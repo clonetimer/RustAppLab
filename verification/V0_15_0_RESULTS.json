@@ -1,0 +1,58 @@
+{
+  "version": "0.15.0",
+  "test_platform": "Linux x86_64",
+  "rust_version": "1.99.1",
+  "debug_workspace_all_targets": {
+    "passed": 256,
+    "failed": 0,
+    "ignored": 15,
+    "result_blocks": 65
+  },
+  "release_network_two_packages": {
+    "passed": 19,
+    "failed": 0,
+    "ignored": 0,
+    "result_blocks": 6
+  },
+  "release_studio_e2e_before_scaffold_warning_only_changes": {
+    "passed": 23,
+    "failed": 0,
+    "ignored": 0,
+    "result_blocks": 1
+  },
+  "network_e2e": {
+    "status": "PASS",
+    "requests": "real TCP/HTTP 200/201/403/404, POST create/close, download, batch",
+    "count": 1,
+    "persisted_after_restart": true,
+    "platform": "posix",
+    "features": [
+      "loopback only",
+      "synchronous",
+      "no external crates"
+    ]
+  },
+  "rustfmt_check": "pass",
+  "debug_clippy_warnings_denied": "pass",
+  "release_clippy_warnings_denied": "pass",
+  "release_workspace_build": "pass",
+  "fresh_extracted_source_workspace_debug_before_scaffold_warning_only_changes": {
+    "passed": 256,
+    "failed": 0,
+    "ignored": 15,
+    "result_blocks": 65
+  },
+  "learner_projects_independent_compilable": 14,
+  "studio_projects": 11,
+  "studio_milestones": 33,
+  "workspace_packages": 16,
+  "release_full_workspace_single_command": "timed out during nested studio_e2e tests, not recorded as passing",
+  "windows_native_validation": "not performed",
+  "async_tokio_reqwest_axum": "not implemented; crates not cached and network DNS unavailable",
+  "fresh_final_source_network_tests": {
+    "passed": 19,
+    "failed": 0
+  },
+  "fresh_final_source_all_test_targets_compile": "pass",
+  "fresh_final_learner_new_starters_compile_no_warnings": "pass"
+}

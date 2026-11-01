@@ -1,0 +1,87 @@
+COMMAND studio start unitlab /mnt/data/RustAppLab_0_18_work/learner-smoke/我的 UnitLab
+EXIT 0
+已创建 UnitLab · 随身单位换算器：/mnt/data/RustAppLab_0_18_work/learner-smoke/我的 UnitLab
+现在只做第 1 步：写出温度转换公式
+用浏览器打开 START.html，编辑 src/lib.rs 的 TODO(1)，保存后检查。
+在本学员目录内：cargo test --offline --test milestones step1_
+在 RustAppLab 根目录：cargo run --offline -p labquest -- studio check "/mnt/data/RustAppLab_0_18_work/learner-smoke/我的 UnitLab" 1
+
+COMMAND learn next /mnt/data/RustAppLab_0_18_work/learner-smoke/我的 UnitLab
+EXIT 0
+UnitLab · 随身单位换算器 / unitlab
+没有可用的历史检查记录；从第 1 步开始。
+
+下一步：第 1 步 · 写出温度转换公式
+打开 "/mnt/data/RustAppLab_0_18_work/learner-smoke/我的 UnitLab"/START.html；修改 "/mnt/data/RustAppLab_0_18_work/learner-smoke/我的 UnitLab"/src/lib.rs 对应 TODO(1) 并保存。
+检查：cargo run --offline -p labquest -- studio check "/mnt/data/RustAppLab_0_18_work/learner-smoke/我的 UnitLab" 1
+提示：cargo run --offline -p labquest -- studio hint unitlab
+注意：本命令不执行测试、不发合格证。只有重新运行 studio check 才能确认当前代码行为。
+
+COMMAND studio check /mnt/data/RustAppLab_0_18_work/learner-smoke/我的 UnitLab 1
+EXIT 2
+UnitLab · 随身单位换算器：先编译你的 src；使用内置合同检查第 1–1 步。
+[FAIL] 第 1 步：写出温度转换公式
+
+running 2 tests
+test step1_freezing ... FAILED
+test step1_negative_and_variable ... FAILED
+
+failures:
+
+failures:
+    step1_freezing
+    step1_negative_and_variable
+
+test result: FAILED. 0 passed; 2 failed; 0 ignored; 0 measured; 6 filtered out; finished in 0.01s
+
+
+
+thread 'step1_freezing' (11001) panicked at tests/milestones.rs:4:5:
+0 摄氏度应为 32 华氏度
+note: run with `RUST_BACKTRACE=1` environment variable to display a backtrace
+
+thread 'step1_negative_and_variable' (11002) panicked at tests/milestones.rs:12:9:
+assertion failed: (celsius_to_fahrenheit(c) - f).abs() < 1e-9
+
+下一步：只看 src/lib.rs 的 TODO(1) 与 LESSON.md 第 1 步；后面的关卡还没开始检查。
+本次记录：/mnt/data/RustAppLab_0_18_work/learner-smoke/我的 UnitLab/.studio-reports/ASSESSMENT-1793361409157886846-10950.md
+LabQuest 错误：当前阶段尚未完成；这不会删除你的源码，按上方第一项失败反馈继续修改
+运行 `cargo run -p labquest -- help` 查看帮助。
+
+COMMAND studio check /mnt/data/RustAppLab_0_18_work/learner-smoke/我的 UnitLab 1
+EXIT 0
+UnitLab · 随身单位换算器：先编译你的 src；使用内置合同检查第 1–1 步。
+[PASS] 第 1 步：写出温度转换公式
+本次记录：/mnt/data/RustAppLab_0_18_work/learner-smoke/我的 UnitLab/.studio-reports/ASSESSMENT-1793361409540858516-11003.md
+当前阶段完成。接下来读第 2 步，修改后运行 studio check "/mnt/data/RustAppLab_0_18_work/learner-smoke/我的 UnitLab" 2。
+
+COMMAND learn next /mnt/data/RustAppLab_0_18_work/learner-smoke/我的 UnitLab
+EXIT 0
+UnitLab · 随身单位换算器 / unitlab
+最近第 1 步通过，源码未变；建议继续下一步。
+
+下一步：第 2 步 · 用 enum 和 match 区分单位
+打开 "/mnt/data/RustAppLab_0_18_work/learner-smoke/我的 UnitLab"/START.html；修改 "/mnt/data/RustAppLab_0_18_work/learner-smoke/我的 UnitLab"/src/lib.rs 对应 TODO(2) 并保存。
+检查：cargo run --offline -p labquest -- studio check "/mnt/data/RustAppLab_0_18_work/learner-smoke/我的 UnitLab" 2
+提示：cargo run --offline -p labquest -- studio hint unitlab
+注意：本命令不执行测试、不发合格证。只有重新运行 studio check 才能确认当前代码行为。
+
+COMMAND learn next /mnt/data/RustAppLab_0_18_work/learner-smoke/我的 UnitLab
+EXIT 0
+UnitLab · 随身单位换算器 / unitlab
+最近报告未通过或与当前源码不同；不要沿用旧的成绩，请重新检查。
+
+下一步：第 1 步 · 写出温度转换公式
+打开 "/mnt/data/RustAppLab_0_18_work/learner-smoke/我的 UnitLab"/START.html；修改 "/mnt/data/RustAppLab_0_18_work/learner-smoke/我的 UnitLab"/src/lib.rs 对应 TODO(1) 并保存。
+检查：cargo run --offline -p labquest -- studio check "/mnt/data/RustAppLab_0_18_work/learner-smoke/我的 UnitLab" 1
+提示：cargo run --offline -p labquest -- studio hint unitlab
+注意：本命令不执行测试、不发合格证。只有重新运行 studio check 才能确认当前代码行为。
+
+COMMAND learn diagnose /mnt/data/RustAppLab_0_18_work/learner-smoke/sample.stderr.txt
+EXIT 0
+首个可识别 Rust 诊断：E0382
+含义：值已经移动（move）后又被使用。
+下一步：定位首次移走所有权的调用；考虑传入 &T 借用、调整所有权流转，确实需要独立副本时再 clone。
+先修复第一条 error，再重新编译；本助手没有编译你的源码，也不能保证只有这一处错误。
+
+LEARNER_SMOKE_PASS

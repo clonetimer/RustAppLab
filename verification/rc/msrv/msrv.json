@@ -1,0 +1,24 @@
+{
+  "version": "0.17.0-rc.1",
+  "source_id": "61d865e5df90f5921c42f1edd542e04d7699de39b74bb9ac84c64cb9bfc4b89a",
+  "system": "Linux",
+  "status": "BLOCKED_ENVIRONMENT",
+  "steps": [
+    {
+      "step": "rustc",
+      "command": [
+        "rustc",
+        "-Vv"
+      ],
+      "exit_code": 0,
+      "timed_out": false,
+      "seconds": 0.008,
+      "log": "rustc.txt",
+      "log_sha256": "907085fc04ad39ff189103277df68c06b0ef73980f0698fb64227af199479757",
+      "passed": true
+    }
+  ],
+  "compiler": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+  "reason": "Actual rustc is not the declared minimum 1.74.0; newer compiler results are not MSRV evidence.",
+  "source_id_after": "61d865e5df90f5921c42f1edd542e04d7699de39b74bb9ac84c64cb9bfc4b89a"
+}

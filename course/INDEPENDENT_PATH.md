@@ -1,0 +1,121 @@
+# 第五段：从完成练习，到独立交付两款软件
+
+## 本段目标
+
+前十二款 Studio 的外壳、类型和三个待实现函数已由平台提供。现在换一种任务：需求与输入输出协议已确定，但数据模型、模块边界、函数划分、测试由你来设计。不要把阅读教师代码、复制答案后的 PASS 填成“独立设计完成”。
+
+本段先做 TaskPocket（可携带的任务管理器），再做 PageMint（离线笔记网页生成器）。最终保留源码、自己的回归测试、个人非敏感输入、真实产物、简短使用说明和设计复盘。它们仍是教学级本地软件，不是生产级数据保护或网页安全产品。
+
+## 起步检查：只需要能做到这些
+
+能运行自己的 Cargo 工程；理解 Vec、结构体、match、Result 和文件读写；能看出错误在编译、运行还是输出内容；会在错误时保留原数据。若做不到，回到 LedgerLite、TextScope 和 BadgeForge 的相应任务，不要求先把所有作品刷完。
+
+## 一条明确的开发路线
+
+| 阶段 | TaskPocket | PageMint | 检查后不能误解为什么 |
+|---|---|---|---|
+| 设计 | Task 字段、状态与 TSV、命令职责 | Note 字段、目录到网页的数据流 | 写下计划不是业务已实现 |
+| 检查点 1 | list/stats：缺失库与已有 TSV 的只读行为 | stats：直接子级 note 的动态统计 | 不要求写入，但不是完整产品通过 |
+| 检查点 2 | add/done、持久化、幂等、Unicode、文件隔离 | 完整网页、排序、转义、不同输入 | 正常路径通过不代表异常处理正确 |
+| 检查点 3 | 全合同、无效参数/坏数据不破坏旧记录 | 全合同、拒绝覆盖/不安全输出/坏输入 | 真实行为通过不等于已证明学习能力 |
+| 人工交付 | 自己的任务文件和重启操作记录 | 自己的笔记集和浏览器查看记录 | 个人测试与说明不可用平台结果替代 |
+
+检查点是累计的，不只是抽一个函数。第三点执行原完整合同，并保留前面的只读回归。模块和函数名由你定，不因使用一个大文件或拆成多个模块改变功能评分。
+
+## 先创建第一款工程
+
+以下三条在完整 RustAppLab 平台根目录运行。`my-taskpocket` 必须是不存在的新目录；已有工程不要重新 init。
+
+```powershell
+cargo run --locked --offline -p labquest -- app init taskpocket my-taskpocket
+cargo run --locked --offline -p labquest -- learn lesson my-taskpocket 1
+cargo run --locked --offline -p labquest -- learn check my-taskpocket 1
+```
+
+第一次检查会失败，因为还没有实现业务；生成器没有塞入答案。打开学员目录的 START.html，阅读 CONTRACT.md；在 PROJECT_JOURNAL.md 写下三个设计决定，才开始修改 src/main.rs。可自行新增 lib.rs 和模块。
+
+Windows 继续用 `LEARN_NEXT_WINDOWS.cmd`：输入已有学员工程完整路径，L 看任务、1/2/3 看递进提示、E 编辑、C 检查、S 指定检查点、G 打开完整讲义。新引导不要求安装 Python，不要求学习者使用 Linux。
+
+## 两个目录，不混用 Cargo 命令
+
+| 位置 | 命令例子 |
+|---|---|
+| 平台根目录 | `cargo run -p labquest -- learn check "D:\RustLearning\my-taskpocket" 1` |
+| 学员目录 | `cargo run --offline -- list samples/read-only.tsv` |
+| 学员目录 | `cargo test --offline`、`cargo build --offline --release` |
+
+`-p labquest` 是平台程序，不是你的作品。生成的工程带自己的 `[workspace]`，可以独立编译交付，也可以放在平台之外。路径带中文/空格时使用引号。
+
+## TaskPocket：先读，再改，再保护
+
+先不实现 add/done，只读 `samples/read-only.tsv`。手算顺序和统计：样例有 ID 8/DONE、3/OPEN，list 应按 3、8 排序，统计 total=2 open=1 done=1。缺失文件应是空表，不创建文件。用这个最小功能验证参数、数据模型和读取层。
+
+然后加入完整生命周期：连续新增两项、完成一项、重复完成、退出后读取、换另一个数据文件。把 ID 当作稳定身份，不是数组位置。对新 ID 的极限处理写错误分支；不要把输出写死成样例结果。
+
+最后制造损坏输入，比较操作前后原文件字节。先校验，再改内存，再保存；不要一开始就截断文件。磁盘写失败的全面恢复、锁和断电一致性属于额外工程要求，不在本合同的通过结论之内。
+
+```powershell
+# 在学员目录；使用新的练习文件
+cargo run --offline -- add samples/my-week.tsv "阅读借用章节"
+cargo run --offline -- add samples/my-week.tsv "写自己的测试"
+cargo run --offline -- done samples/my-week.tsv 1
+cargo run --offline -- stats samples/my-week.tsv
+```
+
+最后预期 total=2 open=1 done=1。关闭并重开进程仍相同，才说明跨进程存储成立。不要只观察内存中的 Vec。
+
+## PageMint：复用方法，不复制业务
+
+在平台创建第二款：
+
+```powershell
+cargo run --locked --offline -p labquest -- app init pagemint my-pagemint
+cargo run --locked --offline -p labquest -- learn lesson my-pagemint 1
+```
+
+到学员目录先做 stats。两个附带样例总计 `notes=2 paragraphs=4`；改变正文应使结果变化，子目录与 txt 不计入。规划一套读入的 Note，供 stats 和 build 复用；不要出现统计和渲染对“有效笔记”的定义不同。
+
+之后生成 `samples/my-notes-01.html`。文件名、标题、正文都是外部输入，必须转义；浏览器应该显示 `<script>` 文本，而非执行它。确定排序后再添加样式，不用排版掩盖数据错误。
+
+```powershell
+# 在 PageMint 学员目录
+cargo run --offline -- stats samples/notes
+cargo run --offline -- build samples/notes samples/my-notes-01.html
+```
+
+输出不允许位于输入目录，也不允许覆盖已有目标；下一次请换新文件名，不指导学员自动删除旧作品。对坏标题、无效 UTF-8、已存在文件的实验都在副本上做，保留原笔记。
+
+## 从看错误到写自己的回归测试
+
+生成器提供 `tests/self_check.rs`：一条缺参数的入口烟测，一条尚未实现且 ignore 的个人作业。默认 cargo test 只有这条烟测通过，绝不算独立作品完成。
+
+阅读 TEST_PLAN.md。先写一项 Arrange–Act–Assert：临时文件是什么；调用什么；应断言哪些输出、退出码与文件字节。显式运行忽略的作业时，todo! 会失败；把它换成有意义的断言，再取消 ignore 进入常规测试。平台不会运行你的自定义测试，必须单独留下结果。
+
+```powershell
+cargo test --offline --test self_check my_regression -- --ignored
+cargo test --offline
+```
+
+TaskPocket 建议“非法 ID 不改写原数据”；PageMint 建议“含特殊字符的输入被转义且重复输出不覆盖”。测试可以启动程序，也可测试自己拆出的纯函数；不规定唯一结构。先看到原缺陷触发失败，再修到通过，记录红→绿，而不是删除断言。
+
+## 进度和报告怎样理解
+
+`learn next`、`learn lesson`、`learn hint` 和 `learn overview` 不执行你的代码。`learn check` 或 `app checkpoint` 才真实构建运行。第一、第二检查点不生成 APP_ASSESSMENT，避免把局部结果冒充完整验收；第三点与旧 `app check` 都执行完整探针并写入该文件。
+
+每次检查还新增 `.app-reports/CHECKPOINT-*.md`。导航指纹覆盖 Cargo.toml、src、tests、build.rs、.cargo、工具链配置（存在时）；源码/测试变化会提示过期。指纹不包含首次构建生成的 Cargo.lock、个人样例、外部依赖或环境，所以不是供应链或发布完整性认证。报告可以编辑，不能当防作弊证书；每次 check 都实际运行。
+
+旧工程无需重建。它没有新模板时，通过平台页面或 CLI 阅读；旧 APP_ASSESSMENT 不自动变为三个新检查点的记录。现有全合同入口和参数仍然可用。
+
+## 最终交付：一份可携带的软件，不是一张截图
+
+在自己的工程完成最后一次全合同检查，然后自写测试、格式检查、Release 构建。照 RELEASE_CHECKLIST.md 写一页说明，列用途、输入格式、完整运行命令、产物位置、重复运行行为、真实用过的平台与已知限制。复制源码与样例到新目录重编译，并从另一个工作目录传入完整路径运行一次。
+
+平台提供的教师基准实现只是验证评测器，不是学员完成证明。学习记录如实写出用了哪些提示、哪个问题仍需讲解。教师观察包括能否解释一项设计取舍、定位一项新错误、改用自己的数据，而不以 PASS 数量代替掌握程度。
+
+## 下一款作品由你定义
+
+选择一个与待办、笔记不同的真实问题，写出用户、输入、产物、两项异常和验收标准；先完成只读或纯计算的最小路径，再加写入和界面。成熟异步框架、桌面 GUI 和 WebAssembly 尚在后续建设范围，本段不宣称覆盖这些技术。
+
+## 对照官方资料
+
+[测试组织](https://doc.rust-lang.org/book/ch11-03-test-organization.html)、[Cargo 集成测试](https://doc.rust-lang.org/cargo/reference/cargo-targets.html#integration-tests)、[OpenOptions](https://doc.rust-lang.org/std/fs/struct.OpenOptions.html)。本教程对协议和文件保护的具体要求，以生成工程的 CONTRACT.md 为准。

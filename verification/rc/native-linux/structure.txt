@@ -1,0 +1,3 @@
+$ /opt/pyvenv/bin/python scripts/structural_check.py
+STRUCTURE CHECK PASSED: 17 packages, twelve Studio lessons, beginner flow, 32 legacy chapters, links, challenges, demo contract, manifest
+NOTE: this is NOT a Rust compile, formatting, Clippy, or runtime test.

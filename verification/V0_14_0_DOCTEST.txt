@@ -1,0 +1,9 @@
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.00s
+   Doc-tests minikv
+
+running 2 tests
+test apps/minikv/src/lib.rs - Database<J>::scan (line 170) - compile fail ... ok
+test apps/minikv/src/lib.rs - Database<J>::scan (line 179) ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.11s
+

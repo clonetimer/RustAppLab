@@ -1,0 +1,4 @@
+# ID<TAB>等待毫秒<TAB>说明
+read	150	学习 Future 与 await
+code	50	编写真正的 async fn
+check	95	运行单元测试

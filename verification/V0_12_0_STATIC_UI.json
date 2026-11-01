@@ -1,0 +1,31 @@
+{
+  "passed": true,
+  "browser": "/usr/bin/chromium",
+  "checks": [
+    {
+      "viewport": "desktop",
+      "size": {
+        "width": 1280,
+        "height": 960
+      },
+      "cards": 6,
+      "workshop_no_horizontal_overflow": true,
+      "first_lesson_link_target_exists": true,
+      "lesson_no_horizontal_overflow": true,
+      "scope": "Chromium set_content DOM rendering only; file:// navigation blocked by container policy ERR_BLOCKED_BY_ADMINISTRATOR; actual file navigation, Windows launcher and localhost HTTP are not verified"
+    },
+    {
+      "viewport": "mobile",
+      "size": {
+        "width": 390,
+        "height": 844
+      },
+      "cards": 6,
+      "workshop_no_horizontal_overflow": true,
+      "first_lesson_link_target_exists": true,
+      "lesson_no_horizontal_overflow": true,
+      "scope": "Chromium set_content DOM rendering only; file:// navigation blocked by container policy ERR_BLOCKED_BY_ADMINISTRATOR; actual file navigation, Windows launcher and localhost HTTP are not verified"
+    }
+  ],
+  "missing_local_links": []
+}

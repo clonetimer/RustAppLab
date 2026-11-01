@@ -1,0 +1,151 @@
+{
+  "status": "PASS",
+  "checks": [
+    {
+      "name": "format",
+      "command": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "exit": 0,
+      "seconds": 0.47,
+      "log": "format.log"
+    },
+    {
+      "name": "clippy-debug",
+      "command": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "--offline",
+        "--workspace",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit": 0,
+      "seconds": 5.1,
+      "log": "clippy-debug.log"
+    },
+    {
+      "name": "clippy-release",
+      "command": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "--offline",
+        "--release",
+        "--workspace",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit": 0,
+      "seconds": 5.19,
+      "log": "clippy-release.log"
+    },
+    {
+      "name": "debug-all",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "--workspace",
+        "--all-targets"
+      ],
+      "exit": 0,
+      "seconds": 101.08,
+      "log": "debug-all.log",
+      "tests": {
+        "passed": 320,
+        "failed": 0,
+        "ignored": 15
+      }
+    },
+    {
+      "name": "release-all",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "--release",
+        "--workspace",
+        "--all-targets"
+      ],
+      "exit": 0,
+      "seconds": 77.53,
+      "log": "release-all.log",
+      "tests": {
+        "passed": 310,
+        "failed": 0,
+        "ignored": 15
+      }
+    },
+    {
+      "name": "doc-tests",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "--workspace",
+        "--doc"
+      ],
+      "exit": 0,
+      "seconds": 0.98,
+      "log": "doc-tests.log",
+      "tests": {
+        "passed": 2,
+        "failed": 0,
+        "ignored": 0
+      }
+    },
+    {
+      "name": "release-build",
+      "command": [
+        "cargo",
+        "build",
+        "--locked",
+        "--offline",
+        "--release",
+        "--workspace"
+      ],
+      "exit": 0,
+      "seconds": 0.07,
+      "log": "release-build.log"
+    },
+    {
+      "name": "python-tests",
+      "command": [
+        "python3",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "scripts/tests"
+      ],
+      "exit": 0,
+      "seconds": 1.48,
+      "log": "python-tests.log"
+    },
+    {
+      "name": "systems-rehearsal",
+      "command": [
+        "python3",
+        "scripts/smoke_systems_path.py",
+        "--output",
+        "/mnt/data/dev4-evidence/real-systems-artifacts"
+      ],
+      "exit": 0,
+      "seconds": 1.68,
+      "log": "systems-rehearsal.log"
+    }
+  ]
+}

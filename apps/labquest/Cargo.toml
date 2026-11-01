@@ -1,0 +1,12 @@
+[package]
+name = "labquest"
+version = "0.19.0-dev.2"
+edition = "2021"
+rust-version = "1.74"
+license = "MIT"
+description = "Case-based, self-checking learning console that connects four Rust AppLab products"
+
+[dependencies]
+filequest = { path = "../filequest" }
+loglens = { path = "../loglens" }
+safesync = { path = "../safesync" }

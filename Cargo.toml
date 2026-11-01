@@ -1,0 +1,4 @@
+[workspace]
+members = ["apps/filequest", "apps/loglens", "apps/localhub", "apps/safesync", "apps/labquest", "apps/unitlab", "apps/quizdeck", "apps/textscope", "apps/ledgerlite", "apps/badgeforge", "apps/batchmeter", "apps/termgarden", "apps/storedesk", "apps/minikv", "apps/netfetch", "apps/servicedesk", "apps/asyncboard"]
+default-members = ["apps/filequest"]
+resolver = "2"

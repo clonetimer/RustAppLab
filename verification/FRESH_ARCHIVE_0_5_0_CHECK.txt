@@ -1,0 +1,24 @@
+Rust AppLab 0.5.0 · Fresh extraction qualification (Linux x86_64)
+Date: 2026-10-28
+Source archive: RustAppLab-0.5.0-source.zip, separate extraction under /tmp
+Binary archive: RustAppLab-0.5.0-linux-x86_64-release.zip, separate extraction under /tmp
+
+Actual fresh source extraction:
+- scripts/structural_check.py: PASS, 22 chapters / 4 packages / source SHA-256 manifest checked
+- CARGO_TARGET_DIR pointed to a new empty build directory
+- cargo test --locked --offline --workspace --all-targets: 64 passed, 0 failed, 15 learner challenges intentionally ignored (21 test targets)
+
+Actual fresh release-binary extraction:
+- filequest / loglens / localhub / safesync help: PASS
+- filequest demo, loglens demo, localhub demo: PASS
+- safesync demo: PASS, 4 files / 3 directories / 110 bytes
+- safesync verify: PASS
+- safesync restore to a NEW directory: PASS
+- safesync stages with no residue: PASS
+
+Limits:
+- Genuine browser -> LocalHub HTTP end-to-end is not proven by these CLI checks.
+- Fresh extraction checks are on Linux, not native Windows or macOS.
+- No claim of Windows/macOS, Rust 1.74, disk-full, or power-loss qualification.
+- This record is added to the final source archive after the first fresh run; the final
+  archive is rechecked again for source manifest integrity.

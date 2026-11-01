@@ -1,0 +1,24 @@
+# Rust AppLab 0.15.0 · Rust 1.99.1 本机验证报告
+
+当前环境：Linux x86_64；Cargo --locked --offline（系统可提供标准库与 SQLite）。
+
+## 真实通过（最后代码状态）
+- `cargo fmt --all -- --check`：通过。
+- `cargo clippy --locked --offline --workspace --all-targets -- -D warnings`：通过。
+- `cargo clippy --release --locked --offline --workspace --all-targets -- -D warnings`：通过。
+- `cargo build --release --locked --offline --workspace`：通过，共 16 个包。
+- `cargo test --locked --offline --workspace --all-targets -- --test-threads=2`：**256 通过，0 失败，15 个教学挑战预留 ignored**（debug_final.log）。
+- `cargo test --release --locked --offline -p netfetch -p servicedesk --all-targets`：**19 通过，0 失败**（network_release_final.log）。
+- `python scripts/smoke_network.py`：**真实 TCP+HTTP 端到端通过**，包括创建/关闭工单、JSON与网页下载、批量任务、HTTP 403/404、退出后数据存在（smoke_network_final2.log）。
+- 11 个 Studio 学员工程 + FirstCard + TaskPocket + PageMint，合计 14 个工程，在新目录离线 `cargo test --no-run` 编译通过。NetFetch / ServiceDesk 新手初始检查按设计失败，正确代码可通过对应三个里程碑。
+
+## 分别完成，未计为最终全量 Release 通过
+- 修改学员模板以消除暂未使用的 scaffold 警告**之前**，`cargo test --release --locked --offline -p labquest --test studio_e2e -- --test-threads=1`：**23 通过，0 失败**，包括新网络模板红绿验证。
+- Release 全 Workspace 单次命令遇到嵌套 Cargo 工程测试超时，并非已证实的测试失败，但**没有整仓 Release 测试通过结论**。修改后不另冒充 Studio Release 完整复测。
+- 修改学员模板之前，第一轮源码 ZIP 全新解压后独立运行 Debug 全量 **256 通过**。修改后，第二轮源码 ZIP 全新解压后结构检查、16 包测试目标编译和新网络包 19 项测试均通过。
+
+## 环境/产品范围
+- NetFetch 和 ServiceDesk 是同步、回环本机 HTTP 教学版；**不是 Tokio、Reqwest、Axum 的异步项目**。
+- 当前执行环境 DNS 无法获取 crates.io，第三方异步网络课程依赖未安装/验证。
+- Windows/macOS 原生运行、浏览器直连的完整视觉网络验收、真实学员效果尚未确认。0.11.1 Windows 首步修复获得过学员通过反馈，但不能推断 0.15.0 新增功能通过。
+- 不适合作为生产公网 HTTP 服务，NetFetch 不支持 HTTPS/chunked/redirect；ServiceDesk 单进程串行处理且缺少公网鉴权。

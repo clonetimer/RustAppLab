@@ -1,0 +1,51 @@
+{
+  "version": "0.14.0",
+  "status": "teaching-development",
+  "platform": "Linux 906fc3add938 6.18.55 #1 SMP Wed Oct 14 19:45:18 UTC 2026 x86_64 GNU/Linux",
+  "rustc": "rustc 1.99.1 (58cf8f9c3 2026-10-13)",
+  "workspace_packages": 14,
+  "studio_products": 9,
+  "studio_milestones": 27,
+  "learner_projects": 12,
+  "mainline_with_materials": 15,
+  "mainline_planned": 20,
+  "tests": {
+    "debug": {
+      "passed": 235,
+      "failed": 0,
+      "ignored": 15
+    },
+    "release": {
+      "passed": 225,
+      "failed": 0,
+      "ignored": 15
+    },
+    "doctest": {
+      "passed": 2,
+      "failed": 0,
+      "ignored": 0
+    }
+  },
+  "format": "PASS",
+  "debug_clippy": "PASS",
+  "release_clippy": "PASS",
+  "release_build": "PASS",
+  "minikv_independent_smoke": 14,
+  "shared_disk_records_checked_independently": 40,
+  "network_probe_compiled": false,
+  "network_dependencies_available": false,
+  "preparation_unit_tests": "5 tests; successful orchestration uses a fake runner, NOT real dependencies",
+  "network_preparation_expected_failure": "Real rustc/cargo commands run; dependency resolution fails with CARGO_NET_OFFLINE=true because the cache is empty; later steps did not run",
+  "browser": {
+    "dom_layout": "PASS",
+    "direct_http": "BLOCKED_BY_ADMINISTRATOR"
+  },
+  "unverified": [
+    "Windows native 0.14.0",
+    "macOS native",
+    "Rust 1.74 MSRV",
+    "network dependency ABI and live probe",
+    "real learner effectiveness",
+    "power-loss durability"
+  ]
+}

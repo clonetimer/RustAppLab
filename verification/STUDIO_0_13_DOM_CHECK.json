@@ -1,0 +1,62 @@
+[
+  {
+    "page": "WORKSHOP.html",
+    "viewport": [
+      1280,
+      900
+    ],
+    "heading": "从第一张任务卡，走向一组自己的 Rust 软件。",
+    "horizontal_overflow": false,
+    "mode": "set_content, not file/HTTP navigation"
+  },
+  {
+    "page": "WORKSHOP.html",
+    "viewport": [
+      390,
+      844
+    ],
+    "heading": "从第一张任务卡，走向一组自己的 Rust 软件。",
+    "horizontal_overflow": false,
+    "mode": "set_content, not file/HTTP navigation"
+  },
+  {
+    "page": "apps/labquest/studio/termgarden_lesson.html",
+    "viewport": [
+      1280,
+      900
+    ],
+    "heading": "TermGarden · 把任务种成一座终端花园",
+    "horizontal_overflow": false,
+    "mode": "set_content, not file/HTTP navigation"
+  },
+  {
+    "page": "apps/labquest/studio/termgarden_lesson.html",
+    "viewport": [
+      390,
+      844
+    ],
+    "heading": "TermGarden · 把任务种成一座终端花园",
+    "horizontal_overflow": false,
+    "mode": "set_content, not file/HTTP navigation"
+  },
+  {
+    "page": "apps/labquest/studio/storedesk_lesson.html",
+    "viewport": [
+      1280,
+      900
+    ],
+    "heading": "StoreDesk · 为社团物料做一个 SQLite 库存台",
+    "horizontal_overflow": false,
+    "mode": "set_content, not file/HTTP navigation"
+  },
+  {
+    "page": "apps/labquest/studio/storedesk_lesson.html",
+    "viewport": [
+      390,
+      844
+    ],
+    "heading": "StoreDesk · 为社团物料做一个 SQLite 库存台",
+    "horizontal_overflow": false,
+    "mode": "set_content, not file/HTTP navigation"
+  }
+]

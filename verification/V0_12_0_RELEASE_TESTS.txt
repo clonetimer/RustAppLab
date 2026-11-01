@@ -1,0 +1,460 @@
+    Finished `release` profile [optimized] target(s) in 0.01s
+     Running unittests src/lib.rs (target/release/deps/badgeforge-bd6b64c01124ee9f)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/main.rs (target/release/deps/badgeforge-4868e078db6bfcc7)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/milestones.rs (target/release/deps/milestones-0b6c7f8fd483806c)
+
+running 8 tests
+test step1_keep_unicode ... ok
+test step1_escape ... ok
+test step2_no_text_injection ... ok
+test step2_trait_render ... ok
+test step3_cli_reject_bad_title ... ok
+test step3_generic_composition ... ok
+test step3_independent_documents ... ok
+test step3_cli_svg_and_no_overwrite ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (target/release/deps/batchmeter-bc7426943267e6f2)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/main.rs (target/release/deps/batchmeter-03bdcb08e077a99d)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/milestones.rs (target/release/deps/milestones-2cf615463d7d385c)
+
+running 8 tests
+test step1_errors ... ok
+test step1_real_file ... ok
+test step2_overflow ... ok
+test step2_totals ... ok
+test step3_cli_missing_is_error ... ok
+test step3_cli_same_order ... ok
+test step3_empty_missing_workers ... ok
+test step3_parallel_matches_serial ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (target/release/deps/filequest-018ff3b388d17ec9)
+
+running 6 tests
+test cli::tests::parses_scan_with_all ... ok
+test cli::tests::rejects_invalid_report_limit ... ok
+test cli::tests::rejects_missing_output ... ok
+test report::tests::html_is_escaped ... ok
+test scanner::tests::extension_is_normalized ... ok
+test scanner::tests::human_readable_bytes ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/main.rs (target/release/deps/filequest-f4929906b2fbb0fa)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/acceptance.rs (target/release/deps/acceptance-83fa7d7d9beacad2)
+
+running 7 tests
+test does_not_traverse_symlinks ... ok
+test accepts_non_utf8_file_names_without_panicking ... ok
+test errors_on_invalid_scan_roots ... ok
+test handles_empty_directories ... ok
+test report_rejects_overwriting_symlink_even_with_force ... ok
+test report_escapes_file_names_and_refuses_unintended_overwrites ... ok
+test scans_real_directories_with_explicit_ignore_policy ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/challenges.rs (target/release/deps/challenges-03ecdf311d3748ca)
+
+running 5 tests
+test mission_01_version_command ... ignored, 任务 01：需要学员添加 version 命令
+test mission_02_scan_extension_filter ... ignored, 任务 02：需要学员实现 --ext 扫描过滤
+test mission_04_extension_size_summary ... ignored, 任务 04：需要学员输出每种扩展名的字节合计
+test mission_05_find_basename_only ... ignored, 任务 05：需要学员增加 --name-only 查找模式
+test mission_06_custom_report_title_is_escaped ... ignored, 任务 06：需要学员支持报告标题并正确 HTML 转义
+
+test result: ok. 0 passed; 0 failed; 5 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/cli_smoke.rs (target/release/deps/cli_smoke-3052cb424bbcee7b)
+
+running 2 tests
+test help_and_unknown_commands ... ok
+test demo_scan_find_report_is_a_real_user_journey ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running unittests src/lib.rs (target/release/deps/labquest-dc49a8cfb6b44ed6)
+
+running 10 tests
+test board::tests::board_escapes_feedback ... ok
+test capstone::tests::generated_starter_is_unsolved ... ok
+test capstone::tests::hints_are_staged ... ok
+test coach::tests::prediction_teaches_strict_boundary ... ok
+test proof::tests::fingerprints_change_when_content_changes ... ok
+test simulation::tests::generated_log_matches_expected_error_counts ... ok
+test simulation::tests::parser_rejects_bad_configs ... ok
+test transfer::tests::hints_are_scaffolded ... ok
+test transfer::tests::starter_is_not_completed ... ok
+test proof::tests::infinite_loop_like_process_is_terminated_with_explanation ... ok
+
+test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.10s
+
+     Running unittests src/main.rs (target/release/deps/labquest-8aa530926fb3b54b)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/beginner_e2e.rs (target/release/deps/beginner_e2e-700f131fdd297b3f)
+
+running 7 tests
+test first_win_requires_real_edit_and_dynamic_input ... ok
+test nested_relative_path_needs_existing_parent_and_does_not_create_it ... ok
+test refuses_existing_folder_without_overwrite ... ok
+test single_component_relative_path_works_like_windows_launcher ... ok
+test syntax_error_explains_next_step_and_does_not_issue_badge ... ok
+test three_tier_hints_work_without_answer_first ... ok
+test endless_loop_returns_feedback_instead_of_hanging_forever ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 4.12s
+
+     Running tests/capstone_e2e.rs (target/release/deps/capstone_e2e-39d824b734aea2a0)
+
+running 5 tests
+test init_creates_independent_unsolved_project_without_overwriting ... ok
+test hardcoding_first_id_cannot_pass_dynamic_and_persistence ... ok
+test report_wont_overwrite_human_written_content ... ok
+test starter_compiles_but_has_no_fake_success_and_reports_failures ... ok
+test real_independent_implementation_passes_nine_groups_and_can_be_rechecked ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.22s
+
+     Running tests/case_e2e.rs (target/release/deps/case_e2e-79ced4fed47e043d)
+
+running 9 tests
+test case_rejects_unsafe_directories_and_unknown_markers ... ok
+test cli_helps_navigate_errors_without_destroying_files ... ok
+test greater_equal_bug_is_caught_on_the_400ms_boundary ... ok
+test hardcoded_success_for_one_configuration_fails_transfer_verification ... ok
+test new_case_has_real_inputs_but_no_free_progress ... ok
+test next_and_predict_are_read_only_cli_learning_aids ... ok
+test full_case_requires_actual_code_build_and_evidence_stays_fresh ... ok
+test symlinked_case_outputs_are_rejected ... ok
+test prior_case_marker_still_supports_legacy_evidence ... ok
+
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.71s
+
+     Running tests/studio_e2e.rs (target/release/deps/studio_e2e-b392f904a38caa6f)
+
+running 14 tests
+test badgeforge_red_to_green ... ok
+test batchmeter_red_to_green ... ok
+test compile_error_is_not_pass ... ok
+test invalid_parameters_and_marker_fail_without_writes ... ok
+test ledgerlite_red_to_green ... ok
+test local_test_deletion_does_not_pass ... ok
+test only_completed_milestone_passes_and_reports_are_snapshots ... ok
+test quizdeck_red_to_green ... ok
+test relative_unicode_space_and_repeated_init ... ok
+test source_cli_breakage_is_detected ... ok
+test symlink_source_and_report_directory_are_rejected ... ok
+test textscope_red_to_green ... ok
+test unitlab_red_to_green ... ok
+test accidental_infinite_loop_is_bounded ... ok
+
+test result: ok. 14 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 8.35s
+
+     Running tests/transfer_cli.rs (target/release/deps/transfer_cli-e01ad77a2585ae14)
+
+running 3 tests
+LabQuest 错误：用法：labquest app hint pagemint <1|2|3>
+运行 `cargo run -p labquest -- help` 查看帮助。
+test catalog_and_hint_commands_are_accessible ... ok
+test both_legacy_and_new_init_are_supported ... ok
+test pagemint_check_failure_creates_report_and_returns_nonzero ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.50s
+
+     Running tests/transfer_e2e.rs (target/release/deps/transfer_e2e-fcd0a84b77c3fed2)
+
+running 5 tests
+test assessment_will_not_overwrite_personal_report ... ok
+test hardcoded_success_output_does_not_pass ... ok
+test correct_independent_solution_passes_real_html_and_robustness_checks ... ok
+test html_without_escaping_is_rejected ... ok
+test starter_is_independent_and_cannot_pass_without_implementation ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.83s
+
+     Running unittests src/lib.rs (target/release/deps/ledgerlite-589b1879ac04aea2)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/main.rs (target/release/deps/ledgerlite-073a7545f747cc7f)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/milestones.rs (target/release/deps/milestones-ec7557cae2296a22)
+
+running 8 tests
+test step1_exact_decimal ... ok
+test step1_bad_money ... ok
+test step2_bad_records ... ok
+test step2_records ... ok
+test step3_checked_sum ... ok
+test step3_cli_refuse_damage ... ok
+test step3_grouping ... ok
+test step3_cli_persistent_book ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (target/release/deps/localhub-ae9206229ce0861d)
+
+running 5 tests
+test cli::tests::parses_serve_and_rejects_ambiguous_input ... ok
+test data::tests::escapes_special_json_characters ... ok
+test http::tests::rejects_bad_hosts_methods_and_unsupported_http_versions ... ok
+test http::tests::rejects_invalid_target_and_accepts_normal_localhost ... ok
+test http::tests::response_has_valid_http_framing_and_security_headers ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/main.rs (target/release/deps/localhub-1cd66a702ccb1c48)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/acceptance.rs (target/release/deps/acceptance-86dae3491b55336b)
+
+running 6 tests
+test combines_real_file_and_log_snapshots ... ok
+test refuses_invalid_root_and_does_not_follow_root_symlink ... ok
+test real_tcp_http_round_trip_and_graceful_limit ... ok
+test routes_are_read_only_limit_validated_and_do_not_accept_browser_paths ... ok
+test rejects_excessive_request_headers_over_real_tcp ... ok
+test safely_returns_special_characters_in_json ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/challenges.rs (target/release/deps/challenges-2296c1aaaaba1bc4)
+
+running 3 tests
+test mission_13_extension_filter ... ignored, 任务 13：在 /api/files 支持 ?ext=rs 过滤
+test mission_14_logs_min_level ... ignored, 任务 14：支持 ?min_level=ERROR，明确返回 filtered_count
+test mission_15_custom_service_name ... ignored, 任务 15：增加 --name 自定义健康检查应用名
+
+test result: ok. 0 passed; 0 failed; 3 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/cli_smoke.rs (target/release/deps/cli_smoke-846fc4783c6d5099)
+
+running 1 test
+test demo_to_real_http_api_and_process_exit ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (target/release/deps/loglens-016909237ecb0708)
+
+running 6 tests
+test analyzer::tests::sanitize_replaces_terminal_control_sequences ... ok
+test analyzer::tests::rate_for_empty_log_is_defined ... ok
+test cli::tests::report_flags_are_parsed_with_validation ... ok
+test parser::tests::handles_blank_malformed_and_bad_timestamp ... ok
+test parser::tests::recognizes_two_useful_formats ... ok
+test report::tests::markdown_escapes_table_cells_and_html ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/main.rs (target/release/deps/loglens-f53b064cb5f8ffcb)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/acceptance.rs (target/release/deps/acceptance-9c734fa7ec631e6e)
+
+running 5 tests
+test explicit_invalid_inputs_and_empty_files ... ok
+test can_compare_a_real_demo_release_regression ... ok
+test invalid_utf8_is_reported_instead_of_silently_replaced ... ok
+test report_force_does_not_follow_symlink ... ok
+test exports_safe_markdown_without_overwriting_by_default ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/challenges.rs (target/release/deps/challenges-99354e7e19f0008e)
+
+running 4 tests
+test mission_08_analyze_top_count ... ignored, 任务 08：为 analyze 添加 --top N
+test mission_09_filter_message ... ignored, 任务 09：增加 --contains 关键词过滤
+test mission_10_fail_on_regression ... ignored, 任务 10：比较错误率回退时可选择失败退出
+test mission_11_report_custom_title ... ignored, 任务 11：支持报告自定义标题，并防止 Markdown 注入
+
+test result: ok. 0 passed; 0 failed; 4 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/cli_smoke.rs (target/release/deps/cli_smoke-03636fed9f0d1cbd)
+
+running 1 test
+test demo_analyze_compare_report_user_journey ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running unittests src/lib.rs (target/release/deps/quizdeck-d78dd6179ffef18c)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/main.rs (target/release/deps/quizdeck-9618716f88c5c80f)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/milestones.rs (target/release/deps/milestones-3c9e1c775c7b9629)
+
+running 8 tests
+test step1_comparison ... ok
+test step1_not_substring ... ok
+test step2_bom_crlf_and_owned_data ... ok
+test step2_invalid ... ok
+test step3_cli_real_deck ... ok
+test step3_cli_interactive_and_bad_deck ... ok
+test step3_count_mismatch ... ok
+test step3_score_and_missed ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (target/release/deps/safesync-e46e1e7c21624965)
+
+running 6 tests
+test cli::tests::parse_commands_without_ambiguous_options ... ok
+test manifest::tests::rejects_traversal_and_duplicates ... ok
+test sha256::tests::sha256_known_vectors ... ok
+test ops::consistency_tests::source_changed_after_stage_verified_is_not_committed ... ok
+test tree::tests::rejects_path_escapes_and_ambiguous_windows_names ... ok
+test sha256::tests::streaming_and_binary_bytes ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/main.rs (target/release/deps/safesync-e2f1c3e5016d3277)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/acceptance.rs (target/release/deps/acceptance-e2337fa6a524ecdf)
+
+running 10 tests
+test backup_target_requires_existing_parent_and_no_accidental_files ... ok
+test blank_source_and_hidden_names_are_valid ... ok
+test non_utf8_names_are_rejected_explicitly ... ok
+test never_overwrite_restore_target_or_allow_backup_within_source ... ok
+test reject_extra_data_files_and_tampered_manifest ... ok
+test real_backup_verify_restore_preserves_bytes_and_empty_dirs ... ok
+test repeat_backup_is_idempotent_but_source_change_does_not_overwrite_snapshot ... ok
+test same_length_bit_flip_is_detected_and_restore_never_starts ... ok
+test special_fifo_file_is_refused ... ok
+test symlinks_are_refused_at_source_and_backup_and_target ... ok
+
+test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+     Running tests/challenges.rs (target/release/deps/challenges-926b75d0c7db75c1)
+
+running 3 tests
+test mission_17_verify_quiet ... ignored, 第 17 关：学员增加 verify --quiet；成功静默输出，损坏时仍返回非零状态
+test mission_18_restore_dry_run ... ignored, 第 18 关：学员增加 restore --dry-run；显示计划但不得创建目标
+test mission_19_verify_json ... ignored, 第 19 关：学员增加 verify --json，输出可供脚本使用的机器可读计数
+
+test result: ok. 0 passed; 0 failed; 3 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/cli_smoke.rs (target/release/deps/cli_smoke-1518730adaa70cdc)
+
+running 2 tests
+test help_missions_and_bad_arguments ... ok
+test demo_verify_tamper_and_restore_is_real_cli_flow ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running tests/recovery.rs (target/release/deps/recovery-4d07f910f1f4a8b7)
+
+running 2 tests
+test stages_does_not_promote_arbitrary_files ... ok
+test stages_lists_symlink_without_following_it ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (target/release/deps/textscope-f848a9320e50c787)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/main.rs (target/release/deps/textscope-5fd0903a29dce2aa)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/milestones.rs (target/release/deps/milestones-8eb647080c3ad6cd)
+
+running 8 tests
+test step1_empty_and_crlf ... ok
+test step1_unicode ... ok
+test step2_limits_and_unicode ... ok
+test step2_rank_and_tie ... ok
+test step3_borrowed_lines ... ok
+test step3_cli_unicode_file ... ok
+test step3_edge_cases ... ok
+test step3_cli_bad_input ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (target/release/deps/unitlab-f3151dcb04980c50)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/main.rs (target/release/deps/unitlab-e64c40f9c91ea301)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/milestones.rs (target/release/deps/milestones-6eb8b67a19633bd2)
+
+running 8 tests
+test step1_freezing ... ok
+test step1_negative_and_variable ... ok
+test step2_directions ... ok
+test step2_invalid_dimension_and_nonfinite ... ok
+test step3_cli_conversion ... ok
+test step3_format_and_rounding ... ok
+test step3_input_errors ... ok
+test step3_cli_errors ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+

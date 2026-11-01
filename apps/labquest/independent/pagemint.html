@@ -1,0 +1,41 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>pagemint</title><style>*{box-sizing:border-box}body{margin:0;background:#f3f6fa;color:#25354c;font:16px/1.85 system-ui,"Microsoft YaHei",sans-serif}header{background:#172f4c;color:white}header>div,main{max-width:980px;margin:auto;padding:24px}header a{color:#d0eaff}h1{font-size:clamp(26px,4vw,36px);line-height:1.4}h2{margin-top:38px;padding-top:18px;border-top:1px solid #d8e1ee;line-height:1.5;font-size:24px}h3{font-size:19px}article{background:white;border:1px solid #d8e1ee;border-radius:16px;padding:20px 28px}p,li{overflow-wrap:anywhere}pre{background:#172f4c;color:white;padding:16px;border-radius:9px;white-space:pre-wrap;overflow-wrap:anywhere}code{font:14px/1.75 Consolas,monospace;background:#ecf1f7;padding:2px 4px;border-radius:3px}pre code{background:none;padding:0}.table-scroll{overflow:auto}table{border-collapse:collapse;width:100%;min-width:520px}td,th{padding:10px;border:1px solid #d8e1ee;text-align:left;vertical-align:top}a{color:#135b9a}nav{display:flex;flex-wrap:wrap;gap:16px}.note{border-left:4px solid #bc711a;padding:10px 16px;background:#fff7e8}footer{max-width:980px;margin:auto;padding:24px;color:#516078}@media(max-width:560px){header>div,main{padding:16px 12px}article{padding:12px 16px}h2{font-size:21px}}</style></head><body><header><div><p>RUST APPLAB · INDEPENDENT PRODUCTS · 0.18.0-dev.6</p><nav><a href="CONTRACT.md">需求合同</a><a href="TEST_PLAN.md">自己的测试</a><a href="RELEASE_CHECKLIST.md">交付清单</a></nav></div></header><main><article><h1>PageMint：把自己的笔记变成离线网页</h1>
+<h2>这次不是换个名字再写任务列表</h2>
+<p>TaskPocket 的核心是修改持久状态；PageMint 的核心是把许多输入转换成一个完整产物。你要交付一个 Rust 程序，用自己的 <code>.note</code> 笔记生成单文件 HTML，离线打开即可阅读，不依赖账号、网络或 CDN。先正确处理内容，再决定是否加 CSS。</p>
+<p>这是一项独立实现：你设计 <code>Note</code> 的字段、读取函数、渲染和写入边界，不要求照着特定函数名写。先修建议为 TextScope、BadgeForge 和至少一次文件读写实验。TaskPocket 不是机械复制的模板；只能迁移参数解析、错误传播、测试与交付方法。</p>
+<p><code>CONTRACT.md</code> 定义标准，<code>PROJECT_JOURNAL.md</code> 记录你自己的设计。新生成工程里的业务是未完成的，不要把第一次 FAIL 当作环境安装失败。</p>
+<h2>分清工作目录</h2>
+<p>在本学员目录运行自己的软件：<code>cargo run --offline -- stats samples/notes</code>。回到完整平台根目录才运行 <code>cargo run --offline -p labquest -- learn check &quot;本工程完整路径&quot; 1</code>。Windows 续学菜单 L/E/C/S/G 同样适用；没有新版 START.html 的旧工程，可以用平台 <code>INDEPENDENT_PATH.html</code> 与 CLI，已有代码不用覆盖。</p>
+<h2>动手前：写清输入、输出、不变量</h2>
+<p>逐个打开 <code>samples/notes</code> 中的两份文件：第一行是标题，之后每个非空行是一段。先手算笔记数和段落数。写下：输入目录是否递归；如何定义有效笔记；输出是否允许在输入目录内；发生输入错误时磁盘上应该留下什么。不要自己改合同来省掉难点。</p>
+<p>画出一条流水线：参数 → 收集路径 → 读取与校验 → 排序 → 统计或渲染 → 创建输出。把文件 I/O 留在边界，便于对字符串转换写小测试。这里的 pipeline 是你画出的数据流，不是必须引入任何第三方库。</p>
+<h2>检查点 1：只读统计</h2>
+<p>只实现 <code>stats</code>，不用实现 <code>build</code>。直接子级的普通 <code>.note</code> 文件参与统计，<code>.txt</code>、子目录都跳过；标题去除前后空白，正文跳过空行，CRLF 与 LF 都能处理。内存数据可用拥有字符串的 <code>Vec&lt;Note&gt;</code>，避免借用已经被释放的临时读取结果。</p>
+<pre><code class="language-powershell"># 学员目录；附带两个样例共四段正文
+cargo run --offline -- stats samples/notes
+</code></pre>
+<p>预期为 <code>notes=2 paragraphs=4</code>。复制一份样例到自己的新目录，在一份正文中增加一个非空行，计数应该增加一，而不是标题数增加。放一个 <code>.txt</code> 和带 <code>.note</code> 的子目录，结果不应变化。统计不得创建网页，也不能改写原笔记。</p>
+<p>平台检查点 1 只要求上述只读行为，并使用不同输入；固定输出“2/4”无法通过。先设计一项自己的读取测试，预测输入，再记录实际结果。</p>
+<h2>检查点 2：生成完整、可读、安全的 HTML</h2>
+<p>先实现纯转换，再连接输出。笔记按文件名排序，而不是按文件系统刚好给出的顺序。每份笔记生成一条 article，标题放 h2，段落放 p；所有外部文本都按合同转义，包括 article 属性中的文件名。<code>&amp; &lt; &gt; &quot; '</code> 五类字符都要考虑。</p>
+<pre><code class="language-powershell">cargo run --offline -- build samples/notes samples/my-notes-01.html
+</code></pre>
+<p>预期 stdout 是 <code>built=2</code>。现在可以双击网页看到自己的笔记；再用编辑器查看 HTML，确认文本已转换为结构。样例中有 <code>&lt;script&gt;</code>，它应显示为普通文本，不能变成活动标签。正确转义不等于完整网页安全审计，后续新增 URL、JavaScript 或 Markdown 需要另行设计。</p>
+<p>用自己的笔记改标题、增加段落，再输出到 <code>my-notes-02.html</code>。保持之前产物，比较真实变化。输出名称不同不是重复劳动，而是在遵守“不覆盖”的合同。先让内容对，再改善排版；不要通过 CSS 把缺失的内容隐藏掉。</p>
+<p>检查点 2 会复查空目录、排序、动态输入、UTF-8、转义和过滤规则，仍不宣称异常处理已经完整。</p>
+<h2>检查点 3：坏输入不能产生伪成品</h2>
+<p>在独立试验目录准备四种错误：标题只有空白；无效 UTF-8；输出文件已存在；输出位于输入目录内。逐次运行，观察非零退出码、错误信息以及文件系统状态。保留输入出错前的有效网页，确认它没有被覆盖。不要在自己的唯一笔记上制造故障。</p>
+<p>为什么要先加载全部笔记再写？如果第一篇就写入目标，第三篇才发现坏输入，可能留下貌似完整的半成品。先验证不能消除所有磁盘 I/O 失败，但能阻止这类输入错误造成的半成品。<code>OpenOptions::create_new(true)</code> 用于拒绝已有路径；不是简单“先 exists 再 File::create”，也不是自动回滚或并发安全的通用保证。</p>
+<p>Unix 额外验证 <code>.note</code> 符号链接。Windows 不以缺少建立符号链接的权限判学员失败；因此完整探针数可能因平台不同而不同，验收结果需附平台。</p>
+<pre><code class="language-powershell"># 平台根目录
+cargo run --offline -p labquest -- learn check &quot;D:\RustLearning\my-pagemint&quot; 3
+cargo run --offline -p labquest -- app check pagemint &quot;D:\RustLearning\my-pagemint&quot;
+</code></pre>
+<p>第三检查点和原 app check 使用同一组完整合同，不放宽标准。<code>.app-reports</code> 保存每次记录；<code>APP_ASSESSMENT.md</code> 仅由完整验收更新。源码、测试或配置改变后历史进度会提示过期，不会自动变成新版本的合格证。</p>
+<h2>自己设计测试，不只消费评测结果</h2>
+<p>默认 <code>cargo test</code> 只检查缺参数的入口烟测，个人回归测试有 ignore 且尚未实现。请按 <code>TEST_PLAN.md</code> 修改 <code>tests/self_check.rs</code>：在临时目录造一份标题含 <code>&amp;</code>、正文含 <code>&lt;script&gt;</code> 的笔记，生成新网页，断言真实文件包含转义文本且不包含活动 script。再写一项重复输出拒绝且旧文件字节不变的测试。</p>
+<p>最初写断言时，先让缺陷触发红色，再修业务代码变绿。不要把“运行了但没有 assert”当成测试；也不要为满足输出把错误行为写进断言。最后取消 ignore，并保留 <code>cargo test</code> 输出。平台检查不运行你自己的测试，两份证据必须分开说明。</p>
+<h2>发布一份可携带的笔记集</h2>
+<p>选用自己真实使用的三份非敏感笔记，生成网页，在关闭网络的条件下打开阅读（无需更改系统网络策略）。记录标题、段落、排序是否正确，浏览器视觉观察不由命令行自动断言替代。</p>
+<p>按 <code>RELEASE_CHECKLIST.md</code> 保留源码、测试、样例、实际 HTML、说明和学习记录。写明“不支持递归、Markdown、图片或自动覆盖”等边界；不要把想做的功能写成已经实现。Windows 程序在默认目标目录是 <code>target\release\pagemint.exe</code>，Linux 无后缀。换一个工作目录，用完整输入/输出路径运行一次，证明没写死开发机路径。</p>
+<p>迁移复盘：相比 TaskPocket，哪些类型和错误处理方法可复用？为什么本应用先收齐输入再输出，而另一个应用必须加载旧状态后修改？把答案写入 PROJECT_JOURNAL.md，再自行选一项扩展（搜索、标签或主题）写需求与测试，不要直接复制完整答案。</p>
+</article></main><footer>行为检查 ≠ 独立设计能力认证。保留自己的源码、测试、产物与解释。</footer></body></html>

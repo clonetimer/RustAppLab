@@ -1,0 +1,107 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>StoreDesk · 为社团物料做一个 SQLite 库存台 · 跟着做</title><style>*{box-sizing:border-box}body{margin:0;background:#f4f7fb;color:#20334d;font:16px/1.85 system-ui,"Microsoft YaHei",sans-serif}header{background:#14273d;color:#fff}header>div,main{max-width:940px;margin:auto;padding:30px 24px}h1{font-size:clamp(25px,4vw,36px);line-height:1.4;margin:10px 0}h2{font-size:24px;line-height:1.5;margin:34px 0 12px;padding-top:12px;border-top:1px solid #d6e2ed}h3{font-size:19px}header p{color:#d7e7f4}article{background:white;border:1px solid #dce5ef;border-radius:14px;padding:12px 28px 28px}p{overflow-wrap:anywhere}code{font:14px/1.65 Consolas,monospace;background:#eaf1f8;color:#194775;padding:2px 4px;border-radius:4px}pre{background:#14273d;color:#edf3fa;padding:16px;border-radius:9px;overflow:auto}pre code{background:none;color:inherit;padding:0;white-space:pre-wrap;overflow-wrap:anywhere}.note{padding:15px;border:1px solid #89b7a4;background:#ebf7f0;color:#245744;border-radius:10px;margin-bottom:20px}table{width:100%;border-collapse:collapse}th,td{border:1px solid #dce5ef;padding:8px;text-align:left}a{color:#14619e}@media(max-width:600px){header>div,main{padding:20px 14px}article{padding:5px 16px 18px}h2{font-size:21px}}</style></head><body><header><div><small>RUST APPLAB / STUDIO / 0.18.0-dev.5</small><h1>StoreDesk · 为社团物料做一个 SQLite 库存台</h1><p>每次只完成一个步骤。读目标、修改指定函数、运行检查，再使用自己的数据。</p></div></header><main><div class="note">代码编辑位置：学员工程 <strong>src/lib.rs</strong>。先完成 TODO(1)，再做 TODO(2)、TODO(3)。<br>分层提示在 HINTS.md，学习记录在 LEARNING_LOG.md。不要修改参考应用源码。</div><article><h2>目标：自己的程序、真正的数据库文件</h2>
+<p>教学场景：你有 10 支学习用笔和 3 本练习本，需要登记物品、调整数量、检查变化流水。一次领用了笔却发现书不够时，这一批操作应该全部取消，而不是只留下半次领取。</p>
+<p>完成后，你会拥有可重复使用的 <code>storedesk</code> 程序，以及一个真实的 <code>inventory.db</code> SQLite 数据库。它不是把 TSV 换一个 <code>.db</code> 后缀，也不需要运行远程数据库服务器。</p>
+<p>**先修要求：**完成 LedgerLite 的记录建模和持久化，理解 <code>Result</code> 与 <code>?</code>。初学者不用学习或修改底层 FFI：<code>src/sqlite.rs</code> 是已提供的有限接口，三个练习仍只在 <code>src/lib.rs</code>。本课的交付范围是 SQL、参数绑定、事务与版本检查；成熟第三方 crate 的选型和依赖管理仍需后续课程，不能把使用这个适配器算作掌握整个 Rust 数据库生态。</p>
+<h2>先检查环境，不要把链接错误误当作练习失败</h2>
+<p>在完整 RustAppLab 根目录运行：</p>
+<pre><code class="language-powershell">cargo run --offline -p storedesk -- doctor
+</code></pre>
+<p>成功会显示实际 SQLite 版本、backend 和 <code>schema=1</code>，版本号由你的系统决定。Windows MSVC 使用 Windows SDK 的 <code>winsqlite3</code>，Linux 使用系统 SQLite；不声明 macOS 支持。程序不附带 SQLite 引擎，也不在线下载 Rust crate。</p>
+<p>出现 <code>cannot find -lsqlite3</code> 或 <code>LNK1104 ... winsqlite3.lib</code> 时，先阅读完整包的 <code>course/SQLITE_SETUP.md</code>。这是原生链接依赖问题，不是 <code>TODO</code> 答案错误。已确认的 0.11.1 Windows 通过情况不能代替这款新应用的原生验证。</p>
+<h2>先看完成后的软件</h2>
+<p>以下在完整平台根目录执行，演示目录必须是新的：</p>
+<pre><code class="language-powershell">cargo run --offline -p storedesk -- demo my-store-demo
+cargo run --offline -p storedesk -- list my-store-demo/inventory.db
+cargo run --offline -p storedesk -- history my-store-demo/inventory.db
+</code></pre>
+<p>你应看到 BOOK 为 4、PEN 为 8，并有两条变化流水。演示目录中的 <code>INVENTORY_REPORT.txt</code> 可以直接阅读；<code>inventory.db</code> 是二进制数据库，不要用记事本修改。运行 <code>adjust ... PEN -100</code> 会报错，再次 list 应仍为 8。</p>
+<h2>创建自己的学员工程</h2>
+<p>在 <strong>RustAppLab 根目录</strong>：</p>
+<pre><code class="language-powershell">cargo run --offline -p labquest -- studio start storedesk my-storedesk
+cargo run --offline -p labquest -- studio check my-storedesk 1
+</code></pre>
+<p>首次失败正常。打开 <code>my-storedesk/START.html</code> 和 <code>my-storedesk/src/lib.rs</code>。<code>main.rs</code> 已经连接命令行；<code>sqlite.rs</code> 负责释放连接与语句、绑定参数、事务守卫；本次核心任务是校验、保存物品、提交一批库存变化。</p>
+<h2>第 1 步：把需求写成可执行的校验</h2>
+<p>修改 <strong>TODO(1)，<code>validate_item</code></strong>。</p>
+<p><code>Item</code> 是拥有数据的结构体：<code>sku</code> 是物品编号、<code>name</code> 是可显示名称、<code>stock</code> 是整数库存。借用 <code>&amp;Item</code> 就能检查，不需要拿走整个物品，也不需要访问数据库。</p>
+<table>
+<thead>
+<tr>
+<th>字段</th>
+<th>合同</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>SKU</td>
+<td>1–32 字节，只允许 ASCII 字母、数字、<code>-_.</code></td>
+</tr>
+<tr>
+<td>名称</td>
+<td>去掉首尾空白后不为空，总长不超过 80 个字符，不含控制字符</td>
+</tr>
+<tr>
+<td>库存</td>
+<td>0 到 1,000,000,000，包括边界</td>
+</tr>
+</tbody>
+</table>
+<p>名称可以含中文和单引号，例如 <code>Alice's 钢笔</code>。禁止单引号并不是正确的 SQL 防注入方法；下一步要把它当参数处理。SKU 的 byte 长度与中文名称的 char 数量是两种不同约束，先回忆 TextScope 学过的区别。</p>
+<p><code>Result&lt;()&gt;</code> 的成功值是 <code>()</code>，意思是“检查通过，不额外返回数据”；不是没有返回值。如果发现错误，尽早返回 <code>Err</code>；所有检查通过后再 <code>Ok(())</code>。</p>
+<p>进入学员目录：</p>
+<pre><code class="language-powershell">cargo test --offline --test milestones step1_
+</code></pre>
+<p>预期为两项通过。自己补一个恰好 80 字的名称和一个负库存案例。仅通过第 1 步并不要求后两步已经实现。</p>
+<h2>第 2 步：用参数保存，不把用户字符串拼入 SQL</h2>
+<p>修改 <strong>TODO(2)，<code>save_item</code></strong>。先 <code>validate_item(item)?</code>，再向已提供的 <code>items</code> 表插入一条记录。SKU 是主键，同一 SKU 再次添加必须报错，不能 <code>REPLACE</code> 覆盖旧库存。</p>
+<p>表结构：<code>items(sku TEXT PRIMARY KEY, name TEXT NOT NULL, stock INTEGER NOT NULL)</code>，实际建表还有库存范围约束。底层提供 <code>db.execute(sql, params)</code>，返回受影响行数或错误；<code>Param::Text</code> 与 <code>Param::Int</code> 区分参数类型。需要时在文件顶部加入 <code>use sqlite::Param;</code>。</p>
+<p>你需要的 SQL 形状是：</p>
+<pre><code class="language-sql">INSERT INTO items(sku,name,stock) VALUES (?1,?2,?3)
+</code></pre>
+<p>把 <code>&amp;item.sku</code>、<code>&amp;item.name</code>、<code>item.stock</code> 按顺序交给参数列表。不要写 <code>format!(&quot;INSERT ... '{}'&quot;, item.name)</code>。SQL 中的 <code>?1</code> 是占位符；Rust 调用末尾的 <code>?</code> 是错误传播运算符，两个问号不是同一机制。</p>
+<p>已提供的 <code>list_items</code> 使用 SELECT 读取数据并按 SKU 排序。阅读它，观察为什么数据库返回的临时内容需要转换成拥有数据的 String，然后才能组成返回的 <code>Vec&lt;Item&gt;</code>。</p>
+<pre><code class="language-powershell">cargo test --offline --test milestones step2_
+</code></pre>
+<p>这两项测试会真正写入磁盘、关闭连接再打开，并检查 SQLite 文件头。还会保存一个看起来像 SQL 的名称，确认它只是普通数据而没有删除表。</p>
+<p>从平台运行 <code>studio check my-storedesk 2</code>，同时复查第 1 步。错误常见于：没有导入 <code>Param</code>；参数顺序错；没有调用验证；错误地用 REPLACE 把重复添加变成了覆盖。</p>
+<h2>第 3 步：一批变化必须一起成功或一起失败</h2>
+<p>修改 <strong>TODO(3)，<code>apply_changes</code></strong>。输入是借用的 <code>&amp;[Change]</code>，每项包含 SKU 和有正负号的整数变化量。一次必须有 1–1000 项；每项变化非零，范围不超过正负 1,000,000,000；SKU 要合法。</p>
+<p>先预测：PEN 初始 10，一批先 <code>-2</code> 再 <code>-99</code>，最后应该是 8、10 还是负数？本合同要求 <strong>10</strong>：第二项失败，第一项与对应流水也必须撤销。</p>
+<p>提供的事务接口形状是：</p>
+<pre><code class="language-rust">// 示意，内部业务需要你完成。
+db.transaction(|tx| {
+    // 逐条调整库存，并为每次变化插入一行 movements。
+    // 任意失败使用 Err 返回，全部成功后 Ok(())。
+    Ok(())
+})
+</code></pre>
+<p>这是“接收一个闭包”的函数。事务开始后，你在闭包里使用 <code>tx: &amp;Db</code>；外部 <code>db</code> 被可变借用，在事务结束之前不应再从别处操作它。这个限制帮助表达一段有明确开始与结束的工作。</p>
+<p>库存更新必须把范围条件放进同一条 UPDATE：只有目标 SKU 存在且 <code>stock+变化量</code> 仍在合法范围内才改变。不要先查询旧数值、离开事务，再写回结果。受影响行数不是 1 时返回错误。随后往 <code>movements(sku,delta)</code> 插入流水，使用同一个 <code>tx</code>。<strong>流水不能在事务外单独写。</strong></p>
+<p>正常返回会 COMMIT；<code>Err</code> 会 ROLLBACK；底层的 Drop 守卫也会在 Rust 栈展开时尝试回滚。不要把这个机制称作任意断电场景都不会丢数据：本课没有物理断电验证。</p>
+<pre><code class="language-powershell">cargo test --offline
+</code></pre>
+<p>完整分步合同为 8 项。最后两项启动真实程序，在不同进程间读取同一数据库，并确认失败批次的退出码、库存和流水都正确。</p>
+<h2>把自己的物品录进去</h2>
+<p>在学员工程目录运行；<code>my-items.db</code> 必须还不存在：</p>
+<pre><code class="language-powershell">cargo run --offline -- init my-items.db
+cargo run --offline -- add my-items.db PEN &quot;我的学习用笔&quot; 10
+cargo run --offline -- add my-items.db BOOK &quot;Rust 练习本&quot; 3
+cargo run --offline -- adjust my-items.db PEN -2
+cargo run --offline -- list my-items.db
+cargo run --offline -- history my-items.db
+</code></pre>
+<p>重开 PowerShell，再次进入同一目录执行 list，确认不是仅保存在内存。运行 <code>adjust my-items.db PEN -99</code>，观察明确失败后数据不变。数据库路径拼错时，list/adjust 不会自动创建新库；只有 init 或明确的演示创建流程能新建。</p>
+<p>把下面两列写入 <code>samples/my-changes.tsv</code>，列间是 Tab，不是若干空格：</p>
+<pre><code class="language-text">PEN	-1
+BOOK	2
+</code></pre>
+<p>执行 <code>cargo run --offline -- apply my-items.db samples/my-changes.tsv</code>。为自己的数据生成一份文本报告并填写 <code>LEARNING_LOG.md</code>。程序的 list 输出可以重定向保存，但不同 PowerShell 版本的重定向文本编码可能不同；数据库本身仍是 SQLite 文件。</p>
+<h2>版本与安全边界</h2>
+<p>数据库有 <code>application_id</code> 身份标记和 <code>user_version=1</code>。陌生库、标记异常和更高版本会拒绝打开，不自动降级。这只是 v1 初始化与版本保护，<strong>没有实现 v1→v2 数据迁移</strong>。</p>
+<p>当前开发版 Windows 原生验证仍待完成；不声明 macOS；本课使用系统 SQLite，实际引擎版本由系统决定。自己写的有限 FFI 适配器不是生产级通用驱动，不支持 BLOB、浮点结果、扩展加载和任意大查询；成熟 rusqlite/SQLx 的使用与依赖治理是后续课程，不算已完成。</p>
+<h2>独立扩展与验收</h2>
+<p>新增 <code>low-stock &lt;数据库&gt; &lt;阈值&gt;</code>：只读查询库存低于阈值的物品，按 SKU 排序。先写两个测试，至少包含“没有低库存”和“阈值恰好等于库存”的情况，然后再实现。不要为查询改变库存。</p>
+<p>完成后交付 <code>target/release/storedesk.exe</code>（Windows）或对应平台程序、你的数据库、运行说明和学习记录。应能解释：为什么必须绑定参数？为什么库存与流水必须放在同一事务？为什么“代码里写了事务”还需要故意制造第二条失败的测试？</p>
+<h2>完成三步后的故障实验</h2>
+<p>继续平台根目录 RELIABILITY_PATH.html：先预测第二条失败会保留什么，再观察库存和流水。该讲义区分参考演练与自己的实现，提供真实 Tab 样例；无需重建已有学员工程。</p>
+</article></main></body></html>

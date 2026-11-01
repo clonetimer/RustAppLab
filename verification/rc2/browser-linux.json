@@ -1,0 +1,21 @@
+{
+  "version": "0.17.0-rc.2",
+  "platform": "Linux-6.18.55-x86_64-with-glibc2.41",
+  "source_id": "4a3bcddfc6bf23f5915a1554a40f85ed1d6f77dc1aa540a38f4f66fe8e74e580",
+  "method": "real browser navigation and fetch, no mocks",
+  "status": "BLOCKED_ENVIRONMENT",
+  "checks": [
+    {
+      "app": "localhub",
+      "status": "BLOCKED_ENVIRONMENT",
+      "error": "Page.goto: net::ERR_BLOCKED_BY_ADMINISTRATOR at http://127.0.0.1:43963/\nCall log:\n  - navigating to \"http://127.0.0.1:43963/\", waiting until \"networkidle\"\n"
+    },
+    {
+      "app": "servicedesk",
+      "status": "BLOCKED_ENVIRONMENT",
+      "error": "Page.goto: net::ERR_BLOCKED_BY_ADMINISTRATOR at http://127.0.0.1:54897/\nCall log:\n  - navigating to \"http://127.0.0.1:54897/\", waiting until \"networkidle\"\n"
+    }
+  ],
+  "browser_version": "144.0.7559.96",
+  "source_id_after": "4a3bcddfc6bf23f5915a1554a40f85ed1d6f77dc1aa540a38f4f66fe8e74e580"
+}

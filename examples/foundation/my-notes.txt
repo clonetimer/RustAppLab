@@ -1,0 +1,3 @@
+Rust 学习
+今天用 Rust 写了 QuizDeck。
+复习：cargo 与 rustc 的区别。

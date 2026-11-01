@@ -1,0 +1,11 @@
+# Rust AppLab 0.15.0 · 全新解压独立复验
+
+- 从生成的 0.15.0 源码 ZIP 解压到 `fresh-final/RustAppLab`，执行 `python scripts/structural_check.py`，通过。
+- 在全新解压目录执行 `cargo test --locked --offline -p netfetch -p servicedesk --all-targets`：**19 项通过、0 项失败**。
+- 在全新解压目录执行 `cargo test --locked --offline --workspace --all-targets --no-run`：**16 个包的所有测试目标编译成功**（这是编译检查，不是再次运行全部测试）。
+- 本轮最终工作区执行 `cargo test --locked --offline --workspace --all-targets -- --test-threads=2`：**256 项通过，0 项失败，15 项有意 ignored**。
+- 从新的学员练习包分别解压 NetFetch、ServiceDesk 工程并执行 `cargo test --offline --no-run`：均可独立编译，且不再出现此前的无关未使用提示。
+- 后续加入的是本验证文档，不改变已独立编译的 Rust 源码。
+- Linux Release 压缩包、学员 ZIP、源码 ZIP 均经过 SHA-256 与 ZIP CRC 校验；最终文件需按最新 SHA-256 清单核验。
+
+限制：Windows/macOS 未实测；全 Workspace Release 一次性测试曾因嵌套 Cargo 工作负载超时，不能宣布它通过；同步网络软件不应冒充 Tokio 异步应用。

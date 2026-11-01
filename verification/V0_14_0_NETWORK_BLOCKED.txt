@@ -1,0 +1,32 @@
+DEPENDENCY PREPARATION FAILURE PATH (NOT NETWORK PASS)
+
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.01s
+     Running `target/debug/labquest ecosystem prepare /mnt/data/network-probe-014`
+[rustc] rustc --version --verbose
+[cargo] cargo --version
+[resolve] cargo generate-lockfile
+LabQuest 错误：依赖准备停在 resolve；日志在 /mnt/data/network-probe-014。保留目录，修复网络/工具链后可原路径重试，不要删除个人工程。
+运行 `cargo run -p labquest -- help` 查看帮助。
+
+STATUS.md:
+# 网络依赖准备 · 当前机器的实测结果
+
+这里只验证依赖探针，不能认定 NetFetch/ServiceDesk 已完成；不代表Windows/Linux互相通过。
+
+- rustc: PASS
+- cargo: PASS
+- resolve: FAIL；查看 logs/resolve.txt
+
+状态：失败，后续步骤未执行。不是学员 TODO 错误。
+
+RESOLVE LOG:
+COMMAND: cargo generate-lockfile
+SUCCESS: false
+STDOUT:
+
+STDERR:
+error: no matching package named `axum` found
+location searched: crates.io index
+required by package `rustapplab-network-probe v0.1.0 (/mnt/data/network-probe-014)`
+note: offline mode (via `--offline`) can sometimes cause surprising resolution failures
+help: if this error is too confusing you may wish to retry without `--offline`

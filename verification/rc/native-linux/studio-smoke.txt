@@ -1,0 +1,2 @@
+$ /opt/pyvenv/bin/python scripts/smoke_studio_release.py --output /mnt/data/rc-native-linux-final/studio-smoke.json
+Release smoke PASS: 6 applications / 14 CLI invocations, exact decimal persistence, SVG XML parse, sequential-parallel equivalence.

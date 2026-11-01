@@ -1,0 +1,55 @@
+Rust AppLab 0.7.0 / Linux x86_64 / 2026-10-28
+Evidence scope: actual local commands. Not a remote CI result, not Windows/macOS/MSRV/Stable.
+
+Toolchain:
+  rustc 1.99.1 (58cf8f9c3 2026-10-13)
+  cargo 1.99.1 (5f94df478 2026-08-27)
+  Workspace: FileQuest, LogLens, LocalHub, SafeSync, LabQuest
+  Dependencies: local path dependencies only; locked offline builds.
+
+Commands actually run from RustAppLab root with CARGO_TARGET_DIR on a separate /tmp path:
+  cargo fmt --all -- --check                                 PASS
+  cargo clippy --locked --offline --workspace --all-targets -- -D warnings    PASS
+  cargo clippy --locked --offline --release --workspace --all-targets -- -D warnings  PASS
+  cargo test --locked --offline --workspace --all-targets    PASS
+      Debug basic tests: 78 passed / 0 failed / 15 ignored teaching challenges
+  cargo test --locked --offline --workspace --all-targets --release  PASS
+      Release basic tests: 68 passed / 0 failed / 15 ignored teaching challenges
+      Release has fewer debug-only SafeSync failure-injection tests by design.
+  cargo build --locked --offline --workspace --release        PASS
+
+Manual CASE 01 evidence (fresh temporary case, 2026-10-28):
+  labquest start <new-case>                    PASS; initially 0/6
+  labquest board <case>                       PASS; offline CASE_BOARD.html
+  edit service.conf to timeout_ms=800
+  labquest simulate <case>                    PASS; 12 records, 0 ERROR
+  labquest test-app <case> BEFORE Rust edit    EXPECTED FAILURE; no SUMMARY
+  edit project/src/main.rs to calculate ERROR count and print SUMMARY
+  labquest test-app <case> AFTER Rust edit     PASS; independently compiled case-gateway app; stdout 13 lines
+  filequest report <case>/project -o <case>/deliverables/inventory.html  PASS
+  loglens report <case>/logs/incident.log -o <case>/deliverables/incident.md  PASS
+  loglens report <case>/logs/current.log -o <case>/deliverables/current.md    PASS
+  safesync backup <case>/project <case>/backups/project-snapshot  PASS; 5 files / 2 dirs / 2140 bytes
+  safesync verify <case>/backups/project-snapshot PASS; 5 files / 2 dirs / 2140 bytes
+  labquest status <case>                      PASS; all 6/6
+  labquest finish <case>                      PASS; CASE_REPORT.md generated
+
+Simulated case statistics (not real service performance):
+  baseline: 0 ERROR / 12 recognized records = 0.00%
+  incident: 11 ERROR / 12 recognized records = 91.67%
+  repaired: 0 ERROR / 12 recognized records = 0.00%
+  This does not show that increasing a timeout fixes real latency root cause.
+
+New automated LabQuest tests (9 passed in Debug, 9 passed in Release):
+  parser and deterministic simulation, HTML escaping, SHA-256 digest;
+  incomplete-case denied, actual child Cargo process for modified mini app,
+  proof invalidation on config/source change, folder/marker safety,
+  symlink output rejection (Unix), CLI helpful errors and non-overwrite finish.
+
+Browser visual test:
+  `chromium --headless --no-sandbox ... --screenshot ... file://<case>/deliverables/CASE_BOARD.html`
+  TIMEOUT in this execution environment. No screenshot evidence claimed; HTML static rendering still needs external browser check.
+
+Pending:
+  Windows/macOS native runtime regression; Rust 1.74 MSRV real run; direct browser navigation;
+  learning study with actual novice; malicious code isolation is explicitly out of scope.

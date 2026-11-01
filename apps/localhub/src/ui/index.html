@@ -1,0 +1,50 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="referrer" content="no-referrer">
+  <title>LocalHub · Rust 本地工作台</title>
+  <link rel="stylesheet" href="/assets/app.css">
+  <script src="/assets/app.js" defer></script>
+</head>
+<body>
+  <header class="hero">
+    <div class="wrap">
+      <div class="brand">🦀 RUST APPLAB / LOCALHUB 0.3</div>
+      <h1>你的本地开发工作台</h1>
+      <p>把 FileQuest 的文件盘点与 LogLens 的日志统计放到一个浏览器页面。数据在本机处理，不向外部服务发送。</p>
+      <div class="chips"><span>🔒 127.0.0.1 Only</span><span>📂 只读快照</span><span>🛠️ Rust 标准库 HTTP</span></div>
+    </div>
+  </header>
+  <main class="wrap">
+    <p id="status" class="status" role="status" aria-live="polite">正在读取本地 API…</p>
+    <section class="metrics" aria-label="文件数据概览">
+      <article class="metric"><span>普通文件</span><strong id="fileCount">—</strong></article>
+      <article class="metric"><span>子目录</span><strong id="directoryCount">—</strong></article>
+      <article class="metric"><span>总体积</span><strong id="totalBytes">—</strong></article>
+      <article class="metric"><span>访问异常</span><strong id="problemCount">—</strong></article>
+    </section>
+    <div class="columns">
+      <section class="panel files-panel">
+        <div class="panel-heading"><div><div class="eyebrow">FILEQUEST</div><h2>文件雷达</h2></div><span class="tag">快照</span></div>
+        <p id="scanRoot" class="context">正在读取目录…</p>
+        <div id="extensions" class="ext-list" aria-label="文件类型统计"></div>
+        <label for="search">检索已返回的文件</label>
+        <input id="search" type="search" placeholder="输入 src、rs 或文件名" autocomplete="off">
+        <p id="shown" class="context"></p>
+        <div class="table-scroll"><table><thead><tr><th>文件路径</th><th>类型</th><th class="right">字节</th></tr></thead><tbody id="fileRows"></tbody></table></div>
+      </section>
+      <section class="panel logs-panel">
+        <div class="panel-heading"><div><div class="eyebrow">LOGLENS</div><h2>日志观察台</h2></div><span class="tag">统计</span></div>
+        <p id="logSource" class="context">正在读取日志…</p>
+        <div class="log-cards"><div><span>已识别记录</span><strong id="records">—</strong></div><div><span>错误记录占比</span><strong id="errorRate">—</strong></div></div>
+        <p class="context" id="logWarning"></p>
+        <h3>级别分布</h3><div id="levelList" class="level-list"></div>
+        <h3>高频消息</h3><ol id="topMessages" class="messages"></ol>
+      </section>
+    </div>
+    <footer>所有 API 均为 GET，数据来自启动时的快照。要读取最新变化，请重新启动 LocalHub。<br>本项目无身份认证，不应转发端口或开放至公共网络。</footer>
+  </main>
+</body>
+</html>

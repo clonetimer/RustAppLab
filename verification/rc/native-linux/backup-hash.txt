@@ -1,0 +1,31 @@
+$ /opt/pyvenv/bin/python scripts/bench_safesync.py --files 64 --mib 8 --output /mnt/data/rc-native-linux-final/backup-check.json
+记录已写入 /mnt/data/rc-native-linux-final/backup-check.json
+{
+  "project": "Rust AppLab 0.6.0",
+  "binary": "/mnt/data/rustapplab-rc-work/RustAppLab/target/release/safesync",
+  "binary_sha256": "0f0e805b415ef6e62ecc604d6ea9519ab4ea6e691c7fe953e5ab465f04318c1a",
+  "timestamp_utc": "2026-10-29T05:05:57.529897+00:00",
+  "os": "Linux-6.18.55-x86_64-with-glibc2.41",
+  "python": "3.13.5",
+  "cpu_count": 5,
+  "files": 64,
+  "logical_bytes": 8388608,
+  "dataset": "pseudo-random deterministic seed 20261028; local temporary directory",
+  "backup_seconds": 0.22658,
+  "verify_seconds": 0.03647,
+  "restore_seconds": 0.15146,
+  "independent_sha256_seconds": 0.02807,
+  "backup_mib_per_second": 35.308,
+  "verify_mib_per_second": 219.358,
+  "restore_mib_per_second": 52.819,
+  "all_content_equal": true,
+  "backup_stdout": "Backup Created: 64 文件、0 目录、8388608 字节 → /tmp/rust-applab-benchmark-hnm9tclg/snapshot",
+  "verify_stdout": "Verify OK: 64 文件、0 目录、8388608 字节",
+  "restore_stdout": "Restore OK: 64 文件、0 目录、8388608 字节 → /tmp/rust-applab-benchmark-hnm9tclg/restored",
+  "benchmark_limits": [
+    "Wall time includes disk cache and directory traversal; not a controlled cold-cache benchmark",
+    "No wall-power-loss, network storage, Windows/macOS or concurrent modification test",
+    "Timing not guaranteed reproducible outside the recorded environment"
+  ]
+}
+

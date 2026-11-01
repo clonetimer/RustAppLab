@@ -1,0 +1,44 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>UnitLab · 随身单位换算器 · 跟着做</title><style>*{box-sizing:border-box}body{margin:0;background:#f4f7fb;color:#20334d;font:16px/1.85 system-ui,"Microsoft YaHei",sans-serif}header{background:#14273d;color:#fff}header>div,main{max-width:940px;margin:auto;padding:30px 24px}h1{font-size:clamp(25px,4vw,36px);line-height:1.4;margin:10px 0}h2{font-size:24px;line-height:1.5;margin:34px 0 12px;padding-top:12px;border-top:1px solid #d6e2ed}h3{font-size:19px}header p{color:#d7e7f4}article{background:white;border:1px solid #dce5ef;border-radius:14px;padding:12px 28px 28px}p{overflow-wrap:anywhere}code{font:14px/1.65 Consolas,monospace;background:#eaf1f8;color:#194775;padding:2px 4px;border-radius:4px}pre{background:#14273d;color:#edf3fa;padding:16px;border-radius:9px;overflow:auto}pre code{background:none;color:inherit;padding:0;white-space:pre-wrap;overflow-wrap:anywhere}.note{padding:15px;border:1px solid #89b7a4;background:#ebf7f0;color:#245744;border-radius:10px;margin-bottom:20px}table{width:100%;border-collapse:collapse}th,td{border:1px solid #dce5ef;padding:8px;text-align:left}a{color:#14619e}@media(max-width:600px){header>div,main{padding:20px 14px}article{padding:5px 16px 18px}h2{font-size:21px}}</style></head><body><header><div><small>RUST APPLAB / STUDIO / 0.16.0</small><h1>UnitLab · 随身单位换算器</h1><p>每次只完成一个步骤。读目标、修改指定函数、运行检查，再使用自己的数据。</p></div></header><main><div class="note">代码编辑位置：学员工程 <strong>src/lib.rs</strong>。先完成 TODO(1)，再做 TODO(2)、TODO(3)。<br>分层提示在 HINTS.md，学习记录在 LEARNING_LOG.md。不要修改参考应用源码。</div><article><p><strong>本作品的中心思想</strong>：用一款可运行的小软件，把三个连续能力连接起来，而不是完成三道无关语法题。</p>
+<h2>开始前只确认这件事</h2>
+<p>你当前应位于这个学员工程的目录，能够看到 <code>Cargo.toml</code>。终端中的 <code>cargo</code> 命令默认在这里运行。<code>src/main.rs</code> 是已经接好的命令行外壳；本轮只修改 <code>src/lib.rs</code> 的 TODO(1)、TODO(2)、TODO(3)。<code>tests/milestones.rs</code> 是公开的验收合同，不能通过删除测试“通关”。</p>
+<p>在完整 RustAppLab 根目录创建本工程的命令是 <code>cargo run --offline -p labquest -- studio start unitlab my-unitlab</code>，然后进入 <code>my-unitlab</code>。本讲义也随学员包提供，包内已有工程就不必再次生成。Windows 可以用 <code>CONTINUE_WINDOWS.cmd</code> 选择作品。</p>
+<p>三个里程碑依次是：<strong>写出温度转换公式 → 用 enum 和 match 区分单位 → 连接 parse、Result 与格式化输出</strong>。未实现的后两步不会阻止你运行第一步测试；语法错误仍会阻止整个库编译。</p>
+<h2>先看你要做出的软件</h2>
+<p>你在看天气预报时想把摄氏温度转换成华氏温度，或把跑步距离从米换成千米。目标不是背公式，而是做一款能接收不同输入、拒绝错误输入的小工具。完成后在本工程目录运行：</p>
+<pre><code class="language-powershell">cargo run --offline -- convert 25 c f
+cargo run --offline -- convert 1500 m km
+</code></pre>
+<p>预期分别为 <code>25.00 c = 77.00 f</code>、<code>1500.00 m = 1.50 km</code>。先预测 <code>-40 c f</code> 的结果，不要急着运行。这里 c/f 表示温度，m/km 表示长度，不支持其它单位，也不做物理温度下限判断。</p>
+<h2>第 1 步：只写一个会计算的函数</h2>
+<p>打开 <code>src/lib.rs</code>，找到 <code>pub fn celsius_to_fahrenheit(celsius: f64) -&gt; f64</code>。今天先不要研究 <code>main.rs</code>。<code>fn</code> 声明函数；括号内是输入；<code>f64</code> 是浮点数类型；箭头后是返回值类型。<code>pub</code> 表示其它模块能够调用它。把 TODO(1) 中的占位代码替换成公式 <code>摄氏度 × 9 ÷ 5 + 32</code>。用 <code>9.0</code>、<code>5.0</code>、<code>32.0</code> 表示浮点字面量。</p>
+<p>函数最后一个表达式不加分号时，它的结果就是返回值。不要把 <code>println!</code> 当作返回值：它只是把文字输出到屏幕，不能把数交还给调用者。这里不需要 <code>mut</code>，因为不必修改原输入。</p>
+<pre><code class="language-powershell">cargo test --offline --test milestones step1_
+</code></pre>
+<p>看到 <code>2 passed; 0 failed</code> 再进入下一步。第一次可能失败，这是占位函数的正常状态。<code>step1_freezing</code> 对应零摄氏度；另一个测试会用负数和小数，不接受只返回 <code>32.0</code>。</p>
+<p><strong>自己解释</strong>：函数调用 <code>celsius_to_fahrenheit(100.0)</code> 中，100.0 到了哪个变量里？末尾加上分号为什么改变含义？在 <code>LEARNING_LOG.md</code> 用自己的话写两句。</p>
+<h2>第 2 步：一个函数支持多种转换</h2>
+<p>仍然只改 <code>src/lib.rs</code> 的 TODO(2)。现有 <code>Unit</code> 枚举已经为你定义四种合法单位，不需要自己新增类型。<code>match (from, to)</code> 匹配一对单位，分别处理摄氏→华氏、华氏→摄氏、米→千米、千米→米和相同单位。华氏转摄氏的顺序是先减 32，再乘 5/9。</p>
+<p>函数返回 <code>Result&lt;f64, String&gt;</code>：成功用 <code>Ok(数值)</code>，失败用 <code>Err(说明文字)</code>。温度转长度不是零，也不是成功，是用户请求本身不成立。浮点输入可能是 NaN 或无穷大，进入计算前先检查 <code>value.is_finite()</code>，运算后也检查结果；不要用 <code>unwrap()</code> 把可预期的用户错误变成崩溃。</p>
+<pre><code class="language-powershell">cargo test --offline --test milestones step2_
+</code></pre>
+<p>测试还会检查 <code>f64::MAX</code> 千米转米的溢出。只有 <code>is_finite()</code> 检查了输入但没有检查结果，也会失败。先理解这两个检查的位置，不用学习浮点数二进制编码。</p>
+<p><strong>小实验</strong>：故意交换乘 1000 和除 1000，运行测试，再改回来。写下测试名称怎样帮助你找到错误分支。</p>
+<h2>第 3 步：把程序接到命令行</h2>
+<p>TODO(3) 中把字符串参数 <code>value</code> 解析成 <code>f64</code>，调用 <code>Unit::parse</code> 和你刚完成的 <code>convert</code>，最后返回一段格式化字符串。<code>value.parse::&lt;f64&gt;()</code> 可能失败；<code>map_err</code> 把解析错误变成人能读懂的提示；<code>?</code> 在成功时取出值，在失败时把错误提前交回上层。</p>
+<p>使用 <code>format!</code> 而非 <code>println!</code>，因为这里需要返回 <code>String</code>。格式 <code>:.2</code> 保留两位小数；浮点表示和舍入规则不应被误当成十进制金额精度，因此账本项目会换一种数据表示。</p>
+<pre><code class="language-powershell">cargo test --offline --test milestones
+cargo run --offline -- convert -40 c f
+cargo run --offline -- convert 1 m f
+cargo run --offline -- convert abc c f
+</code></pre>
+<p>最后两条应该明确报错，退出码非零。在 PowerShell 紧接着输入 <code>$LASTEXITCODE</code> 查看退出状态。报错是正确功能的一部分，不等于程序没有完成。</p>
+<h2>交付与你自己的变体</h2>
+<p>用 <code>cargo build --offline --release</code> 编译，Windows 程序在 <code>target/release/unitlab.exe</code>。运行它分别转换你的常见气温和步行距离。把五组输入、预期、实际写入 <code>LEARNING_LOG.md</code>；再尝试新增厘米，不改坏已有测试。新增单位是扩展任务，本轮基础验收不要求它。</p>
+<p><strong>常见卡点</strong>：E0308 往往是返回类型不一致；需要 f64 却得到 <code>()</code> 时检查最后一行分号。非穷尽 match 则表示遗漏分支，用错误返回补全不能处理的组合，而不是给所有未知请求一个零。</p>
+<p>参考：Rust 官方书第 3 章的函数与控制流、第 6 章枚举、第 9 章错误处理。https://doc.rust-lang.org/book/</p>
+<h2>一次只检查当前阶段</h2>
+<p>本工程内可以运行 <code>cargo test --offline --test milestones step1_</code>。完成一步，再运行 step2_、step3_，最后执行全量 <code>cargo test --offline</code>。完整平台还提供权威检查：回到 RustAppLab 根目录执行 <code>cargo run --offline -p labquest -- studio check &quot;my-unitlab&quot; 1</code>，把最后的 1 改成 2、3 或 all。它会用自带的测试检查当前源码，不信任你编辑后的本地 tests。第 2 步会重新检查第 1 步，第 3 步会重查前两步。</p>
+<p>检查会真实编译并运行你写的 Rust，只用于你信任的自编代码，不是安全沙箱。报告按检查次数生成新文件，包含当前源文件摘要；旧报告不能证明修改后的代码仍正确。遇到错误先看第一个 FAIL 和对应函数，再看 HINTS.md。</p>
+<h2>完成标准</h2>
+<p>功能测试通过只是其中一项。还需用自己的数据运行一次，给一个错误输入，保存真实产物或控制台结果，并在 LEARNING_LOG.md 解释一个关键 Rust 概念。然后为未提供的变体自行增加一个测试。不要把参考程序已通过等同于自己已学会。</p>
+</article></main></body></html>

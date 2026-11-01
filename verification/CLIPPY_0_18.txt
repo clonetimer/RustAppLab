@@ -1,0 +1,2 @@
+    Checking labquest v0.18.0-dev.1 (/mnt/data/RustAppLab_0_18_work/RustAppLab/apps/labquest)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.90s

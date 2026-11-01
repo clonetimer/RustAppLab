@@ -1,0 +1,36 @@
+Rust AppLab 0.11.0 – FirstCard 初学者入口验证记录
+日期：2026-10-28
+执行环境：Linux x86_64；rustc 1.99.1 (58cf8f9c3 2026-10-13)；cargo 1.99.1
+范围：五个 Workspace Package；32 关原有教程保持；新增 FirstCard 第 0 阶段和 Windows 引导入口。
+
+真实执行命令（已完成）：
+  cargo fmt --all -- --check                                 PASS
+  cargo clippy --offline --workspace --all-targets -- -D warnings        PASS
+  cargo clippy --offline --release --workspace --all-targets -- -D warnings PASS
+  cargo test --locked --offline --workspace --all-targets              PASS: 106 passed, 0 failed, 15 ignored
+  cargo test --locked --offline --release --workspace --all-targets     PASS: 96 passed, 0 failed, 15 ignored
+  cargo build --locked --offline --workspace --release                 PASS
+
+FirstCard 独立真实编译与运行（本机）：
+  begin start <含中文和空格的新路径>                  PASS，Cargo.toml/源码/讲义创建
+  begin check <路径>（未修改的占位程序）             EXPECTED FAIL，无 FIRST_WIN.md
+  只写死第一条输出                                 EXPECTED FAIL，不能蒙混通过
+  修改为使用 name 和 task 变量                     PASS，4 个不同输入全部通过
+  生成 FIRST_WIN.md                                PASS，重复验收不覆盖文件
+  用实际输入生成 我的任务卡.txt                     PASS，文件内容和输入一致
+  已存在学习目录上执行 begin start                 EXPECTED FAIL，未修改既有文件
+  故意破坏 println! 语法                          EXPECTED FAIL，给出可理解编译错误
+  意外无限循环                                    EXPECTED FAIL，4 秒超时反馈
+  beginner hint 1/2/3                             PASS，第四层错误参数拒绝
+
+Windows 交付准备（未实际在 Windows 运行）：
+  START_HERE.html 可被 Python HTML parser 解析，包含入门步骤和常见错误
+  START_WINDOWS.cmd 使用 Windows CRLF；scripts/start_windows.ps1 有 UTF-8 BOM
+  scripts/windows_beginner_smoke.ps1 具备可供 Windows CI 执行的初始失败→编辑→通过脚本
+  .github/workflows/ci.yml 已配置 windows-latest runner 的额外初学者烟雾测试
+  但当前本地系统无 Windows、Windows PowerShell 5.1、MSVC 或 Windows 原生浏览器。
+  因此 **Windows 引导器、PowerShell UI 及 Windows 原生程序尚无本机通过证明**。
+
+解释边界：本项目不是安全沙箱；check 会编译执行学生明示选择的本地 Rust 代码。
+生成的本地 FIRST_WIN.md 是练习记录，不是能力认证，也不能证明真人已独立掌握 Rust。
+仍缺真人学员独立通关成功率/求助层级/常见安装阻塞等反馈。版本为教学开发版，非 Stable。

@@ -1,0 +1,9 @@
+[package]
+name = "loglens"
+version = "0.2.0"
+edition = "2021"
+rust-version = "1.74"
+license = "MIT"
+description = "A streaming local log analyzer for the Rust AppLab course"
+
+[dependencies]

@@ -1,0 +1,2 @@
+$ /opt/pyvenv/bin/python scripts/smoke_asyncboard.py
+ASYNCBOARD REAL RELEASE SMOKE PASS: 6 commands; timed overlap / Unicode paths / no-overwrite / malformed input

@@ -1,0 +1,3 @@
+    Checking labquest v0.14.0 (/mnt/data/rustapplab-v014-work/RustAppLab/apps/labquest)
+    Checking minikv v0.14.0 (/mnt/data/rustapplab-v014-work/RustAppLab/apps/minikv)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.48s

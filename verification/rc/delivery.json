@@ -1,0 +1,510 @@
+{
+  "version": "0.17.0-rc.1",
+  "status": "PASS",
+  "checks": [
+    {
+      "project": "FirstCard",
+      "check": "initial_template_compiles",
+      "command": [
+        "cargo",
+        "test",
+        "--offline",
+        "--manifest-path",
+        "/mnt/data/rc-delivery-check/学员包 fresh/FirstCard/Cargo.toml",
+        "--no-run",
+        "-j",
+        "2"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "log": "FirstCard-compile.txt",
+      "log_sha256": "4e9bb2d086d6196ee1f2790353891013a93588960b766363284adfa211336e0f"
+    },
+    {
+      "project": "PageMint",
+      "check": "initial_template_compiles",
+      "command": [
+        "cargo",
+        "test",
+        "--offline",
+        "--manifest-path",
+        "/mnt/data/rc-delivery-check/学员包 fresh/PageMint/Cargo.toml",
+        "--no-run",
+        "-j",
+        "2"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "log": "PageMint-compile.txt",
+      "log_sha256": "4f48a27b00788896ad5a788ca069c745a3cb1f083e3c62279e4f7b222aa56fd5"
+    },
+    {
+      "project": "Studio-asyncboard",
+      "check": "initial_template_compiles",
+      "command": [
+        "cargo",
+        "test",
+        "--offline",
+        "--manifest-path",
+        "/mnt/data/rc-delivery-check/学员包 fresh/Studio/asyncboard/Cargo.toml",
+        "--no-run",
+        "-j",
+        "2"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "log": "Studio-asyncboard-compile.txt",
+      "log_sha256": "f59212ca90e19e66ca3326424d9e5afd7888e377bf6fc6ff730ddf9665525007"
+    },
+    {
+      "project": "Studio-asyncboard",
+      "check": "unfinished_step1_rejected",
+      "exit_code": 101,
+      "passed": true,
+      "log": "Studio-asyncboard-initial-step1.txt",
+      "log_sha256": "35dcb187091f149943e1de05ea5d34ff503d3b7a0a3434484a67663ec2db788c"
+    },
+    {
+      "project": "Studio-badgeforge",
+      "check": "initial_template_compiles",
+      "command": [
+        "cargo",
+        "test",
+        "--offline",
+        "--manifest-path",
+        "/mnt/data/rc-delivery-check/学员包 fresh/Studio/badgeforge/Cargo.toml",
+        "--no-run",
+        "-j",
+        "2"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "log": "Studio-badgeforge-compile.txt",
+      "log_sha256": "aae8ebbcead9e3708320f685ea10b205047eb4b3c4e61eaa41d23c3adb612b71"
+    },
+    {
+      "project": "Studio-badgeforge",
+      "check": "unfinished_step1_rejected",
+      "exit_code": 101,
+      "passed": true,
+      "log": "Studio-badgeforge-initial-step1.txt",
+      "log_sha256": "c21dd9ccfb9b1974666fe31e738e11bba5721b1d6241fc3514289bbacc62e8cc"
+    },
+    {
+      "project": "Studio-batchmeter",
+      "check": "initial_template_compiles",
+      "command": [
+        "cargo",
+        "test",
+        "--offline",
+        "--manifest-path",
+        "/mnt/data/rc-delivery-check/学员包 fresh/Studio/batchmeter/Cargo.toml",
+        "--no-run",
+        "-j",
+        "2"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "log": "Studio-batchmeter-compile.txt",
+      "log_sha256": "4d09c2103504378e7b6931e0f5bf618a559ddbeb068eec01cf94cc123d2f4f69"
+    },
+    {
+      "project": "Studio-batchmeter",
+      "check": "unfinished_step1_rejected",
+      "exit_code": 101,
+      "passed": true,
+      "log": "Studio-batchmeter-initial-step1.txt",
+      "log_sha256": "58ee1484cf29d7331d38ac041c2e10b6c96b0ff9e2a38831f08ab446b75f1af7"
+    },
+    {
+      "project": "Studio-ledgerlite",
+      "check": "initial_template_compiles",
+      "command": [
+        "cargo",
+        "test",
+        "--offline",
+        "--manifest-path",
+        "/mnt/data/rc-delivery-check/学员包 fresh/Studio/ledgerlite/Cargo.toml",
+        "--no-run",
+        "-j",
+        "2"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "log": "Studio-ledgerlite-compile.txt",
+      "log_sha256": "006128cb392ca53e4205d2b8eb89f159e8aaed0c192f02633d1cf8e305665392"
+    },
+    {
+      "project": "Studio-ledgerlite",
+      "check": "unfinished_step1_rejected",
+      "exit_code": 101,
+      "passed": true,
+      "log": "Studio-ledgerlite-initial-step1.txt",
+      "log_sha256": "5ffac794f8a583e95929514d89847d09131d34484a87e8e144375763412cd77b"
+    },
+    {
+      "project": "Studio-minikv",
+      "check": "initial_template_compiles",
+      "command": [
+        "cargo",
+        "test",
+        "--offline",
+        "--manifest-path",
+        "/mnt/data/rc-delivery-check/学员包 fresh/Studio/minikv/Cargo.toml",
+        "--no-run",
+        "-j",
+        "2"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "log": "Studio-minikv-compile.txt",
+      "log_sha256": "161528a7445c328802edb38399bf1b6d031db15509fd6e9d7905dd28d40a5c20"
+    },
+    {
+      "project": "Studio-minikv",
+      "check": "unfinished_step1_rejected",
+      "exit_code": 101,
+      "passed": true,
+      "log": "Studio-minikv-initial-step1.txt",
+      "log_sha256": "944378d0de079e654991b3f4595983ecfe1a534647118f194468dd271db53932"
+    },
+    {
+      "project": "Studio-netfetch",
+      "check": "initial_template_compiles",
+      "command": [
+        "cargo",
+        "test",
+        "--offline",
+        "--manifest-path",
+        "/mnt/data/rc-delivery-check/学员包 fresh/Studio/netfetch/Cargo.toml",
+        "--no-run",
+        "-j",
+        "2"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "log": "Studio-netfetch-compile.txt",
+      "log_sha256": "4394b8899bdcbbc1d3484b28e79444c8461ada26a1d0e1dbb713d110bace4388"
+    },
+    {
+      "project": "Studio-netfetch",
+      "check": "unfinished_step1_rejected",
+      "exit_code": 101,
+      "passed": true,
+      "log": "Studio-netfetch-initial-step1.txt",
+      "log_sha256": "37915b554b766c568ffee6020d27d65ff97086e36a8d57a7fcfb71a31eaa4384"
+    },
+    {
+      "project": "Studio-quizdeck",
+      "check": "initial_template_compiles",
+      "command": [
+        "cargo",
+        "test",
+        "--offline",
+        "--manifest-path",
+        "/mnt/data/rc-delivery-check/学员包 fresh/Studio/quizdeck/Cargo.toml",
+        "--no-run",
+        "-j",
+        "2"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "log": "Studio-quizdeck-compile.txt",
+      "log_sha256": "49addc4ea2968123e3f952184156f7c9e172f9bd4542d767ac992d9763fe6a38"
+    },
+    {
+      "project": "Studio-quizdeck",
+      "check": "unfinished_step1_rejected",
+      "exit_code": 101,
+      "passed": true,
+      "log": "Studio-quizdeck-initial-step1.txt",
+      "log_sha256": "c81dafb7d2e9011d5a41b20a822eef82c1fdab21ea91d3b9e1c5f7d533bcf04b"
+    },
+    {
+      "project": "Studio-servicedesk",
+      "check": "initial_template_compiles",
+      "command": [
+        "cargo",
+        "test",
+        "--offline",
+        "--manifest-path",
+        "/mnt/data/rc-delivery-check/学员包 fresh/Studio/servicedesk/Cargo.toml",
+        "--no-run",
+        "-j",
+        "2"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "log": "Studio-servicedesk-compile.txt",
+      "log_sha256": "af6ebffaaf4b96d5b959e6cb71d933ae99f8d8a01bb54b2b06fb36112bc377b0"
+    },
+    {
+      "project": "Studio-servicedesk",
+      "check": "unfinished_step1_rejected",
+      "exit_code": 101,
+      "passed": true,
+      "log": "Studio-servicedesk-initial-step1.txt",
+      "log_sha256": "73377ad8e5ca3b07ab4a2a49d40c64d1e292dab5f2e45dac44958b84d3d88d64"
+    },
+    {
+      "project": "Studio-storedesk",
+      "check": "initial_template_compiles",
+      "command": [
+        "cargo",
+        "test",
+        "--offline",
+        "--manifest-path",
+        "/mnt/data/rc-delivery-check/学员包 fresh/Studio/storedesk/Cargo.toml",
+        "--no-run",
+        "-j",
+        "2"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "log": "Studio-storedesk-compile.txt",
+      "log_sha256": "5e8343a0c0b6066de368f9a085a97ba4965bbb41645d3b1d96925912cf15513d"
+    },
+    {
+      "project": "Studio-storedesk",
+      "check": "unfinished_step1_rejected",
+      "exit_code": 101,
+      "passed": true,
+      "log": "Studio-storedesk-initial-step1.txt",
+      "log_sha256": "16d443af8c80bdfdaf57f3793234559d88381dd3986b1f302e4f051b4c22cb15"
+    },
+    {
+      "project": "Studio-termgarden",
+      "check": "initial_template_compiles",
+      "command": [
+        "cargo",
+        "test",
+        "--offline",
+        "--manifest-path",
+        "/mnt/data/rc-delivery-check/学员包 fresh/Studio/termgarden/Cargo.toml",
+        "--no-run",
+        "-j",
+        "2"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "log": "Studio-termgarden-compile.txt",
+      "log_sha256": "e3e712889baa29b327c6a5ee4284d44f3a6d26b84b0b26c207fee0be47af61fa"
+    },
+    {
+      "project": "Studio-termgarden",
+      "check": "unfinished_step1_rejected",
+      "exit_code": 101,
+      "passed": true,
+      "log": "Studio-termgarden-initial-step1.txt",
+      "log_sha256": "86f032cbad8b26e62adf41faf40f7249bbb95f28d2b42917808d759b3963df33"
+    },
+    {
+      "project": "Studio-textscope",
+      "check": "initial_template_compiles",
+      "command": [
+        "cargo",
+        "test",
+        "--offline",
+        "--manifest-path",
+        "/mnt/data/rc-delivery-check/学员包 fresh/Studio/textscope/Cargo.toml",
+        "--no-run",
+        "-j",
+        "2"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "log": "Studio-textscope-compile.txt",
+      "log_sha256": "4d2471d18a800d973b8975d5d717a49651a06a041c6027b9d079d9059f4a859b"
+    },
+    {
+      "project": "Studio-textscope",
+      "check": "unfinished_step1_rejected",
+      "exit_code": 101,
+      "passed": true,
+      "log": "Studio-textscope-initial-step1.txt",
+      "log_sha256": "129b123c930b724bc717bcb5719513d1b06ed9fc3975d7aceb3c0f866af4bde3"
+    },
+    {
+      "project": "Studio-unitlab",
+      "check": "initial_template_compiles",
+      "command": [
+        "cargo",
+        "test",
+        "--offline",
+        "--manifest-path",
+        "/mnt/data/rc-delivery-check/学员包 fresh/Studio/unitlab/Cargo.toml",
+        "--no-run",
+        "-j",
+        "2"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "log": "Studio-unitlab-compile.txt",
+      "log_sha256": "7f6f07b0809669d68581133725dd5281bcafd3b47050ef9d6889795df739ae6b"
+    },
+    {
+      "project": "Studio-unitlab",
+      "check": "unfinished_step1_rejected",
+      "exit_code": 101,
+      "passed": true,
+      "log": "Studio-unitlab-initial-step1.txt",
+      "log_sha256": "5bb4a60da1e9856ee675c98432bf7a4f392d7b94ca8da4962fddef6e71ede4ca"
+    },
+    {
+      "project": "TaskPocket",
+      "check": "initial_template_compiles",
+      "command": [
+        "cargo",
+        "test",
+        "--offline",
+        "--manifest-path",
+        "/mnt/data/rc-delivery-check/学员包 fresh/TaskPocket/Cargo.toml",
+        "--no-run",
+        "-j",
+        "2"
+      ],
+      "exit_code": 0,
+      "passed": true,
+      "log": "TaskPocket-compile.txt",
+      "log_sha256": "222dd44f74a6e8c11e695f5cdd377e8bfaebde9cde92d5160f811d288851a8fa"
+    },
+    {
+      "application": "filequest",
+      "check": "archive_binary_starts",
+      "exit_code": 0,
+      "passed": true,
+      "log": "filequest-binary-help.txt",
+      "log_sha256": "dae20c803a8e3e69bd2f7bfe77f2777c10dc19a5e3340eac8119a1e38af1759b"
+    },
+    {
+      "application": "loglens",
+      "check": "archive_binary_starts",
+      "exit_code": 0,
+      "passed": true,
+      "log": "loglens-binary-help.txt",
+      "log_sha256": "74b0b5514066eb3f881e8b31d8557d62589c63440bc479ea85a1f82f9dcf1517"
+    },
+    {
+      "application": "localhub",
+      "check": "archive_binary_starts",
+      "exit_code": 0,
+      "passed": true,
+      "log": "localhub-binary-help.txt",
+      "log_sha256": "df944236150437f3da52f7545825611a27278012ca39a7659db2cb7acbba7136"
+    },
+    {
+      "application": "safesync",
+      "check": "archive_binary_starts",
+      "exit_code": 0,
+      "passed": true,
+      "log": "safesync-binary-help.txt",
+      "log_sha256": "a69d6aa84465f192a0ebd3a2d55d4b83761786604e8a53f5069254db4a16d957"
+    },
+    {
+      "application": "labquest",
+      "check": "archive_binary_starts",
+      "exit_code": 0,
+      "passed": true,
+      "log": "labquest-binary-help.txt",
+      "log_sha256": "31702b72c8079d95a8abc1e56b1873d0bead1d735ffe0cdc53a1198ef252fe7f"
+    },
+    {
+      "application": "unitlab",
+      "check": "archive_binary_starts",
+      "exit_code": 0,
+      "passed": true,
+      "log": "unitlab-binary-help.txt",
+      "log_sha256": "859475a8881f97dd6c6636b0eb19889be7e23c4d646966630cb7027b9b246b7e"
+    },
+    {
+      "application": "quizdeck",
+      "check": "archive_binary_starts",
+      "exit_code": 0,
+      "passed": true,
+      "log": "quizdeck-binary-help.txt",
+      "log_sha256": "e724b29effcdca97b07a6242171237d70b2e517db69e8e4f31e5b9c547bd2573"
+    },
+    {
+      "application": "textscope",
+      "check": "archive_binary_starts",
+      "exit_code": 0,
+      "passed": true,
+      "log": "textscope-binary-help.txt",
+      "log_sha256": "b587a00a3d9aed96179c329186e070d2bb450b1415f854fe01a2011316389346"
+    },
+    {
+      "application": "ledgerlite",
+      "check": "archive_binary_starts",
+      "exit_code": 0,
+      "passed": true,
+      "log": "ledgerlite-binary-help.txt",
+      "log_sha256": "55badf5ad5c8a4ce99f717a713c495c8792c93fe356064722f3e2854f52c1294"
+    },
+    {
+      "application": "badgeforge",
+      "check": "archive_binary_starts",
+      "exit_code": 0,
+      "passed": true,
+      "log": "badgeforge-binary-help.txt",
+      "log_sha256": "9c39ab715e6382d028ed9bfa4e472260f5eb15d9f0c8ae85a3c0fa975e88428e"
+    },
+    {
+      "application": "batchmeter",
+      "check": "archive_binary_starts",
+      "exit_code": 0,
+      "passed": true,
+      "log": "batchmeter-binary-help.txt",
+      "log_sha256": "4bb43ea9332adcc11d71b5752234be0b5bd9a22c134957c78ea3efc83961759b"
+    },
+    {
+      "application": "termgarden",
+      "check": "archive_binary_starts",
+      "exit_code": 0,
+      "passed": true,
+      "log": "termgarden-binary-help.txt",
+      "log_sha256": "c7cc8fa55cb0faecb58aa2b3688ce9b206677a07d1a1b8a7d334a0a07a826d18"
+    },
+    {
+      "application": "storedesk",
+      "check": "archive_binary_starts",
+      "exit_code": 0,
+      "passed": true,
+      "log": "storedesk-binary-help.txt",
+      "log_sha256": "d363de8d7b8dd5a9246554449e77774efdfff2506408b2f4496eb1507ef13e33"
+    },
+    {
+      "application": "minikv",
+      "check": "archive_binary_starts",
+      "exit_code": 0,
+      "passed": true,
+      "log": "minikv-binary-help.txt",
+      "log_sha256": "36d680d8f8b94ea7e4a9dec52f5081bc4a3a4a96936d2702854421f0e661fa2e"
+    },
+    {
+      "application": "netfetch",
+      "check": "archive_binary_starts",
+      "exit_code": 0,
+      "passed": true,
+      "log": "netfetch-binary-help.txt",
+      "log_sha256": "e69883112ca441b4b806aa4c74d68fa55be591524b5a9605dfbbd6498dc094b1"
+    },
+    {
+      "application": "servicedesk",
+      "check": "archive_binary_starts",
+      "exit_code": 0,
+      "passed": true,
+      "log": "servicedesk-binary-help.txt",
+      "log_sha256": "f413285c364fb291196188a0ee09fd5bc7fb580b8ed7a500d4172889f87dd9c3"
+    },
+    {
+      "application": "asyncboard",
+      "check": "archive_binary_starts",
+      "exit_code": 0,
+      "passed": true,
+      "log": "asyncboard-binary-help.txt",
+      "log_sha256": "d6a36f8fb033ea95fc238f6eda1887fe0d84a7133f5e7784740e6769c632cb32"
+    }
+  ],
+  "learner_zip_sha256": "3bef5e1e5e01049be2177bd668fd0261414f7127c45a937cd10dc527e583e48d",
+  "linux_zip_sha256": "8f32fd0010ce948d7299e59d90626a7d2d127629edb614582128d5ceb0957d8b"
+}

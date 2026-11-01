@@ -1,0 +1,42 @@
+Rust AppLab 0.16.0 · 实际运行与发布证据（2026-10-29）
+
+一、运行环境与交付范围
+- Rust：rustc 1.99.1、Cargo 1.99.1（用户提供的 Linux x86_64 离线工具链）。
+- Workspace：17 个 Cargo package；Studio：12 款 × 3 阶段，另有历史 32 关与独立项目。
+- 新增 AsyncBoard：真正的 async/await、Future/Poll/Waker、单执行线程 + 一个定时器驱动线程，保存 TSV 报告。
+- 无 Tokio/Reqwest/Axum 依赖、无非阻塞网络 reactor/TLS，不能冒充 async HTTP。
+
+二、源码/静态检查
+- cargo fmt --all -- --check：通过。
+- cargo clippy --locked --offline --workspace --all-targets -- -D warnings：通过。
+- cargo clippy --release --locked --offline --workspace --all-targets -- -D warnings：通过。
+- cargo build --release --locked --offline --workspace：通过，17 个应用可执行程序。
+- python scripts/structural_check.py：通过，含课程链接、32 历史关、12 Studio、演示数据与清单。
+
+三、实际测试（正确区分全量、分组和新代码范围）
+- Debug：`cargo test --locked --offline --workspace --all-targets -- --test-threads=2`
+  **275 passed、0 failed、15 ignored**（日志 v016_final_debug.log）
+- Release 在当前容器中整仓一次性执行曾超时，不能声称单次全仓完成。
+  实际分组：非 LabQuest 应用 193 passed、0 failed、15 ignored；
+  LabQuest 既有全量测试此前 71 passed（含当时25项 Studio）；新增的第26项 Studio 测试后，
+  当前版本单独重跑 `-p labquest --test studio_e2e` 得 26 passed、0 failed。
+  因此不能机械把两次 Studio 的计数叠加；按不重叠套件合计，相当于 265 项覆盖、0 已知失败，
+  但结果来自多个命令和两个紧邻的源码测试状态，不等于单次整仓 Release 通过。
+- AsyncBoard 自身 `cargo test --offline -p asyncboard --all-targets`：16 passed、0 failed；
+  另有 LabQuest Studio 的 AsyncBoard red→green / 缺失 await 拒绝 / 第一步单独通过 三项 E2E 通过。
+- `python scripts/smoke_asyncboard.py`：6 次真实 Linux Release CLI（演示、预览、重运行拒绝、报告生成、拒绝覆盖、非法数据拒绝）；中文空格目录与输出文件实际检查通过。
+
+四、教学质量与安全边界
+- 无答案模板在第1步故意失败；只实现第1步时，第二步尚未实现不应阻挡；正确参考实现完成全部。
+- `complete` 遗漏 `delay.await` 会被真实计时测试拒绝；非忙轮询的执行器有独立 `pending_is_not_busy_polled` 测试。
+- 任务清单最多128条，等待最大30000ms；非法/重复ID拒绝；报告使用 create_new 防覆盖，拒绝无效目录。
+- 工具运行用户自己的 Rust 代码，Studio check 并非恶意代码沙箱；不要上传机密和不可恢复资料进行实验。
+
+五、尚待验证
+- 0.16.0 Windows/macOS 原生实测、最低Rust版本1.74实测、真实学员独立通关率均无数据。
+- crates.io DNS 当前无法访问，Tokio/Reqwest/Axum真实源码和依赖未取得，异步客户端/服务端不在本版本验收范围。
+- 不承诺计时精度、生产级持久性、TLS或公网服务；不能把同步NetFetch/ServiceDesk或教学执行器当成熟异步网络系统。
+
+六、参考日志
+- v016_final_debug.log、v016_release_apps.log、v016_release_labquest.log、v016_final_studio_release.log
+- 验证前已更新Cargo.lock；发布压缩包另按CRC和SHA-256、全新目录解压结果进行校验。

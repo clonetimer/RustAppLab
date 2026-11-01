@@ -1,0 +1,40 @@
+Rust AppLab 0.14.0 — executed verification evidence
+
+Baseline: 0.13.0, 206 Debug tests passed in this container.
+Environment: Linux x86_64; rustc 1.99.1 (58cf8f9c3 2026-10-13).
+
+Root workspace: 14 packages, zero external Rust crates. StoreDesk uses system SQLite.
+Studio: 9 products / 27 milestones; learner kit: 12 independent projects.
+MiniKV: 21 tests (8 staged contract/CLI, 13 behavior), plus 3 platform red/green tests.
+Documentation: 2 tests; one expected E0502 compile failure, one repaired working example.
+Dependency preparation: 5 unit tests, including fake-runner orchestration; not network library verification.
+
+Debug workspace: 235 passed, 0 failed, 15 deliberately ignored learner challenges.
+Release workspace: 225 passed, 0 failed, 15 deliberately ignored learner challenges.
+Release excludes 10 Debug-only fault-injection tests already present in previous releases.
+Rustfmt and strict Debug/Release Clippy: PASS. Full Release build: PASS.
+
+MiniKV Release: 14 actual CLI calls. Python independently decodes journal records.
+Verified cross-process persistence, replacement, deletion, Unicode/space paths,
+no overwrite of export, no file creation on missing read, bad input unchanged,
+40 distinct records written by 4 threads, truncated-log rejection preserving bytes.
+
+Stage progression: initial failure -> stage 1 alone pass -> stage 2 alone pass -> all pass.
+A wrong prefix iterator passes stages 1/2 but fails stage 3. Local editable tests are not trusted.
+Existing empty files are not silently initialized. Lock files are retained after abnormal exits.
+No malicious-tamper detection, encryption, multi-key transactions, compaction or power-loss guarantee.
+
+Browser: Chromium static DOM/layout PASS (1280 desktop / 390 mobile, no horizontal overflow).
+Direct HTTP navigation blocked by administrator policy: NO real browser network pass claimed.
+
+Network: crates.io cannot be resolved in the container. No crate archive or vendor obtained.
+The optional probe has formatting/parser checks only, no library-backed typecheck or runtime result.
+Actual preparation failure-path run used CARGO_NET_OFFLINE=true; resolve failed as expected.
+STATUS.md contains failure, not PASS. NetFetch/ServiceDesk remain unfinished.
+
+Windows/macOS 0.14.0 native runs, Rust 1.74, and learner effectiveness are NOT verified.
+The user's prior 0.11.1 Windows success is not treated as 0.14.0 qualification.
+
+Raw logs: V0_14_0_TEST_DEBUG.txt / TEST_RELEASE.txt / DOCTEST.txt /
+CLIPPY_DEBUG.txt / CLIPPY_RELEASE.txt / BUILD.txt; JSON evidence in V0_14_0_RESULTS.json.
+The final delivered archive is separately re-extracted and tested; see external FRESH_ARCHIVE_CHECK.

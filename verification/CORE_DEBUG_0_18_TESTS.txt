@@ -1,0 +1,264 @@
+   Compiling labquest v0.18.0-dev.1 (/mnt/data/RustAppLab_0_18_work/RustAppLab/apps/labquest)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.40s
+     Running unittests src/lib.rs (/mnt/data/RustAppLab_0_18_build/debug/deps/asyncboard-03e4bd69a0b155a8)
+
+running 5 tests
+test runtime::tests::immediate_task_finishes_without_timer ... ok
+test tests::reject_invalid_before_execution ... ok
+test tests::zero_delay_and_unicode ... ok
+test runtime::tests::pending_is_not_busy_polled ... ok
+test tests::order_and_overlap ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.12s
+
+     Running unittests src/main.rs (/mnt/data/RustAppLab_0_18_build/debug/deps/asyncboard-95b5108a5daf2db0)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (/mnt/data/RustAppLab_0_18_build/debug/deps/badgeforge-5a8a4936cc87b241)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/main.rs (/mnt/data/RustAppLab_0_18_build/debug/deps/badgeforge-4a353917af27b5ce)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (/mnt/data/RustAppLab_0_18_build/debug/deps/batchmeter-d0cff182790b8de7)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/main.rs (/mnt/data/RustAppLab_0_18_build/debug/deps/batchmeter-8a63200738ffe749)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (/mnt/data/RustAppLab_0_18_build/debug/deps/filequest-679019be6782d6d7)
+
+running 6 tests
+test cli::tests::rejects_missing_output ... ok
+test cli::tests::rejects_invalid_report_limit ... ok
+test report::tests::html_is_escaped ... ok
+test cli::tests::parses_scan_with_all ... ok
+test scanner::tests::extension_is_normalized ... ok
+test scanner::tests::human_readable_bytes ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/main.rs (/mnt/data/RustAppLab_0_18_build/debug/deps/filequest-87dd8346f38b63b0)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (/mnt/data/RustAppLab_0_18_build/debug/deps/labquest-1ba3bb503f26f353)
+
+running 30 tests
+test capstone::tests::hints_are_staged ... ok
+test capstone::tests::generated_starter_is_unsolved ... ok
+test coach::tests::prediction_teaches_strict_boundary ... ok
+test board::tests::board_escapes_feedback ... ok
+test ecosystem::tests::seed_is_offline_and_never_overwrites ... ok
+test ecosystem::tests::changed_probe_is_not_executed ... ok
+test learning::tests::diagnostic_distinguishes_errors ... ok
+test learning::tests::distinguishes_both_independent_products ... ok
+test ecosystem::tests::spawn_error_is_recorded ... ok
+test learning::tests::next_ignores_stale_and_fake_reports ... ok
+test learning::tests::next_matches_snapshot_but_does_not_certify ... ok
+test learning::tests::score_parser_only_accepts_valid_milestones ... ok
+test ecosystem::tests::failure_stops_pipeline_and_never_claims_pass ... ok
+test learning::tests::rejects_unknown_or_symlink_directories ... ok
+test process::tests::child_fixture ... ok
+test learning::tests::windows_report_path_separators_are_normalized ... ok
+test process::tests::spawn_failure_cleans_only_own_files ... ok
+test ecosystem::tests::orchestration_success_with_fake_runner_is_not_real_dependency_test ... ok
+test process::tests::inherited_stdin_is_closed ... ok
+test proof::tests::fingerprints_change_when_content_changes ... ok
+test process::tests::verbose_stdout_and_stderr_do_not_block_and_files_are_cleaned ... ok
+test simulation::tests::generated_log_matches_expected_error_counts ... ok
+test process::tests::excessive_output_is_not_a_success ... ok
+test simulation::tests::parser_rejects_bad_configs ... ok
+test studio::diagnostics_tests::missing_sqlite_is_environment_error ... ok
+test studio::diagnostics_tests::ordinary_compile_error_keeps_learning_guidance ... ok
+test transfer::tests::hints_are_scaffolded ... ok
+test transfer::tests::starter_is_not_completed ... ok
+test process::tests::timeout_kills_direct_child_and_closes_logs ... ok
+test proof::tests::infinite_loop_like_process_is_terminated_with_explanation ... ok
+
+test result: ok. 30 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.13s
+
+     Running unittests src/main.rs (/mnt/data/RustAppLab_0_18_build/debug/deps/labquest-6351747850fa2f04)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (/mnt/data/RustAppLab_0_18_build/debug/deps/ledgerlite-3241848c56fc21f4)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/main.rs (/mnt/data/RustAppLab_0_18_build/debug/deps/ledgerlite-bb6603ebab58a5f7)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (/mnt/data/RustAppLab_0_18_build/debug/deps/localhub-af08979c1c033257)
+
+running 5 tests
+test cli::tests::parses_serve_and_rejects_ambiguous_input ... ok
+test http::tests::rejects_invalid_target_and_accepts_normal_localhost ... ok
+test http::tests::rejects_bad_hosts_methods_and_unsupported_http_versions ... ok
+test data::tests::escapes_special_json_characters ... ok
+test http::tests::response_has_valid_http_framing_and_security_headers ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/main.rs (/mnt/data/RustAppLab_0_18_build/debug/deps/localhub-14534a6312f6ae3f)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (/mnt/data/RustAppLab_0_18_build/debug/deps/loglens-df2f5cd562b35cfc)
+
+running 6 tests
+test analyzer::tests::sanitize_replaces_terminal_control_sequences ... ok
+test analyzer::tests::rate_for_empty_log_is_defined ... ok
+test cli::tests::report_flags_are_parsed_with_validation ... ok
+test parser::tests::handles_blank_malformed_and_bad_timestamp ... ok
+test parser::tests::recognizes_two_useful_formats ... ok
+test report::tests::markdown_escapes_table_cells_and_html ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/main.rs (/mnt/data/RustAppLab_0_18_build/debug/deps/loglens-d139c31d7f4ff242)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (/mnt/data/RustAppLab_0_18_build/debug/deps/minikv-441accb352b47ce7)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/main.rs (/mnt/data/RustAppLab_0_18_build/debug/deps/minikv-bf585f6935403b74)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (/mnt/data/RustAppLab_0_18_build/debug/deps/netfetch-2f9841c3bcc80e5a)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/main.rs (/mnt/data/RustAppLab_0_18_build/debug/deps/netfetch-498adcbd5ebf71b2)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (/mnt/data/RustAppLab_0_18_build/debug/deps/quizdeck-bee9e4dacb2768a4)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/main.rs (/mnt/data/RustAppLab_0_18_build/debug/deps/quizdeck-29504c20926f7e39)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (/mnt/data/RustAppLab_0_18_build/debug/deps/safesync-48d9e571572099b6)
+
+running 6 tests
+test cli::tests::parse_commands_without_ambiguous_options ... ok
+test sha256::tests::sha256_known_vectors ... ok
+test tree::tests::rejects_path_escapes_and_ambiguous_windows_names ... ok
+test manifest::tests::rejects_traversal_and_duplicates ... ok
+test ops::consistency_tests::source_changed_after_stage_verified_is_not_committed ... ok
+test sha256::tests::streaming_and_binary_bytes ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+     Running unittests src/main.rs (/mnt/data/RustAppLab_0_18_build/debug/deps/safesync-5e011751c46aa084)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (/mnt/data/RustAppLab_0_18_build/debug/deps/servicedesk-04b054b256415ec5)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/main.rs (/mnt/data/RustAppLab_0_18_build/debug/deps/servicedesk-c15bb3fd50691894)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (/mnt/data/RustAppLab_0_18_build/debug/deps/storedesk-b4922c57b38cb127)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/main.rs (/mnt/data/RustAppLab_0_18_build/debug/deps/storedesk-3c48e155a98317d2)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (/mnt/data/RustAppLab_0_18_build/debug/deps/termgarden-04cb9aab3f1843b6)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/main.rs (/mnt/data/RustAppLab_0_18_build/debug/deps/termgarden-52c13349936abf3d)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (/mnt/data/RustAppLab_0_18_build/debug/deps/textscope-60230e11250c2392)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/main.rs (/mnt/data/RustAppLab_0_18_build/debug/deps/textscope-bcb78fe874c84457)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/lib.rs (/mnt/data/RustAppLab_0_18_build/debug/deps/unitlab-58ec0ba9f8a3be5d)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/main.rs (/mnt/data/RustAppLab_0_18_build/debug/deps/unitlab-cdd80179d91379f1)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+

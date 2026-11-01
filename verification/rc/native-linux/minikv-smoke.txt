@@ -1,0 +1,8 @@
+$ /opt/pyvenv/bin/python scripts/smoke_minikv.py --output /mnt/data/rc-native-linux-final/minikv-products
+{
+  "version": "0.14.0",
+  "platform": "Linux-6.18.55-x86_64-with-glibc2.41",
+  "cli_calls": 14,
+  "independent_journal_check": true,
+  "shared_records": 40
+}

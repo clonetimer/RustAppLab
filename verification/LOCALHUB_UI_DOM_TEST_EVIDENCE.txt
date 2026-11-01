@@ -1,0 +1,7 @@
+LocalHub DOM/JS smoke (real Rust HTTP JSON, browser mock fetch)
+NOTE: Not a real browser-to-HTTP end-to-end test. Browser localhost navigation blocked by policy.
+Files from HTTP: 11; DOM rows: 11
+Log HTTP: 8 records, 3 errors, 37.50%
+Injection escaped: True; search filter: pass; mobile overflow: no
+JavaScript errors: none
+Result: PASS (DOM only)

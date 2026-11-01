@@ -1,0 +1,106 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>TermGarden · 把任务种成一座终端花园 · 跟着做</title><style>*{box-sizing:border-box}body{margin:0;background:#f4f7fb;color:#20334d;font:16px/1.85 system-ui,"Microsoft YaHei",sans-serif}header{background:#14273d;color:#fff}header>div,main{max-width:940px;margin:auto;padding:30px 24px}h1{font-size:clamp(25px,4vw,36px);line-height:1.4;margin:10px 0}h2{font-size:24px;line-height:1.5;margin:34px 0 12px;padding-top:12px;border-top:1px solid #d6e2ed}h3{font-size:19px}header p{color:#d7e7f4}article{background:white;border:1px solid #dce5ef;border-radius:14px;padding:12px 28px 28px}p{overflow-wrap:anywhere}code{font:14px/1.65 Consolas,monospace;background:#eaf1f8;color:#194775;padding:2px 4px;border-radius:4px}pre{background:#14273d;color:#edf3fa;padding:16px;border-radius:9px;overflow:auto}pre code{background:none;color:inherit;padding:0;white-space:pre-wrap;overflow-wrap:anywhere}.note{padding:15px;border:1px solid #89b7a4;background:#ebf7f0;color:#245744;border-radius:10px;margin-bottom:20px}table{width:100%;border-collapse:collapse}th,td{border:1px solid #dce5ef;padding:8px;text-align:left}a{color:#14619e}@media(max-width:600px){header>div,main{padding:20px 14px}article{padding:5px 16px 18px}h2{font-size:21px}}</style></head><body><header><div><small>RUST APPLAB / STUDIO / 0.16.0</small><h1>TermGarden · 把任务种成一座终端花园</h1><p>每次只完成一个步骤。读目标、修改指定函数、运行检查，再使用自己的数据。</p></div></header><main><div class="note">代码编辑位置：学员工程 <strong>src/lib.rs</strong>。先完成 TODO(1)，再做 TODO(2)、TODO(3)。<br>分层提示在 HINTS.md，学习记录在 LEARNING_LOG.md。不要修改参考应用源码。</div><article><h2>这次要交付什么</h2>
+<p>这是一款能每天使用的小型任务管理器。你输入要完成的事情，在终端里选择任务、标记完成或撤销，退出后仍能读取自己的任务文件。完成数从 0 到 1 再到 3 时，花园从 seed → sprout → bloom。它不会替你判断学习效果，也不依靠挂机计时奖励。</p>
+<p>**先修要求：**完成 QuizDeck，理解 <code>Vec</code>、枚举、<code>&amp;mut</code> 和 <code>Result</code>；做过 BadgeForge 会更容易理解最后的两种界面。刚完成 FirstCard 的学员先去 UnitLab，不必跳到这里。</p>
+<p>这次是<strong>按行输入版</strong>，每条命令按 Enter 执行，不需要方向键即时响应、鼠标或终端原始模式。这样的输入也能保存成文件，重复播放，便于把“看起来能用”变成可测试的行为。完整 raw-mode TUI 留作后续扩展，不把这一版冒充成它。</p>
+<h2>先体验一个真正的软件</h2>
+<p>在完整 RustAppLab 根目录，运行参考版：</p>
+<pre><code class="language-powershell">cargo run --offline -p termgarden -- play my-garden.tasks
+</code></pre>
+<p>依次输入下面几行，每行按 Enter：</p>
+<pre><code class="language-text">add 学会 Rust 的枚举
+add 完成自己的词频工具
+p
+x
+f
+q
+</code></pre>
+<p>第二次添加后选中 #2；<code>p</code> 移到 #1；<code>x</code> 把 #1 标成完成；<code>f</code> 只显示未完成任务，光标移到 #2；<code>q</code> 退出。终端中的 <code>&gt;</code> 标记当前项，<code>[x]</code> 表示已完成。再次运行相同的 <code>play</code> 命令，两项任务仍在；筛选和光标属于本次会话，不持久化。</p>
+<p>不要只看花园图案：打开 <code>my-garden.tasks</code> 看三列数据，再回到程序确认磁盘记录确实决定显示的内容。不要把它当作可任意编辑的普通笔记；格式损坏时软件会拒绝加载，不会悄悄覆盖。</p>
+<h2>创建自己的工程</h2>
+<p>在 <strong>RustAppLab 根目录</strong>运行：</p>
+<pre><code class="language-powershell">cargo run --offline -p labquest -- studio start termgarden my-termgarden
+cargo run --offline -p labquest -- studio check my-termgarden 1
+</code></pre>
+<p>首次 FAIL 正常：你还没有写命令解析。打开 <code>my-termgarden/START.html</code>，用编辑器打开 <code>my-termgarden/src/lib.rs</code>。别修改参考目录 <code>apps/termgarden</code>。</p>
+<p>目录关系：<code>main.rs</code> 负责收键盘输入、输出提示和保存；<code>lib.rs</code> 管理业务状态，是本次三个练习所在；<code>storage.rs</code> 已提供文件格式与写入，先不修改。输入经过 <code>parse_command</code> 变成 <code>Event</code>，由 <code>apply_event</code> 修改 <code>Garden</code>，最后由 <code>render</code> 生成文本界面。</p>
+<h2>第 1 步：把一句输入变成一个事件</h2>
+<p>修改 <code>src/lib.rs</code> 的 <strong>TODO(1)，<code>parse_command</code></strong>。</p>
+<p><code>Event::Next</code> 只有“下一项”这个含义，不需要额外数据；<code>Event::Add(String)</code> 既说明要添加，也带着新任务的标题。不要使用一组可能互相冲突的布尔值代表命令。</p>
+<table>
+<thead>
+<tr>
+<th>输入</th>
+<th>应返回</th>
+<th>原因</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>n</code> 或 <code>next</code></td>
+<td><code>Ok(Event::Next)</code></td>
+<td>同一操作支持缩写</td>
+</tr>
+<tr>
+<td><code>p</code> / <code>prev</code></td>
+<td><code>Ok(Event::Prev)</code></td>
+<td>上一项</td>
+</tr>
+<tr>
+<td><code>x</code> / <code>toggle</code></td>
+<td><code>Ok(Event::Toggle)</code></td>
+<td>完成或撤销</td>
+</tr>
+<tr>
+<td><code>f</code> / <code>filter</code></td>
+<td><code>Ok(Event::Filter)</code></td>
+<td>切换过滤条件</td>
+</tr>
+<tr>
+<td><code>q</code> / <code>quit</code></td>
+<td><code>Ok(Event::Quit)</code></td>
+<td>结束循环</td>
+</tr>
+<tr>
+<td><code>add 写一个测试</code></td>
+<td><code>Ok(Event::Add(...))</code></td>
+<td>标题要保存为拥有数据的 String</td>
+</tr>
+<tr>
+<td><code>add</code>、空输入、未知命令</td>
+<td><code>Err(...)</code></td>
+<td>不能猜测用户意图</td>
+</tr>
+</tbody>
+</table>
+<p>先用 <code>trim()</code> 去掉行首行尾空白，再区分带标题的命令和固定命令。<code>strip_prefix(&quot;add &quot;)</code> 返回 <code>Option&lt;&amp;str&gt;</code>；<code>if let Some(title)</code> 表示只有前缀匹配时才使用标题。调用已提供的 <code>valid_title</code> 拒绝空标题、控制字符和超过 80 字符的标题。</p>
+<p>**所有权练习：**参数 <code>input: &amp;str</code> 只是借用这一行，函数返回后输入缓冲可以被重用。事件需要保存标题，所以这里要创建 <code>String</code>，而不是把借用的 <code>&amp;str</code> 塞进一个要求 <code>String</code> 的枚举。</p>
+<p>在平台根目录检查第 1 步，或进入学员目录执行：</p>
+<pre><code class="language-powershell">cargo test --offline --test milestones step1_
+</code></pre>
+<p>看到 <code>2 passed; 0 failed</code> 后再做第二步。预测题：<code>next extra</code> 应当执行 next 还是报错？用你自己的测试说明理由。</p>
+<h2>第 2 步：让状态变化，而不是打印一句“成功”</h2>
+<p>修改 <strong>TODO(2)，<code>apply_event</code></strong>。它收到 <code>&amp;mut Garden</code>，所以能改变已有花园；<code>render</code> 只收到 <code>&amp;Garden</code>，不能随意改变任务。返回 <code>Ok(true)</code> 表示继续运行，<code>Ok(false)</code> 表示退出，<code>Err</code> 表示这次操作无效。</p>
+<p>先只实现 Add，检查任务是否进入 <code>tasks</code>、ID 是否递增、光标是否选中新任务。再实现 Next/Prev 的首尾循环，之后实现 Toggle、Filter，最后处理 Quit。不要一次写完六个分支才测试。</p>
+<p>光标保存的是稳定的任务 ID，不是“当前显示第几行”。比如 #1 完成后被筛掉，#2 仍是 #2，不能因为它现在位于第一行就把它误认成 #1。已提供 <code>visible_ids</code> 返回当前可见 ID；改变过滤条件或完成状态后，需要把失效的选中项移到第一个可见项，或者在空列表时设为 <code>None</code>。</p>
+<p>**一条错误不能改变数据。**添加前先验证标题、数量和 <code>checked_add</code>；空列表 Toggle 应报错，而不是下标越界。<code>checked_add</code> 不是复杂技巧，它把整数溢出变成能处理的 <code>Option</code>。</p>
+<pre><code class="language-powershell">cargo test --offline --test milestones step2_
+</code></pre>
+<p>再从平台运行 <code>studio check my-termgarden 2</code>：它会同时复查第 1 步。自己重现“完成当前任务 → 仅未完成 → 全部完成 → 没有可见任务”的状态，不要只用两项未完成任务测试。</p>
+<h2>第 3 步：同一份状态，两种界面</h2>
+<p>修改 <strong>TODO(3)，<code>render</code></strong>。它应返回一个 <code>String</code>，不是直接 <code>println!</code>，也不应该在函数内部读取键盘或文件。这样测试可以比较完整结果，主程序可以自由选择显示到终端还是保存为报告。</p>
+<p>固定第一行 <code>=== TermGarden ===</code>；第二行包含 <code>done=完成数/总数 growth=阶段 view=all或open</code>。各任务用 <code>&gt; [ ] #编号 标题</code> 表示选中未完成项，用 <code>[x]</code> 表示完成项；没有可见项时必须含 <code>(empty)</code>。阶段规则：0 项完成为 seed，1–2 项为 sprout，3 项起为 bloom。</p>
+<p>调用 <code>visible_ids</code>，遍历可见任务，把每一行追加到输出。渲染不应改变光标、完成数和任务标题；对同一个状态重复渲染应得到相同文本。</p>
+<p>现在查看文件末尾已提供的 <code>Renderer</code> 接口。<code>BoardView</code> 调用你实现的完整界面；<code>CompactView</code> 只显示摘要。<code>renderer</code> 返回 <code>Box&lt;dyn Renderer&gt;</code>，因为使用者在运行时选择界面，而不是像 BadgeForge 的泛型那样提前确定具体类型。暂时不用自己写虚函数表；你需要理解“拥有一个符合接口的对象”，并能够新增自己的实现。</p>
+<pre><code class="language-powershell">cargo test --offline
+cargo run --offline -- play garden.tasks
+cargo run --offline -- play garden.tasks compact
+</code></pre>
+<p>这些命令在<strong>学员工程目录</strong>运行。平台的 <code>studio check my-termgarden 3</code> 则必须在 RustAppLab 根目录运行。完整三步为 8 项合同测试；最终两项真实运行你的 CLI，并检查保存结果以及错误脚本不产生半份文件。</p>
+<h2>亲手交付，而不是只取得 PASS</h2>
+<p>用自己的 5 项任务运行两次，保存 <code>garden.tasks</code>，至少完成一项，再退出重新打开确认。把一段操作写到 <code>samples/mine.txt</code>，用 <code>cargo run --offline -- replay another.tasks samples/mine.txt</code> 重放；不要用现有个人文件做破坏实验。</p>
+<p>扩展任务任选一项：增加 <code>rename 新标题</code> 事件，或增加 <code>MinimalView</code> 作为第三种 Renderer。先说明要改变哪层、写一个测试，再实现功能。不要删除原来的测试。</p>
+<p>最后执行 <code>cargo build --offline --release</code>，保存自己的任务数据与 <code>LEARNING_LOG.md</code>。Windows 程序在 <code>target/release/termgarden.exe</code>。在记录里解释：为什么解析返回拥有数据的 String？为什么光标用 ID？为什么 render 不直接读键盘？</p>
+<h2>常见卡点与边界</h2>
+<p>“移动后借用”通常来自一边迭代借用任务、一边 push/修改列表；先算出 ID 或位置，结束只读借用，再获取可变引用。<code>Option</code> 不是可以直接作为下标使用的整数；先处理 <code>None</code>。修改后完全没变化时，检查是否编辑了学员目录而非参考目录，并确认 Ctrl+S 保存。</p>
+<p>这是单人、单进程任务工具。不要同时打开两个进程写同一文件；同目录暂存后替换不等于跨进程事务或断电持久化保证。它不是完整即时键盘 TUI，不覆盖终端 raw mode、鼠标、焦点或无障碍测试。</p>
+</article></main></body></html>

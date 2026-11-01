@@ -1,0 +1,7 @@
+[package]
+name = "asyncboard"
+version = "0.16.0"
+edition = "2021"
+rust-version = "1.74"
+description = "Offline Rust async/await reminder queue with a wake-driven teaching executor"
+license = "MIT"

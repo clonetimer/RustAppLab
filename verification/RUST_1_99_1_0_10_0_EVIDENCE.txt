@@ -1,0 +1,32 @@
+Rust AppLab 0.10.0 · Linux x86_64 / Rust 1.99.1 执行记录
+日期：2026-10-28
+执行环境：Linux x86_64，离线 Cargo Workspace，Rust 工具链位于 /tmp/rust-app-toolchain/installed/bin
+rustc：rustc 1.99.1 (58cf8f9c3 2026-10-13)
+cargo：cargo 1.99.1 (5f94df478 2026-08-27)
+
+0.9.0基线：原有 Workspace 测试通过；未修改原有四款领域工具的 Rust 源码。
+本轮代码：新增 LabQuest::transfer（PageMint）及真实运行的 transfer_e2e/transfer_cli；重用既有 TaskPocket 有界 Cargo 执行器。
+课程：新增第 30、31 关（当前共 32 章）；源代码包可复现，学员包不含维护者参考实现，包含 HTML 视觉目标样本（不是 Rust 答案）。
+
+实际命令及结果：
+  cargo fmt --all -- --check                                 PASS
+  cargo clippy --offline --workspace --all-targets -- -D warnings          PASS
+  cargo clippy --offline --release --workspace --all-targets -- -D warnings PASS
+  cargo test --locked --offline --workspace --all-targets                  PASS：101 passed, 0 failed, 15 ignored（27 测试套件）
+  cargo test --locked --offline --release --workspace --all-targets        PASS：91 passed, 0 failed, 15 ignored（27 测试套件）
+  cargo build --locked --offline --workspace --release                     PASS
+
+PageMint 真实评分：
+  未实现初始工程：非零退出，无法取得全部 PASS
+  写死 built=1：无法取得全部 PASS
+  漏掉 & 的 HTML 转义：第 4 组明确失败
+  教师参考 Rust 程序：9/9 PASS，并在原始工程上重复评分 PASS
+  报告名被用户写入其他内容：拒绝覆盖
+  LabQuest 二进制 app catalog/init/check/hint 实际 CLI 路径：PASS
+  样例 PageMint：notes=2 paragraphs=4，built=2，生成真实的离线 HTML（例子文件单独交付）
+
+说明：PageMint 跨平台第 9 组依赖 Unix symlink，其他平台基线 8 组；上述 9/9 是 Linux 结论。
+不能由自动测试推断任何人类学习者已经理解 Rust；没有真实学员参与的学习效果评价。
+浏览器视觉渲染/Windows/macOS/Rust1.74/MSRV/物理断电等未在本轮验证，不能据此标记 RC 或 Stable。
+
+交付归档结果：详见 RustAppLab-0.10.0-FRESH_ARCHIVE_CHECK.txt（打包后单独生成）

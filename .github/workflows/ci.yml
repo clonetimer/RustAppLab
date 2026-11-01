@@ -1,0 +1,74 @@
+name: Rust AppLab Windows/Linux supported-platform CI
+on: [push, pull_request, workflow_dispatch]
+jobs:
+  native:
+    name: Native engineering / ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+        with:
+          components: rustfmt, clippy
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: SQLite development library
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y libsqlite3-dev
+      - name: Rust error lessons must fail and be repaired as described
+        run: python scripts/check_error_labs.py
+      - name: Complete native Debug + Release + real product checks
+        run: python scripts/release_check.py --output native-evidence
+      - name: Windows launcher and evidence script itself
+        if: runner.os == 'Windows'
+        shell: powershell
+        run: ./scripts/verify_release_windows.ps1 -OutputDirectory windows-launcher-evidence
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: native-${{ matrix.os }}
+          path: |
+            native-evidence/
+            windows-launcher-evidence/engineering.json
+            windows-launcher-evidence/*.txt
+  browser:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@stable
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - run: cargo build --locked --offline --release -p localhub -p servicedesk
+      - run: python -m pip install playwright
+      - run: python -m playwright install --with-deps chromium
+      - name: Actual browser navigation, HTTP, create/close, restart, mobile
+        run: python scripts/browser_e2e.py --output browser-evidence
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: real-browser
+          path: browser-evidence/
+  msrv:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@1.74.0
+      - run: sudo apt-get update && sudo apt-get install -y libsqlite3-dev
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Declared MSRV Debug, Release and docs
+        run: python scripts/msrv_check.py --output msrv-evidence
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: declared-msrv
+          path: msrv-evidence/

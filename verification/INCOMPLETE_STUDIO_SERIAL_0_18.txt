@@ -1,0 +1,33 @@
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.01s
+     Running tests/studio_e2e.rs (/mnt/data/RustAppLab_0_18_build/debug/deps/studio_e2e-e48641065e0d455d)
+
+running 26 tests
+test accidental_infinite_loop_is_bounded ... ok
+test asyncboard_first_milestone_is_reachable_without_future_milestones ... ok
+test asyncboard_red_to_green ... ok
+test asyncboard_support_runtime_and_await_are_required ... ok
+test badgeforge_red_to_green ... ok
+test batchmeter_red_to_green ... ok
+test compile_error_is_not_pass ... ok
+test invalid_parameters_and_marker_fail_without_writes ... ok
+test ledgerlite_red_to_green ... ok
+test local_test_deletion_does_not_pass ... ok
+test minikv_each_stage_is_independently_reachable ... ok
+test minikv_red_to_green ... ok
+test minikv_wrong_iterator_is_not_full_pass ... ok
+test netfetch_studio_red_green ... ok
+test new_starter_passes_step1_without_later_answers ... ok
+test new_support_modules_and_samples_are_portable ... ok
+test only_completed_milestone_passes_and_reports_are_snapshots ... ok
+test quizdeck_red_to_green ... ok
+test relative_unicode_space_and_repeated_init ... ok
+test servicedesk_studio_red_green ... ok
+test source_cli_breakage_is_detected ... ok
+test storedesk_red_to_green ... ok
+test symlink_source_and_report_directory_are_rejected ... ok
+test termgarden_red_to_green ... ok
+test textscope_red_to_green ... ok
+test unitlab_red_to_green ... ok
+
+test result: ok. 26 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 56.96s
+

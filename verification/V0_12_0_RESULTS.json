@@ -1,0 +1,55 @@
+{
+  "version": "0.12.0",
+  "status": "teaching-development",
+  "platform": "Linux x86_64",
+  "toolchain": "rustc/cargo 1.99.1 uploaded offline toolchain",
+  "baseline": {
+    "version": "0.11.1",
+    "linux_debug_passed": 108,
+    "windows": "User explicitly reported 0.11.1 tests passed; not treated as current full-platform verification"
+  },
+  "tests": {
+    "debug": {
+      "passed": 170,
+      "failed": 0,
+      "ignored": 15
+    },
+    "release": {
+      "passed": 160,
+      "failed": 0,
+      "ignored": 15
+    }
+  },
+  "strict_format": true,
+  "strict_debug_clippy": true,
+  "strict_release_clippy": true,
+  "release_build": true,
+  "workspace_packages": 11,
+  "new_completed_reference_apps": 6,
+  "new_studio_milestones": 18,
+  "studio_e2e_tests": 14,
+  "curriculum": {
+    "main_products_with_executable_teaching_material": 12,
+    "planned_only_products": 8,
+    "warmup_excluded": "FirstCard",
+    "teaching_controller_excluded": "LabQuest",
+    "legacy_lessons_retained": 32,
+    "new_three_stage_lessons": 6,
+    "learner_standalone_projects": 9
+  },
+  "actual_release_smoke": "V0_12_0_RELEASE_SMOKE.json",
+  "ui": {
+    "evidence": "V0_12_0_STATIC_UI.json",
+    "scope": "Chromium set_content rendering and local link target checks; direct file navigation blocked by environment policy, not counted as passed"
+  },
+  "not_verified": [
+    "Windows/macOS native execution of 0.12.0",
+    "Rust 1.74 MSRV",
+    "real beginner learning effectiveness",
+    "native Windows PowerShell launchers",
+    "browser actual file navigation and LocalHub browser HTTP loop"
+  ],
+  "test_log": "RUST_1_99_1_0_12_0_EVIDENCE.txt",
+  "execution_note": "Initial combined shell reached container execution time limit during release tests; separately rerun release tests and build passed in full. See original interrupted and completed logs.",
+  "fresh_archive_evidence": "Delivered separately as RustAppLab-0.12.0-FRESH_ARCHIVE_CHECK.txt; actual final archive hash included there."
+}

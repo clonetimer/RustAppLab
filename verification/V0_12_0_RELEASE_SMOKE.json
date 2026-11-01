@@ -1,0 +1,233 @@
+{
+  "platform": "Linux-6.18.55-x86_64-with-glibc2.41",
+  "status": "passed",
+  "applications": 6,
+  "cli_invocations": 14,
+  "checks": [
+    {
+      "application": "unitlab",
+      "arguments": [
+        "convert",
+        "25",
+        "c",
+        "f"
+      ],
+      "exit_code": 0,
+      "stdout": "25.00 c = 77.00 f\n",
+      "stderr": ""
+    },
+    {
+      "application": "unitlab",
+      "arguments": [
+        "convert",
+        "1",
+        "m",
+        "f"
+      ],
+      "exit_code": 2,
+      "stdout": "",
+      "stderr": "UnitLab: 温度和长度不能互相换算\n"
+    },
+    {
+      "application": "quizdeck",
+      "arguments": [
+        "play",
+        "/tmp/rustapplab-studio-release-qw6r1d_g/中文 题库.tsv"
+      ],
+      "exit_code": 0,
+      "stdout": "问题 1/2：工具\n> 问题 2/2：2+3\n> score=1/2\n复习：2+3\n",
+      "stderr": ""
+    },
+    {
+      "application": "textscope",
+      "arguments": [
+        "top",
+        "/tmp/rustapplab-studio-release-qw6r1d_g/我的 文本.txt",
+        "1"
+      ],
+      "exit_code": 0,
+      "stdout": "rust\t2\n",
+      "stderr": ""
+    },
+    {
+      "application": "textscope",
+      "arguments": [
+        "find",
+        "/tmp/rustapplab-studio-release-qw6r1d_g/我的 文本.txt",
+        "Rust"
+      ],
+      "exit_code": 0,
+      "stdout": "1:Rust 学习\n2:Rust tools\n",
+      "stderr": ""
+    },
+    {
+      "application": "ledgerlite",
+      "arguments": [
+        "add",
+        "/tmp/rustapplab-studio-release-qw6r1d_g/生活 账本.tsv",
+        "2026-10-28",
+        "餐饮",
+        "0.10"
+      ],
+      "exit_code": 0,
+      "stdout": "added=2026-10-28 餐饮 0.10\n",
+      "stderr": ""
+    },
+    {
+      "application": "ledgerlite",
+      "arguments": [
+        "add",
+        "/tmp/rustapplab-studio-release-qw6r1d_g/生活 账本.tsv",
+        "2026-10-28",
+        "餐饮",
+        "0.20"
+      ],
+      "exit_code": 0,
+      "stdout": "added=2026-10-28 餐饮 0.20\n",
+      "stderr": ""
+    },
+    {
+      "application": "ledgerlite",
+      "arguments": [
+        "summary",
+        "/tmp/rustapplab-studio-release-qw6r1d_g/生活 账本.tsv"
+      ],
+      "exit_code": 0,
+      "stdout": "餐饮\t0.30\ntotal=0.30\n",
+      "stderr": ""
+    },
+    {
+      "application": "ledgerlite",
+      "arguments": [
+        "add",
+        "/tmp/rustapplab-studio-release-qw6r1d_g/生活 账本.tsv",
+        "2023-02-29",
+        "餐饮",
+        "99"
+      ],
+      "exit_code": 2,
+      "stdout": "",
+      "stderr": "LedgerLite: 第 1 行：需要有效日期<TAB>分类<TAB>金额\n"
+    },
+    {
+      "application": "badgeforge",
+      "arguments": [
+        "make",
+        "我的 Rust 作品",
+        "从第一行代码，到自己的软件",
+        "/tmp/rustapplab-studio-release-qw6r1d_g/我的作品.svg"
+      ],
+      "exit_code": 0,
+      "stdout": "created=/tmp/rustapplab-studio-release-qw6r1d_g/我的作品.svg\n",
+      "stderr": ""
+    },
+    {
+      "application": "badgeforge",
+      "arguments": [
+        "make",
+        "不要覆盖",
+        "测试",
+        "/tmp/rustapplab-studio-release-qw6r1d_g/我的作品.svg"
+      ],
+      "exit_code": 2,
+      "stdout": "",
+      "stderr": "BadgeForge: 不能新建 /tmp/rustapplab-studio-release-qw6r1d_g/我的作品.svg：File exists (os error 17)；不会覆盖已有文件\n"
+    },
+    {
+      "application": "batchmeter",
+      "arguments": [
+        "scan",
+        "1",
+        "/tmp/rustapplab-studio-release-qw6r1d_g/文本 0.txt",
+        "/tmp/rustapplab-studio-release-qw6r1d_g/文本 1.txt",
+        "/tmp/rustapplab-studio-release-qw6r1d_g/文本 2.txt",
+        "/tmp/rustapplab-studio-release-qw6r1d_g/文本 3.txt",
+        "/tmp/rustapplab-studio-release-qw6r1d_g/文本 4.txt",
+        "/tmp/rustapplab-studio-release-qw6r1d_g/文本 5.txt",
+        "/tmp/rustapplab-studio-release-qw6r1d_g/文本 6.txt",
+        "/tmp/rustapplab-studio-release-qw6r1d_g/文本 7.txt",
+        "/tmp/rustapplab-studio-release-qw6r1d_g/文本 8.txt",
+        "/tmp/rustapplab-studio-release-qw6r1d_g/文本 9.txt",
+        "/tmp/rustapplab-studio-release-qw6r1d_g/文本 10.txt",
+        "/tmp/rustapplab-studio-release-qw6r1d_g/文本 11.txt",
+        "/tmp/rustapplab-studio-release-qw6r1d_g/文本 12.txt",
+        "/tmp/rustapplab-studio-release-qw6r1d_g/文本 13.txt",
+        "/tmp/rustapplab-studio-release-qw6r1d_g/文本 14.txt",
+        "/tmp/rustapplab-studio-release-qw6r1d_g/文本 15.txt",
+        "/tmp/rustapplab-studio-release-qw6r1d_g/文本 16.txt",
+        "/tmp/rustapplab-studio-release-qw6r1d_g/文本 17.txt",
+        "/tmp/rustapplab-studio-release-qw6r1d_g/文本 18.txt",
+        "/tmp/rustapplab-studio-release-qw6r1d_g/文本 19.txt",
+        "/tmp/rustapplab-studio-release-qw6r1d_g/文本 20.txt",
+        "/tmp/rustapplab-studio-release-qw6r1d_g/文本 21.txt",
+        "/tmp/rustapplab-studio-release-qw6r1d_g/文本 22.txt",
+        "/tmp/rustapplab-studio-release-qw6r1d_g/文本 23.txt",
+        "/tmp/rustapplab-studio-release-qw6r1d_g/文本 24.txt",
+        "/tmp/rustapplab-studio-release-qw6r1d_g/文本 25.txt",
+        "/tmp/rustapplab-studio-release-qw6r1d_g/文本 26.txt",
+        "/tmp/rustapplab-studio-release-qw6r1d_g/文本 27.txt",
+        "/tmp/rustapplab-studio-release-qw6r1d_g/文本 28.txt",
+        "/tmp/rustapplab-studio-release-qw6r1d_g/文本 29.txt",
+        "/tmp/rustapplab-studio-release-qw6r1d_g/文本 30.txt",
+        "/tmp/rustapplab-studio-release-qw6r1d_g/文本 31.txt"
+      ],
+      "exit_code": 0,
+      "stdout": "/tmp/rustapplab-studio-release-qw6r1d_g/文本 0.txt\t24\t2\n/tmp/rustapplab-studio-release-qw6r1d_g/文本 1.txt\t24\t2\n/tmp/rustapplab-studio-release-qw6r1d_g/文本 2.txt\t24\t2\n/tmp/rustapplab-studio-release-qw6r1d_g/文本 3.txt\t24\t2\n/tmp/rustapplab-studio-release-qw6r1d_g/文本 4.txt\t24\t2\n/tmp/rustapplab-studio-release-qw6r1d_g/文本 5.txt\t24\t2\n/tmp/rustapplab-studio-release-qw6r1d_g/文本 6.txt\t24\t2\n/tmp/rustapplab-studio-release-qw6r1d_g/文本 7.txt\t24\t2\n/tmp/rustapplab-studio-release-qw6r1d_g/文本 8.txt\t24\t2\n/tmp/rustapplab-studio-release-qw6r1d_g/文本 9.txt\t24\t2\n/tmp/rustapplab-studio-release-qw6r1d_g/文本 10.txt\t25\t2\n/tmp/rustapplab-studio-release-qw6r1d_g/文本 11.txt\t25\t2\n/tmp/rustapplab-studio-release-qw6r1d_g/文本 12.txt\t25\t2\n/tmp/rustapplab-studio-release-qw6r1d_g/文本 13.txt\t25\t2\n/tmp/rustapplab-studio-release-qw6r1d_g/文本 14.txt\t25\t2\n/tmp/rustapplab-studio-release-qw6r1d_g/文本 15.txt\t25\t2\n/tmp/rustapplab-studio-release-qw6r1d_g/文本 16.txt\t25\t2\n/tmp/rustapplab-studio-release-qw6r1d_g/文本 17.txt\t25\t2\n/tmp/rustapplab-studio-release-qw6r1d_g/文本 18.txt\t25\t2\n/tmp/rustapplab-studio-release-qw6r1d_g/文本 19.txt\t25\t2\n/tmp/rustapplab-studio-release-qw6r1d_g/文本 20.txt\t25\t2\n/tmp/rustapplab-studio-release-qw6r1d_g/文本 21.txt\t25\t2\n/tmp/rustapplab-studio-release-qw6r1d_g/文本 22.txt\t25\t2\n/tmp/rustapplab-studio-release-qw6r1d_g/文本 23.txt\t25\t2\n/tmp/rustapplab-studio-release-qw6r1d_g/文本 24.txt\t25\t2\n/tmp/rustapplab-studio-release-qw6r1d_g/文本 25.txt\t25\t2\n/tmp/rustapplab-studio-release-qw6r1d_g/文本 26.txt\t25\t2\n/tmp/rustapplab-studio-release-qw6r1d_g/文本 27.txt\t25\t2\n/tmp/rustapplab-studio-release-qw6r1d_g/文本 28.txt\t25\t2\n/tmp/rustapplab-studio-release-qw6r1d_g/文本 29.txt\t25\t2\n/tmp/rustapplab-studio-release-qw6r1d_g/文本 30.txt\t25\t2\n/tmp/rustapplab-studio-release-qw6r1d_g/文本 31.txt\t25\t2\nfiles=32 bytes=790 lines=64\n",
+      "stderr": ""
+    },
+    {
+      "application": "batchmeter",
+      "arguments": [
+        "scan",
+        "4",
+        "/tmp/rustapplab-studio-release-qw6r1d_g/文本 0.txt",
+        "/tmp/rustapplab-studio-release-qw6r1d_g/文本 1.txt",
+        "/tmp/rustapplab-studio-release-qw6r1d_g/文本 2.txt",
+        "/tmp/rustapplab-studio-release-qw6r1d_g/文本 3.txt",
+        "/tmp/rustapplab-studio-release-qw6r1d_g/文本 4.txt",
+        "/tmp/rustapplab-studio-release-qw6r1d_g/文本 5.txt",
+        "/tmp/rustapplab-studio-release-qw6r1d_g/文本 6.txt",
+        "/tmp/rustapplab-studio-release-qw6r1d_g/文本 7.txt",
+        "/tmp/rustapplab-studio-release-qw6r1d_g/文本 8.txt",
+        "/tmp/rustapplab-studio-release-qw6r1d_g/文本 9.txt",
+        "/tmp/rustapplab-studio-release-qw6r1d_g/文本 10.txt",
+        "/tmp/rustapplab-studio-release-qw6r1d_g/文本 11.txt",
+        "/tmp/rustapplab-studio-release-qw6r1d_g/文本 12.txt",
+        "/tmp/rustapplab-studio-release-qw6r1d_g/文本 13.txt",
+        "/tmp/rustapplab-studio-release-qw6r1d_g/文本 14.txt",
+        "/tmp/rustapplab-studio-release-qw6r1d_g/文本 15.txt",
+        "/tmp/rustapplab-studio-release-qw6r1d_g/文本 16.txt",
+        "/tmp/rustapplab-studio-release-qw6r1d_g/文本 17.txt",
+        "/tmp/rustapplab-studio-release-qw6r1d_g/文本 18.txt",
+        "/tmp/rustapplab-studio-release-qw6r1d_g/文本 19.txt",
+        "/tmp/rustapplab-studio-release-qw6r1d_g/文本 20.txt",
+        "/tmp/rustapplab-studio-release-qw6r1d_g/文本 21.txt",
+        "/tmp/rustapplab-studio-release-qw6r1d_g/文本 22.txt",
+        "/tmp/rustapplab-studio-release-qw6r1d_g/文本 23.txt",
+        "/tmp/rustapplab-studio-release-qw6r1d_g/文本 24.txt",
+        "/tmp/rustapplab-studio-release-qw6r1d_g/文本 25.txt",
+        "/tmp/rustapplab-studio-release-qw6r1d_g/文本 26.txt",
+        "/tmp/rustapplab-studio-release-qw6r1d_g/文本 27.txt",
+        "/tmp/rustapplab-studio-release-qw6r1d_g/文本 28.txt",
+        "/tmp/rustapplab-studio-release-qw6r1d_g/文本 29.txt",
+        "/tmp/rustapplab-studio-release-qw6r1d_g/文本 30.txt",
+        "/tmp/rustapplab-studio-release-qw6r1d_g/文本 31.txt"
+      ],
+      "exit_code": 0,
+      "stdout": "/tmp/rustapplab-studio-release-qw6r1d_g/文本 0.txt\t24\t2\n/tmp/rustapplab-studio-release-qw6r1d_g/文本 1.txt\t24\t2\n/tmp/rustapplab-studio-release-qw6r1d_g/文本 2.txt\t24\t2\n/tmp/rustapplab-studio-release-qw6r1d_g/文本 3.txt\t24\t2\n/tmp/rustapplab-studio-release-qw6r1d_g/文本 4.txt\t24\t2\n/tmp/rustapplab-studio-release-qw6r1d_g/文本 5.txt\t24\t2\n/tmp/rustapplab-studio-release-qw6r1d_g/文本 6.txt\t24\t2\n/tmp/rustapplab-studio-release-qw6r1d_g/文本 7.txt\t24\t2\n/tmp/rustapplab-studio-release-qw6r1d_g/文本 8.txt\t24\t2\n/tmp/rustapplab-studio-release-qw6r1d_g/文本 9.txt\t24\t2\n/tmp/rustapplab-studio-release-qw6r1d_g/文本 10.txt\t25\t2\n/tmp/rustapplab-studio-release-qw6r1d_g/文本 11.txt\t25\t2\n/tmp/rustapplab-studio-release-qw6r1d_g/文本 12.txt\t25\t2\n/tmp/rustapplab-studio-release-qw6r1d_g/文本 13.txt\t25\t2\n/tmp/rustapplab-studio-release-qw6r1d_g/文本 14.txt\t25\t2\n/tmp/rustapplab-studio-release-qw6r1d_g/文本 15.txt\t25\t2\n/tmp/rustapplab-studio-release-qw6r1d_g/文本 16.txt\t25\t2\n/tmp/rustapplab-studio-release-qw6r1d_g/文本 17.txt\t25\t2\n/tmp/rustapplab-studio-release-qw6r1d_g/文本 18.txt\t25\t2\n/tmp/rustapplab-studio-release-qw6r1d_g/文本 19.txt\t25\t2\n/tmp/rustapplab-studio-release-qw6r1d_g/文本 20.txt\t25\t2\n/tmp/rustapplab-studio-release-qw6r1d_g/文本 21.txt\t25\t2\n/tmp/rustapplab-studio-release-qw6r1d_g/文本 22.txt\t25\t2\n/tmp/rustapplab-studio-release-qw6r1d_g/文本 23.txt\t25\t2\n/tmp/rustapplab-studio-release-qw6r1d_g/文本 24.txt\t25\t2\n/tmp/rustapplab-studio-release-qw6r1d_g/文本 25.txt\t25\t2\n/tmp/rustapplab-studio-release-qw6r1d_g/文本 26.txt\t25\t2\n/tmp/rustapplab-studio-release-qw6r1d_g/文本 27.txt\t25\t2\n/tmp/rustapplab-studio-release-qw6r1d_g/文本 28.txt\t25\t2\n/tmp/rustapplab-studio-release-qw6r1d_g/文本 29.txt\t25\t2\n/tmp/rustapplab-studio-release-qw6r1d_g/文本 30.txt\t25\t2\n/tmp/rustapplab-studio-release-qw6r1d_g/文本 31.txt\t25\t2\nfiles=32 bytes=790 lines=64\n",
+      "stderr": ""
+    },
+    {
+      "application": "batchmeter",
+      "arguments": [
+        "scan",
+        "2",
+        "/tmp/rustapplab-studio-release-qw6r1d_g/not-there.txt"
+      ],
+      "exit_code": 2,
+      "stdout": "",
+      "stderr": "BatchMeter: /tmp/rustapplab-studio-release-qw6r1d_g/not-there.txt：No such file or directory (os error 2)\n"
+    }
+  ],
+  "scope": "Real processes/files; not a GUI or Windows-native certification unless executed on that platform."
+}

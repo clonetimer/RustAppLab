@@ -1,0 +1,171 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>事务与等待实验 · Rust AppLab</title><style>
+*{box-sizing:border-box}body{margin:0;background:#f4f7fb;color:#23364d;font:16px/1.85 system-ui,"Microsoft YaHei",sans-serif}header{background:#17324d;color:white}header>div,main{max-width:960px;margin:auto;padding:28px 24px}h1{font-size:clamp(26px,4vw,37px);line-height:1.35}h2{margin-top:40px;padding-top:16px;border-top:1px solid #d9e3ed;font-size:24px;line-height:1.45}h3{font-size:19px}article{background:white;border:1px solid #d9e3ed;border-radius:15px;padding:16px 28px}p,li{overflow-wrap:anywhere}code{font:14px/1.7 Consolas,monospace;background:#edf3f7;padding:2px 4px;border-radius:4px;overflow-wrap:anywhere}pre{background:#17324d;color:white;border-radius:9px;padding:16px;white-space:pre-wrap;overflow-wrap:anywhere}pre code{background:none;padding:0}a{color:#16639c}.table-scroll{overflow-x:auto}table{border-collapse:collapse;min-width:520px;width:100%}td,th{border:1px solid #d9e3ed;padding:10px;vertical-align:top;text-align:left}header p{margin:0}.stamp{font-size:13px;letter-spacing:.14em}@media(max-width:550px){header>div,main{padding:20px 14px}article{padding:12px 16px}h2{font-size:21px}}</style></head><body><header><div><span class="stamp">RUST APPLAB / RELIABILITY PATH / 0.18.0-dev.5</span><p>两款自己的软件 · 故意制造失败，再检查真实数据</p></div></header><main><article><h1>第四段：一批操作要么成功，要么不留下半份结果</h1>
+<p>你已经用小软件保存文件、处理工单。本段做两件不同的事：用 <strong>StoreDesk</strong> 管理自己的物品，让失败批次能够回滚；用 <strong>AsyncBoard</strong> 安排本地复习提醒，让等待不阻塞其它任务。它们没有自动互相调用，不共享事务，也不执行远程提醒。</p>
+<p>最终交付是你自己写的软件、一个可重新打开的 SQLite 数据库、两份提醒报告和一页实验记录。不用把测试数量、截图数量当作理解程度。</p>
+<h2>先选自己的入口</h2>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>当前情况</th>
+<th>从哪里开始</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>没做完 LedgerLite，尚不理解 <code>Result</code></td>
+<td>先回基础第二段，暂不写 SQL 或 Future</td>
+</tr>
+<tr>
+<td>想理解数据库为何不能只写一半</td>
+<td>StoreDesk 第一步，先只写校验函数</td>
+</tr>
+<tr>
+<td>理解 BatchMeter 的线程和 MiniKV 的借用</td>
+<td>再做 AsyncBoard，先解析清单，不先手写执行器</td>
+</tr>
+<tr>
+<td>这两款以前已建工程</td>
+<td>保留旧目录，用新版导航输入旧目录完整路径；不要覆盖源码</td>
+</tr>
+</tbody>
+</table></div>
+<p>平台根目录有 <code>apps</code> 和 Workspace 的 <code>Cargo.toml</code>；自己的学员工程内有 <code>src/lib.rs</code>、<code>START.html</code> 和独立的 <code>Cargo.toml</code>。下文每组命令都说明在哪个目录运行。</p>
+<h2>1. StoreDesk：先预测，再写一行数据</h2>
+<p>在<strong>平台根目录</strong>检查原生 SQLite 环境并创建练习：</p>
+<pre><code class="language-powershell">cargo run --locked --offline -p storedesk -- doctor
+cargo run --locked --offline -p labquest -- studio start storedesk my-storedesk
+cargo run --locked --offline -p labquest -- learn lesson my-storedesk 1
+cargo run --locked --offline -p labquest -- learn check my-storedesk 1
+</code></pre>
+<p>第一次不通过是因为函数还没有实现。若出现 <code>winsqlite3.lib</code> 或 <code>-lsqlite3</code> 链接错误，先读 <code>course/SQLITE_SETUP.md</code>；这是环境问题，不能用乱改 <code>TODO</code> 解决。项目只声明 Windows x64 MSVC、Linux x86_64，不声明 macOS。</p>
+<p>只修改自己的 <code>src/lib.rs</code>。打开 <code>TASK_CARDS.html</code>，一层层展开提示。第一步 <code>validate_item</code> 不需要数据库；第二步 <code>save_item</code> 才处理 SQL；第三步 <code>apply_changes</code> 才处理事务。第一步通过，不代表整个 CLI 已经可用。</p>
+<p>用自己的话先回答三个问题：库存为 0 合法吗？中文名称为什么不用字节数限制到 80？名称 <code>Alice's 钢笔</code> 为什么不应该因为单引号就被禁止？参数绑定把用户数据与 SQL 结构分开，并非通过删除所有特殊字符达到目的。[1]</p>
+<p>第二步导入 <code>Param</code> 时放在 <code>pub mod sqlite;</code> 下面，不要把 <code>use</code> 插到文件开头的 <code>//!</code> 模块文档注释之前。</p>
+<h2>2. 准备一套只属于自己的实验文件</h2>
+<p>接下来这组是<strong>平台参考软件演练</strong>，用于理解目标，不能算作独立完成。先在<strong>平台根目录</strong>复制样例到新目录：</p>
+<pre><code class="language-powershell">if (Test-Path -LiteralPath &quot;my-reliability&quot;) { throw &quot;目录已存在，请换一个新名字，保留旧作品。&quot; }
+Copy-Item -Recurse -LiteralPath &quot;examples/reliability&quot; -Destination &quot;my-reliability&quot;
+cargo run --locked --offline -p storedesk -- init my-reliability/inventory.db
+cargo run --locked --offline -p storedesk -- add my-reliability/inventory.db PEN &quot;Alice's 钢笔&quot; 10
+cargo run --locked --offline -p storedesk -- add my-reliability/inventory.db BOOK &quot;我的 Rust 练习本&quot; 3
+cargo run --locked --offline -p storedesk -- list my-reliability/inventory.db
+cargo run --locked --offline -p storedesk -- history my-reliability/inventory.db
+</code></pre>
+<p>应有 PEN=10、BOOK=3，流水为空。<code>.db</code> 是 SQLite 二进制文件，不用记事本修改。关闭终端后重新执行 list，确认不是仅存在本次进程内。</p>
+<p>样例里的列间是<strong>实际 Tab</strong>。修改文字时保留 Tab，不要把它换成空格。Unix shell 可用 <code>cp -R examples/reliability my-reliability</code> 代替 <code>Copy-Item</code>，同样先确认目标目录不存在。</p>
+<h2>3. 故意让第二项失败：观察的是数据，不只是退出码</h2>
+<p><code>rollback.tsv</code> 内容为 PEN -2、BOOK -99。在运行之前，先在 <code>LEARNING_LOG_TEMPLATE.md</code> 写下两项库存和新增流水的预测。</p>
+<pre><code class="language-powershell">cargo run --locked --offline -p storedesk -- apply my-reliability/inventory.db my-reliability/rollback.tsv
+cargo run --locked --offline -p storedesk -- list my-reliability/inventory.db
+cargo run --locked --offline -p storedesk -- history my-reliability/inventory.db
+</code></pre>
+<p>第一条命令<strong>应当失败</strong>；不要因此停止实验。结果应该仍然是 PEN=10、BOOK=3，流水为空。错误实现可能返回失败却留下 PEN=8，这正是我们要发现的问题。</p>
+<p>SQLite 事务通过明确的 COMMIT/ROLLBACK 确定提交或撤销；本项目包装器在业务闭包返回错误时回滚。[2] 关键是<strong>整批操作和流水都在同一个事务内</strong>。每条操作各开一个事务，或者捕获第二项错误后返回 <code>Ok(())</code>，都不符合本课合同。</p>
+<p>不要拿数据库文件的 SHA-256 不变作为回滚标准。数据库内部页结构、日志处理与逻辑内容不是同一层；这里比较库存、名称、流水，而不是数据库二进制布局。本实验也不是断电持久性验证。</p>
+<h2>4. 成功批次与重复 SKU</h2>
+<pre><code class="language-powershell">cargo run --locked --offline -p storedesk -- apply my-reliability/inventory.db my-reliability/success.tsv
+cargo run --locked --offline -p storedesk -- list my-reliability/inventory.db
+cargo run --locked --offline -p storedesk -- history my-reliability/inventory.db
+cargo run --locked --offline -p storedesk -- apply my-reliability/inventory.db my-reliability/repeated-sku.tsv
+cargo run --locked --offline -p storedesk -- list my-reliability/inventory.db
+cargo run --locked --offline -p storedesk -- history my-reliability/inventory.db
+</code></pre>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>时点</th>
+<th style="text-align:right">PEN</th>
+<th style="text-align:right">BOOK</th>
+<th style="text-align:right">流水总数</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>初始登记后</td>
+<td style="text-align:right">10</td>
+<td style="text-align:right">3</td>
+<td style="text-align:right">0</td>
+</tr>
+<tr>
+<td>失败批次回滚后</td>
+<td style="text-align:right">10</td>
+<td style="text-align:right">3</td>
+<td style="text-align:right">0</td>
+</tr>
+<tr>
+<td>success：PEN -2、BOOK +1</td>
+<td style="text-align:right">8</td>
+<td style="text-align:right">4</td>
+<td style="text-align:right">2</td>
+</tr>
+<tr>
+<td>repeated-sku：PEN -1、PEN -2</td>
+<td style="text-align:right">5</td>
+<td style="text-align:right">4</td>
+<td style="text-align:right">4</td>
+</tr>
+</tbody>
+</table></div>
+<p>同一个 SKU 在一批出现两次，应先后作用于当前事务内的最新值，不是都用最初的库存。再尝试以同一 PEN 编号添加 99，应该拒绝，不能偷偷 REPLACE 成新库存。</p>
+<p>三步完成后，将这些命令换成自己的 StoreDesk 运行：进入 <code>my-storedesk</code>，把 <code>cargo run --locked --offline -p storedesk --</code> 换成 <code>cargo run --offline --</code>，并使用数据库和 TSV 的<strong>完整路径</strong>。学员独立工程可能尚未生成 Cargo.lock，首次不要求 <code>--locked</code>。</p>
+<h2>5. AsyncBoard：把等待写进函数，而不是卡住线程</h2>
+<p>回到<strong>平台根目录</strong>：</p>
+<pre><code class="language-powershell">cargo run --locked --offline -p labquest -- studio start asyncboard my-asyncboard
+cargo run --locked --offline -p labquest -- learn lesson my-asyncboard 1
+cargo run --locked --offline -p labquest -- learn check my-asyncboard 1
+</code></pre>
+<p>按 <code>parse_jobs → render_report → complete</code> 完成三步。只通过前两步时，程序可能能生成一份格式正确、却根本没有等待的报告，所以必须检查第三步。</p>
+<p>参考软件体验：</p>
+<pre><code class="language-powershell">cargo run --locked --offline -p asyncboard -- preview my-reliability/jobs.tsv
+cargo run --locked --offline -p asyncboard -- run my-reliability/jobs.tsv my-reliability/RESULTS.tsv
+cargo run --locked --offline -p asyncboard -- run my-reliability/equal-delay.tsv my-reliability/EQUAL.tsv
+cargo run --locked --offline -p asyncboard -- run my-reliability/duplicate-jobs.tsv my-reliability/SHOULD_NOT_EXIST.tsv
+</code></pre>
+<p>最后一条应失败，且不能出现 <code>SHOULD_NOT_EXIST.tsv</code>。报告已存在时会拒绝覆盖，重试请换名字，不要删掉旧结果来掩盖行为。</p>
+<p><code>jobs.tsv</code> 三项提醒的等待配置不同，通常短等待任务先被观察完成；报告保留执行器实际观察顺序。相同延时不要要求固定顺序，系统调度也可能影响不同延时的观察次序。必须核对每个 ID 出现一次、说明和配置保留，不能只核对某一条演示顺序。</p>
+<p><strong><code>wait_ms</code> 是输入配置，不是实际测量耗时。</strong> 不能将这列相加当总耗时，也不能仅凭报告次序就证明性能或并发正确。整体耗时需要另测；本课不给硬件性能承诺。</p>
+<h2>6. 四个小问题，把 .await 讲明白</h2>
+<p>Rust 的 Future 需要被 poll 才能推进；返回 Pending 后应通过 Waker 通知再次调度，不是在忙循环中反复 poll。[3] 运行提供的最小实验，观察它们之间的区别：</p>
+<pre><code class="language-powershell"># 在完整平台根目录运行，不在自己的学员工程中
+cargo run --locked --offline -p asyncboard --example wake_lab
+</code></pre>
+<div class="table-scroll"><table>
+<thead>
+<tr>
+<th>实验输出</th>
+<th>要解释的含义</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>created_future body_runs=0</code></td>
+<td>仅构造 async Future，函数体尚未执行</td>
+</tr>
+<tr>
+<td><code>driven_future body_runs=1</code></td>
+<td>执行器驱动后才产生函数体内的效果</td>
+</tr>
+<tr>
+<td><code>missing_wake polls=1 result=timeout (expected)</code></td>
+<td>只返回 Pending 却不登记唤醒，不能靠忙轮询“碰运气”</td>
+</tr>
+<tr>
+<td><code>timer_wake result=awake</code></td>
+<td>提供的定时器到期唤醒后，等待才能完成</td>
+</tr>
+</tbody>
+</table></div>
+<p>有一个容易混淆的细节：这个项目的 <code>TimerDriver::delay</code> 在<strong>调用时已经登记计时</strong>，它不是 async 函数；<code>complete(job, delay)</code> 的 async 函数体则是惰性的。不能因为 Future 惰性，就推断它创建前的所有代码都不会有副作用。</p>
+<p><code>drive</code> 的超时是<strong>协作式超时</strong>，只在轮询间和等待通知时检查。单次 <code>poll</code> 里面的 <code>thread::sleep</code>、死循环或阻塞系统调用，它不能强行打断；不能把它当作恶意代码沙箱。不要实际运行无限循环来试这个边界。</p>
+<p>等待超时也不等于撤销所有外部副作用，更不等于数据库事务回滚。这个提醒器没有自动恢复、网络通知或 Tokio I/O 驱动。已有的 <code>asyncboard</code> Linux 二进制包不包含 <code>wake_lab</code> 实验；实验通过完整源码的 Cargo 命令运行。</p>
+<h2>7. 换成自己的数据，最后走向独立开发</h2>
+<p>用自己的两个物品、两条成功变化、一条必失败变化替换示例；提醒清单改成自己的三项复习任务。在学习记录中分别写下预测、实测、用过的提示和原因。不要直接把本讲义的结果表作为自己的观察记录。</p>
+<p>最小作品目录应包含：<code>inventory.db</code>、三份变化 TSV、正常提醒报告、同延时报告、失败终端输出或文字记录、你的源码与 <code>LEARNING_LOG_TEMPLATE.md</code>。不需要把整个 <code>target</code> 打包。</p>
+<p>最后写两条自己的测试：第一条验证“第二条失败也回滚第一条与流水”；第二条验证“报告保留传入顺序且调用前后 Completion 切片不变”。允许先用提示，但应记录，不把参考实现的运行当作独立开发能力证明。</p>
+<p>这十二款 Studio 全部仍提供外壳。接下来回平台运行 <code>cargo run --offline -p labquest -- app init taskpocket my-independent-taskpocket</code>，阅读生成的 <code>CONTRACT.md</code>，按需求独立实现输入、业务与持久化；此时不再用三个 TODO 代替整体软件设计。</p>
+<h2>参考与验证边界</h2>
+<p>[1] SQLite 参数绑定接口：<a href="https://www.sqlite.org/c3ref/bind_blob.html">https://www.sqlite.org/c3ref/bind_blob.html</a>。<br />
+[2] SQLite Transaction：<a href="https://www.sqlite.org/lang_transaction.html">https://www.sqlite.org/lang_transaction.html</a>。<br />
+[3] Rust Future 文档：<a href="https://doc.rust-lang.org/std/future/trait.Future.html">https://doc.rust-lang.org/std/future/trait.Future.html</a>。</p>
+<p>本段的运行时细节以随包源码为准。Linux 自动演练不等于 Windows 本轮原生验证；自动测试不等于真人教学有效性认证。正式支持范围仍为 Windows x64 MSVC 与 Linux x86_64。</p>
+</article></main></body></html>

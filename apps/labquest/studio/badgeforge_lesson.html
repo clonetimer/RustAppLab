@@ -1,0 +1,38 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>BadgeForge · SVG 作品卡生成器 · 跟着做</title><style>*{box-sizing:border-box}body{margin:0;background:#f4f7fb;color:#20334d;font:16px/1.85 system-ui,"Microsoft YaHei",sans-serif}header{background:#14273d;color:#fff}header>div,main{max-width:940px;margin:auto;padding:30px 24px}h1{font-size:clamp(25px,4vw,36px);line-height:1.4;margin:10px 0}h2{font-size:24px;line-height:1.5;margin:34px 0 12px;padding-top:12px;border-top:1px solid #d6e2ed}h3{font-size:19px}header p{color:#d7e7f4}article{background:white;border:1px solid #dce5ef;border-radius:14px;padding:12px 28px 28px}p{overflow-wrap:anywhere}code{font:14px/1.65 Consolas,monospace;background:#eaf1f8;color:#194775;padding:2px 4px;border-radius:4px}pre{background:#14273d;color:#edf3fa;padding:16px;border-radius:9px;overflow:auto}pre code{background:none;color:inherit;padding:0;white-space:pre-wrap;overflow-wrap:anywhere}.note{padding:15px;border:1px solid #89b7a4;background:#ebf7f0;color:#245744;border-radius:10px;margin-bottom:20px}table{width:100%;border-collapse:collapse}th,td{border:1px solid #dce5ef;padding:8px;text-align:left}a{color:#14619e}@media(max-width:600px){header>div,main{padding:20px 14px}article{padding:5px 16px 18px}h2{font-size:21px}}</style></head><body><header><div><small>RUST APPLAB / STUDIO / 0.16.0</small><h1>BadgeForge · SVG 作品卡生成器</h1><p>每次只完成一个步骤。读目标、修改指定函数、运行检查，再使用自己的数据。</p></div></header><main><div class="note">代码编辑位置：学员工程 <strong>src/lib.rs</strong>。先完成 TODO(1)，再做 TODO(2)、TODO(3)。<br>分层提示在 HINTS.md，学习记录在 LEARNING_LOG.md。不要修改参考应用源码。</div><article><p><strong>本作品的中心思想</strong>：用一款可运行的小软件，把三个连续能力连接起来，而不是完成三道无关语法题。</p>
+<h2>开始前只确认这件事</h2>
+<p>你当前应位于这个学员工程的目录，能够看到 <code>Cargo.toml</code>。终端中的 <code>cargo</code> 命令默认在这里运行。<code>src/main.rs</code> 是已经接好的命令行外壳；本轮只修改 <code>src/lib.rs</code> 的 TODO(1)、TODO(2)、TODO(3)。<code>tests/milestones.rs</code> 是公开的验收合同，不能通过删除测试“通关”。</p>
+<p>在完整 RustAppLab 根目录创建本工程的命令是 <code>cargo run --offline -p labquest -- studio start badgeforge my-badgeforge</code>，然后进入 <code>my-badgeforge</code>。本讲义也随学员包提供，包内已有工程就不必再次生成。Windows 可以用 <code>CONTINUE_WINDOWS.cmd</code> 选择作品。</p>
+<p>三个里程碑依次是：<strong>正确转义文本而不破坏中文 → 为作品卡实现 Element trait → 用泛型组合独立 SVG 文档</strong>。未实现的后两步不会阻止你运行第一步测试；语法错误仍会阻止整个库编译。</p>
+<h2>先看你要做出的软件</h2>
+<p>这次作品不只在终端显示数字。你将生成一张可以在浏览器打开、放进作品集的 SVG 卡片。完成后在本工程目录运行：</p>
+<pre><code class="language-powershell">cargo run --offline -- make &quot;我的 Rust 作品&quot; &quot;编写 · 运行 · 分享&quot; my-badge.svg
+</code></pre>
+<p>双击 <code>my-badge.svg</code> 用浏览器查看。已有同名文件会被拒绝，不会覆盖之前的作品；换一个新文件名继续实验。标题最多 20 个 Unicode scalar，副标题最多 40 个，布局不是自动排版引擎。</p>
+<h2>第 1 步：把用户输入当文本而不是标签</h2>
+<p>打开 <code>src/lib.rs</code> 的 <code>escape_xml</code>。输入里可能有 <code>&amp; &lt; &gt; &quot; '</code>。它们应分别转为 <code>&amp;amp; &amp;lt; &amp;gt; &amp;quot; &amp;apos;</code>，中文原样保留。先替换 &amp;，否则你刚生成的 <code>&amp;lt;</code> 会再次被转成 <code>&amp;amp;lt;</code>。</p>
+<pre><code class="language-powershell">cargo test --offline --test milestones step1_
+</code></pre>
+<p>文本 <code>&lt;script&gt;</code> 要显示为字面文字，不应该变成标签。已有文本 <code>&amp;lt;</code> 本来就是用户输入的五个字符，应转成 <code>&amp;amp;lt;</code>。不要把“多次调用仍不变”的幂等性强加给这个原始文本转义函数。</p>
+<h2>第 2 步：第一次实现 trait</h2>
+<p><code>svg</code> 模块中有 <code>pub trait Element { fn render(&amp;self) -&gt; String; }</code>。它表达“这个类型能够输出一段 SVG 内容”。<code>Badge</code> 保存标题和副标题，<code>impl svg::Element for Badge</code> 则说明 Badge 如何做到这件事。</p>
+<p>TODO(2) 在 <code>render</code> 中生成 <code>&lt;g&gt;...&lt;/g&gt;</code>：包含背景 <code>&lt;rect&gt;</code> 和两段 <code>&lt;text&gt;</code>。标题与副标题必须先经过上一步转义。图形的颜色和排版可以自己选择，测试不要求一模一样；需要有文本元素、数据随输入变化且不产生未经转义的标签。</p>
+<p>可以先只生成两段文本，再补背景。<code>self.title</code> 是当前卡片的数据，<code>&amp;self</code> 表示渲染只读借用，不消耗卡片。为了少写双引号转义，可以使用 <code>r#&quot;...&quot;#</code> 原始字符串；如果字符串内部存在 <code>&quot;#</code>（例如颜色值），就使用 <code>r##&quot;...&quot;##</code>。</p>
+<pre><code class="language-powershell">cargo test --offline --test milestones step2_
+</code></pre>
+<p>调用 trait 方法时，要让 trait 在当前模块可见，例如 <code>use badgeforge::svg::Element;</code>。遇到“method not found”先检查 trait 导入，不要立刻把方法复制成另一份。</p>
+<h2>第 3 步：为什么这里需要泛型</h2>
+<p>TODO(3) 的签名是 <code>document&lt;T: svg::Element&gt;(element: &amp;T) -&gt; String</code>。它不关心 T 是否为 Badge，只要求它具有 render 行为。组合完整 XML 声明、SVG 根标签、命名空间、viewBox、element.render() 和闭合标签，就能把任意符合约定的图形元素包成独立文件。</p>
+<pre><code class="language-powershell">cargo test --offline --test milestones step3_
+</code></pre>
+<p>测试会另外实现一个 Dot 圆点类型传给 document，避免你只对 Badge 特判。完成后自己新增一张矩形卡片类型，复用 document，看看为什么不用改生成文档的函数。</p>
+<h2>从代码到可分享作品</h2>
+<p>全部测试通过后运行 make 命令；再使用标题 <code>A&amp;B &lt;Rust&gt;</code> 生成第二张卡片。浏览器应显示这些文字，不把它们解释成标签。用文本编辑器打开 SVG，检查文件中的实体和两个文本字段。</p>
+<p>保存源代码、SVG 和一段关于 trait 的说明。SVG 可以离线打开，不需要运行本地服务器。CLI 对输入长度做基础限制；复杂字体、换行、可访问性描述和智能布局属于后续改进，不能把本作品当作完整图形设计软件。</p>
+<p><strong>自主扩展</strong>：为卡片增加第三行日期，但保持原有泛型接口；然后写一个自己的 Element 实现。看到不同类型都能通过同一 document 函数，才是真正使用了 trait，而不只是记住语法。</p>
+<p>参考：Rust 官方 trait https://doc.rust-lang.org/book/ch10-02-traits.html 和泛型 https://doc.rust-lang.org/book/ch10-01-syntax.html 。</p>
+<h2>一次只检查当前阶段</h2>
+<p>本工程内可以运行 <code>cargo test --offline --test milestones step1_</code>。完成一步，再运行 step2_、step3_，最后执行全量 <code>cargo test --offline</code>。完整平台还提供权威检查：回到 RustAppLab 根目录执行 <code>cargo run --offline -p labquest -- studio check &quot;my-badgeforge&quot; 1</code>，把最后的 1 改成 2、3 或 all。它会用自带的测试检查当前源码，不信任你编辑后的本地 tests。第 2 步会重新检查第 1 步，第 3 步会重查前两步。</p>
+<p>检查会真实编译并运行你写的 Rust，只用于你信任的自编代码，不是安全沙箱。报告按检查次数生成新文件，包含当前源文件摘要；旧报告不能证明修改后的代码仍正确。遇到错误先看第一个 FAIL 和对应函数，再看 HINTS.md。</p>
+<h2>完成标准</h2>
+<p>功能测试通过只是其中一项。还需用自己的数据运行一次，给一个错误输入，保存真实产物或控制台结果，并在 LEARNING_LOG.md 解释一个关键 Rust 概念。然后为未提供的变体自行增加一个测试。不要把参考程序已通过等同于自己已学会。</p>
+</article></main></body></html>

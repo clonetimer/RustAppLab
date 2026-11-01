@@ -1,0 +1,261 @@
+   Compiling localhub v0.3.0 (/mnt/data/RustAppLab_0_18_work/RustAppLab/apps/localhub)
+   Compiling asyncboard v0.16.0 (/mnt/data/RustAppLab_0_18_work/RustAppLab/apps/asyncboard)
+   Compiling storedesk v0.1.0 (/mnt/data/RustAppLab_0_18_work/RustAppLab/apps/storedesk)
+   Compiling minikv v0.14.0 (/mnt/data/RustAppLab_0_18_work/RustAppLab/apps/minikv)
+   Compiling termgarden v0.1.0 (/mnt/data/RustAppLab_0_18_work/RustAppLab/apps/termgarden)
+   Compiling textscope v0.1.0 (/mnt/data/RustAppLab_0_18_work/RustAppLab/apps/textscope)
+   Compiling servicedesk v0.15.0 (/mnt/data/RustAppLab_0_18_work/RustAppLab/apps/servicedesk)
+   Compiling quizdeck v0.1.0 (/mnt/data/RustAppLab_0_18_work/RustAppLab/apps/quizdeck)
+   Compiling unitlab v0.1.0 (/mnt/data/RustAppLab_0_18_work/RustAppLab/apps/unitlab)
+   Compiling badgeforge v0.1.0 (/mnt/data/RustAppLab_0_18_work/RustAppLab/apps/badgeforge)
+   Compiling batchmeter v0.1.0 (/mnt/data/RustAppLab_0_18_work/RustAppLab/apps/batchmeter)
+   Compiling netfetch v0.15.0 (/mnt/data/RustAppLab_0_18_work/RustAppLab/apps/netfetch)
+   Compiling ledgerlite v0.1.0 (/mnt/data/RustAppLab_0_18_work/RustAppLab/apps/ledgerlite)
+   Compiling labquest v0.18.0-dev.1 (/mnt/data/RustAppLab_0_18_work/RustAppLab/apps/labquest)
+   Compiling safesync v0.6.0 (/mnt/data/RustAppLab_0_18_work/RustAppLab/apps/safesync)
+   Compiling filequest v0.1.0 (/mnt/data/RustAppLab_0_18_work/RustAppLab/apps/filequest)
+   Compiling loglens v0.2.0 (/mnt/data/RustAppLab_0_18_work/RustAppLab/apps/loglens)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 10.41s
+     Running unittests src/lib.rs (/mnt/data/RustAppLab_0_18_build/debug/deps/asyncboard-03e4bd69a0b155a8)
+
+running 5 tests
+test runtime::tests::immediate_task_finishes_without_timer ... ok
+test tests::reject_invalid_before_execution ... ok
+test tests::zero_delay_and_unicode ... ok
+test runtime::tests::pending_is_not_busy_polled ... ok
+test tests::order_and_overlap ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.12s
+
+     Running unittests src/main.rs (/mnt/data/RustAppLab_0_18_build/debug/deps/asyncboard-95b5108a5daf2db0)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/cli.rs (/mnt/data/RustAppLab_0_18_build/debug/deps/cli-2e51279e78f6ce68)
+
+running 3 tests
+test report_unicode_and_boundary ... ok
+test invalid_manifest_does_not_create_output ... ok
+test demo_and_re_run ... ok
+
+test result: ok. 3 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.24s
+
+     Running tests/milestones.rs (/mnt/data/RustAppLab_0_18_build/debug/deps/milestones-7d61bff9f860b60b)
+
+running 8 tests
+test step2_empty_report_has_only_header ... ok
+test step1_parses_owned_unicode_jobs ... ok
+test step2_renders_order_and_unicode ... ok
+test step1_rejects_bad_values_and_duplicates ... ok
+test step3_cli_preserves_existing_report ... ok
+test step3_real_await_will_not_finish_immediately ... ok
+test step3_demo_cli_saves_a_real_report ... ok
+test step3_multiple_jobs_finish_in_readiness_order ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.15s
+
+     Running unittests src/lib.rs (/mnt/data/RustAppLab_0_18_build/debug/deps/badgeforge-5a8a4936cc87b241)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/main.rs (/mnt/data/RustAppLab_0_18_build/debug/deps/badgeforge-4a353917af27b5ce)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/milestones.rs (/mnt/data/RustAppLab_0_18_build/debug/deps/milestones-2a8424d5f5c55ede)
+
+running 8 tests
+test step1_escape ... ok
+test step1_keep_unicode ... ok
+test step2_no_text_injection ... ok
+test step3_generic_composition ... ok
+test step3_independent_documents ... ok
+test step2_trait_render ... ok
+test step3_cli_reject_bad_title ... ok
+test step3_cli_svg_and_no_overwrite ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running unittests src/lib.rs (/mnt/data/RustAppLab_0_18_build/debug/deps/batchmeter-d0cff182790b8de7)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/main.rs (/mnt/data/RustAppLab_0_18_build/debug/deps/batchmeter-8a63200738ffe749)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/milestones.rs (/mnt/data/RustAppLab_0_18_build/debug/deps/milestones-dc0ad76f733adf4a)
+
+running 8 tests
+test step2_totals ... ok
+test step2_overflow ... ok
+test step1_errors ... ok
+test step1_real_file ... ok
+test step3_empty_missing_workers ... ok
+test step3_parallel_matches_serial ... ok
+test step3_cli_missing_is_error ... ok
+test step3_cli_same_order ... ok
+
+test result: ok. 8 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+     Running unittests src/lib.rs (/mnt/data/RustAppLab_0_18_build/debug/deps/filequest-679019be6782d6d7)
+
+running 6 tests
+test cli::tests::parses_scan_with_all ... ok
+test cli::tests::rejects_invalid_report_limit ... ok
+test cli::tests::rejects_missing_output ... ok
+test scanner::tests::extension_is_normalized ... ok
+test report::tests::html_is_escaped ... ok
+test scanner::tests::human_readable_bytes ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/main.rs (/mnt/data/RustAppLab_0_18_build/debug/deps/filequest-87dd8346f38b63b0)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/acceptance.rs (/mnt/data/RustAppLab_0_18_build/debug/deps/acceptance-fa16c308a36d3433)
+
+running 7 tests
+test accepts_non_utf8_file_names_without_panicking ... ok
+test does_not_traverse_symlinks ... ok
+test errors_on_invalid_scan_roots ... ok
+test handles_empty_directories ... ok
+test report_rejects_overwriting_symlink_even_with_force ... ok
+test scans_real_directories_with_explicit_ignore_policy ... ok
+test report_escapes_file_names_and_refuses_unintended_overwrites ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/challenges.rs (/mnt/data/RustAppLab_0_18_build/debug/deps/challenges-0f53023ef6449e8f)
+
+running 5 tests
+test mission_01_version_command ... ignored, 任务 01：需要学员添加 version 命令
+test mission_02_scan_extension_filter ... ignored, 任务 02：需要学员实现 --ext 扫描过滤
+test mission_04_extension_size_summary ... ignored, 任务 04：需要学员输出每种扩展名的字节合计
+test mission_05_find_basename_only ... ignored, 任务 05：需要学员增加 --name-only 查找模式
+test mission_06_custom_report_title_is_escaped ... ignored, 任务 06：需要学员支持报告标题并正确 HTML 转义
+
+test result: ok. 0 passed; 0 failed; 5 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/cli_smoke.rs (/mnt/data/RustAppLab_0_18_build/debug/deps/cli_smoke-c519bb98406c9b40)
+
+running 2 tests
+test help_and_unknown_commands ... ok
+test demo_scan_find_report_is_a_real_user_journey ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running unittests src/lib.rs (/mnt/data/RustAppLab_0_18_build/debug/deps/labquest-1ba3bb503f26f353)
+
+running 28 tests
+test coach::tests::prediction_teaches_strict_boundary ... ok
+test board::tests::board_escapes_feedback ... ok
+test capstone::tests::hints_are_staged ... ok
+test capstone::tests::generated_starter_is_unsolved ... ok
+test ecosystem::tests::seed_is_offline_and_never_overwrites ... ok
+test ecosystem::tests::changed_probe_is_not_executed ... ok
+test learning::tests::diagnostic_distinguishes_errors ... ok
+test ecosystem::tests::spawn_error_is_recorded ... ok
+test learning::tests::next_ignores_stale_and_fake_reports ... ok
+test learning::tests::rejects_unknown_or_symlink_directories ... ok
+test ecosystem::tests::failure_stops_pipeline_and_never_claims_pass ... ok
+test learning::tests::next_matches_snapshot_but_does_not_certify ... ok
+test learning::tests::score_parser_only_accepts_valid_milestones ... ok
+test ecosystem::tests::orchestration_success_with_fake_runner_is_not_real_dependency_test ... ok
+test process::tests::child_fixture ... ok
+test process::tests::spawn_failure_cleans_only_own_files ... ok
+test process::tests::inherited_stdin_is_closed ... ok
+test process::tests::excessive_output_is_not_a_success ... ok
+test proof::tests::fingerprints_change_when_content_changes ... ok
+test simulation::tests::generated_log_matches_expected_error_counts ... ok
+test simulation::tests::parser_rejects_bad_configs ... ok
+test studio::diagnostics_tests::missing_sqlite_is_environment_error ... ok
+test studio::diagnostics_tests::ordinary_compile_error_keeps_learning_guidance ... ok
+test transfer::tests::hints_are_scaffolded ... ok
+test transfer::tests::starter_is_not_completed ... ok
+test process::tests::verbose_stdout_and_stderr_do_not_block_and_files_are_cleaned ... ok
+test process::tests::timeout_kills_direct_child_and_closes_logs ... ok
+test proof::tests::infinite_loop_like_process_is_terminated_with_explanation ... ok
+
+test result: ok. 28 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.12s
+
+     Running unittests src/main.rs (/mnt/data/RustAppLab_0_18_build/debug/deps/labquest-6351747850fa2f04)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/beginner_e2e.rs (/mnt/data/RustAppLab_0_18_build/debug/deps/beginner_e2e-a2e4529679a99371)
+
+running 10 tests
+test nested_relative_path_needs_existing_parent_and_does_not_create_it ... ok
+test output_flood_is_rejected_without_a_badge ... ok
+test refuses_existing_folder_without_overwrite ... ok
+test learner_build_is_native_even_when_parent_has_a_cross_target ... ok
+test syntax_error_explains_next_step_and_does_not_issue_badge ... ok
+test three_tier_hints_work_without_answer_first ... ok
+test single_component_relative_path_works_like_windows_launcher ... ok
+test verbose_stderr_does_not_turn_correct_work_into_a_timeout ... ok
+test first_win_requires_real_edit_and_dynamic_input ... ok
+test endless_loop_returns_feedback_instead_of_hanging_forever ... ok
+
+test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 4.21s
+
+     Running tests/capstone_e2e.rs (/mnt/data/RustAppLab_0_18_build/debug/deps/capstone_e2e-f20ed54aec22b34b)
+
+running 5 tests
+test init_creates_independent_unsolved_project_without_overwriting ... ok
+test hardcoding_first_id_cannot_pass_dynamic_and_persistence ... ok
+test report_wont_overwrite_human_written_content ... ok
+test starter_compiles_but_has_no_fake_success_and_reports_failures ... ok
+test real_independent_implementation_passes_nine_groups_and_can_be_rechecked ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.74s
+
+     Running tests/case_e2e.rs (/mnt/data/RustAppLab_0_18_build/debug/deps/case_e2e-f36b02845456390d)
+
+running 9 tests
+test case_rejects_unsafe_directories_and_unknown_markers ... ok
+test cli_helps_navigate_errors_without_destroying_files ... ok
+test new_case_has_real_inputs_but_no_free_progress ... ok
+test next_and_predict_are_read_only_cli_learning_aids ... ok
+test greater_equal_bug_is_caught_on_the_400ms_boundary ... ok
+test symlinked_case_outputs_are_rejected ... ok
+test hardcoded_success_for_one_configuration_fails_transfer_verification ... ok
+test prior_case_marker_still_supports_legacy_evidence ... ok
+test full_case_requires_actual_code_build_and_evidence_stays_fresh ... ok
+
+test result: ok. 9 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 1.16s
+
+     Running tests/studio_e2e.rs (/mnt/data/RustAppLab_0_18_build/debug/deps/studio_e2e-e48641065e0d455d)
+
+running 26 tests
+test asyncboard_first_milestone_is_reachable_without_future_milestones ... ok
+test asyncboard_support_runtime_and_await_are_required ... ok
+test asyncboard_red_to_green ... ok
+test compile_error_is_not_pass ... ok
+test invalid_parameters_and_marker_fail_without_writes ... ok
+test badgeforge_red_to_green ... ok
+test local_test_deletion_does_not_pass ... ok
+test batchmeter_red_to_green ... ok
+test ledgerlite_red_to_green ... ok
+test accidental_infinite_loop_is_bounded ... ok
+test minikv_red_to_green ... ok
+test minikv_wrong_iterator_is_not_full_pass ... ok
+test new_support_modules_and_samples_are_portable ... ok
+test netfetch_studio_red_green ... ok
+test quizdeck_red_to_green ... ok
+test relative_unicode_space_and_repeated_init ... ok

@@ -1,0 +1,157 @@
+{
+  "version": "0.14.0",
+  "platform": "Linux-6.18.55-x86_64-with-glibc2.41",
+  "binary": "/mnt/data/rustapplab-v014-work/RustAppLab/target/release/minikv",
+  "cli_calls": 14,
+  "independent_journal_check": true,
+  "records": {
+    "book/rust": "已经理解借用",
+    "project/next": "实现自己的 Iterator"
+  },
+  "shared_records": 40,
+  "calls": [
+    {
+      "args": [
+        "put",
+        "/mnt/data/rustapplab-v014-work/RustAppLab/examples/minikv/我的 书签.kv",
+        "book/rust",
+        "中文笔记"
+      ],
+      "exit": 0,
+      "stdout": "stored replaced=false\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "put",
+        "/mnt/data/rustapplab-v014-work/RustAppLab/examples/minikv/我的 书签.kv",
+        "project/next",
+        "实现自己的 Iterator"
+      ],
+      "exit": 0,
+      "stdout": "stored replaced=false\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "put",
+        "/mnt/data/rustapplab-v014-work/RustAppLab/examples/minikv/我的 书签.kv",
+        "book/rust",
+        "已经理解借用"
+      ],
+      "exit": 0,
+      "stdout": "stored replaced=true\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "get",
+        "/mnt/data/rustapplab-v014-work/RustAppLab/examples/minikv/我的 书签.kv",
+        "book/rust"
+      ],
+      "exit": 0,
+      "stdout": "已经理解借用\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "put",
+        "/mnt/data/rustapplab-v014-work/RustAppLab/examples/minikv/我的 书签.kv",
+        "scratch/remove",
+        "临时"
+      ],
+      "exit": 0,
+      "stdout": "stored replaced=false\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "delete",
+        "/mnt/data/rustapplab-v014-work/RustAppLab/examples/minikv/我的 书签.kv",
+        "scratch/remove"
+      ],
+      "exit": 0,
+      "stdout": "removed\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "delete",
+        "/mnt/data/rustapplab-v014-work/RustAppLab/examples/minikv/我的 书签.kv",
+        "absent"
+      ],
+      "exit": 2,
+      "stdout": "",
+      "stderr": "MiniKV 错误：[not-found] 键不存在：absent\n"
+    },
+    {
+      "args": [
+        "put",
+        "/mnt/data/rustapplab-v014-work/RustAppLab/examples/minikv/我的 书签.kv",
+        " bad",
+        "not saved"
+      ],
+      "exit": 2,
+      "stdout": "",
+      "stderr": "MiniKV 错误：[invalid-key] 键不合法：不能有首尾空白或控制字符\n"
+    },
+    {
+      "args": [
+        "scan",
+        "/mnt/data/rustapplab-v014-work/RustAppLab/examples/minikv/我的 书签.kv",
+        "book/"
+      ],
+      "exit": 0,
+      "stdout": "book/rust\t已经理解借用\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "export",
+        "/mnt/data/rustapplab-v014-work/RustAppLab/examples/minikv/我的 书签.kv",
+        "/mnt/data/rustapplab-v014-work/RustAppLab/examples/minikv/my-product.tsv"
+      ],
+      "exit": 0,
+      "stdout": "exported=2 path=/mnt/data/rustapplab-v014-work/RustAppLab/examples/minikv/my-product.tsv\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "export",
+        "/mnt/data/rustapplab-v014-work/RustAppLab/examples/minikv/我的 书签.kv",
+        "/mnt/data/rustapplab-v014-work/RustAppLab/examples/minikv/my-product.tsv"
+      ],
+      "exit": 2,
+      "stdout": "",
+      "stderr": "MiniKV 错误：不覆盖已有导出文件：File exists (os error 17)\n"
+    },
+    {
+      "args": [
+        "get",
+        "/mnt/data/rustapplab-v014-work/RustAppLab/examples/minikv/missing.kv",
+        "any"
+      ],
+      "exit": 2,
+      "stdout": "",
+      "stderr": "MiniKV 错误：[io] 文件操作失败：数据库不存在；先用 put 创建\n"
+    },
+    {
+      "args": [
+        "share-demo",
+        "/mnt/data/rustapplab-v014-work/RustAppLab/examples/minikv/four-workers.kv"
+      ],
+      "exit": 0,
+      "stdout": "workers=4 records=40 expected=40\n",
+      "stderr": ""
+    },
+    {
+      "args": [
+        "scan",
+        "/mnt/data/rustapplab-v014-work/RustAppLab/examples/minikv/truncated.kv"
+      ],
+      "exit": 2,
+      "stdout": "",
+      "stderr": "MiniKV 错误：[corrupt] 日志第 6 行损坏：末条记录不完整；未自动修改原文件\n"
+    }
+  ]
+}

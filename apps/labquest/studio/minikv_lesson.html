@@ -1,0 +1,212 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>MiniKV · 本地配置与书签仓库 · 跟着做</title><style>*{box-sizing:border-box}body{margin:0;background:#f4f7fb;color:#20334d;font:16px/1.85 system-ui,"Microsoft YaHei",sans-serif}header{background:#14273d;color:#fff}header>div,main{max-width:940px;margin:auto;padding:30px 24px}h1{font-size:clamp(25px,4vw,36px);line-height:1.4;margin:10px 0}h2{font-size:24px;line-height:1.5;margin:34px 0 12px;padding-top:12px;border-top:1px solid #d6e2ed}h3{font-size:19px}header p{color:#d7e7f4}article{background:white;border:1px solid #dce5ef;border-radius:14px;padding:12px 28px 28px}p{overflow-wrap:anywhere}code{font:14px/1.65 Consolas,monospace;background:#eaf1f8;color:#194775;padding:2px 4px;border-radius:4px}pre{background:#14273d;color:#edf3fa;padding:16px;border-radius:9px;overflow:auto}pre code{background:none;color:inherit;padding:0;white-space:pre-wrap;overflow-wrap:anywhere}.note{padding:15px;border:1px solid #89b7a4;background:#ebf7f0;color:#245744;border-radius:10px;margin-bottom:20px}table{width:100%;border-collapse:collapse}th,td{border:1px solid #dce5ef;padding:8px;text-align:left}a{color:#14619e}@media(max-width:600px){header>div,main{padding:20px 14px}article{padding:5px 16px 18px}h2{font-size:21px}}</style></head><body><header><div><small>RUST APPLAB / STUDIO / 0.16.0</small><h1>MiniKV · 本地配置与书签仓库</h1><p>每次只完成一个步骤。读目标、修改指定函数、运行检查，再使用自己的数据。</p></div></header><main><div class="note">代码编辑位置：学员工程 <strong>src/lib.rs</strong>。先完成 TODO(1)，再做 TODO(2)、TODO(3)。<br>分层提示在 HINTS.md，学习记录在 LEARNING_LOG.md。不要修改参考应用源码。</div><article><h2>先判断：现在适合学这款吗？</h2>
+<p>这不是零基础第一课。你应已完成 TextScope，能区分 <code>String</code> 与 <code>&amp;str</code>；完成 BadgeForge，知道 trait 是一组约定；完成 BatchMeter，见过线程与 <code>move</code>。尚不熟悉这些内容时，先回到对应作品，不要因为本章排在新版菜单里就跳级。</p>
+<p>你不需要先懂存储引擎。本章从一个具体需求开始：保存“下一课学什么”“常用网址”“自己的作品路径”，关闭程序后再打开，资料还在；输入 <code>book/</code> 时只看书签。这比单纯运行一个 HashMap 示例多了真实用途，但不会要求你先实现底层文件协议。</p>
+<p>本章交付：一个独立 Rust 程序、一份真实 <code>.kv</code> 数据文件、一份 TSV 导出，以及你对一个借用错误的解释。文件不是加密的，请不要保存密码和重要唯一副本。</p>
+<h2>先体验参考软件，看清自己的目标</h2>
+<p>在完整 RustAppLab 根目录（能看到 Cargo.toml）打开 PowerShell：</p>
+<pre><code class="language-powershell">cargo run --offline -p minikv -- demo my-kv-demo
+cargo run --offline -p minikv -- put my-kv-demo/my-bookmarks.kv &quot;course/next&quot; &quot;完成自己的迭代器&quot;
+cargo run --offline -p minikv -- get my-kv-demo/my-bookmarks.kv &quot;course/next&quot;
+cargo run --offline -p minikv -- scan my-kv-demo/my-bookmarks.kv &quot;bookmark/&quot;
+</code></pre>
+<p>第二次运行 <code>demo</code> 的目录必须换一个名字，它不会覆盖原有文件。<code>get</code> 应输出你刚写的文字；<code>scan</code> 只列出 <code>bookmark/</code> 开头的键，按键的字节序排列，不是按你添加的顺序，也不是中文拼音排序。</p>
+<p>打开 <code>my-kv-demo</code>：<code>my-bookmarks.kv</code> 是日志文件，<code>bookmarks.tsv</code> 是首次演示时的可读导出，<code>MY_PRODUCT.md</code> 是作品说明。<strong>后来更新数据库不会自动更新此前的导出</strong>，需要重新导出到另一个新文件。十六进制是编码，不是加密。</p>
+<p>做一个预测：连续两次保存同一个键，<code>scan</code> 最终显示一条还是两条？为什么日志文件可能有多条记录？记录答案后用自己的键验证。</p>
+<h2>创建自己的工程：只改你的 lib.rs</h2>
+<p>Windows 学员可双击 <code>CONTINUE_WINDOWS.cmd</code>，选 9。也可在 RustAppLab 根目录执行：</p>
+<pre><code class="language-powershell">cargo run --offline -p labquest -- studio start minikv my-minikv
+cargo run --offline -p labquest -- studio check my-minikv 1
+</code></pre>
+<p>首次检查会失败，因为练习还没写。浏览器打开 <code>my-minikv/START.html</code>，编辑 <code>my-minikv/src/lib.rs</code>；不要编辑平台的 <code>apps/minikv/src/lib.rs</code>，那是参考实现。</p>
+<p>文件关系：</p>
+<table>
+<thead>
+<tr>
+<th>文件</th>
+<th>作用</th>
+<th>这次是否需要修改</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Cargo.toml</td>
+<td>独立包名、版本和 Rust 版本声明</td>
+<td>不需要；不引用平台目录，也没有第三方 crate</td>
+</tr>
+<tr>
+<td>src/main.rs</td>
+<td>读取命令行、选择文件、显示结果、演示线程共享</td>
+<td>先不改；三步完成后阅读</td>
+</tr>
+<tr>
+<td>src/lib.rs</td>
+<td>业务类型、Database 和迭代器</td>
+<td>依次完成 TODO(1)、TODO(2)、TODO(3)</td>
+</tr>
+<tr>
+<td>src/journal.rs</td>
+<td>已提供的内存/文件日志、编码与锁释放</td>
+<td>先当作工具；进阶阅读，不要求从零实现</td>
+</tr>
+<tr>
+<td>tests/milestones.rs</td>
+<td>三步的公开行为合同</td>
+<td>可以读预期，不要删除来制造通过</td>
+</tr>
+<tr>
+<td>LEARNING_LOG.md</td>
+<td>预测、错误、解释与自己的扩展</td>
+<td>每步记录一项实测结果</td>
+</tr>
+</tbody>
+</table>
+<p>主线数据流是 <code>命令行 → Operation → Database::execute → Journal → 文件</code>。扫描不修改文件，它从 Database 中借用当前的数据。CLI 的职责不等于数据库逻辑，底层文件编码也不等于业务规则。</p>
+<h2>第 1 步：让错误不再只是一句字符串</h2>
+<p><strong>修改位置：<code>validate_key</code> 函数的 TODO(1)。</strong> 其它 TODO 暂时不动。</p>
+<p>键必须同时满足：UTF-8 字节长度 1–128；不包含控制字符；没有首尾空白。中间的普通空格、斜杠和中文允许使用。不要静默去掉空白再存储，否则 <code>&quot; book&quot;</code> 和 <code>&quot;book&quot;</code> 会被错误地当成同一个输入。</p>
+<p>你已经学过 <code>Result&lt;T, E&gt;</code>。本章成功时不需要返回一个新值，因此成功类型是 <code>()</code>；错误类型不再是随意的 <code>String</code>，而是 <code>KvError</code>。它把键非法、键不存在、文件错误等分开表示。调用者可以匹配错误类别，而不必猜测中文报错字符串是否改变了。</p>
+<p>先预测下表，再写测试：</p>
+<table>
+<thead>
+<tr>
+<th>输入</th>
+<th>应有结果</th>
+<th>关键原因</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td><code>book/rust</code></td>
+<td>成功</td>
+<td>普通业务键</td>
+</tr>
+<tr>
+<td><code>书签/Rust</code></td>
+<td>成功</td>
+<td>中文不等于非法字符</td>
+</tr>
+<tr>
+<td><code> book</code></td>
+<td>失败</td>
+<td>首部空白不能静默去掉</td>
+</tr>
+<tr>
+<td><code>a\tb</code>（真正的 Tab）</td>
+<td>失败</td>
+<td>控制字符</td>
+</tr>
+<tr>
+<td>128 个 ASCII x</td>
+<td>成功</td>
+<td>恰好达到字节上限</td>
+</tr>
+<tr>
+<td>43 个“好”</td>
+<td>失败</td>
+<td>UTF-8 总字节数超过 128，不是按字符个数计算</td>
+</tr>
+</tbody>
+</table>
+<p>建议先写“空/过长”的分支，再写“空白/控制字符”的分支，最后返回成功。判断合法不需要新建字符串、不需要打开文件。保存后：</p>
+<pre><code class="language-powershell">cargo run --offline -p labquest -- studio check my-minikv 1
+</code></pre>
+<p>常见卡点：返回 <code>true</code> 不符合 <code>Result&lt;(), KvError&gt;</code>；只用 <code>trim().is_empty()</code> 会漏掉首尾空白；<code>chars().count()</code> 不是本作品约定的字节上限。发生编译错误先看第一条 error，不要一次改三个函数。</p>
+<p>解释任务：<code>KvError::InvalidKey</code> 与 <code>KvError::Missing</code> 分别表示什么？输入非法与输入合法但不存在，为什么不应该合并成一种情况？</p>
+<h2>第 2 步：一次读写，从借用检查走到拥有数据</h2>
+<p><strong>修改位置：<code>Database&lt;J&gt;::execute</code> 的 TODO(2)。</strong> <code>open</code> 中的恢复流程已经提供，先不修改。</p>
+<p>软件接收三类操作：Put 保存值；Get 读取值；Delete 删除键。用 <code>match</code> 完成，不要靠固定字符串猜测命令。业务合同如下：</p>
+<table>
+<thead>
+<tr>
+<th>操作</th>
+<th>成功结果</th>
+<th>是否写日志</th>
+<th>失败时的要求</th>
+</tr>
+</thead>
+<tbody>
+<tr>
+<td>Put 新键</td>
+<td>Stored，replaced=false</td>
+<td>是</td>
+<td>参数非法或日志失败时不改内存</td>
+</tr>
+<tr>
+<td>Put 已有键</td>
+<td>Stored，replaced=true</td>
+<td>是</td>
+<td>不先删旧值</td>
+</tr>
+<tr>
+<td>Get 已有键</td>
+<td>Value</td>
+<td>否</td>
+<td>不存在返回 Missing</td>
+</tr>
+<tr>
+<td>Delete 已有键</td>
+<td>Removed</td>
+<td>是</td>
+<td>不存在先报错，不能留下删除记录</td>
+</tr>
+</tbody>
+</table>
+<p><code>Database&lt;J&gt;</code> 中的 J 是实现了 Journal trait 的某个类型。<code>MemoryJournal</code> 不写磁盘，便于实验；<code>FileJournal</code> 写真实文件。它们都实现同一组方法，但不需要把“如果是测试就怎样”散布到业务代码中。你已经用过泛型，此处泛型服务于可替换的存储，而不是为了炫技。</p>
+<p>最容易写错的顺序是先执行 <code>data.insert(...)</code>，然后才调用日志。假如磁盘写失败，内存已经显示新值，重启后却恢复旧值。这里的合同要求：<strong>先验证 → 成功追加日志 → 更新内存</strong>。调用 <code>append</code> 后的 <code>?</code> 表示失败时立即返回，不继续改 map。提供的日志适配器在部分写入错误后停止后续写入；这不是数据库级多操作事务，也不承诺断电时完整持久化。</p>
+<p>所有权提示：先 <code>match &amp;operation</code>，此时只借用键和值来验证；随后 <code>append(&amp;operation)</code> 也只借用。验证和追加成功后，再 <code>match operation</code>，把拥有的 String 放入 map。这样通常无需先克隆整条操作。</p>
+<p>Get 可以直接在第一轮匹配中返回。它返回独立拥有的 String，调用者稍后修改数据库不会让这个值失效；第 3 步会对比“批量扫描为什么使用借用”。</p>
+<pre><code class="language-powershell">cargo run --offline -p labquest -- studio check my-minikv 2
+</code></pre>
+<p>本阶段会重新运行第 1 步。测试还会使用一个故意返回写入错误的 Journal，验证旧值没被更改；它不是在你的电脑上真的把磁盘写满。</p>
+<p>自己的实验：保存 <code>project/name</code>，保存两次不同内容，预测两次 replaced 的值；读取它；删除它；再次读取。把每次实际结果写进 LEARNING_LOG.md。此时第 3 步未完成，完整 CLI 的 scan 还不能作为通过依据。</p>
+<h2>第 3 步：你来实现 Iterator，而不只是调用它</h2>
+<p><strong>修改位置：<code>impl Iterator for PrefixScan</code> 中 <code>next</code> 的 TODO(3)。</strong></p>
+<p>调用 <code>db.scan(&quot;book/&quot;)</code> 得到一个迭代器，但还没把全部结果复制出来。<code>inner</code> 已经定位到第一个不小于前缀的键，BTreeMap 保证有序。本步每次只需要取下一个条目：若匹配前缀，返回键和值的引用；若不匹配或已到末尾，记录结束并返回 None。结束后再次 next 仍应返回 None。</p>
+<p>例如顺序为 <code>book/a</code>、<code>book/b</code>、<code>bookmark</code>、<code>z</code> 时，<code>book/</code> 只匹配前两项。遇到 <code>bookmark</code> 后停止；因为键已经排序，不需要继续遍历整个数据库。空前缀匹配所有键，缺失前缀没有结果。</p>
+<p><code>type Item = (&amp;'a str, &amp;'a str)</code> 说的是“每个条目由两个引用组成”。这里的 <code>'a</code> 来自数据库的借用，<strong>不是凭空延长字符串寿命</strong>。不要在 next 里创建一个临时 String，再返回它的 <code>&amp;str</code>；临时值离开函数就不存在了。直接从底层 map 的键和值借用。</p>
+<p>实现 next 后，标准迭代器方法就可以组合使用：</p>
+<pre><code class="language-rust">// 只读前两条匹配数据，不提前复制整份数据库。
+let first_two: Vec&lt;_&gt; = db.scan(&quot;book/&quot;).take(2).collect();
+</code></pre>
+<pre><code class="language-powershell">cargo run --offline -p labquest -- studio check my-minikv 3
+</code></pre>
+<p>最后一步也会运行真实 CLI，跨不同进程保存和读取中文数据，并检查导出不能覆盖已有文件。只返回写死的两个样例、忽略前缀、删除本地测试，都不能完成权威检查。</p>
+<h2>实验 A：故意理解一次 E0502</h2>
+<p>完成三步之后，打开 <code>src/lib.rs</code> 中 scan 上方的文档示例，观察下面的冲突：</p>
+<pre><code class="language-rust">let mut rows = db.scan(&quot;&quot;);
+db.execute(Operation::Put { key: &quot;new&quot;.into(), value: &quot;value&quot;.into() })?;
+println!(&quot;{:?}&quot;, rows.next());
+</code></pre>
+<p>rows 仍将在最后一行被使用，它借用数据库。中间的 execute 却需要独占可变借用。编译器拒绝，是为了防止你一边引用结构内部的数据，一边修改结构。不要把每个值都 clone 一遍来碰运气。</p>
+<p>要删除某个前缀下的全部键，可以先把<strong>需要跨过借用边界的键</strong>收集成 <code>Vec&lt;String&gt;</code>，结束 scan，再逐个执行删除。这个修正示例也在文档中。</p>
+<p>在参考应用目录或已完成的学员目录执行：</p>
+<pre><code class="language-powershell">cargo test --offline --doc
+</code></pre>
+<p>其中 compile_fail 示例“如预期无法编译”才算测试通过；另一个修正示例必须编译并运行通过。不要把前者的编译失败当作产品构建失败。</p>
+<h2>实验 B：四个线程为什么没有复制四份数据库？</h2>
+<p>先看 <code>src/main.rs</code> 的 <code>share_demo</code>，再运行自己的程序（确保三步已完成）：</p>
+<pre><code class="language-powershell">cd my-minikv
+cargo run --offline -- share-demo shared-demo.kv
+</code></pre>
+<p>预期输出 <code>workers=4 records=40 expected=40</code>。每次实验换一个新路径，避免误修改旧数据。</p>
+<p><code>Arc::clone</code> 共享拥有同一个对象，不是深拷贝所有记录；Mutex 让某一时刻只有持锁线程进入这段业务操作。锁守卫离开作用域时释放锁，不要求手动调用 unlock。与 BatchMeter 的消息传递不同，这里展示共享状态。四个工作线程并不意味着磁盘写入变成四倍速度，本实现把同一数据库的写操作串行化。</p>
+<p>解释任务：如果把锁范围移到整个循环外，结果是否一定错？吞吐和公平性可能怎样变化？不要在没有测量的情况下把线程数当性能提升。</p>
+<h2>最终作品：自己的资料，而不是重复演示</h2>
+<p>在学员工程目录执行：</p>
+<pre><code class="language-powershell">cargo run --offline -- put my-life.kv &quot;book/rust&quot; &quot;我正在学迭代器&quot;
+cargo run --offline -- put my-life.kv &quot;project/next&quot; &quot;为自己的工具加搜索&quot;
+cargo run --offline -- scan my-life.kv &quot;project/&quot;
+cargo run --offline -- export my-life.kv my-product.tsv
+cargo build --offline --release
+</code></pre>
+<p>退出终端后重新打开，再运行 get，确认不是仅仅在内存中保留了数据。Windows 的可执行文件在 <code>target/release/minikv.exe</code>。</p>
+<p>选择一个自主变体并补测试：按值里的关键词搜索；导出只包含某个前缀；增加“键已存在则拒绝”的 insert-only 命令。这里不给完整答案；先写输入、预期输出和失败条件，再实现。它们不是本版已有功能，不能只在说明书中写上就当作完成。</p>
+<p>验收交付包括：自己的源码、数据库副本、TSV、运行命令、一个新增测试，以及 LEARNING_LOG.md 中对 E0502 或 Arc/Mutex 的解释。自动通过说明这份源码满足测试，不代表你已经理解全部实现。</p>
+<h2>范围与异常处理</h2>
+<p>这是有序内存索引加追加日志的教学键值库，不是 SQLite 或 Redis 的替代品；没有多键事务、日志压缩、索引持久化、网络服务、加密和恶意篡改防护。单个日志最多 16 MiB；每次打开完整重放，数据规模大时不适合本设计。</p>
+<p>正常退出会删除 <code>.lock</code>；异常终止可能留下它。不要在另一个程序仍运行时删除锁。先确认所有 MiniKV 实例已退出，保留数据库副本，再处理锁文件。损坏或截断日志会被拒绝，软件不会擅自修复你的数据。文件权限、断电持久化和网络文件系统不是本章的完整保证。</p>
+<h2>核对用的官方资料</h2>
+<p>Iterator 及 next：<a href="https://doc.rust-lang.org/book/ch13-02-iterators.html">https://doc.rust-lang.org/book/ch13-02-iterators.html</a>。
+共享状态及 Arc/Mutex：<a href="https://doc.rust-lang.org/book/ch16-03-shared-state.html">https://doc.rust-lang.org/book/ch16-03-shared-state.html</a>。
+这些是概念补充；本章的主线是你自己的可运行作品，不要求先读完整本书。</p>
+</article></main></body></html>

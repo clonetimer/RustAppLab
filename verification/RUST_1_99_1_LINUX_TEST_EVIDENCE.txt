@@ -1,0 +1,244 @@
+Rust AppLab 0.3.0 — Linux x86_64 实测证据
+测试日期：2026-10-28；环境：本轮隔离容器（Linux）
+Rust 安装来源：用户上传 rust-1.99.1-x86_64-unknown-linux-gnu.tar.xz（离线安装）
+Linux 6.18.55 x86_64
+rustc 1.99.1 (58cf8f9c3 2026-10-13)
+binary: rustc
+commit-hash: 58cf8f9c35b355199727627d07ae34a4e2846d67
+commit-date: 2026-10-13
+host: x86_64-unknown-linux-gnu
+release: 1.99.1
+LLVM version: 23.1.1
+cargo 1.99.1 (5f94df478 2026-08-27)
+clippy 0.1.99 (58cf8f9c35 2026-10-13)
+=== [1/7] rustfmt check ===
+=== [2/7] clippy -D warnings ===
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.15s
+=== [3/7] tests ===
+   Compiling localhub v0.3.0 (/mnt/data/RustAppLab/apps/localhub)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.81s
+     Running unittests src/lib.rs (/tmp/rust-applab-target/debug/deps/filequest-679019be6782d6d7)
+
+running 6 tests
+test cli::tests::parses_scan_with_all ... ok
+test cli::tests::rejects_invalid_report_limit ... ok
+test cli::tests::rejects_missing_output ... ok
+test report::tests::html_is_escaped ... ok
+test scanner::tests::extension_is_normalized ... ok
+test scanner::tests::human_readable_bytes ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/main.rs (/tmp/rust-applab-target/debug/deps/filequest-87dd8346f38b63b0)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/acceptance.rs (/tmp/rust-applab-target/debug/deps/acceptance-fa16c308a36d3433)
+
+running 7 tests
+test accepts_non_utf8_file_names_without_panicking ... ok
+test errors_on_invalid_scan_roots ... ok
+test handles_empty_directories ... ok
+test report_rejects_overwriting_symlink_even_with_force ... ok
+test does_not_traverse_symlinks ... ok
+test report_escapes_file_names_and_refuses_unintended_overwrites ... ok
+test scans_real_directories_with_explicit_ignore_policy ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/challenges.rs (/tmp/rust-applab-target/debug/deps/challenges-0f53023ef6449e8f)
+
+running 5 tests
+test mission_01_version_command ... ignored, 任务 01：需要学员添加 version 命令
+test mission_02_scan_extension_filter ... ignored, 任务 02：需要学员实现 --ext 扫描过滤
+test mission_04_extension_size_summary ... ignored, 任务 04：需要学员输出每种扩展名的字节合计
+test mission_05_find_basename_only ... ignored, 任务 05：需要学员增加 --name-only 查找模式
+test mission_06_custom_report_title_is_escaped ... ignored, 任务 06：需要学员支持报告标题并正确 HTML 转义
+
+test result: ok. 0 passed; 0 failed; 5 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/cli_smoke.rs (/tmp/rust-applab-target/debug/deps/cli_smoke-c519bb98406c9b40)
+
+running 2 tests
+test help_and_unknown_commands ... ok
+test demo_scan_find_report_is_a_real_user_journey ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running unittests src/lib.rs (/tmp/rust-applab-target/debug/deps/localhub-af08979c1c033257)
+
+running 5 tests
+test data::tests::escapes_special_json_characters ... ok
+test cli::tests::parses_serve_and_rejects_ambiguous_input ... ok
+test http::tests::rejects_invalid_target_and_accepts_normal_localhost ... ok
+test http::tests::response_has_valid_http_framing_and_security_headers ... ok
+test http::tests::rejects_bad_hosts_methods_and_unsupported_http_versions ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/main.rs (/tmp/rust-applab-target/debug/deps/localhub-14534a6312f6ae3f)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/acceptance.rs (/tmp/rust-applab-target/debug/deps/acceptance-5a54a369452a21d1)
+
+running 6 tests
+test combines_real_file_and_log_snapshots ... ok
+test refuses_invalid_root_and_does_not_follow_root_symlink ... ok
+test safely_returns_special_characters_in_json ... ok
+test routes_are_read_only_limit_validated_and_do_not_accept_browser_paths ... ok
+test real_tcp_http_round_trip_and_graceful_limit ... ok
+test rejects_excessive_request_headers_over_real_tcp ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/challenges.rs (/tmp/rust-applab-target/debug/deps/challenges-f462bebd5af8abde)
+
+running 3 tests
+test mission_13_extension_filter ... ignored, 任务 13：在 /api/files 支持 ?ext=rs 过滤
+test mission_14_logs_min_level ... ignored, 任务 14：支持 ?min_level=ERROR，明确返回 filtered_count
+test mission_15_custom_service_name ... ignored, 任务 15：增加 --name 自定义健康检查应用名
+
+test result: ok. 0 passed; 0 failed; 3 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/cli_smoke.rs (/tmp/rust-applab-target/debug/deps/cli_smoke-8ba24151ffbeb605)
+
+running 1 test
+test demo_to_real_http_api_and_process_exit ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+     Running unittests src/lib.rs (/tmp/rust-applab-target/debug/deps/loglens-df2f5cd562b35cfc)
+
+running 6 tests
+test analyzer::tests::rate_for_empty_log_is_defined ... ok
+test analyzer::tests::sanitize_replaces_terminal_control_sequences ... ok
+test parser::tests::handles_blank_malformed_and_bad_timestamp ... ok
+test cli::tests::report_flags_are_parsed_with_validation ... ok
+test parser::tests::recognizes_two_useful_formats ... ok
+test report::tests::markdown_escapes_table_cells_and_html ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/main.rs (/tmp/rust-applab-target/debug/deps/loglens-d139c31d7f4ff242)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/acceptance.rs (/tmp/rust-applab-target/debug/deps/acceptance-4242f747510cc9fb)
+
+running 5 tests
+test invalid_utf8_is_reported_instead_of_silently_replaced ... ok
+test explicit_invalid_inputs_and_empty_files ... ok
+test can_compare_a_real_demo_release_regression ... ok
+test report_force_does_not_follow_symlink ... ok
+test exports_safe_markdown_without_overwriting_by_default ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/challenges.rs (/tmp/rust-applab-target/debug/deps/challenges-419dc44898d260a8)
+
+running 4 tests
+test mission_08_analyze_top_count ... ignored, 任务 08：为 analyze 添加 --top N
+test mission_09_filter_message ... ignored, 任务 09：增加 --contains 关键词过滤
+test mission_10_fail_on_regression ... ignored, 任务 10：比较错误率回退时可选择失败退出
+test mission_11_report_custom_title ... ignored, 任务 11：支持报告自定义标题，并防止 Markdown 注入
+
+test result: ok. 0 passed; 0 failed; 4 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/cli_smoke.rs (/tmp/rust-applab-target/debug/deps/cli_smoke-2b8e63e6de33e093)
+
+running 1 test
+test demo_analyze_compare_report_user_journey ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+=== [4/7] release build ===
+   Compiling filequest v0.1.0 (/mnt/data/RustAppLab/apps/filequest)
+   Compiling loglens v0.2.0 (/mnt/data/RustAppLab/apps/loglens)
+   Compiling localhub v0.3.0 (/mnt/data/RustAppLab/apps/localhub)
+    Finished `release` profile [optimized] target(s) in 1.74s
+=== [5/7] JavaScript syntax ===
+=== [6/7] Actual CLI product journeys ===
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.01s
+     Running `/tmp/rust-applab-target/debug/filequest demo /tmp/rust-applab-qa-XwFefL/files`
+演示工作区创建成功：/tmp/rust-applab-qa-XwFefL/files
+已生成 9 个样例文件。
+离线报告：/tmp/rust-applab-qa-XwFefL/files/report.html
+下一步：cargo run -- scan "/tmp/rust-applab-qa-XwFefL/files"
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.01s
+     Running `/tmp/rust-applab-target/debug/filequest scan /tmp/rust-applab-qa-XwFefL/files`
+FileQuest · 目录扫描完成
+/tmp/rust-applab-qa-XwFefL/files
+普通文件：10 | 已扫描子目录：5 | 总体积：8.3 KiB
+跳过构建/依赖目录：0 | 跳过符号链接：0 | 访问异常：0
+
+文件类型 TOP 8：
+  rs                   3 个
+  log                  2 个
+  md                   2 个
+  csv                  1 个
+  html                 1 个
+  toml                 1 个
+
+体积 TOP 8：
+     7.8 KiB  report.html
+        85 B  docs/design.md
+        75 B  logs/app.log
+        72 B  logs/build.log
+        60 B  src/scan.rs
+        59 B  src/main.rs
+        57 B  docs/README.md
+        45 B  src/config.rs
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.01s
+     Running `/tmp/rust-applab-target/debug/filequest find /tmp/rust-applab-qa-XwFefL/files logs`
+检索范围：/tmp/rust-applab-qa-XwFefL/files
+关键词：logs；共找到 2 个文件
+  logs/app.log (75 B)
+  logs/build.log (72 B)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.01s
+     Running `/tmp/rust-applab-target/debug/filequest report /tmp/rust-applab-qa-XwFefL/files -o /tmp/rust-applab-qa-XwFefL/filequest-review.html`
+已保存离线报告：/tmp/rust-applab-qa-XwFefL/filequest-review.html
+扫描 10 个文件；其中最多展示 400 个。
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.01s
+     Running `/tmp/rust-applab-target/debug/loglens demo /tmp/rust-applab-qa-XwFefL/logs`
+已生成两个练习日志：
+  /tmp/rust-applab-qa-XwFefL/logs/baseline.log
+  /tmp/rust-applab-qa-XwFefL/logs/candidate.log
+下一步：cargo run -p loglens -- compare "/tmp/rust-applab-qa-XwFefL/logs/baseline.log" "/tmp/rust-applab-qa-XwFefL/logs/candidate.log"
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.01s
+     Running `/tmp/rust-applab-target/debug/loglens compare /tmp/rust-applab-qa-XwFefL/logs/baseline.log /tmp/rust-applab-qa-XwFefL/logs/candidate.log`
+LogLens · 两份日志的错误率比较
+旧日志：/tmp/rust-applab-qa-XwFefL/logs/baseline.log
+新日志：/tmp/rust-applab-qa-XwFefL/logs/candidate.log
+             旧日志          新日志
+识别记录            8              8
+ERROR+FATAL         1              3
+错误率         12.50%         37.50%
+错误率变化：+25.00 个百分点
+未识别行：旧 0 行，新 1 行
+注意：存在未识别日志行，以上错误率仅针对已识别记录。
+注意：仅比较记录级错误占比，不推断故障原因；两份日志需具有可比性。
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.01s
+     Running `/tmp/rust-applab-target/debug/loglens report /tmp/rust-applab-qa-XwFefL/logs/candidate.log -o /tmp/rust-applab-qa-XwFefL/loglens-review.md`
+报告已保存：/tmp/rust-applab-qa-XwFefL/loglens-review.md（已识别 8 行；未识别 1 行）
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.01s
+     Running `/tmp/rust-applab-target/debug/localhub demo /tmp/rust-applab-qa-XwFefL/web`
+演示工作区已创建：/tmp/rust-applab-qa-XwFefL/web
+启动面板：cargo run -p localhub -- serve --root "/tmp/rust-applab-qa-XwFefL/web/files" --log "/tmp/rust-applab-qa-XwFefL/web/logs/candidate.log"
+=== [7/7] Real local HTTP/JSON smoke ===
+HTTP_JSON_SMOKE: PASS (health, files=10, log=8/3/1 and 37.50%, parameter=400, host=403, clean exit)
+=== RESULT: ALL ABOVE CHECKS PASSED ON LINUX x86_64 ===
+NOTE: 12 Rust teaching challenges were ignored by design; Windows/macOS, MSRV 1.74 and browser rendering not verified.
+
+=== Teaching RED-stage verification (failure expected) ===
+EXPECTED_RED: mission_13_extension_filter fails before learner implements the feature
+EXPECTED_RED: mission_14_logs_min_level fails before learner implements the feature
+EXPECTED_RED: mission_15_custom_service_name fails before learner implements the feature
+=== Packaged crate lockfile check ===
+LOCKFILE_LOCKED_OFFLINE: PASS

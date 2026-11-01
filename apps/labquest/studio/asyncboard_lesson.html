@@ -1,0 +1,49 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>AsyncBoard · 离线异步提醒工作台（第 12 款 Studio 作品） · 跟着做</title><style>*{box-sizing:border-box}body{margin:0;background:#f4f7fb;color:#20334d;font:16px/1.85 system-ui,"Microsoft YaHei",sans-serif}header{background:#14273d;color:#fff}header>div,main{max-width:940px;margin:auto;padding:30px 24px}h1{font-size:clamp(25px,4vw,36px);line-height:1.4;margin:10px 0}h2{font-size:24px;line-height:1.5;margin:34px 0 12px;padding-top:12px;border-top:1px solid #d6e2ed}h3{font-size:19px}header p{color:#d7e7f4}article{background:white;border:1px solid #dce5ef;border-radius:14px;padding:12px 28px 28px}p{overflow-wrap:anywhere}code{font:14px/1.65 Consolas,monospace;background:#eaf1f8;color:#194775;padding:2px 4px;border-radius:4px}pre{background:#14273d;color:#edf3fa;padding:16px;border-radius:9px;overflow:auto}pre code{background:none;color:inherit;padding:0;white-space:pre-wrap;overflow-wrap:anywhere}.note{padding:15px;border:1px solid #89b7a4;background:#ebf7f0;color:#245744;border-radius:10px;margin-bottom:20px}table{width:100%;border-collapse:collapse}th,td{border:1px solid #dce5ef;padding:8px;text-align:left}a{color:#14619e}@media(max-width:600px){header>div,main{padding:20px 14px}article{padding:5px 16px 18px}h2{font-size:21px}}</style></head><body><header><div><small>RUST APPLAB / STUDIO / 0.18.0-dev.5</small><h1>AsyncBoard · 离线异步提醒工作台（第 12 款 Studio 作品）</h1><p>每次只完成一个步骤。读目标、修改指定函数、运行检查，再使用自己的数据。</p></div></header><main><div class="note">代码编辑位置：学员工程 <strong>src/lib.rs</strong>。先完成 TODO(1)，再做 TODO(2)、TODO(3)。<br>分层提示在 HINTS.md，学习记录在 LEARNING_LOG.md。不要修改参考应用源码。</div><article><p>你要交付一款自己的任务提醒程序：给出三项任务的等待时间，<strong>同时开始等待</strong>，最终按完成顺序生成 TSV 文件。不是观看参考软件，而是亲手完成三处 Rust 函数。</p>
+<h2>先看看要做成什么</h2>
+<p>在完整 Rust AppLab 根目录运行参考程序：</p>
+<pre><code class="language-powershell">cargo run --offline -p asyncboard -- demo my-async-demo
+</code></pre>
+<p>打开 <code>my-async-demo/jobs.tsv</code> 和 <code>my-async-demo/RESULTS.tsv</code>。三条任务依次等待 110、40、75 毫秒，通常会先看到 <code>write</code>、再 <code>review</code>、再 <code>read</code>；强烈的系统调度延迟可能改变观察次序。任务同时计时，先完成的排前面。这不是网络下载，也不使用 Tokio。</p>
+<h2>创建你自己的学员工程</h2>
+<pre><code class="language-powershell">cargo run --offline -p labquest -- studio start asyncboard my-asyncboard
+cargo run --offline -p labquest -- studio check my-asyncboard 1
+</code></pre>
+<p>第一次得到 FAIL 是正常的：任务还没有实现。现在只打开 <code>my-asyncboard/src/lib.rs</code>，不修改参考软件和 <code>tests/</code>。每做完一步按 Ctrl+S，重新运行 check。Windows 可用 <code>CONTINUE_WINDOWS.cmd</code> 选菜单 <strong>12</strong>。</p>
+<h2>第一步：解析任务清单 <code>parse_jobs</code>（输入与所有权）</h2>
+<p><strong>你要改的地方</strong>：<code>src/lib.rs</code> 中 <code>// LESSON 1 BEGIN</code> 到 <code>// LESSON 1 END</code>。</p>
+<p>输入每行包含三段，用 TAB 分隔：<code>ID</code>、非负整数毫秒、任务说明。需要跳过空行和 <code>#</code> 开头的注释；错误必须返回 <code>Err(...)</code>，不能静默忽略；最后返回拥有字符串的 <code>Vec&lt;Job&gt;</code>。你已经在 FileQuest、TextScope 学过 <code>String</code>、集合和 <code>Result</code>，现在用在真实清单校验。</p>
+<p>边界合同：最多 128 项，毫秒不超过 30000；ID 不超过 24 字节，只能是 ASCII 字母数字、<code>-</code>、<code>_</code>，不能重复；说明不能为空、不超过 160 个字符，不能包含控制字符。</p>
+<p><strong>先预测</strong>：<code>todo\t0\t写代码</code> 合法；<code>todo\t-1\t写代码</code> 不合法；两个 <code>todo</code> 不能同时出现。</p>
+<p>完成后：</p>
+<pre><code class="language-powershell">cargo run --offline -p labquest -- studio check my-asyncboard 1
+</code></pre>
+<p>通过再做第二步。若报 <code>expected u64</code>，检查 <code>delay.parse::&lt;u64&gt;()</code> 和 <code>?</code>；不要用 <code>unwrap()</code> 掩盖输入错误。</p>
+<h2>第二步：生成结果 <code>render_report</code>（借用与格式化）</h2>
+<p><strong>你要改的地方</strong>：<code>// LESSON 2 BEGIN</code> 到 <code>// LESSON 2 END</code>。</p>
+<p>按照 <code>completions</code> 的原有顺序生成 TSV，第一行固定是 <code>id&lt;TAB&gt;wait_ms&lt;TAB&gt;note</code>，每条结果占一行，结尾有换行。你无需修改 <code>completions</code>，函数参数是借用的切片 <code>&amp;[Completion]</code>。</p>
+<p>思考：为什么不先排序？因为执行器已经按实际完成顺序交回结果，擅自排序反而可能破坏语义。中文文本不应被替换成问号。</p>
+<pre><code class="language-powershell">cargo run --offline -p labquest -- studio check my-asyncboard 2
+</code></pre>
+<p>这会重新检查前两步。通过后比较 <code>&amp;str</code>、<code>String</code> 与借用：你不需要为了写一行 TSV 克隆整个任务集合。</p>
+<h2>第三步：在真正的 <code>async fn</code> 中等待 <code>.await</code></h2>
+<p><strong>你要改的地方</strong>：<code>async fn complete</code> 的 <code>// LESSON 3 BEGIN</code> 到 <code>// LESSON 3 END</code>。</p>
+<p><code>Delay</code> 已由 <code>src/runtime.rs</code> 提供。你的任务只有两件事：<strong>先 <code>delay.await</code>，再用输入的 Job 生成 Completion</strong>。不要使用 <code>std::thread::sleep</code> 假装 <code>.await</code>，那会把执行线程阻塞住；也不要一收到 <code>Job</code> 就立刻返回结果。</p>
+<pre><code class="language-powershell">cargo run --offline -p labquest -- studio check my-asyncboard 3
+</code></pre>
+<p>检查器会使用多个真实计时任务并检查完成次序与等待时间，还会运行 CLI 演示。若写死输出或者略过 <code>.await</code>，测试应失败。由于系统调度存在误差，不要用测得的毫秒数推断精确性能。</p>
+<h2>为什么 Future 需要运行时？</h2>
+<p><code>async fn</code> 返回惰性的 <code>Future</code>，它不会自动执行；执行器要不断在可继续的时候调用 <code>poll</code>。返回 <code>Poll::Pending</code> 时要保存 <code>Waker</code>，等事件发生后再唤醒。项目提供的 <code>src/runtime.rs</code> 是<strong>教学型执行器</strong>：单线程调度 Future，一条独立定时器线程负责到期唤醒，并不包含网络 I/O 驱动。你可以通过测试 <code>pending_is_not_busy_polled</code> 查看轮询次数，没有把忙轮询当成异步。</p>
+<p>后续使用 Tokio 时，保持 <code>Future</code> 和 <code>.await</code> 这些概念，但要换成成熟的异步网络运行时，而不是复制这份教学执行器去做生产服务器。</p>
+<h2>交付作品</h2>
+<pre><code class="language-powershell">cd my-asyncboard
+cargo run --offline -- demo my-first-async-output
+cargo run --offline -- preview my-first-async-output/jobs.tsv
+cargo run --offline -- run my-first-async-output/jobs.tsv my-first-async-output/SECOND.tsv
+</code></pre>
+<p>交付 <code>src/</code>、<code>jobs.tsv</code>、<code>RESULTS.tsv</code>、<code>LEARNING_LOG.md</code>，再使用自己的新任务完成一次实验。请写下“为什么三个任务的总时间不等于三个等待时间之和”，以及“这里的异步为何不代表 HTTP 网络已经异步”。</p>
+<h2>分层提示与常见错误</h2>
+<p>先看 <code>HINTS.md</code> 的第一层提示，再看第二层。常见错误：漏掉 TAB、没有对重复 ID 处理、把 <code>await</code> 写在普通 <code>fn</code>、没有 <code>use</code> 需要的模块、第二次运行覆盖旧报告失败。最后一个是数据保护设计，不是 Rust 编译错误。</p>
+<h2>复盘：不要把配置时间当成计时结果</h2>
+<p>报告的 <code>wait_ms</code> 来自输入配置，不是实测耗时；相同延时不保证固定次序。Future 函数体是惰性的，但提供的 TimerDriver::delay 在调用时已经登记计时。drive 是协作式超时，不能打断单次 poll 内的阻塞或死循环。</p>
+<p>完成三步后看平台根目录 RELIABILITY_PATH.html，并在平台运行 <code>cargo run --offline -p asyncboard --example wake_lab</code>，观察函数体、轮询与唤醒。这里不提供 Tokio 网络能力，也不把超时当作撤销外部副作用的事务。</p>
+</article></main></body></html>

@@ -1,0 +1,2 @@
+$ cargo clippy --release --locked --offline --workspace --all-targets -- -D warnings
+    Finished `release` profile [optimized] target(s) in 0.01s

@@ -1,0 +1,54 @@
+Rust AppLab 0.11.1 · Windows beginner start hotfix evidence
+Date: 2026-10-28
+Test OS: Linux x86_64 (NOT native Windows)
+Toolchain: rustc 1.99.1, cargo 1.99.1
+
+REPRODUCED against untouched 0.11.0:
+  cargo run --offline -p labquest -- beginner start my-first-card
+  exit=2; stderr contains: 上级文件夹不存在：my-first-card
+
+AFTER PATCH (same working directory and same command):
+  cargo run --offline -p labquest -- beginner start my-first-card
+  exit=0; created my-first-card/Cargo.toml, src/main.rs, 跟着做.md
+
+TESTS, ALL PACKAGES (cargo --locked --offline):
+  cargo fmt --all -- --check                          PASS
+  cargo clippy --workspace --all-targets -- -D warnings                  PASS
+  cargo clippy --release --workspace --all-targets -- -D warnings        PASS
+  cargo test --workspace --all-targets                          108 passed, 0 failed, 15 ignored
+  cargo test --release --workspace --all-targets                98 passed, 0 failed, 15 ignored
+  cargo build --release --workspace                             PASS
+
+NEW REGRESSION TESTS:
+  single_component_relative_path_works_like_windows_launcher       PASS
+  nested_relative_path_needs_existing_parent_and_does_not_create_it PASS
+  all 7 beginner_e2e tests                                         PASS
+
+CHANGE SUMMARY:
+  apps/labquest/src/beginner.rs: empty parent from Path::parent() means current directory, not missing directory
+  scripts/start_windows.ps1: beginner start/check use absolute $Project
+  apps/labquest/src/transfer.rs: no Windows-only unused_mut warning
+  scripts/windows_beginner_smoke.ps1: relative-path smoke before absolute-path checks
+
+CONSTRAINT:
+  Windows PowerShell and MSVC native run not executed here. This evidence proves Linux reproduction/fix
+  with the same CLI args and keeps Windows script status pending. A Windows learner's re-test is required.
+
+ORIGINAL FAILURE TAIL:
+   Compiling safesync v0.6.0 (/mnt/data/rustapplab-hotfix-work/RustAppLab/apps/safesync)
+   Compiling loglens v0.2.0 (/mnt/data/rustapplab-hotfix-work/RustAppLab/apps/loglens)
+   Compiling filequest v0.1.0 (/mnt/data/rustapplab-hotfix-work/RustAppLab/apps/filequest)
+   Compiling labquest v0.11.0 (/mnt/data/rustapplab-hotfix-work/RustAppLab/apps/labquest)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.98s
+     Running `target/debug/labquest beginner start my-first-card`
+LabQuest 错误：上级文件夹不存在：my-first-card。请先在 RustAppLab 根目录运行命令，并使用如 my-first-card 的简单名字。
+运行 `cargo run -p labquest -- help` 查看帮助。
+
+
+FIXED COMMAND OUTPUT:
+[1/3] 已创建：my-first-card
+[2/3] 现在用记事本打开 my-first-card/src/main.rs
+[3/3] 只修改一处 println! 并保存，再运行：
+  cargo run -p labquest -- beginner check "my-first-card"
+不会 Rust 也没关系：详细步骤在工程中的 跟着做.md；提示用 beginner hint 1。此时 check 失败是正常的。
+

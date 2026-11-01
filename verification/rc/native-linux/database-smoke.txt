@@ -1,0 +1,3 @@
+$ /opt/pyvenv/bin/python scripts/smoke_state_database.py --output /mnt/data/rc-native-linux-final/database-products
+PASS: 15 CLI calls; SQLite independent read/write, rollback and terminal persistence verified.
+/mnt/data/rc-native-linux-final/database-products/STATE_DATABASE_SMOKE.json

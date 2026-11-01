@@ -1,0 +1,9 @@
+[package]
+name = "safesync"
+version = "0.6.0"
+edition = "2021"
+rust-version = "1.74"
+license = "MIT"
+description = "Offline, verifiable snapshot backup and conservative restore learning application"
+
+[dependencies]

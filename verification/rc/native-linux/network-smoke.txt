@@ -1,0 +1,2 @@
+$ /opt/pyvenv/bin/python scripts/smoke_network.py --output /mnt/data/rc-native-linux-final/network-products
+NETWORK END-TO-END PASS: {"status": "PASS", "requests": "real TCP/HTTP 200/201/403/404, POST create/close, download, batch", "count": 1, "persisted_after_restart": true, "platform": "posix", "features": ["loopback only", "synchronous", "no external crates"]}

@@ -1,0 +1,2 @@
+# Preserve exact archive bytes for cross-platform source fingerprints.
+* -text

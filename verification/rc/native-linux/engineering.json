@@ -1,0 +1,322 @@
+{
+  "schema": 1,
+  "version": "0.17.0-rc.1",
+  "generated_utc": "20261029T050504Z",
+  "platform": "Linux-6.18.55-x86_64-with-glibc2.41",
+  "system": "Linux",
+  "machine": "x86_64",
+  "source_id": "61d865e5df90f5921c42f1edd542e04d7699de39b74bb9ac84c64cb9bfc4b89a",
+  "engineering_gate": "PASS",
+  "steps": [
+    {
+      "step": "rustc",
+      "command": [
+        "rustc",
+        "-Vv"
+      ],
+      "exit_code": 0,
+      "timed_out": false,
+      "seconds": 0.016,
+      "log": "rustc.txt",
+      "log_sha256": "907085fc04ad39ff189103277df68c06b0ef73980f0698fb64227af199479757",
+      "passed": true
+    },
+    {
+      "step": "cargo",
+      "command": [
+        "cargo",
+        "-V"
+      ],
+      "exit_code": 0,
+      "timed_out": false,
+      "seconds": 0.008,
+      "log": "cargo.txt",
+      "log_sha256": "af1454fabb686a174e4009a5854a0367813ab53a4e3731fad80862e856bb8529",
+      "passed": true
+    },
+    {
+      "step": "tooling-tests",
+      "command": [
+        "/opt/pyvenv/bin/python",
+        "-m",
+        "unittest",
+        "discover",
+        "-s",
+        "scripts/tests",
+        "-v"
+      ],
+      "exit_code": 0,
+      "timed_out": false,
+      "seconds": 0.817,
+      "log": "tooling-tests.txt",
+      "log_sha256": "37611e9f3c2a049595694a311a8f94a90aa2fd8cc915beb71097970b51bf0ffd",
+      "passed": true
+    },
+    {
+      "step": "structure",
+      "command": [
+        "/opt/pyvenv/bin/python",
+        "scripts/structural_check.py"
+      ],
+      "exit_code": 0,
+      "timed_out": false,
+      "seconds": 0.831,
+      "log": "structure.txt",
+      "log_sha256": "7982babd82c8f7501279f394aa53fdcaf0b9b3e722b9ecbc6db95d03c1b4e5d3",
+      "passed": true
+    },
+    {
+      "step": "format",
+      "command": [
+        "cargo",
+        "fmt",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "exit_code": 0,
+      "timed_out": false,
+      "seconds": 0.214,
+      "log": "format.txt",
+      "log_sha256": "5fcb04dce61431e03194e48dc201c4f32c352e4a96d055e73ed0191c5364579a",
+      "passed": true
+    },
+    {
+      "step": "debug-clippy",
+      "command": [
+        "cargo",
+        "clippy",
+        "--locked",
+        "--offline",
+        "--workspace",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0,
+      "timed_out": false,
+      "seconds": 0.064,
+      "log": "debug-clippy.txt",
+      "log_sha256": "7c53091c3fe2e58a7e199c81fa8c4a70273299580d09b7c38935f29ae1f7a1c3",
+      "passed": true
+    },
+    {
+      "step": "release-clippy",
+      "command": [
+        "cargo",
+        "clippy",
+        "--release",
+        "--locked",
+        "--offline",
+        "--workspace",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "exit_code": 0,
+      "timed_out": false,
+      "seconds": 0.036,
+      "log": "release-clippy.txt",
+      "log_sha256": "2b490a6a0344430e5b7f1bae5fc909e28dc638a728206d3b1bd567a2249f3a7e",
+      "passed": true
+    },
+    {
+      "step": "debug-tests",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "--workspace",
+        "--all-targets",
+        "--",
+        "--test-threads=2"
+      ],
+      "exit_code": 0,
+      "timed_out": false,
+      "seconds": 22.808,
+      "log": "debug-tests.txt",
+      "log_sha256": "584bb1056460fb72f07c1b23f94049c39cdc23ae89c964bd8645a0927bb39065",
+      "passed": true,
+      "tests": {
+        "suites": 69,
+        "passed": 284,
+        "failed": 0,
+        "ignored": 15,
+        "valid": true
+      }
+    },
+    {
+      "step": "release-tests",
+      "command": [
+        "cargo",
+        "test",
+        "--release",
+        "--locked",
+        "--offline",
+        "--workspace",
+        "--all-targets",
+        "--",
+        "--test-threads=2"
+      ],
+      "exit_code": 0,
+      "timed_out": false,
+      "seconds": 22.875,
+      "log": "release-tests.txt",
+      "log_sha256": "f88647d9ee24cf5a74964706ae6180782d8ea43b5d8254241d3b5713022d5f8a",
+      "passed": true,
+      "tests": {
+        "suites": 69,
+        "passed": 274,
+        "failed": 0,
+        "ignored": 15,
+        "valid": true
+      }
+    },
+    {
+      "step": "doctests",
+      "command": [
+        "cargo",
+        "test",
+        "--locked",
+        "--offline",
+        "--workspace",
+        "--doc"
+      ],
+      "exit_code": 0,
+      "timed_out": false,
+      "seconds": 0.467,
+      "log": "doctests.txt",
+      "log_sha256": "2095fec70e2f79a6efff5fe4034e49a683eeb332915d430e8e4d833fba50d930",
+      "passed": true,
+      "tests": {
+        "suites": 17,
+        "passed": 2,
+        "failed": 0,
+        "ignored": 0,
+        "valid": true
+      }
+    },
+    {
+      "step": "release-build",
+      "command": [
+        "cargo",
+        "build",
+        "--locked",
+        "--offline",
+        "--workspace",
+        "--release"
+      ],
+      "exit_code": 0,
+      "timed_out": false,
+      "seconds": 0.032,
+      "log": "release-build.txt",
+      "log_sha256": "19e86c45aff6257199f2dc7c56f44c24ab76bb0751ca7b4de6907aaaaefff4d5",
+      "passed": true
+    },
+    {
+      "step": "studio-smoke",
+      "command": [
+        "/opt/pyvenv/bin/python",
+        "scripts/smoke_studio_release.py",
+        "--output",
+        "/mnt/data/rc-native-linux-final/studio-smoke.json"
+      ],
+      "exit_code": 0,
+      "timed_out": false,
+      "seconds": 0.691,
+      "log": "studio-smoke.txt",
+      "log_sha256": "633ea76deacdb1de86af79e5e04b80059dd887824537632c2f19fc125a70a7e5",
+      "passed": true
+    },
+    {
+      "step": "database-smoke",
+      "command": [
+        "/opt/pyvenv/bin/python",
+        "scripts/smoke_state_database.py",
+        "--output",
+        "/mnt/data/rc-native-linux-final/database-products"
+      ],
+      "exit_code": 0,
+      "timed_out": false,
+      "seconds": 0.72,
+      "log": "database-smoke.txt",
+      "log_sha256": "609805b9c039c6d8db84cb033c4407dd61fe61a2b42025a412ae7a7728fda7f1",
+      "passed": true
+    },
+    {
+      "step": "minikv-smoke",
+      "command": [
+        "/opt/pyvenv/bin/python",
+        "scripts/smoke_minikv.py",
+        "--output",
+        "/mnt/data/rc-native-linux-final/minikv-products"
+      ],
+      "exit_code": 0,
+      "timed_out": false,
+      "seconds": 0.729,
+      "log": "minikv-smoke.txt",
+      "log_sha256": "5457603f9ce8e9fe385d1208ba895033db53420cf14ae18cd6ea2c84531058d9",
+      "passed": true
+    },
+    {
+      "step": "network-smoke",
+      "command": [
+        "/opt/pyvenv/bin/python",
+        "scripts/smoke_network.py",
+        "--output",
+        "/mnt/data/rc-native-linux-final/network-products"
+      ],
+      "exit_code": 0,
+      "timed_out": false,
+      "seconds": 0.773,
+      "log": "network-smoke.txt",
+      "log_sha256": "4091d36388f7a82bf6ea58e1dab03c52df984e41774f1f0f47dfc3dc99219adf",
+      "passed": true
+    },
+    {
+      "step": "async-smoke",
+      "command": [
+        "/opt/pyvenv/bin/python",
+        "scripts/smoke_asyncboard.py"
+      ],
+      "exit_code": 0,
+      "timed_out": false,
+      "seconds": 1.021,
+      "log": "async-smoke.txt",
+      "log_sha256": "3c0d3900408ef5a5554fd309ff7a6ee41347180a21d9cb49a8b2192aa0bc0fdc",
+      "passed": true
+    },
+    {
+      "step": "backup-hash",
+      "command": [
+        "/opt/pyvenv/bin/python",
+        "scripts/bench_safesync.py",
+        "--files",
+        "64",
+        "--mib",
+        "8",
+        "--output",
+        "/mnt/data/rc-native-linux-final/backup-check.json"
+      ],
+      "exit_code": 0,
+      "timed_out": false,
+      "seconds": 1.227,
+      "log": "backup-hash.txt",
+      "log_sha256": "a832142135ffb46c4ad6f3746b74917bc57cdb02f954c41cf0257969755d9a1c",
+      "passed": true
+    }
+  ],
+  "scope": "Native local engineering tests only; not whole-course or all-platform certification",
+  "unchecked": [
+    "browser HTTP navigation",
+    "other operating systems",
+    "MSRV unless this compiler is 1.74.0",
+    "real learners"
+  ],
+  "source_id_after": "61d865e5df90f5921c42f1edd542e04d7699de39b74bb9ac84c64cb9bfc4b89a",
+  "completed_steps": 17,
+  "planned_steps": 17
+}

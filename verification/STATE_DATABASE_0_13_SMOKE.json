@@ -1,0 +1,197 @@
+{
+  "platform": "Linux-6.18.55-x86_64-with-glibc2.41",
+  "native_backend": "SQLite=3.46.1 backend=system-sqlite3 schema=1",
+  "python_sqlite": "3.46.1",
+  "cli_calls": 15,
+  "sqlite_header": "verified",
+  "schema_version": 1,
+  "application_id": 1398031435,
+  "failed_batch_rollback": "inventory and audit unchanged",
+  "parameter_binding": "SQL-shaped name stored literally",
+  "independent_change_visible_to_rust": true,
+  "integrity_check": [
+    [
+      "ok"
+    ]
+  ],
+  "foreign_key_check": [],
+  "terminal_script_rollback": true,
+  "terminal_persistence": true,
+  "records": [
+    {
+      "command": [
+        "/mnt/data/rustapplab-v013-work/RustAppLab/target/release/storedesk",
+        "doctor"
+      ],
+      "returncode": 0,
+      "stdout": "SQLite=3.46.1 backend=system-sqlite3 schema=1\n",
+      "stderr": "",
+      "expected": 0
+    },
+    {
+      "command": [
+        "/mnt/data/rustapplab-v013-work/RustAppLab/target/release/storedesk",
+        "demo",
+        "/mnt/data/rustapplab-v013-work/real-examples/StoreDesk 中文示例"
+      ],
+      "returncode": 0,
+      "stdout": "StoreDesk · SQLite 3.46.1\nBOOK\tRust 练习本\t4\nPEN\t学习用笔\t8\naudit_rows=2\n数据库：/mnt/data/rustapplab-v013-work/real-examples/StoreDesk 中文示例/inventory.db\n",
+      "stderr": "",
+      "expected": 0
+    },
+    {
+      "command": [
+        "/mnt/data/rustapplab-v013-work/RustAppLab/target/release/storedesk",
+        "apply",
+        "/mnt/data/rustapplab-v013-work/real-examples/StoreDesk 中文示例/inventory.db",
+        "/mnt/data/rustapplab-v013-work/real-examples/StoreDesk 中文示例/reject-batch.tsv"
+      ],
+      "returncode": 2,
+      "stdout": "",
+      "stderr": "StoreDesk 错误：BOOK 不存在，或调整会导致负库存/超过上限；本批次全部撤销\n",
+      "expected": 2
+    },
+    {
+      "command": [
+        "/mnt/data/rustapplab-v013-work/RustAppLab/target/release/storedesk",
+        "add",
+        "/mnt/data/rustapplab-v013-work/real-examples/StoreDesk 中文示例/inventory.db",
+        "SAFE",
+        "x'); DROP TABLE items; --",
+        "2"
+      ],
+      "returncode": 0,
+      "stdout": "added=SAFE stock=2\n",
+      "stderr": "",
+      "expected": 0
+    },
+    {
+      "command": [
+        "/mnt/data/rustapplab-v013-work/RustAppLab/target/release/storedesk",
+        "add",
+        "/mnt/data/rustapplab-v013-work/real-examples/StoreDesk 中文示例/inventory.db",
+        "SAFE",
+        "not a replacement",
+        "99"
+      ],
+      "returncode": 2,
+      "stdout": "",
+      "stderr": "StoreDesk 错误：SQLite(19): UNIQUE constraint failed: items.sku\n",
+      "expected": 2
+    },
+    {
+      "command": [
+        "/mnt/data/rustapplab-v013-work/RustAppLab/target/release/storedesk",
+        "adjust",
+        "/mnt/data/rustapplab-v013-work/real-examples/StoreDesk 中文示例/inventory.db",
+        "PEN",
+        "-100"
+      ],
+      "returncode": 2,
+      "stdout": "",
+      "stderr": "StoreDesk 错误：PEN 不存在，或调整会导致负库存/超过上限；本批次全部撤销\n",
+      "expected": 2
+    },
+    {
+      "command": [
+        "/mnt/data/rustapplab-v013-work/RustAppLab/target/release/storedesk",
+        "init",
+        "/mnt/data/rustapplab-v013-work/real-examples/StoreDesk 中文示例/inventory.db"
+      ],
+      "returncode": 2,
+      "stdout": "",
+      "stderr": "StoreDesk 错误：init 只接受新文件：File exists (os error 17)\n",
+      "expected": 2
+    },
+    {
+      "command": [
+        "/mnt/data/rustapplab-v013-work/RustAppLab/target/release/storedesk",
+        "list",
+        "/mnt/data/rustapplab-v013-work/real-examples/StoreDesk 中文示例/mistyped.db"
+      ],
+      "returncode": 2,
+      "stdout": "",
+      "stderr": "StoreDesk 错误：数据库不存在；先 init 新文件。路径拼错不会创建新库。\n",
+      "expected": 2
+    },
+    {
+      "command": [
+        "/mnt/data/rustapplab-v013-work/RustAppLab/target/release/storedesk",
+        "list",
+        "/mnt/data/rustapplab-v013-work/real-examples/StoreDesk 中文示例/inventory.db"
+      ],
+      "returncode": 0,
+      "stdout": "SKU\t名称\t库存\nBOOK\tRust 练习本\t4\nPEN\t学习用笔\t8\nSAFE\tx'); DROP TABLE items; --\t2\n",
+      "stderr": "",
+      "expected": 0
+    },
+    {
+      "command": [
+        "/mnt/data/rustapplab-v013-work/RustAppLab/target/release/storedesk",
+        "history",
+        "/mnt/data/rustapplab-v013-work/real-examples/StoreDesk 中文示例/inventory.db"
+      ],
+      "returncode": 0,
+      "stdout": "1\tPEN\t-2\n2\tBOOK\t1\n",
+      "stderr": "",
+      "expected": 0
+    },
+    {
+      "command": [
+        "/mnt/data/rustapplab-v013-work/RustAppLab/target/release/storedesk",
+        "list",
+        "/mnt/data/rustapplab-v013-work/real-examples/StoreDesk 中文示例/inventory.db"
+      ],
+      "returncode": 0,
+      "stdout": "SKU\t名称\t库存\nBOOK\tRust 练习本\t4\nPEN\t学习用笔\t17\nSAFE\tx'); DROP TABLE items; --\t2\n",
+      "stderr": "",
+      "expected": 0
+    },
+    {
+      "command": [
+        "/mnt/data/rustapplab-v013-work/RustAppLab/target/release/termgarden",
+        "demo",
+        "/mnt/data/rustapplab-v013-work/real-examples/TermGarden 中文示例"
+      ],
+      "returncode": 0,
+      "stdout": "=== TermGarden ===\ndone=0/0 growth=seed view=all\n(empty) 输入 add 我的第一项任务\nadd 标题 | n/p 移动 | x 完成/撤销 | f 筛选 | q 退出\n\n> add 学习 Rust 的枚举\n=== TermGarden ===\ndone=0/1 growth=seed view=all\n> [ ] #1 学习 Rust 的枚举\nadd 标题 | n/p 移动 | x 完成/撤销 | f 筛选 | q 退出\n\n> add 完成自己的词频工具\n=== TermGarden ===\ndone=0/2 growth=seed view=all\n  [ ] #1 学习 Rust 的枚举\n> [ ] #2 完成自己的词频工具\nadd 标题 | n/p 移动 | x 完成/撤销 | f 筛选 | q 退出\n\n> p\n=== TermGarden ===\ndone=0/2 growth=seed view=all\n> [ ] #1 学习 Rust 的枚举\n  [ ] #2 完成自己的词频工具\nadd 标题 | n/p 移动 | x 完成/撤销 | f 筛选 | q 退出\n\n> x\n=== TermGarden ===\ndone=1/2 growth=sprout view=all\n> [x] #1 学习 Rust 的枚举\n  [ ] #2 完成自己的词频工具\nadd 标题 | n/p 移动 | x 完成/撤销 | f 筛选 | q 退出\n\n> f\n=== TermGarden ===\ndone=1/2 growth=sprout view=open\n> [ ] #2 完成自己的词频工具\nadd 标题 | n/p 移动 | x 完成/撤销 | f 筛选 | q 退出\n\n> x\n=== TermGarden ===\ndone=2/2 growth=sprout view=open\n(empty) 输入 add 我的第一项任务\nadd 标题 | n/p 移动 | x 完成/撤销 | f 筛选 | q 退出\n\n> f\n=== TermGarden ===\ndone=2/2 growth=sprout view=all\n> [x] #1 学习 Rust 的枚举\n  [x] #2 完成自己的词频工具\nadd 标题 | n/p 移动 | x 完成/撤销 | f 筛选 | q 退出\n\n> q\n\n已保存：/mnt/data/rustapplab-v013-work/real-examples/TermGarden 中文示例\n",
+      "stderr": "",
+      "expected": 0
+    },
+    {
+      "command": [
+        "/mnt/data/rustapplab-v013-work/RustAppLab/target/release/termgarden",
+        "replay",
+        "/mnt/data/rustapplab-v013-work/real-examples/TermGarden 中文示例/garden.tasks",
+        "/mnt/data/rustapplab-v013-work/real-examples/TermGarden 中文示例/bad-session.txt"
+      ],
+      "returncode": 2,
+      "stdout": "",
+      "stderr": "TermGarden 错误：命令：add 标题 / n 下一项 / p 上一项 / x 完成或撤销 / f 仅未完成 / q 退出\n",
+      "expected": 2
+    },
+    {
+      "command": [
+        "/mnt/data/rustapplab-v013-work/RustAppLab/target/release/termgarden",
+        "play",
+        "/mnt/data/rustapplab-v013-work/real-examples/TermGarden 中文示例/自己的任务.tasks",
+        "compact"
+      ],
+      "returncode": 0,
+      "stdout": "TermGarden · 终端任务花园\nplay <任务文件> [board|compact]    按行输入，每条命令按 Enter；自动保存\nreplay <任务文件> <命令文件>    整段成功才保存；用于可重复实验\ndemo <新目录>    生成任务文件与会话报告，不覆盖已有目录\nhelp\n命令：add 标题 | n | p | x | f | q\n这是按行交互版，不要求终端原始模式；不是方向键即时 TUI。\nTermGarden 0/0 completed; selected=None; commands: add/n/p/x/f/q\n\n> TermGarden 0/1 completed; selected=Some(1); commands: add/n/p/x/f/q\n\n> TermGarden 1/1 completed; selected=Some(1); commands: add/n/p/x/f/q\n\n> 已退出。重新 play 同一文件可继续。 \n",
+      "stderr": "",
+      "expected": 0
+    },
+    {
+      "command": [
+        "/mnt/data/rustapplab-v013-work/RustAppLab/target/release/termgarden",
+        "play",
+        "/mnt/data/rustapplab-v013-work/real-examples/TermGarden 中文示例/自己的任务.tasks"
+      ],
+      "returncode": 0,
+      "stdout": "TermGarden · 终端任务花园\nplay <任务文件> [board|compact]    按行输入，每条命令按 Enter；自动保存\nreplay <任务文件> <命令文件>    整段成功才保存；用于可重复实验\ndemo <新目录>    生成任务文件与会话报告，不覆盖已有目录\nhelp\n命令：add 标题 | n | p | x | f | q\n这是按行交互版，不要求终端原始模式；不是方向键即时 TUI。\n=== TermGarden ===\ndone=1/1 growth=sprout view=all\n> [x] #1 真实终端输入\nadd 标题 | n/p 移动 | x 完成/撤销 | f 筛选 | q 退出\n\n> 已退出。重新 play 同一文件可继续。 \n",
+      "stderr": "",
+      "expected": 0
+    }
+  ]
+}

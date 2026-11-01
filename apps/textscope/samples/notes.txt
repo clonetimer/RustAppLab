@@ -1,0 +1,3 @@
+Rust 让工具变成作品。
+Rust makes tools. Tools help learners.
+先运行，再修改，再验证。

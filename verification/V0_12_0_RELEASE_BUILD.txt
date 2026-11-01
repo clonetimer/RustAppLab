@@ -1,0 +1,3 @@
+    Finished `release` profile [optimized] target(s) in 0.01s
+   Compiling labquest v0.12.0 (/mnt/data/rustapplab-v012-work/RustAppLab/apps/labquest)
+    Finished `release` profile [optimized] target(s) in 1.76s

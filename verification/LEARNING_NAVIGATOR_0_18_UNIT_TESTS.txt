@@ -1,0 +1,15 @@
+   Compiling labquest v0.18.0-dev.1 (/mnt/data/RustAppLab_0_18_work/RustAppLab/apps/labquest)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 1.18s
+     Running unittests src/lib.rs (/mnt/data/RustAppLab_0_18_build/debug/deps/labquest-1ba3bb503f26f353)
+
+running 7 tests
+test learning::tests::diagnostic_distinguishes_errors ... ok
+test learning::tests::rejects_unknown_or_symlink_directories ... ok
+test learning::tests::distinguishes_both_independent_products ... ok
+test learning::tests::windows_report_path_separators_are_normalized ... ok
+test learning::tests::score_parser_only_accepts_valid_milestones ... ok
+test learning::tests::next_matches_snapshot_but_does_not_certify ... ok
+test learning::tests::next_ignores_stale_and_fake_reports ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 23 filtered out; finished in 0.00s
+

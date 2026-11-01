@@ -1,0 +1,28 @@
+{
+  "project": "Rust AppLab 0.5.0",
+  "binary": "/tmp/rust-applab-05-target/release/safesync",
+  "binary_sha256": "dcebf1c912bedb7425b8700aac1fa56ae995566d4e23fb32f0512b34c3c5c243",
+  "timestamp_utc": "2026-10-28T10:56:50.164012+00:00",
+  "os": "Linux-6.18.55-x86_64-with-glibc2.41",
+  "python": "3.13.5",
+  "cpu_count": 5,
+  "files": 64,
+  "logical_bytes": 33554432,
+  "dataset": "pseudo-random deterministic seed 20261028; local temporary directory",
+  "backup_seconds": 0.62597,
+  "verify_seconds": 0.1667,
+  "restore_seconds": 0.56002,
+  "independent_sha256_seconds": 0.08245,
+  "backup_mib_per_second": 51.121,
+  "verify_mib_per_second": 191.962,
+  "restore_mib_per_second": 57.141,
+  "all_content_equal": true,
+  "backup_stdout": "Backup Created: 64 文件、0 目录、33554432 字节 → /tmp/rust-applab-benchmark-y5eh4m3r/snapshot",
+  "verify_stdout": "Verify OK: 64 文件、0 目录、33554432 字节",
+  "restore_stdout": "Restore OK: 64 文件、0 目录、33554432 字节 → /tmp/rust-applab-benchmark-y5eh4m3r/restored",
+  "benchmark_limits": [
+    "Wall time includes disk cache and directory traversal; not a controlled cold-cache benchmark",
+    "No wall-power-loss, network storage, Windows/macOS or concurrent modification test",
+    "Timing not guaranteed reproducible outside the recorded environment"
+  ]
+}

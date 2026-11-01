@@ -1,0 +1,7 @@
+{
+  "scope": "Static HTML injected into Chromium for DOM/layout checks only; direct HTTP navigation was blocked by administrator policy. No HTTP pass claimed.",
+  "cards": 9,
+  "scroll_width": 390,
+  "client_width": 390,
+  "dom_layout_passed": true
+}

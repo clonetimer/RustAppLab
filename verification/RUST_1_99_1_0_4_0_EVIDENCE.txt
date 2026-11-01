@@ -1,0 +1,221 @@
+Rust AppLab 0.4.0 Linux x86_64 real execution evidence
+Date: 2026-10-28
+Platform: Linux-6.18.55-x86_64-with-glibc2.41
+Rust: rustc 1.99.1 (58cf8f9c3 2026-10-13)
+Cargo: cargo 1.99.1 (5f94df478 2026-08-27)
+Clippy: clippy 0.1.99 (58cf8f9c35 2026-10-13)
+Workspace base tests: 56 passed, 0 failed; 15 student challenges ignored intentionally
+Browser: see LOCALHUB_UI_DOM_TEST_EVIDENCE.txt; localhost browser navigation blocked by browser policy
+
+=== Format: PASS (0.107s) ===
+$ cargo fmt --all -- --check
+
+=== Clippy: PASS (0.520s) ===
+$ cargo clippy --locked --offline --workspace --all-targets -- -D warnings
+    Checking safesync v0.4.0 (/mnt/data/RustAppLab/apps/safesync)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.48s
+
+=== Tests: PASS (0.286s) ===
+$ cargo test --locked --offline --workspace --all-targets
+
+running 6 tests
+test cli::tests::rejects_invalid_report_limit ... ok
+test cli::tests::parses_scan_with_all ... ok
+test report::tests::html_is_escaped ... ok
+test cli::tests::rejects_missing_output ... ok
+test scanner::tests::extension_is_normalized ... ok
+test scanner::tests::human_readable_bytes ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 7 tests
+test accepts_non_utf8_file_names_without_panicking ... ok
+test handles_empty_directories ... ok
+test errors_on_invalid_scan_roots ... ok
+test does_not_traverse_symlinks ... ok
+test report_rejects_overwriting_symlink_even_with_force ... ok
+test report_escapes_file_names_and_refuses_unintended_overwrites ... ok
+test scans_real_directories_with_explicit_ignore_policy ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 5 tests
+test mission_01_version_command ... ignored, 任务 01：需要学员添加 version 命令
+test mission_02_scan_extension_filter ... ignored, 任务 02：需要学员实现 --ext 扫描过滤
+test mission_04_extension_size_summary ... ignored, 任务 04：需要学员输出每种扩展名的字节合计
+test mission_05_find_basename_only ... ignored, 任务 05：需要学员增加 --name-only 查找模式
+test mission_06_custom_report_title_is_escaped ... ignored, 任务 06：需要学员支持报告标题并正确 HTML 转义
+
+test result: ok. 0 passed; 0 failed; 5 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 2 tests
+test help_and_unknown_commands ... ok
+test demo_scan_find_report_is_a_real_user_journey ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+
+running 5 tests
+test data::tests::escapes_special_json_characters ... ok
+test http::tests::rejects_invalid_target_and_accepts_normal_localhost ... ok
+test http::tests::rejects_bad_hosts_methods_and_unsupported_http_versions ... ok
+test cli::tests::parses_serve_and_rejects_ambiguous_input ... ok
+test http::tests::response_has_valid_http_framing_and_security_headers ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 6 tests
+test refuses_invalid_root_and_does_not_follow_root_symlink ... ok
+test combines_real_file_and_log_snapshots ... ok
+test routes_are_read_only_limit_validated_and_do_not_accept_browser_paths ... ok
+test safely_returns_special_characters_in_json ... ok
+test real_tcp_http_round_trip_and_graceful_limit ... ok
+test rejects_excessive_request_headers_over_real_tcp ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 3 tests
+test mission_13_extension_filter ... ignored, 任务 13：在 /api/files 支持 ?ext=rs 过滤
+test mission_14_logs_min_level ... ignored, 任务 14：支持 ?min_level=ERROR，明确返回 filtered_count
+test mission_15_custom_service_name ... ignored, 任务 15：增加 --name 自定义健康检查应用名
+
+test result: ok. 0 passed; 0 failed; 3 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 1 test
+test demo_to_real_http_api_and_process_exit ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.01s
+
+
+running 6 tests
+test analyzer::tests::sanitize_replaces_terminal_control_sequences ... ok
+test analyzer::tests::rate_for_empty_log_is_defined ... ok
+test cli::tests::report_flags_are_parsed_with_validation ... ok
+test parser::tests::handles_blank_malformed_and_bad_timestamp ... ok
+test parser::tests::recognizes_two_useful_formats ... ok
+test report::tests::markdown_escapes_table_cells_and_html ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 5 tests
+test invalid_utf8_is_reported_instead_of_silently_replaced ... ok
+test explicit_invalid_inputs_and_empty_files ... ok
+test can_compare_a_real_demo_release_regression ... ok
+test exports_safe_markdown_without_overwriting_by_default ... ok
+test report_force_does_not_follow_symlink ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 4 tests
+test mission_08_analyze_top_count ... ignored, 任务 08：为 analyze 添加 --top N
+test mission_09_filter_message ... ignored, 任务 09：增加 --contains 关键词过滤
+test mission_10_fail_on_regression ... ignored, 任务 10：比较错误率回退时可选择失败退出
+test mission_11_report_custom_title ... ignored, 任务 11：支持报告自定义标题，并防止 Markdown 注入
+
+test result: ok. 0 passed; 0 failed; 4 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 1 test
+test demo_analyze_compare_report_user_journey ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.02s
+
+
+running 5 tests
+test sha256::tests::sha256_known_vectors ... ok
+test cli::tests::parse_commands_without_ambiguous_options ... ok
+test tree::tests::rejects_path_escapes_and_ambiguous_windows_names ... ok
+test manifest::tests::rejects_traversal_and_duplicates ... ok
+test sha256::tests::streaming_and_binary_bytes ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.04s
+
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 10 tests
+test non_utf8_names_are_rejected_explicitly ... ok
+test backup_target_requires_existing_parent_and_no_accidental_files ... ok
+test blank_source_and_hidden_names_are_valid ... ok
+test never_overwrite_restore_target_or_allow_backup_within_source ... ok
+test reject_extra_data_files_and_tampered_manifest ... ok
+test special_fifo_file_is_refused ... ok
+test real_backup_verify_restore_preserves_bytes_and_empty_dirs ... ok
+test repeat_backup_is_idempotent_but_source_change_does_not_overwrite_snapshot ... ok
+test same_length_bit_flip_is_detected_and_restore_never_starts ... ok
+test symlinks_are_refused_at_source_and_backup_and_target ... ok
+
+test result: ok. 10 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+
+running 3 tests
+test mission_17_verify_quiet ... ignored, 第 17 关：学员增加 verify --quiet；成功静默输出，损坏时仍返回非零状态
+test mission_18_restore_dry_run ... ignored, 第 18 关：学员增加 restore --dry-run；显示计划但不得创建目标
+test mission_19_verify_json ... ignored, 第 19 关：学员增加 verify --json，输出可供脚本使用的机器可读计数
+
+test result: ok. 0 passed; 0 failed; 3 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+
+running 2 tests
+test help_missions_and_bad_arguments ... ok
+test demo_verify_tamper_and_restore_is_real_cli_flow ... ok
+
+test result: ok. 2 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.03s
+
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.04s
+     Running unittests src/lib.rs (/tmp/rust-applab-target/debug/deps/filequest-679019be6782d6d7)
+     Running unittests src/main.rs (/tmp/rust-applab-target/debug/deps/filequest-87dd8346f38b63b0)
+     Running tests/acceptance.rs (/tmp/rust-applab-target/debug/deps/acceptance-fa16c308a36d3433)
+     Running tests/challenges.rs (/tmp/rust-applab-target/debug/deps/challenges-0f53023ef6449e8f)
+     Running tests/cli_smoke.rs (/tmp/rust-applab-target/debug/deps/cli_smoke-c519bb98406c9b40)
+     Running unittests src/lib.rs (/tmp/rust-applab-target/debug/deps/localhub-af08979c1c033257)
+     Running unittests src/main.rs (/tmp/rust-applab-target/debug/deps/localhub-14534a6312f6ae3f)
+     Running tests/acceptance.rs (/tmp/rust-applab-target/debug/deps/acceptance-5a54a369452a21d1)
+     Running tests/challenges.rs (/tmp/rust-applab-target/debug/deps/challenges-f462bebd5af8abde)
+     Running tests/cli_smoke.rs (/tmp/rust-applab-target/debug/deps/cli_smoke-8ba24151ffbeb605)
+     Running unittests src/lib.rs (/tmp/rust-applab-target/debug/deps/loglens-df2f5cd562b35cfc)
+     Running unittests src/main.rs (/tmp/rust-applab-target/debug/deps/loglens-d139c31d7f4ff242)
+     Running tests/acceptance.rs (/tmp/rust-applab-target/debug/deps/acceptance-4242f747510cc9fb)
+     Running tests/challenges.rs (/tmp/rust-applab-target/debug/deps/challenges-419dc44898d260a8)
+     Running tests/cli_smoke.rs (/tmp/rust-applab-target/debug/deps/cli_smoke-2b8e63e6de33e093)
+     Running unittests src/lib.rs (/tmp/rust-applab-target/debug/deps/safesync-b5d0026c8d05e0d9)
+     Running unittests src/main.rs (/tmp/rust-applab-target/debug/deps/safesync-84b1cd2345f45c21)
+     Running tests/acceptance.rs (/tmp/rust-applab-target/debug/deps/acceptance-764494a41cfb0e46)
+     Running tests/challenges.rs (/tmp/rust-applab-target/debug/deps/challenges-aed46e21abc56ce1)
+     Running tests/cli_smoke.rs (/tmp/rust-applab-target/debug/deps/cli_smoke-6c04a6833706ca60)
+
+=== Release: PASS (0.891s) ===
+$ cargo build --locked --offline --workspace --release
+   Compiling safesync v0.4.0 (/mnt/data/RustAppLab/apps/safesync)
+    Finished `release` profile [optimized] target(s) in 0.88s
+
+=== Independent SHA-256 + full snapshot ===
+External hashlib SHA-256 comparison: 201 files, 2 directories; 5 MiB+ binary verified
+Snapshot creation time (single run, non-benchmark): 0.299s
+Independent backup/verify/idempotent/restore: PASS

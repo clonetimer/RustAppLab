@@ -1,0 +1,35 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ServiceDesk · 本地工单网页 · 跟着做</title><style>*{box-sizing:border-box}body{margin:0;background:#f4f7fb;color:#20334d;font:16px/1.85 system-ui,"Microsoft YaHei",sans-serif}header{background:#14273d;color:#fff}header>div,main{max-width:940px;margin:auto;padding:30px 24px}h1{font-size:clamp(25px,4vw,36px);line-height:1.4;margin:10px 0}h2{font-size:24px;line-height:1.5;margin:34px 0 12px;padding-top:12px;border-top:1px solid #d6e2ed}h3{font-size:19px}header p{color:#d7e7f4}article{background:white;border:1px solid #dce5ef;border-radius:14px;padding:12px 28px 28px}p{overflow-wrap:anywhere}code{font:14px/1.65 Consolas,monospace;background:#eaf1f8;color:#194775;padding:2px 4px;border-radius:4px}pre{background:#14273d;color:#edf3fa;padding:16px;border-radius:9px;overflow:auto}pre code{background:none;color:inherit;padding:0;white-space:pre-wrap;overflow-wrap:anywhere}.note{padding:15px;border:1px solid #89b7a4;background:#ebf7f0;color:#245744;border-radius:10px;margin-bottom:20px}table{width:100%;border-collapse:collapse}th,td{border:1px solid #dce5ef;padding:8px;text-align:left}a{color:#14619e}@media(max-width:600px){header>div,main{padding:20px 14px}article{padding:5px 16px 18px}h2{font-size:21px}}</style></head><body><header><div><small>RUST APPLAB / STUDIO / 0.16.0</small><h1>ServiceDesk · 本地工单网页</h1><p>每次只完成一个步骤。读目标、修改指定函数、运行检查，再使用自己的数据。</p></div></header><main><div class="note">代码编辑位置：学员工程 <strong>src/lib.rs</strong>。先完成 TODO(1)，再做 TODO(2)、TODO(3)。<br>分层提示在 HINTS.md，学习记录在 LEARNING_LOG.md。不要修改参考应用源码。</div><article><p><strong>本课的中心思想</strong>：把一个 Rust 业务状态机连接到本机 HTTP API 和浏览器。用户创建工单，程序保存操作，刷新后数据仍在。学习“业务数据、持久化、协议、界面”的分层，而不是把所有逻辑堆进一个服务器函数。</p>
+<h2>先运行参考软件看目标</h2>
+<p>适合已经完成 LedgerLite、TermGarden、MiniKV，并学过 NetFetch 的学员。第一次学习 Rust 不必从本课开始。</p>
+<p>在完整 Rust AppLab 根目录：</p>
+<pre><code class="language-powershell">cargo run --offline -p servicedesk -- demo my-service-demo
+cargo run --offline -p servicedesk -- serve my-service-demo/tickets.log 8766
+</code></pre>
+<p>保持终端运行，在本机浏览器打开 <code>http://127.0.0.1:8766/</code>。新增一个“修复第一个网络 Bug”工单，再关闭它，刷新网页，确认状态保留。用 Ctrl+C 停止服务。<code>tickets.log</code> 是追加式数据日志，<code>tickets.json</code> 是初始演示快照而不是实时数据库。</p>
+<p>这里实际实现的是<strong>标准库同步串行 HTTP 服务器</strong>，只绑定 127.0.0.1，没有 HTTPS、认证、多人并发控制、数据库迁移、后台任务或公网部署能力；不能把它冒充 Axum 或生产 Web 服务。安全保护包括限定 Host、Origin、写入专用请求头、限制请求长度、对页面内容用 textContent 渲染。它们降低本地误用风险，不是完整安全审计。</p>
+<h2>从一行业务判断开始，而不是先学 Web 框架</h2>
+<p>在完整项目根目录：</p>
+<pre><code class="language-powershell">cargo run --offline -p labquest -- studio start servicedesk my-servicedesk
+</code></pre>
+<p>浏览器打开学员目录的 <code>START.html</code>。编辑 <code>src/lib.rs</code> 中的 TODO，<code>src/http.rs</code> 和 <code>samples/index.html</code> 已提供。只有完成当前步骤再往后走。</p>
+<h3>第 1 步：验证工单标题（纯函数）</h3>
+<p>实现 <code>validate_title(text: &amp;str) -&gt; Result&lt;String, String&gt;</code>：去掉外层普通空格；标题 1–120 个字符；拒绝控制字符，包括换行和制表符。为什么用 <code>chars().count()</code> 而不是 <code>len()</code>？中文在 UTF-8 中可能占多个字节。为什么错误使用 <code>Result</code> 而不是 <code>unwrap()</code>？因为用户输错是正常业务场景。</p>
+<pre><code class="language-powershell">cargo test --offline --test milestones step1_
+</code></pre>
+<h3>第 2 步：添加、关闭与防止状态错误</h3>
+<p>实现 <code>apply(tickets: &amp;mut Vec&lt;Ticket&gt;, action: Action)</code>。<code>Action::Add</code> 生成新编号、存入未完成工单；<code>Action::Close(id)</code> 修改已有工单；不存在或已经关闭的编号应返回 <code>Err</code>，数据不应发生错误变化。</p>
+<p>对照 <code>&amp;mut Vec&lt;Ticket&gt;</code> 与 <code>&amp;[Ticket]</code>，解释为什么写入函数需要可变借用，而输出报告只需只读借用。持久化 <code>persist()</code> 已提供，但它先调用你的 <code>apply()</code>：业务逻辑错误也会导致日志错误。</p>
+<pre><code class="language-powershell">cargo test --offline --test milestones step2_
+</code></pre>
+<h3>第 3 步：面向浏览器的 JSON</h3>
+<p>实现 <code>render_json(tickets: &amp;[Ticket]) -&gt; String</code>，产生形如 <code>{&quot;tickets&quot;:[{&quot;id&quot;:1,&quot;title&quot;:&quot;我的任务&quot;,&quot;done&quot;:false}],&quot;count&quot;:1}</code> 的 JSON。注意引号、反斜杠、中文、<code>&lt;img&gt;</code>、<code>&amp;</code> 等特殊字符；浏览器不应该把用户输入解释为 HTML。已经给出 <code>json_string()</code> 辅助函数；学员重点是把有类型的工单组合成正确的 JSON。生产环境应使用 serde_json 等成熟库。</p>
+<p>完整的 HTTP 处理外壳在 <code>src/http.rs</code>，学员不必首先自行编写解析器。<code>GET /</code> 是网页，<code>GET /api/tickets</code> 返回 JSON，<code>POST /api/tickets</code> 创建，<code>POST /api/close</code> 关闭。浏览器的 <code>fetch</code> 发送 URL 编码表单。服务使用单进程追加日志；损坏记录会让后续操作拒绝写入，而非悄悄丢失数据。</p>
+<pre><code class="language-powershell">cargo test --offline --test milestones step3_
+cargo test --offline
+cargo run --offline -- demo my-own-service
+cargo run --offline -- serve my-own-service/tickets.log 8766
+</code></pre>
+<h3>做一个属于自己的工单系统</h3>
+<p>至少实际创建 3 张工单，关闭其中 1 张；刷新页面并重新启动服务，确认数据仍在。更改一份本地<strong>副本</strong>的日志末尾制造不完整记录，观察读取失败，避免损坏真实学习数据。用文字解释哪些代码是领域状态，哪些代码是 HTTP 协议，哪些代码是持久化。还需要记录你输入过的至少一个无效标题，以及程序如何处理它。</p>
+<p>本课程只证明同步 HTTP 基础。下一阶段等待依赖包实际到位后，再用 Tokio + Axum 改造，学习 async/await、任务取消、超时、连接池与多请求并发。</p>
+</article></main></body></html>

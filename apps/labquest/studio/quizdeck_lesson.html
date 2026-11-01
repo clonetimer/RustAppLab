@@ -1,0 +1,44 @@
+<!doctype html><html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>QuizDeck · 终端知识闯关 · 跟着做</title><style>*{box-sizing:border-box}body{margin:0;background:#f4f7fb;color:#20334d;font:16px/1.85 system-ui,"Microsoft YaHei",sans-serif}header{background:#14273d;color:#fff}header>div,main{max-width:940px;margin:auto;padding:30px 24px}h1{font-size:clamp(25px,4vw,36px);line-height:1.4;margin:10px 0}h2{font-size:24px;line-height:1.5;margin:34px 0 12px;padding-top:12px;border-top:1px solid #d6e2ed}h3{font-size:19px}header p{color:#d7e7f4}article{background:white;border:1px solid #dce5ef;border-radius:14px;padding:12px 28px 28px}p{overflow-wrap:anywhere}code{font:14px/1.65 Consolas,monospace;background:#eaf1f8;color:#194775;padding:2px 4px;border-radius:4px}pre{background:#14273d;color:#edf3fa;padding:16px;border-radius:9px;overflow:auto}pre code{background:none;color:inherit;padding:0;white-space:pre-wrap;overflow-wrap:anywhere}.note{padding:15px;border:1px solid #89b7a4;background:#ebf7f0;color:#245744;border-radius:10px;margin-bottom:20px}table{width:100%;border-collapse:collapse}th,td{border:1px solid #dce5ef;padding:8px;text-align:left}a{color:#14619e}@media(max-width:600px){header>div,main{padding:20px 14px}article{padding:5px 16px 18px}h2{font-size:21px}}</style></head><body><header><div><small>RUST APPLAB / STUDIO / 0.16.0</small><h1>QuizDeck · 终端知识闯关</h1><p>每次只完成一个步骤。读目标、修改指定函数、运行检查，再使用自己的数据。</p></div></header><main><div class="note">代码编辑位置：学员工程 <strong>src/lib.rs</strong>。先完成 TODO(1)，再做 TODO(2)、TODO(3)。<br>分层提示在 HINTS.md，学习记录在 LEARNING_LOG.md。不要修改参考应用源码。</div><article><p><strong>本作品的中心思想</strong>：用一款可运行的小软件，把三个连续能力连接起来，而不是完成三道无关语法题。</p>
+<h2>开始前只确认这件事</h2>
+<p>你当前应位于这个学员工程的目录，能够看到 <code>Cargo.toml</code>。终端中的 <code>cargo</code> 命令默认在这里运行。<code>src/main.rs</code> 是已经接好的命令行外壳；本轮只修改 <code>src/lib.rs</code> 的 TODO(1)、TODO(2)、TODO(3)。<code>tests/milestones.rs</code> 是公开的验收合同，不能通过删除测试“通关”。</p>
+<p>在完整 RustAppLab 根目录创建本工程的命令是 <code>cargo run --offline -p labquest -- studio start quizdeck my-quizdeck</code>，然后进入 <code>my-quizdeck</code>。本讲义也随学员包提供，包内已有工程就不必再次生成。Windows 可以用 <code>CONTINUE_WINDOWS.cmd</code> 选择作品。</p>
+<p>三个里程碑依次是：<strong>比较答案并处理空白 → 把文本解析为拥有数据的结构体 → 用切片、迭代器生成复习清单</strong>。未实现的后两步不会阻止你运行第一步测试；语法错误仍会阻止整个库编译。</p>
+<h2>先看你要做出的软件</h2>
+<p>把自己的 Rust 术语、外语单词或常识写成题库，让程序逐题提问，最后生成需要复习的题目。完成后在本工程目录运行：</p>
+<pre><code class="language-powershell">cargo run --offline -- play samples/deck.tsv
+</code></pre>
+<p>终端显示一题就输入一个答案并回车。样例有 3 题；全部答对时显示 <code>score=3/3</code>。也可先使用 <code>cargo run --offline -- demo</code> 看内置模拟答案：完成后应为 <code>score=2/3</code>，不是把屏幕输出写死。</p>
+<p>前置要求：完成 UnitLab，能够看懂函数的输入和返回值。这里第一次引入“一个值里有多个字段”。</p>
+<h2>第 1 步：先让答案比较公平</h2>
+<p>打开 <code>src/lib.rs</code>，只做 <code>is_correct</code> 中的 TODO(1)。目标：前后空白不影响结果，ASCII 英文字母大小写不影响结果，中文必须内容相同。<code>trim()</code> 返回借用的字符串切片，不需要复制整个字符串。<code>eq_ignore_ascii_case</code> 只处理 ASCII 大小写，不是通用 Unicode 大小写折叠。</p>
+<pre><code class="language-powershell">cargo test --offline --test milestones step1_
+</code></pre>
+<p><code>cargo</code> 与 <code>Cargo</code> 应相等，<code>cargo</code> 与 <code>cargo build</code> 不相等。不能用 <code>contains()</code> 代替完整答案相等，否则只要答案里含有正确单词就能得分。</p>
+<p><strong>预测再试</strong>：中文答案“北京”和“ 北京 ”是什么结果？é 和 É 呢？解释为什么本作品没有声称支持全部语言的大小写归一化。</p>
+<h2>第 2 步：让题库真的来自文件</h2>
+<p><code>Card</code> 是结构体，包含 <code>question: String</code> 和 <code>answer: String</code>；<code>Vec&lt;Card&gt;</code> 是多张卡片。TODO(2) 接收一整个文本，按行处理，每行必须恰好用一个 TAB 分出两个非空字段。注意 TAB 是制表符，不是连续空格，Rust 中写作 <code>'\t'</code>。</p>
+<p>先使用已提供的 <code>samples/deck.tsv</code>，不要一开始用记事本手敲制表符。空白行忽略；第一行可能有 UTF-8 BOM；Windows 文件常用 CRLF 换行，<code>lines()</code> 能处理这种行结尾。遇到坏行应返回含行号的 <code>Err</code>，不能悄悄略过错误题目；完全空的题库也返回错误。</p>
+<p>在解析循环里，<code>line</code>、<code>fields[0]</code> 都借用输入文本。可是返回的卡片可能比输入文本存在更久，因此字段要用 <code>.to_string()</code> 取得自己的字符串。这是有实际用途的所有权转移，不是为了消除编译错误随便 clone。</p>
+<pre><code class="language-powershell">cargo test --offline --test milestones step2_
+</code></pre>
+<p>测试会让原输入 <code>String</code> 在内部作用域结束，再检查返回的卡片依旧可读。这个场景说明为什么 <code>Card</code> 的字段不是指向短命局部变量的引用。</p>
+<h2>第 3 步：给成绩一个结构</h2>
+<p>TODO(3) 接收 <code>&amp;[Card]</code> 和 <code>&amp;[String]</code>，它们是只读借用的切片。先检查数量相同，再逐题比较。<code>Score</code> 保存总题数、正确数和错题的问题文本。不要在函数里读取终端；交互已经在 <code>main.rs</code> 中提供，业务函数只做计算，才能自动测试。</p>
+<p>可以先用一个普通 <code>for</code> 循环；理解后再改成 <code>iter().zip()</code>。只要合同正确，学习阶段不要求用最短的一行迭代器。错误答案是正常成绩，答案数量不匹配才是 <code>Err</code>。</p>
+<pre><code class="language-powershell">cargo test --offline --test milestones step3_
+cargo run --offline -- check samples/deck.tsv samples/answers.txt
+cargo run --offline -- play samples/deck.tsv
+</code></pre>
+<p>第二条应为 <code>score=3/3</code>。复制题库为自己的文件，至少写 5 题，故意答错一题，确认复习清单真的包含那道题。不要修改官方样例来适配测试结果。</p>
+<h2>从函数过渡到终端交互</h2>
+<p>完成三个步骤后再读 <code>src/main.rs</code> 的 play 分支：<code>read_line(&amp;mut answer)</code> 要把终端输入写进一个可变 String，所以使用可变借用；<code>flush()</code> 让 <code>&gt;</code> 提示及时出现；读到 EOF 应退出并报告未完成，而不是无限循环等输入。它们是输入输出层的责任，和判分函数分开。</p>
+<p><strong>故障实验</strong>：给 TSV 某行追加第三列，确认提示具体行号；再恢复数据。终端模式遇到输入中断不会伪造满分。</p>
+<h2>交付与变体</h2>
+<p>交付自己的题库、Release 程序、一次实测成绩和错题说明。扩展任务是把错题保存为新的 TSV；先决定是否允许覆盖，再编码。当前基本版不保存历史成绩，也不随机抽题，不要据此宣称掌握概率抽样或数据库。</p>
+<p>参考：Rust 官方书结构体、集合、所有权与借用。https://doc.rust-lang.org/book/ch04-02-references-and-borrowing.html</p>
+<h2>一次只检查当前阶段</h2>
+<p>本工程内可以运行 <code>cargo test --offline --test milestones step1_</code>。完成一步，再运行 step2_、step3_，最后执行全量 <code>cargo test --offline</code>。完整平台还提供权威检查：回到 RustAppLab 根目录执行 <code>cargo run --offline -p labquest -- studio check &quot;my-quizdeck&quot; 1</code>，把最后的 1 改成 2、3 或 all。它会用自带的测试检查当前源码，不信任你编辑后的本地 tests。第 2 步会重新检查第 1 步，第 3 步会重查前两步。</p>
+<p>检查会真实编译并运行你写的 Rust，只用于你信任的自编代码，不是安全沙箱。报告按检查次数生成新文件，包含当前源文件摘要；旧报告不能证明修改后的代码仍正确。遇到错误先看第一个 FAIL 和对应函数，再看 HINTS.md。</p>
+<h2>完成标准</h2>
+<p>功能测试通过只是其中一项。还需用自己的数据运行一次，给一个错误输入，保存真实产物或控制台结果，并在 LEARNING_LOG.md 解释一个关键 Rust 概念。然后为未提供的变体自行增加一个测试。不要把参考程序已通过等同于自己已学会。</p>
+</article></main></body></html>
