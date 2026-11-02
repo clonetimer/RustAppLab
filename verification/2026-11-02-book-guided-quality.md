@@ -33,7 +33,11 @@ Debug/Release 均保留原有 15 个有意忽略的学员挑战测试；普通�
 
 27 步实现集成检查对应源码指纹 `77ca52102115624a4921949da615c1c58d575a61442e7bc4aaaf91383073ad18`，发生在最后的 Report v2 兼容修复之前；该修复由追加端到端测试与独立复审覆盖，最终提交还须由 CI 执行完整矩阵。独立复审发现的 1 项重要问题和 2 项小问题均已解决。
 
-Rust 1.74.0 的首次本地全量运行在 328 个测试通过后遇到生成的测试二进制缺少执行位（EACCES），没有记为通过；保留失败证据并在独立副本清理重建后复验。MSRV、Windows 原生 PowerShell 和浏览器的最终判断请查看本次提交的相应 CI job。
+Rust 1.74.0 的首次本地全量运行在 328 个测试通过后遇到生成的测试二进制缺少执行位（EACCES），没有记为通过；保留失败证据并在独立副本清理重建后复验。重建产物的内容 SHA-256 与原文件相同、执行位恢复，TermGarden 的 34 项测试通过；随后完整 Debug 379 项通过，但 Release 的另一生成产物遇到同类权限异常，仍不记为 MSRV 全量通过。MSRV 的最终判断请查看本次提交的 CI job。
+
+首轮 [PR CI 41448353771](https://github.com/clonetimer/RustAppLab/actions/runs/41448353771)（提交 `8ad5a16`）的 Linux 完整工程门禁 27/27 通过；Rust 1.74.0 的 11 步门禁通过，根 Debug 379、Release 369、doctest 9，独立参考 Workspace 的各配置也通过，确认最低版本兼容。真实 Chromium 测试通过，LocalHub 和 ServiceDesk 均无 JavaScript 错误，桌面/移动截图已保留。
+
+同轮 Windows 的 UTF-8 编译实验与 Python 52 项回归通过，随后阅读测试使用的目录名包含 Windows 不允许的 `<` / `>`，触发目录创建错误；已把测试目录改为含中文、空格和 `&` 的合法名称，保留原有 HTML 转义断言，由更新后的完整 CI 再验证。Windows PowerShell 的最终判断也以更新后的 job 为准。
 
 ## 可复现命令
 

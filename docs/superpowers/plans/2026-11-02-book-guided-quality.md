@@ -54,4 +54,4 @@
 - [x] 复现进阶源码/讲义不影响指纹，增加默认/严格 feature、Debug/Release、doctest 的独立工作区检查。
 - [x] 更新 Python / PowerShell 的证据规则和快速检查命令，验证零测试、ignored 与失败不能通过。
 - [x] 更新课程/入口/借鉴记录和当前已知问题，重新生成清单。
-- [ ] 完整 Linux 测试与独立审查后提交 feature 分支、建立 PR，检查 Windows/Linux/MSRV/浏览器结果。
+- [x] 完整 Linux 测试与独立审查后提交 feature 分支、建立 PR，检查 Windows/Linux/MSRV/浏览器结果。首轮 Linux/MSRV/浏览器通过；Windows 暴露的测试目录名问题已修复并提交同一 PR，最终状态以该 PR 当前提交的 CI 为准。

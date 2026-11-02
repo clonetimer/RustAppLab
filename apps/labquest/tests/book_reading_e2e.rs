@@ -203,7 +203,7 @@ fn unknown_missing_and_forged_projects_are_rejected_without_writes() {
 #[test]
 fn generated_cards_share_precise_links_and_escape_html() {
     let t = Temp::new();
-    let root = t.0.join("借用 & <实验>");
+    let root = t.0.join("借用 & 实验");
     labquest::studio::init("minikv", &root).unwrap();
     let md = fs::read_to_string(root.join("TASK_CARDS.md")).unwrap();
     let html = fs::read_to_string(root.join("TASK_CARDS.html")).unwrap();
