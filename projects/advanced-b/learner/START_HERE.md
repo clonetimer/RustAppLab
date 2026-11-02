@@ -16,9 +16,12 @@
 cargo test --locked --offline -p taskcore --test b1
 cargo test --locked --offline -p taskcore --test b2
 cargo test --locked --offline -p taskpocket-pro --test b3
+cargo test --locked --offline -p taskpocket-report --test report_cli
+cargo test --locked --offline -p taskcore --test feature --no-default-features
+cargo test --locked --offline -p taskcore --test feature --no-default-features --features strict-titles
 ```
 
-前一阶段未通过时，不要跳到下一阶段。`B3` 的 CLI 测试需要真实磁盘和进程，不只检查函数输出。
+前一阶段未通过时，不要跳到下一阶段。`B3` 的 CLI 测试需要真实磁盘和进程，核对新进程的 `list` 输出和 `stats`。平台检查 B3 会累计重跑 B1、B2，再执行 CLI、独立报告程序，以及默认/`strict-titles` 两种配置的固定合同；任何一项失败都不能获得 B3 通过记录。B1、B2 不要求先完成 B3 功能。
 
 ## 设计审查
 1. 为什么 CLI 不直接解析 TSV？
@@ -26,6 +29,6 @@ cargo test --locked --offline -p taskpocket-pro --test b3
 3. 如果数据库文件原本是坏数据，`add` 应该覆写还是报错？
 4. 共享业务逻辑使用 path 依赖与复制粘贴相比，有何不同？
 5. `strict-titles` 是 Cargo feature；切换后哪些语义会变化？
-6. 尝试给 `taskcore` 增加独立文档测试，并用 `cargo tree` 查看依赖。
+6. 尝试给 `taskcore` 的公开函数增加 `///` 文档示例，在其中断言真实行为，用 `cargo test --locked --offline -p taskcore --doc` 运行；参考实现的 `parse_tsv` 提供了示例。再用 `cargo tree` 查看依赖。
 
 注意：当前 `save()` 是教学型写入，不保证多进程并发安全或断电一致性。平台自动测试不是安全沙箱。

@@ -2,6 +2,7 @@ import importlib.util
 from pathlib import Path
 import tempfile
 import unittest
+import sys
 
 spec = importlib.util.spec_from_file_location('release_check', Path(__file__).resolve().parents[1]/'release_check.py')
 release = importlib.util.module_from_spec(spec)
@@ -33,6 +34,55 @@ class SummaryTests(unittest.TestCase):
             self.assertEqual(before,release.source_id(r))
             p.write_text('pub fn f() { panic!() }')
             self.assertNotEqual(before,release.source_id(r))
+
+    def test_source_fingerprint_covers_separate_workspace_and_embedded_lessons(self):
+        # Removing projects/course or non-Rust embedded inputs from the fingerprint
+        # would let evidence for old learner contracts qualify changed materials.
+        paths = (
+            'projects/advanced-b/reference/taskcore/src/lib.rs',
+            'projects/advanced-b/learner/taskcore/tests/b1.rs',
+            'projects/advanced-b/learner/Cargo.lock',
+            'projects/advanced-b/ADVANCED_B.md',
+            'course/RUST_ERROR_LABS.md',
+            'apps/labquest/studio/README.md',
+            'examples/foundation/tasks.tsv',
+        )
+        for relative in paths:
+            with self.subTest(path=relative), tempfile.TemporaryDirectory() as temp:
+                root = Path(temp)
+                target = root / relative
+                target.parent.mkdir(parents=True)
+                target.write_text('before', encoding='utf-8')
+                before = release.source_id(root)
+                target.write_text('after', encoding='utf-8')
+                self.assertNotEqual(before, release.source_id(root))
+
+    def test_source_fingerprint_ignores_nested_builds_and_unshipped_student_projects(self):
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            before = release.source_id(root)
+            for relative in ('projects/advanced-b/reference/target/generated.rs',
+                             'projects/my-personal-app/src/main.rs',
+                             'verification/current/evidence.json'):
+                target = root / relative
+                target.parent.mkdir(parents=True, exist_ok=True)
+                target.write_text('generated', encoding='utf-8')
+            self.assertEqual(before, release.source_id(root))
+
+    def test_advanced_workspace_requires_real_test_and_doctest_summaries(self):
+        cases = (
+            ('advanced-b-debug-default', '', False),
+            ('advanced-b-debug-default', 'test result: ok. 0 passed; 0 failed; 0 ignored;', False),
+            ('advanced-b-debug-strict', 'test result: ok. 12 passed; 0 failed; 1 ignored;', False),
+            ('advanced-b-release-default', 'test result: FAILED. 12 passed; 1 failed; 0 ignored;', False),
+            ('advanced-b-release-strict', 'test result: ok. 12 passed; 0 failed; 0 ignored;', True),
+            ('advanced-b-doctests-default', 'test result: ok. 0 passed; 0 failed; 0 ignored;', False),
+            ('advanced-b-doctests-strict', 'test result: ok. 1 passed; 0 failed; 0 ignored;', True),
+        )
+        for label, output, expected in cases:
+            with self.subTest(step=label, output=output), tempfile.TemporaryDirectory() as temp:
+                result = release.run_step(label, [sys.executable, '-c', f'print({output!r})'], Path(temp))
+                self.assertEqual(result['passed'], expected)
 
 
 # The release label alone must never promote an incomplete candidate.

@@ -10,6 +10,7 @@ pub const HELP: &str = concat!(
   cargo run --offline -p labquest -- advanced start my-workbench    进入进阶 A
   cargo run --offline -p labquest -- advanced check my-workbench 1  累计检查1/2/3
   cargo run --offline -p labquest -- advanced lesson 1              读取进阶讲义
+  cargo run --offline -p labquest -- learn reading [工程]   Book 对照阅读（只读概念导航）
   cargo run --offline -p labquest -- learn route          查看推荐的分层学习路线
   cargo run --offline -p labquest -- learn lesson <工程> [步骤]           当前微任务卡
   cargo run --offline -p labquest -- learn hint <工程> <1|2|3> [步骤]     概念/思路/自测三级提示

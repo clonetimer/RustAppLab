@@ -1,5 +1,7 @@
 # 进阶 B · 从可以运行到可以复用
 
+概念阅读入口：在平台根目录运行 `cargo run --locked --offline -p labquest -- learn reading "my-taskpocket-pro"`，参见 [Rust Book 对照学习](BOOK_GUIDE.md)。
+
 ## B1 数据层（数据契约）
 
 先阅读 `taskcore/src/lib.rs`，并用测试定义数据格式。`Task`、`Summary` 属于业务层，不应由 CLI 决定它们的含义。学员需解析损坏行、重复 ID、非法状态、中文和空数据文件。完成后讨论：什么该返回 `Result`，什么可以用普通值表达。
@@ -19,15 +21,18 @@ cargo metadata --no-deps --format-version 1
 cargo tree --workspace
 cargo test --offline --workspace
 cargo test --offline -p taskcore --features strict-titles
+cargo test --locked --offline --workspace --doc
 cargo fmt --all -- --check
 cargo clippy --workspace --all-targets -- -D warnings
 ```
 
 注意 feature 可能因依赖图而合并；独立运行某个包的行为不等于完整 Workspace feature 组合。
 
+B3 平台检查先累计回归 B1/B2，再验证新进程 list 的完整 TSV、独立 Markdown 报告，以及默认和 strict-titles 两种标题规则。80/81 个中文字符边界会通过验证、解析和新增接口分别检查。
+
 ## B4（待真实依赖，不能伪称已完成）
 
-计划用官方 serde / serde_json 实现 JSON 导出，练习 crates.io 依赖、Cargo.lock、derive、features 与 MSRV 核对。当前环境没有这些 crate 缓存且网络 DNS 失效，因此 **没有将其加入本离线 Workspace，也没有宣称已经编译**。联网环境可先研究 `cargo add serde --features derive`、`cargo add serde_json` 的真实依赖图，确认锁文件和许可证后再开发。
+下一阶段使用 serde / serde_json 实现 JSON 导出，练习 crates.io 依赖、Cargo.lock、derive、features 与 MSRV 核对。本轮交付仍为 B1–B3；B4 需补齐依赖锁定、实现和 Windows/Linux 验证后进入已交付范围。
 
 ## 质量范围
 

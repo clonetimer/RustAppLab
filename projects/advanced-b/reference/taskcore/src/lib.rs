@@ -26,6 +26,15 @@ pub fn validate_title(title: &str) -> Result<String, String> {
     Ok(t.to_string())
 }
 
+/// Parse task records, reject malformed data, and return tasks ordered by ID.
+///
+/// ```
+/// let tasks = taskcore::parse_tsv("2\tDONE\t写测试\n1\tOPEN\t学 Rust\n")?;
+/// assert_eq!(tasks[0].id, 1);
+/// assert_eq!(taskcore::summary(&tasks).done, 1);
+/// assert!(taskcore::parse_tsv("1\tUNKNOWN\tbad\n").is_err());
+/// # Ok::<(), String>(())
+/// ```
 pub fn parse_tsv(content: &str) -> Result<Vec<Task>, String> {
     let mut tasks = Vec::new();
     let mut ids = HashSet::new();

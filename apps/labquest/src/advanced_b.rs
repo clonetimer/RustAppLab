@@ -13,9 +13,10 @@ use std::{
 };
 
 const MARKER: &str = "RustAppLab Advanced B v1\n";
+const REPORT_HEADER: &str = "RustAppLab Advanced B Report v2\n";
 const GUIDE: &str = include_str!("../../../projects/advanced-b/ADVANCED_B.md");
 const START: &str = include_str!("../../../projects/advanced-b/learner/START_HERE.md");
-const FILES: [(&str, &str); 11] = [
+const FILES: [(&str, &str); 12] = [
     (
         "Cargo.toml",
         include_str!("../../../projects/advanced-b/learner/Cargo.toml"),
@@ -39,6 +40,10 @@ const FILES: [(&str, &str); 11] = [
     (
         "taskcore/tests/b2.rs",
         include_str!("../../../projects/advanced-b/learner/taskcore/tests/b2.rs"),
+    ),
+    (
+        "taskcore/tests/feature.rs",
+        include_str!("../../../projects/advanced-b/learner/taskcore/tests/feature.rs"),
     ),
     (
         "taskcli/Cargo.toml",
@@ -213,6 +218,9 @@ pub fn next(root: &Path) -> Result<String, String> {
             }
             let txt = fs::read_to_string(p).map_err(|e| e.to_string())?;
             if txt.starts_with("RustAppLab Advanced B Report v1\n") {
+                return Ok("进阶 B：验收合同已更新，旧版报告未覆盖 list 和标题 feature 验收；请使用新版平台重新运行 advanced-b check <目录> 3。".into());
+            }
+            if txt.starts_with(REPORT_HEADER) {
                 if !txt.lines().any(|s| s == format!("source_sha256={hash}")) {
                     return Ok("进阶 B：源码改变，历史报告已过期；请从 B1 回归。".into());
                 }
@@ -224,6 +232,9 @@ pub fn next(root: &Path) -> Result<String, String> {
                     })
                     .filter(|n| *n <= 3)
                 {
+                    if passed == 0 {
+                        return Ok("进阶 B：B1 尚未通过。阅读验收报告中的第一项失败，修改数据解析和汇总后重新执行 advanced-b check <目录> 1。".into());
+                    }
                     if passed == 3 {
                         return Ok("进阶 B 3/3 本地检查有通过记录。下一步：自己增加功能、回归测试与个人报告，不能只提交平台PASS。".into());
                     }
@@ -255,7 +266,7 @@ pub fn check(root: &Path, required: usize) -> Result<bool, String> {
     }
     let mut passed = 0;
     let mut log = String::new();
-    for s in 1..=required {
+    'stages: for s in 1..=required {
         let (package, test) = match s {
             1 => ("taskcore", "b1"),
             2 => ("taskcore", "b2"),
@@ -286,41 +297,77 @@ pub fn check(root: &Path, required: usize) -> Result<bool, String> {
             Ok(out) => {
                 log.push_str(&format!("\n=== B{s} ===\n{}\n{}", out.stdout, out.stderr));
                 if out.success {
-                    // B3 also runs the independent Markdown executable, not only library calls.
+                    // B3 verifies the second executable and both Cargo feature configurations.
                     if s == 3 {
-                        let mut report_cmd = Command::new("cargo");
-                        report_cmd.args([
-                            "test",
-                            "--locked",
-                            "--offline",
-                            "-p",
-                            "taskpocket-report",
-                            "--test",
-                            "report_cli",
-                        ]);
-                        crate::process::learner_cargo(&mut report_cmd)
-                            .arg("--")
-                            .arg("--test-threads=1")
-                            .current_dir(&project)
-                            .env("CARGO_TARGET_DIR", temp.0.join("target"));
-                        match run_bounded(
-                            &mut report_cmd,
-                            Duration::from_secs(120),
-                            &temp.0,
-                            "B3 报告程序验收",
-                        ) {
-                            Ok(report_out) => {
-                                log.push_str(&format!(
-                                    "\n=== B3-report ===\n{}\n{}",
-                                    report_out.stdout, report_out.stderr
-                                ));
-                                if !report_out.success {
-                                    break;
+                        let checks: [(&str, &[&str]); 3] = [
+                            (
+                                "B3-report",
+                                &[
+                                    "test",
+                                    "--locked",
+                                    "--offline",
+                                    "-p",
+                                    "taskpocket-report",
+                                    "--test",
+                                    "report_cli",
+                                ],
+                            ),
+                            (
+                                "B3-default-titles",
+                                &[
+                                    "test",
+                                    "--locked",
+                                    "--offline",
+                                    "-p",
+                                    "taskcore",
+                                    "--test",
+                                    "feature",
+                                    "--no-default-features",
+                                ],
+                            ),
+                            (
+                                "B3-strict-titles",
+                                &[
+                                    "test",
+                                    "--locked",
+                                    "--offline",
+                                    "-p",
+                                    "taskcore",
+                                    "--test",
+                                    "feature",
+                                    "--no-default-features",
+                                    "--features",
+                                    "strict-titles",
+                                ],
+                            ),
+                        ];
+                        for (label, args) in checks {
+                            let mut command = Command::new("cargo");
+                            command.args(args);
+                            crate::process::learner_cargo(&mut command)
+                                .arg("--")
+                                .arg("--test-threads=1")
+                                .current_dir(&project)
+                                .env("CARGO_TARGET_DIR", temp.0.join("target"));
+                            match run_bounded(
+                                &mut command,
+                                Duration::from_secs(120),
+                                &temp.0,
+                                label,
+                            ) {
+                                Ok(output) => {
+                                    log.push_str(&format!(
+                                        "\n=== {label} ===\n{}\n{}",
+                                        output.stdout, output.stderr
+                                    ));
+                                    if !output.success {
+                                        break 'stages;
+                                    }
                                 }
-                            }
-                            Err(e) => {
-                                log.push_str(&format!("\n=== B3-report 失败 ===\n{e}\n"));
-                                break;
+                                Err(error) => {
+                                    log.push_str(&format!("\n=== {label} 失败 ===\n{error}\n"));
+                                    break 'stages;
+                                }
                             }
                         }
                     }
@@ -345,7 +392,7 @@ pub fn check(root: &Path, required: usize) -> Result<bool, String> {
         .write(true)
         .open(&dest)
         .map_err(|e| e.to_string())?;
-    let report=format!("RustAppLab Advanced B Report v1\nsource_sha256={hash}\npassed={passed}\nrequested={required}\n\n固定合同成功 {passed}/{required}。这不是个人设计评审或恶意代码沙箱。\n{log}");
+    let report=format!("{REPORT_HEADER}source_sha256={hash}\npassed={passed}\nrequested={required}\n\n固定合同成功 {passed}/{required}。这不是个人设计评审或恶意代码沙箱。\n{log}");
     f.write_all(report.as_bytes()).map_err(|e| e.to_string())?;
     println!("通过阶段 {passed}/{required}；报告：{}", dest.display());
     if passed != required {

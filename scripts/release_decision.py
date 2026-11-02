@@ -5,9 +5,10 @@ import argparse
 import hashlib
 import json
 from pathlib import Path
-from release_check import ROOT, source_id, test_summary
+from release_check import ROOT, source_id, test_summary, advanced_b_steps, TEST_LIMITS
 
 REQUIRED = {'format','debug-clippy','release-clippy','debug-tests','release-tests','doctests','release-build'}
+REQUIRED.update(name for name, _ in advanced_b_steps())
 
 
 def engineering(path: Path | None, expected_id: str, expected_version: str) -> bool:
@@ -23,7 +24,10 @@ def engineering(path: Path | None, expected_id: str, expected_version: str) -> b
             if Path(filename).name != filename:return False
             log=path.parent/filename
             if hashlib.sha256(log.read_bytes()).hexdigest() != item['log_sha256']:return False
-            if name in {'debug-tests','release-tests'} and not test_summary(log.read_text(encoding='utf-8',errors='replace'),0)['valid']:return False
+            if name in TEST_LIMITS:
+                minimum, ignored = TEST_LIMITS[name]
+                if not test_summary(log.read_text(encoding='utf-8',errors='replace'),0,
+                                    minimum=minimum,expected_ignored=ignored)['valid']:return False
         return True
     except (OSError,ValueError,KeyError,TypeError):return False
 

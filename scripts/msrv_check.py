@@ -5,7 +5,7 @@ import json
 from pathlib import Path
 import platform
 import re
-from release_check import ROOT,run_step,source_id
+from release_check import ROOT,run_step,source_id,advanced_b_steps
 
 def main():
     p=argparse.ArgumentParser(description=__doc__);p.add_argument('--output',type=Path,required=True);a=p.parse_args()
@@ -22,10 +22,11 @@ def main():
         plan=[('debug-tests',['cargo','test','--locked','--offline','--workspace','--all-targets','--','--test-threads=2']),
               ('release-tests',['cargo','test','--locked','--offline','--release','--workspace','--all-targets','--','--test-threads=2']),
               ('doctests',['cargo','test','--locked','--offline','--workspace','--doc'])]
+        plan.extend(advanced_b_steps(quality=False))
         for label,command in plan:
             item=run_step(label,command,out);report['steps'].append(item)
             if not item['passed']:break
-        report['status']='PASS' if len(report['steps'])==4 and all(x['passed'] for x in report['steps']) else 'FAIL'
+        report['status']='PASS' if len(report['steps'])==len(plan)+1 and all(x['passed'] for x in report['steps']) else 'FAIL'
     report['source_id_after']=source_id()
     if report['source_id_after']!=identity:report['status']='FAIL'
     (out/'msrv.json').write_text(json.dumps(report,ensure_ascii=False,indent=2),encoding='utf-8')
