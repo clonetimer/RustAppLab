@@ -39,6 +39,8 @@ Rust 1.74.0 的首次本地全量运行在 328 个测试通过后遇到生成的
 
 同轮 Windows 的 UTF-8 编译实验与 Python 52 项回归通过，随后阅读测试使用的目录名包含 Windows 不允许的 `<` / `>`，触发目录创建错误；已把测试目录改为含中文、空格和 `&` 的合法名称，保留原有 HTML 转义断言，由更新后的完整 CI 再验证。Windows PowerShell 的最终判断也以更新后的 job 为准。
 
+第二轮 [CI 41448957882](https://github.com/clonetimer/RustAppLab/actions/runs/41448957882)（提交 `b1fce6c`）的 Linux 完整门禁及浏览器通过，Windows 阅读导航 5/5 通过。随后基线已有的编译错误定位测试只接受 `src/lib.rs`，不接受 Windows rustc 输出的 `src\lib.rs`；现仅在测试断言中统一分隔符，保留实际诊断和工程行为。真实 Windows 回归验证这一修复，不以 Linux 运行代替。
+
 ## 可复现命令
 
 ```sh
