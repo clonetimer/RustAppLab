@@ -7,7 +7,9 @@
 | 冻结 RC 0.17.0-rc.2 工程 | 原生通过（用户提供完整工程证据） | 原生通过 | 不声明支持 |
 | 冻结 RC 浏览器交互 | Chrome/Edge 实机 E2E 通过 | Chromium E2E 另有受环境策略阻断记录；Rust HTTP/CLI 通过 | 不声明支持 |
 | 冻结 RC Rust 1.74.0 | 实测 271 Debug / 261 Release、15 个学员工程 | Rust 1.99.1 工程通过；未单独提供 Linux 1.74 全矩阵 | 不声明支持 |
-| 新的 0.18.0-dev.3 教学反馈 | 待当前开发版 Windows 原生复验 | Linux 实测 | 不声明支持 |
+| 当前 0.19.0-dev.2 工程 | 以当轮 Windows CI / 原生记录为准 | 以当轮 Linux / MSRV 记录为准 | 不声明支持 |
+
+当前源码的具体测试提交、命令与结果见 [2026-11-02 测试记录](verification/2026-11-02-book-guided-quality.md)。进阶 B 独立参考工作区现已加入 Windows/Linux 工程脚本和 Rust 1.74 测试计划。
 
 支持边界：StoreDesk 依赖系统 SQLite 开发/运行库；浏览器应用只能绑定 localhost；用户自写 Rust 代码评测不构成不可信代码隔离沙箱。未完成的 Tokio/Reqwest/Axum、桌面 GUI、WASM 课程不计入已经交付的课程范围。
 

@@ -2,7 +2,7 @@
 
 已完成 B1–B3：多 crate Workspace、业务库/CLI/报告分层、特性开关与黑盒检查。B4 Serde/serde_json、Tokio/Axum 异步网络未能在离线环境中编译验证，仍为待办。见 `course/ADVANCED_B.md`。
 
-# Rust AppLab 路线 · 0.19.0-dev.1
+# Rust AppLab 路线 · 0.19.0-dev.2
 
 ## 已完成的基础阶段
 
@@ -13,10 +13,10 @@
 | 单元 | 作品载体 | 状态 |
 |---|---|---|
 | A 所有权和接口设计 | TermGarden工作区：共享视图、闭包批次、撤销、快照报告 | 本轮交付参考软件、独立学员工程、三阶段检查和设计评审 |
-| B 成熟生态和库工程 | TaskPocket/PageMint/StoreDesk：第三方依赖、序列化、业务库、功能开关 | 未交付 |
+| B 成熟生态和库工程 | TaskPocket：业务库、两个程序复用、功能开关；后续第三方依赖与序列化 | B1–B3 已交付并补齐累计/feature 检查；B4 待完成 |
 | C 真实异步应用 | NetFetch/ServiceDesk：成熟运行时、有限并发、取消、正常退出 | 未交付；同步版和教学执行器不能替代 |
 
-A完成后不再追加同类基础小工具；转入B和C。宏的基础使用、错误类型、Cargo工程能力随B补齐。GUI/WASM/嵌入式为方向选修，不阻塞共同主线结课。
+A完成后进入B和C。已有作品通过 [Book 对照阅读](course/BOOK_GUIDE.md) 衔接语言概念，后续优先推进 B4 与 C。GUI/WASM/嵌入式为方向选修。
 
 ## 本轮范围
 

@@ -1,6 +1,16 @@
 # Rust AppLab · 0.19.0-dev.2 进阶单元 B（可复用软件）
 
-已经完成进阶 A 的学员，现在可阅读 [进阶 B](course/ADVANCED_B.md)（[Windows 操作步骤](course/ADVANCED_B_WINDOWS.md)）（[Windows 操作步骤](course/ADVANCED_B_WINDOWS.md)），双击 `START_ADVANCED_B_WINDOWS.cmd` 或运行 `cargo run --offline -p labquest -- advanced-b start my-taskpocket-pro`。
+## 2026-11-02：对照阅读与完整工程检查
+
+新增 [Rust Book 对照学习指南](course/BOOK_GUIDE.md)。在当前工程旁查看相关中文概念、官方资料和思考实验：
+
+```powershell
+cargo run --locked --offline -p labquest -- learn reading "my-textscope"
+```
+
+进阶 B 的累计检查覆盖 CLI `list`、独立报告程序与默认/严格标题配置；维护者检查显式运行独立参考 Workspace 和 doctest。Windows 编译错误实验改为显式 UTF-8 读取中文诊断。当前结果见 [本轮测试记录](verification/2026-11-02-book-guided-quality.md)。
+
+已经完成进阶 A 的学员，现在可阅读 [进阶 B](course/ADVANCED_B.md)（[Windows 操作步骤](course/ADVANCED_B_WINDOWS.md)），双击 `START_ADVANCED_B_WINDOWS.cmd` 或运行 `cargo run --offline -p labquest -- advanced-b start my-taskpocket-pro`。
 
 进阶 B1–B3 已实现独立的 Cargo Workspace：`taskcore` 业务库、TaskPocket CLI、Markdown 报告程序，包含真实行为测试和学员生成器。**Serde / serde_json 等第三方依赖尚未下载、编译，因此第三方生态专题 B4 仍待完成，不算已通过课程。** 原有课程与 RC 冻结版不受影响。
 
@@ -17,7 +27,7 @@ cargo run --locked --offline -p labquest -- advanced start my-workbench
 cargo run --locked --offline -p labquest -- advanced check my-workbench 1
 ```
 
-新学员工程独立保存，旧TermGarden和已有15个学员工程保留。主Workspace仍为17个包，增加的是同一软件的进阶版本而非新领域应用。进阶B（成熟依赖生态）和C（真实异步网络）尚待完成；此版仍是教学开发版，不继承旧RC/MSRV通过资格。详细教程见 [源讲义](course/ADVANCED_A.md)。
+新学员工程独立保存，旧TermGarden和已有15个学员工程保留。主Workspace仍为17个包。进阶 B1–B3 已交付，B4（第三方依赖生态）和 C（真实异步网络）尚待完成；此版仍是教学开发版。详细教程见 [源讲义](course/ADVANCED_A.md)。
 
 ## 原有基础教学入口
 
@@ -47,7 +57,7 @@ cargo run --locked --offline -p labquest -- learn check "my-unitlab"
 
 ## 验证与支持边界
 
-这是 **0.19.0-dev.2 开发版**，不继承冻结的 0.17.0-rc.2 / RC_READY 资格。本轮实际测试记录随交付包提供；新增 Windows 菜单、当前源码的 Rust 1.74 兼容性和真实学员学习效果仍需独立验证。平台范围见 [SUPPORTED_PLATFORMS](SUPPORTED_PLATFORMS.md)。
+这是 **0.19.0-dev.2 开发版**。Windows/Linux、Rust 1.74 与浏览器的当前工程结果见 [本轮测试记录](verification/2026-11-02-book-guided-quality.md)，正式支持范围见 [SUPPORTED_PLATFORMS](SUPPORTED_PLATFORMS.md)。真实学员学习效果单独评估；冻结的 0.17.0-rc.2 / RC_READY 记录保留原版本范围。
 
 普通学员不需要 Python、Playwright，也不运行发布验收脚本。StoreDesk 仍依赖系统 SQLite；NetFetch/ServiceDesk 为同步网络教学版，AsyncBoard 是教学型异步执行器，不等于 Tokio/Reqwest/Axum。尚未完成的成熟异步框架、桌面 GUI、WASM 课程不计入已交付能力。
 

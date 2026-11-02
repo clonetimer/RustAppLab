@@ -21,18 +21,49 @@ import time
 ROOT = Path(__file__).resolve().parents[1]
 IGNORED_CHALLENGES = 15
 TEST_RESULT = re.compile(r"test result: (ok|FAILED)\. (\d+) passed; (\d+) failed; (\d+) ignored;")
-CODE_SUFFIXES = {'.rs', '.toml', '.lock', '.py', '.ps1', '.cmd', '.sh', '.html', '.css', '.js', '.yml', '.yaml'}
+CODE_SUFFIXES = {'.rs', '.toml', '.lock', '.py', '.ps1', '.cmd', '.sh', '.html', '.css', '.js', '.yml', '.yaml',
+                 '.md', '.tsv', '.txt', '.json', '.kv', '.svg'}
+ADVANCED_B_MANIFEST = 'projects/advanced-b/reference/Cargo.toml'
+TEST_LIMITS = {
+    'debug-tests': (200, 15), 'release-tests': (200, 15), 'doctests': (2, 0),
+    'advanced-b-debug-default': (12, 0), 'advanced-b-debug-strict': (12, 0),
+    'advanced-b-release-default': (12, 0), 'advanced-b-release-strict': (12, 0),
+    'advanced-b-no-default': (12, 0),
+    'advanced-b-doctests-default': (1, 0), 'advanced-b-doctests-strict': (1, 0),
+}
+
+
+def advanced_b_steps(quality: bool = True) -> list[tuple[str, list[str]]]:
+    """Explicitly cover the separate reference workspace; never run learner TODOs."""
+    common = ['--locked', '--offline', '--manifest-path', ADVANCED_B_MANIFEST, '--workspace']
+    plan = []
+    if quality:
+        plan.append(('advanced-b-format', ['cargo', 'fmt', '--manifest-path', ADVANCED_B_MANIFEST,
+                                           '--all', '--', '--check']))
+        for name, features in [('default', []), ('strict', ['--all-features'])]:
+            plan.append(('advanced-b-clippy-' + name,
+                         ['cargo', 'clippy'] + common + ['--all-targets'] + features + ['--', '-D', 'warnings']))
+    for profile, flags in [('debug', []), ('release', ['--release'])]:
+        for name, features in [('default', []), ('strict', ['--all-features'])]:
+            plan.append((f'advanced-b-{profile}-{name}',
+                         ['cargo', 'test'] + common + flags + ['--all-targets'] + features + ['--', '--test-threads=2']))
+    plan.append(('advanced-b-no-default', ['cargo', 'test'] + common +
+                 ['--all-targets', '--no-default-features', '--', '--test-threads=2']))
+    for name, features in [('default', []), ('strict', ['--all-features'])]:
+        plan.append(('advanced-b-doctests-' + name, ['cargo', 'test'] + common + features + ['--doc']))
+    return plan
 
 
 def source_id(root: Path = ROOT) -> str:
-    """Code/build/launcher/UI content; excludes generated evidence, docs and caches."""
+    """Code, build and lesson inputs; excludes generated evidence and build caches."""
     h = hashlib.sha256()
     paths = []
     for path in root.rglob('*'):
         rel = path.relative_to(root)
         if not path.is_file() or any(x in {'target', '.git', '__pycache__'} for x in rel.parts):
             continue
-        if rel.parts[0] not in {'apps', 'scripts', '.github'} and len(rel.parts) != 1:
+        if (rel.parts[0] not in {'apps', 'scripts', '.github', 'course', 'examples'}
+                and rel.parts[:2] != ('projects', 'advanced-b') and len(rel.parts) != 1):
             continue
         if path.suffix in CODE_SUFFIXES or rel.as_posix() == 'VERSION':
             paths.append(path)
@@ -83,11 +114,9 @@ def run_step(label: str, command: list[str], output: Path, timeout: int = 600) -
     item = dict(step=label, command=command, exit_code=code, timed_out=timed_out,
                 seconds=round(time.monotonic()-start, 3), log=log.name,
                 log_sha256=hashlib.sha256(log.read_bytes()).hexdigest(), passed=code == 0)
-    if label in {'debug-tests', 'release-tests'}:
-        item['tests'] = test_summary(text, code)
-        item['passed'] = item['tests']['valid']
-    if label == 'doctests':
-        item['tests'] = test_summary(text, code, minimum=2, expected_ignored=0)
+    if label in TEST_LIMITS:
+        minimum, ignored = TEST_LIMITS[label]
+        item['tests'] = test_summary(text, code, minimum=minimum, expected_ignored=ignored)
         item['passed'] = item['tests']['valid']
     return item
 
@@ -118,6 +147,7 @@ def main() -> int:
         ('release-tests',cargo+['test','--release']+locked+['--','--test-threads=2']),
         ('doctests',cargo+['test','--locked','--offline','--workspace','--doc']),
         ('release-build',cargo+['build','--locked','--offline','--workspace','--release']),
+        *advanced_b_steps(),
         ('studio-smoke',[sys.executable,'scripts/smoke_studio_release.py','--output',str(out/'studio-smoke.json')]),
         ('database-smoke',[sys.executable,'scripts/smoke_state_database.py','--output',str(out/'database-products')]),
         ('minikv-smoke',[sys.executable,'scripts/smoke_minikv.py','--output',str(out/'minikv-products')]),

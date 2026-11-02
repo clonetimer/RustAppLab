@@ -111,7 +111,7 @@ fn compilation_failure_reports_real_code_and_learner_location() {
     let msg = text(&failed);
     assert!(msg.contains("E0308"), "{msg}");
     assert!(msg.contains("分号"));
-    assert!(msg.contains("src/lib.rs"));
+    assert!(msg.replace('\\', "/").contains("src/lib.rs"), "{msg}");
     assert!(msg.contains("自己的"));
     assert_eq!(fs::read_to_string(&file).unwrap(), code);
     assert!(text(&learn(&p, "next", &[])).contains("不是把学习进度重置"));

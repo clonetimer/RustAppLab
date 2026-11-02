@@ -16,11 +16,11 @@ $Out = (New-Item -ItemType Directory -Path $OutputDirectory).FullName
 $Steps = New-Object System.Collections.ArrayList
 $Apps = @('filequest','loglens','localhub','safesync','labquest','unitlab','quizdeck','textscope','ledgerlite','badgeforge','batchmeter','termgarden','storedesk','minikv','netfetch','servicedesk','asyncboard')
 function Source-Id {
-    $Names = [string[]]@(Get-ChildItem -LiteralPath $Root -Recurse -File | ForEach-Object {
+    $Names = [string[]]@(Get-ChildItem -LiteralPath $Root -Recurse -File -Force | ForEach-Object {
         $Rel = $_.FullName.Substring($Root.Length + 1).Replace('\','/')
-        if ($Rel -notmatch '(^|/)(target|\.git|__pycache__)/' -and
-            (($Rel -notmatch '/') -or ($Rel -match '^(apps|scripts|\.github)/')) -and
-            (($Rel -eq 'VERSION') -or ($_.Extension -in @('.rs','.toml','.lock','.py','.ps1','.cmd','.sh','.html','.css','.js','.yml','.yaml')))) { $Rel }
+        if ($Rel -cnotmatch '(^|/)(target|\.git|__pycache__)/' -and
+            (($Rel -notmatch '/') -or ($Rel -cmatch '^(apps|scripts|\.github|course|examples)/') -or ($Rel -cmatch '^projects/advanced-b/')) -and
+            (($Rel -ceq 'VERSION') -or ($_.Extension -cin @('.rs','.toml','.lock','.py','.ps1','.cmd','.sh','.html','.css','.js','.yml','.yaml','.md','.tsv','.txt','.json','.kv','.svg')))) { $Rel }
     })
     [Array]::Sort($Names, [StringComparer]::Ordinal)
     $Buffer = New-Object IO.MemoryStream
@@ -41,7 +41,7 @@ function Quote-Native([string]$Value) {
     $Escaped = [regex]::Replace($Escaped, '(\\+)$', '$1$1')
     return '"' + $Escaped + '"'
 }
-function Step([string]$Name, [string]$Program, [string[]]$Arguments, [bool]$TestSummary = $false) {
+function Step([string]$Name, [string]$Program, [string[]]$Arguments, [bool]$TestSummary = $false, [int]$MinimumPassed = 200, [int]$ExpectedIgnored = 15) {
     Write-Host "[$Name] $Program $($Arguments -join ' ')" -ForegroundColor Cyan
     $Stdout = Join-Path $Out ($Name+'.stdout.txt')
     $Stderr = Join-Path $Out ($Name+'.stderr.txt')
@@ -63,10 +63,13 @@ function Step([string]$Name, [string]$Program, [string[]]$Arguments, [bool]$Test
     $Result = [ordered]@{step=$Name;command=@($Program)+$Arguments;exit_code=$Code;timed_out=$TimedOut;seconds=[math]::Round($Timer.Elapsed.TotalSeconds,3);log=[IO.Path]::GetFileName($Log);log_sha256=(Get-FileHash -LiteralPath $Log -Algorithm SHA256).Hash.ToLowerInvariant();passed=$Passed}
     if ($TestSummary) {
         $Matches = [regex]::Matches($Text,'test result: (ok|FAILED)\. (\d+) passed; (\d+) failed; (\d+) ignored;')
-        $Good=0; $Bad=0; $Ignored=0
-        foreach ($M in $Matches) { $Good += [int]$M.Groups[2].Value; $Bad += [int]$M.Groups[3].Value; $Ignored += [int]$M.Groups[4].Value }
+        $Good=0; $Bad=0; $Ignored=0; $AllOk=$true
+        foreach ($M in $Matches) {
+            $Good += [int]$M.Groups[2].Value; $Bad += [int]$M.Groups[3].Value; $Ignored += [int]$M.Groups[4].Value
+            if ($M.Groups[1].Value -cne 'ok') { $AllOk=$false }
+        }
         $Result.tests = @{suites=$Matches.Count;passed=$Good;failed=$Bad;ignored=$Ignored}
-        $Result.passed = $Passed -and $Matches.Count -gt 0 -and $Good -ge 200 -and $Bad -eq 0 -and $Ignored -eq 15
+        $Result.passed = $Passed -and $Matches.Count -gt 0 -and $Good -ge $MinimumPassed -and $Bad -eq 0 -and $Ignored -eq $ExpectedIgnored -and $AllOk
     }
     [void]$Steps.Add([pscustomobject]$Result)
     if (-not $Result.passed) { Write-Host $Text; throw "$Name failed (exit=$Code). Log: $Log" }
@@ -97,8 +100,28 @@ try {
     Step 'release-clippy' 'cargo' @('clippy','--locked','--offline','--release','--workspace','--all-targets','--','-D','warnings')
     Step 'debug-tests' 'cargo' @('test','--locked','--offline','--workspace','--all-targets','--','--test-threads=2') $true
     Step 'release-tests' 'cargo' @('test','--locked','--offline','--release','--workspace','--all-targets','--','--test-threads=2') $true
-    Step 'doctests' 'cargo' @('test','--locked','--offline','--workspace','--doc')
+    Step 'doctests' 'cargo' @('test','--locked','--offline','--workspace','--doc') $true 2 0
     Step 'release-build' 'cargo' @('build','--locked','--offline','--workspace','--release')
+    # Match release_check.py advanced_b_steps(): this reference is a separate workspace.
+    $ReferenceManifest = 'projects/advanced-b/reference/Cargo.toml'
+    $ReferenceCommon = @('--locked','--offline','--manifest-path',$ReferenceManifest,'--workspace')
+    $Configurations = @(
+        @{Name='default'; Features=@()},
+        @{Name='strict'; Features=@('--all-features')}
+    )
+    Step 'advanced-b-format' 'cargo' @('fmt','--manifest-path',$ReferenceManifest,'--all','--','--check')
+    foreach ($Configuration in $Configurations) {
+        Step ('advanced-b-clippy-'+$Configuration.Name) 'cargo' (@('clippy')+$ReferenceCommon+@('--all-targets')+$Configuration.Features+@('--','-D','warnings'))
+    }
+    foreach ($BuildProfile in @(@{Name='debug'; Flags=@()}, @{Name='release'; Flags=@('--release')})) {
+        foreach ($Configuration in $Configurations) {
+            Step ('advanced-b-'+$BuildProfile.Name+'-'+$Configuration.Name) 'cargo' (@('test')+$ReferenceCommon+$BuildProfile.Flags+@('--all-targets')+$Configuration.Features+@('--','--test-threads=2')) $true 12 0
+        }
+    }
+    Step 'advanced-b-no-default' 'cargo' (@('test')+$ReferenceCommon+@('--all-targets','--no-default-features','--','--test-threads=2')) $true 12 0
+    foreach ($Configuration in $Configurations) {
+        Step ('advanced-b-doctests-'+$Configuration.Name) 'cargo' (@('test')+$ReferenceCommon+$Configuration.Features+@('--doc')) $true 1 0
+    }
     foreach ($Script in @('windows_beginner_smoke','windows_database_smoke','windows_studio_smoke')) {
         Step $Script 'powershell.exe' @('-NoLogo','-NoProfile','-ExecutionPolicy','Bypass','-File',(Join-Path $PSScriptRoot ($Script+'.ps1')))
     }

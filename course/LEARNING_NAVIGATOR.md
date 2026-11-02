@@ -1,5 +1,9 @@
 # 学习导航：读任务、修改、检查、理解错误
 
+## 对照阅读
+
+运行 `cargo run --locked --offline -p labquest -- learn reading "my-textscope"`，按已有学员工程查看 Rust Book 中文概念、官方资料和自己的输入实验。省略目录查看概述；阅读后回到原有检查命令。新任务卡也带参考段。版本对应和完整用法见 [BOOK_GUIDE.md](BOOK_GUIDE.md)。
+
 ## 当前入口
 
 Windows 已有工程请双击平台根目录 `LEARN_NEXT_WINDOWS.cmd`。目录可以在旧版本文件夹里，也可以在外部磁盘；导航不会迁移、删除或覆盖源码。没有工程时用 `START_WINDOWS.cmd` 或 `CONTINUE_WINDOWS.cmd` 创建。

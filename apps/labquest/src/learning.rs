@@ -32,12 +32,13 @@ MiniKV 等 Studio 工程有提供的外壳，不应当作从零独立开发考�
 查看所有项目：cargo run --offline -p labquest -- learn overview <练习父目录>
 查看当前项目：cargo run --offline -p labquest -- learn next <学员项目目录>
 当前任务卡：cargo run --offline -p labquest -- learn lesson <学员项目目录>
+对照阅读：cargo run --offline -p labquest -- learn reading <学员项目目录>
 检查当前步：cargo run --offline -p labquest -- learn check <学员项目目录>
 分层提示：cargo run --offline -p labquest -- learn hint <学员项目目录> 1
 分析外部报错：cargo run --offline -p labquest -- learn diagnose <编译错误文本文件>
 "#;
 
-fn require_regular(path: &Path, max_bytes: u64) -> Result<String, String> {
+pub(crate) fn require_regular(path: &Path, max_bytes: u64) -> Result<String, String> {
     let m = fs::symlink_metadata(path).map_err(|e| format!("无法读取 {}：{e}", path.display()))?;
     if !m.is_file() || m.file_type().is_symlink() || m.len() > max_bytes {
         return Err(format!(
@@ -47,7 +48,7 @@ fn require_regular(path: &Path, max_bytes: u64) -> Result<String, String> {
     fs::read_to_string(path).map_err(|e| format!("文件不是有效 UTF-8 或读取失败：{e}"))
 }
 
-fn studio_id(root: &Path) -> Result<Option<String>, String> {
+pub(crate) fn studio_id(root: &Path) -> Result<Option<String>, String> {
     let marker = root.join(".applab-studio");
     if !marker.exists() && fs::symlink_metadata(&marker).is_err() {
         return Ok(None);
@@ -387,7 +388,7 @@ fn read_diagnostics(path: &Path) -> Result<String, String> {
     }
 }
 
-fn learning_root(root: &Path) -> Result<(), String> {
+pub(crate) fn learning_root(root: &Path) -> Result<(), String> {
     let m = fs::symlink_metadata(root)
         .map_err(|e| format!("无法打开学习目录 {}：{e}", root.display()))?;
     if !m.is_dir() || m.file_type().is_symlink() {
@@ -404,7 +405,7 @@ fn step_for(root: &Path, requested: Option<usize>) -> Result<usize, String> {
     }
     Ok(last_report(root)?.map(ReportState::step).unwrap_or(1))
 }
-fn first_card(root: &Path) -> bool {
+pub(crate) fn first_card(root: &Path) -> bool {
     root.join("跟着做.md").is_file() && root.join("src/main.rs").is_file()
 }
 fn handoff(id: &str) -> String {
@@ -445,6 +446,7 @@ pub(crate) fn printable_tasks(id: &str) -> Option<String> {
     text.push_str("## 完成后\n\n");
     text.push_str(&handoff(id));
     text.push_str("\n记录输入、预期、实际输出、用过的提示和仍然不理解的地方。功能测试通过不等于无需帮助就掌握了这些概念。\n");
+    text.push_str(&crate::book_reading::markdown(id)?);
     Some(text)
 }
 
@@ -492,10 +494,18 @@ pub fn printable_tasks_html(id: &str) -> Option<String> {
         ));
     }
     out.push_str(&format!("<section><h2>三步完成之后</h2><pre><code>cargo test --offline</code></pre><p>{}</p><p>学习路线中提到的 course/ 路径位于完整平台或学员包根目录。记录真实输入、产物和用过的提示：<a href=\"LEARNING_LOG.md\">LEARNING_LOG.md</a>。</p></section><footer>页面不保存成绩，不执行代码、不请求网络。展开提示不代表通关；真实检查请使用 Cargo 或平台的 learn check。</footer></main></body></html>",html(&handoff(id))));
+    let references = crate::book_reading::html(id)?;
+    out = out.replace("<footer>", &format!("{references}<footer>"));
     Some(out)
 }
 
 pub fn lesson(root: &Path, requested: Option<usize>) -> Result<String, String> {
+    let mut text = lesson_text(root, requested)?;
+    text.push_str(&crate::book_reading::lesson_reminder(root));
+    Ok(text)
+}
+
+fn lesson_text(root: &Path, requested: Option<usize>) -> Result<String, String> {
     learning_root(root)?;
     if let Some(id) = studio_id(root)? {
         let step = step_for(root, requested)?;
@@ -759,6 +769,14 @@ pub fn overview(parent: &Path) -> Result<String, String> {
 }
 
 pub fn run(args: &[OsString]) -> Result<(), String> {
+    if args.first().is_some_and(|arg| arg == "reading") {
+        match args.len() {
+            1 => print!("{}", crate::book_reading::overview()),
+            2 => print!("{}", crate::book_reading::for_project(Path::new(&args[1]))?),
+            _ => return Err("用法：learn reading [学员工程目录]".into()),
+        }
+        return Ok(());
+    }
     if args.len() >= 2 && crate::advanced_b::is_project(Path::new(&args[1])) {
         let root = Path::new(&args[1]);
         return match args[0].to_str() {
@@ -771,6 +789,7 @@ pub fn run(args: &[OsString]) -> Result<(), String> {
                     "{}",
                     include_str!("../../../projects/advanced-b/ADVANCED_B.md")
                 );
+                print!("{}", crate::book_reading::lesson_reminder(root));
                 Ok(())
             }
             Some("check") if args.len() == 3 => {
@@ -788,7 +807,14 @@ pub fn run(args: &[OsString]) -> Result<(), String> {
         };
     }
     if args.len() >= 2 && crate::advanced::is_project(Path::new(&args[1])) {
-        return crate::advanced::learn_run(args);
+        crate::advanced::learn_run(args)?;
+        if args[0] == "lesson" {
+            print!(
+                "{}",
+                crate::book_reading::lesson_reminder(Path::new(&args[1]))
+            );
+        }
+        return Ok(());
     }
     let command = args.first().and_then(|s| s.to_str()).unwrap_or("route");
     fn parse_step(arg: Option<&OsString>) -> Result<Option<usize>, String> {
@@ -814,7 +840,7 @@ pub fn run(args: &[OsString]) -> Result<(), String> {
             else { Err("当前练习尚未通过；阅读本次反馈、保存修改后，重新运行 learn check".into()) }
         }
         "diagnose" if args.len()==2 => { println!("{}",diagnose_text(&read_diagnostics(Path::new(&args[1]))?)); Ok(()) }
-        _ => Err("用法：learn route | overview <练习父目录> | next <目录> | lesson <目录> [步骤] | hint <目录> <级别1..3> [步骤] | check <目录> [步骤|all] | diagnose <报错文件>".into()),
+        _ => Err("用法：learn route | reading [目录] | overview <练习父目录> | next <目录> | lesson <目录> [步骤] | hint <目录> <级别1..3> [步骤] | check <目录> [步骤|all] | diagnose <报错文件>".into()),
     }
 }
 
@@ -1066,7 +1092,16 @@ mod tests {
             assert!(!page.contains("<script"));
             assert!(!page.contains("/mnt/data/"));
             assert!(!page.contains("src=\"http"));
-            assert!(!page.contains("href=\"http"));
+            // Reference links are opened only by the reader; no remote assets load.
+            for tail in page.split("href=\"").skip(1) {
+                let url = tail.split('"').next().unwrap();
+                if url.starts_with("http") {
+                    assert!(
+                        url.starts_with("https://rust.bootcss.com/")
+                            || url.starts_with("https://doc.rust-lang.org/")
+                    );
+                }
+            }
         }
         assert!(printable_tasks_html("minikv").unwrap().contains("&amp;str"));
         assert!(printable_tasks_html("unknown").is_none());

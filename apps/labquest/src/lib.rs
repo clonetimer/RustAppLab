@@ -3,6 +3,7 @@ pub mod advanced;
 pub mod advanced_b;
 pub mod beginner;
 pub mod board;
+mod book_reading;
 pub mod capstone;
 pub mod case;
 pub mod checks;

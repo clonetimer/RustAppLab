@@ -1,4 +1,20 @@
-# 参考项目借鉴记录（2026-10-28）
+# 参考项目借鉴记录
+
+## 2026-11-02：Rust Book 中文站与官方资料
+
+本轮实际阅读 [rust.bootcss.com](https://rust.bootcss.com/)，并用 [官方 Rust Book](https://doc.rust-lang.org/book/) 和 Cargo 文档核对行为。中文站首页写明 Rust 1.37.0 / Edition 2018；本项目保持 Rust 2021 与最低 Rust 1.74.0，按主题建立对照。
+
+| 参考内容 | 本项目落实 |
+|---|---|
+| [引用与借用](https://rust.bootcss.com/ch04-02-references-and-borrowing.html)、[Result](https://rust.bootcss.com/ch09-02-recoverable-errors-with-result.html) | `learn reading [工程]` 将现有作品与相关概念、思考实验、实际检查入口相连 |
+| [测试组织](https://rust.bootcss.com/ch11-03-test-organization.html)、[官方对应章节](https://doc.rust-lang.org/book/ch11-03-test-organization.html) | 进阶 B 验证公开接口、CLI list、独立报告进程；用真实错误变体确认检查器发现回归 |
+| [Cargo 工作空间](https://rust.bootcss.com/ch14-03-cargo-workspaces.html)、[官方 Workspace](https://doc.rust-lang.org/cargo/reference/workspaces.html) | 显式测试独立 reference 工作区，将默认/strict feature、Debug/Release、no-default 纳入工程检查 |
+| [Cargo test](https://doc.rust-lang.org/cargo/commands/cargo-test.html)、[文档测试](https://doc.rust-lang.org/rustdoc/write-documentation/documentation-tests.html) | 所有目标测试与 doctest 分别执行，新增可运行 API 示例，零测试、ignored 和失败均按门槛判断 |
+| [现代 async](https://doc.rust-lang.org/book/ch17-00-async-await.html) | AsyncBoard 导航同时提供线程基础和当前异步资料，标注现有教学执行器范围 |
+
+课程解释和思考实验由本项目编写，参考链接用于进一步阅读。学习说明见 [对照学习指南](course/BOOK_GUIDE.md)。
+
+## 2026-10-28：原有参考项目
 
 本项目教学方案参考下列公开仓库的 README、入口说明或项目介绍。主要借鉴**教学组织方式和产品交付理念**，不复制参考项目的源码。
 

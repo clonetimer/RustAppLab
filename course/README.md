@@ -1,4 +1,6 @@
-# 当前学习路线（0.13.0）
+# 当前学习路线（0.19.0-dev.2）
+
+[Rust Book 对照学习](BOOK_GUIDE.md) · [学习导航](LEARNING_NAVIGATOR.md) · [进阶 A](ADVANCED_A.md) · [进阶 B](ADVANCED_B.md)。已有学员可用 `learn reading <工程路径>` 按当前作品查找相关概念。
 
 完成 FirstCard 后先去 [作品工坊](../WORKSHOP.html)，从 [UnitLab](studio/unitlab.md) 开始。原有 00–31 讲义保留，但不再要求零基础从复杂工具源码直接入手。
 

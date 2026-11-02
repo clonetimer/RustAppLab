@@ -22,16 +22,16 @@ def verify() -> tuple[int, int]:
             file=folder / f'lab{index}.rs'
             binary=folder / f"lab{index}{'.exe' if sys.platform == 'win32' else ''}"
             file.write_text(source,encoding='utf-8')
-            result=subprocess.run(['rustc','--edition','2021',str(file),'-o',str(binary)],capture_output=True,text=True,timeout=20)
+            result=subprocess.run(['rustc','--edition','2021',str(file),'-o',str(binary)],capture_output=True,text=True,encoding='utf-8',timeout=20)
             if kind=='rust,compile_fail':
                 expected=EXPECTED[index//2]
-                if result.returncode == 0 or expected not in result.stderr:
+                if result.returncode == 0 or not re.search(rf'^error\[{expected}\]:',result.stderr,re.M):
                     raise RuntimeError(f'Lab {index//2+1} must fail with {expected}; exit={result.returncode}; stderr={result.stderr[-500:]}')
                 print(f'[EXPECTED FAIL] {expected}')
             else:
                 if result.returncode != 0:
                     raise RuntimeError(f'Corrected lab {index//2+1} did not compile: {result.stderr[-500:]}')
-                run=subprocess.run([str(binary)],capture_output=True,text=True,timeout=8)
+                run=subprocess.run([str(binary)],capture_output=True,text=True,encoding='utf-8',timeout=8)
                 if run.returncode != 0:
                     raise RuntimeError(f'Corrected lab {index//2+1} did not run: {run.stderr[-500:]}')
                 print(f'[PASS] corrected lab {index//2+1}')

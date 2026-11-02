@@ -18,10 +18,14 @@
 cargo metadata --no-deps --format-version 1
 cargo tree --workspace
 cargo test --offline --workspace
-cargo test --offline -p taskcore --features strict-titles
+cargo test --locked --offline -p taskcore --test feature --no-default-features
+cargo test --locked --offline -p taskcore --test feature --no-default-features --features strict-titles
+cargo test --locked --offline -p taskcore --doc
 cargo fmt --all -- --check
 cargo clippy --workspace --all-targets -- -D warnings
 ```
+
+`feature.rs` 对比 80/81 个 Unicode 字符的标题边界，并检查解析和新增任务是否共享标题规则。B3 自动验收会分别运行上面的两种 feature 配置。测试目录中的文件是集成测试，`///` 中可编译运行的示例是文档测试；`cargo test --all-targets` 不会代替 `cargo test --doc`。
 
 注意 feature 可能因依赖图而合并；独立运行某个包的行为不等于完整 Workspace feature 组合。
 

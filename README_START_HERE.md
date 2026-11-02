@@ -1,5 +1,9 @@
 > 已完成基础与进阶 A 的学员：见 `ADVANCED_B.html`，可双击 `START_ADVANCED_B_WINDOWS.cmd` 开始多程序复用课程。
 
+## 按当前工程查阅 Rust Book
+
+已有学员工程时，在平台根目录执行 `cargo run --locked --offline -p labquest -- learn reading "my-unitlab"`。按当前作品查看中文概念、官方资料与思考实验，阅读后回到原有检查命令。详见 [对照学习指南](course/BOOK_GUIDE.md)。
+
 # 已完成基础课程的学员
 
 0.19.0-dev.1开始进阶A。直接打开 [ADVANCED_A.html](ADVANCED_A.html)，或Windows双击 `START_ADVANCED_WINDOWS.cmd`，生成独立的my-workbench。已有基础工程不用覆盖。旧续学菜单同样识别新工程。

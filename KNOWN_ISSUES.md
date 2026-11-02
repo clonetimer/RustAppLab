@@ -1,22 +1,26 @@
-# 0.18.0-dev.3 当前边界
+# 0.19.0-dev.2 当前范围与后续事项
 
-新版 Windows 持续学习菜单已进行静态检查，尚无原生执行证据。当前源码也尚未在 Rust 1.74 原生重验；旧 RC 的通过证据只适用于旧冻结源码。基础微任务卡目前只覆盖 UnitLab、QuizDeck、TextScope，其余 Studio 使用既有讲义。没有新增真人教学效果数据。
+更新：2026-11-02。工程测试结果见 [本轮测试记录](verification/2026-11-02-book-guided-quality.md)，历史变更见 [RELEASE_NOTES.md](RELEASE_NOTES.md)。
 
-与 dev.1 不同，本轮已取得单次全仓 Debug/Release 全部通过结果。下方历史条目中的超时或旧版本状态不能作为当前测试结论。
+## 已交付的当前范围
 
----
+- 基础教学：十二款 Studio、36 张任务卡、108 条逐级提示；FirstCard 与 TaskPocket/PageMint 独立作品路线。
+- 进阶 A：TermGarden 的共享句柄、弱引用、闭包、快照与接口设计。
+- 进阶 B1–B3：业务库、多 crate Workspace、CLI 与报告程序、默认/strict-titles 两种配置的累计检查。
+- Rust Book 对照阅读：按现有工程显示相关章节和思考实验；新版生成任务卡附同源参考段。
 
-# 0.18.0-dev.1 已知限制与教学改进事项
+本轮修复了 Windows 编译实验 UTF-8 解码、进阶 B list/feature 漏验和 B1..B0 导航文案，并将独立工作区及教材输入纳入工程验证。
 
-| ID | 范围与现状 | 是否影响 Stable |
-|---|---|---|
-| PLATFORMS | 仅声明 Windows x64 MSVC、Linux x86_64。macOS 不声明支持，也不是 Stable 门槛 | **否** |
-| WINDOWS-NEW | 当前版本新增 `LEARN_NEXT_WINDOWS.cmd` 和 `learn` 命令，尚未取得此开发版的 Windows 原生复验 | **是**，需要测试 |
-| LEARNERS | 尚无足够的零基础学员连续独立完成 FirstCard/UnitLab/独立软件的观察数据 | **是** |
-| ASSESSMENT | 旧 `.studio-reports` 可由用户修改，`learn next` 只用于导航，不产生新通过证明 | 已有约束，不能当能力证据 |
-| ERROR-HELP | `learn diagnose` 仅解释十种常见 Rust 错误码，不能自动定位或修复任意错误 | 不阻塞当前教学范围 |
-| STORAGE | SafeSync/MiniKV 为教学存储，不承诺物理断电安全；StoreDesk 需系统 SQLite | 已知边界 |
-| NETWORK | 同步 HTTP 与 AsyncBoard Future 不构成 Tokio/Reqwest/Axum 非阻塞网络课程 | 后续扩展范围 |
-| NEW-DOMAINS | ChatDock、DeskNotes GUI、WasmBoard 仍未完成 | 后续课程，不伪报已完成 |
+## 后续工作与使用范围
 
-当前 0.17.0-rc.2 冻结版本的 RC_READY 有独立记录。当前开发版不得以旧版证据发布 Stable。
+| 项目 | 当前情况与下一步 |
+|---|---|
+| B4 第三方依赖 | Serde/serde_json 课程待实现，需依赖锁定、序列化练习和 Windows/Linux 实测 |
+| C 真实异步网络 | Tokio/Reqwest/Axum 课程待完成；现有 NetFetch/ServiceDesk 为同步本机网络，AsyncBoard 是教学型 Future 执行器 |
+| GUI / WASM | 仍为方向选修规划 |
+| 学习效果 | 自动检查提供程序行为证据；零基础学员的连续独立完成情况需实际观察 |
+| 学习记录 | 本地记录用于导航；源码改变后需重新运行当前检查 |
+| 存储 | StoreDesk 依赖系统 SQLite；TaskPocket/MiniKV 等教学存储的持久化能力按各自讲义说明使用 |
+| 平台 | 正式支持 Windows x64 MSVC、Linux x86_64；macOS 未纳入当前支持范围 |
+
+本版本保持开发版。冻结 RC 0.17.0-rc.2 的资格仅对应当时源码；当前工程结果、真人教学观察和交付物检查分别记录。

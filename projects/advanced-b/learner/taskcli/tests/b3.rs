@@ -32,6 +32,12 @@ fn actual_cli_and_report() {
     assert_eq!(r.stdout, b"added=1\n");
     assert!(run(&["add", p, "write tests"]).status.success());
     assert!(run(&["done", p, "1"]).status.success());
+    let listed = run(&["list", p]);
+    assert!(listed.status.success());
+    assert_eq!(
+        String::from_utf8(listed.stdout).unwrap(),
+        "1\tDONE\t学 Rust\n2\tOPEN\twrite tests\n"
+    );
     let out = run(&["stats", p]);
     assert_eq!(out.stdout, b"total=2 open=1 done=1\n");
     let tasks = taskcore::load(&db).unwrap();
