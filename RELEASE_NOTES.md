@@ -1,3 +1,13 @@
+# 2026-11-02 · B4 Serde JSON 导出增补（0.19.0-dev.2）
+
+- 新增独立 `json-export` 适配工作区，真实 serde / serde_json、固定 v3 lock、DTO/Serialize derive、严格标题 feature 和只读 CLI；基础 Workspace 保持纯 path 依赖。
+- 新增 `advanced-b add-json/prepare-json`；固定参考源码准备依赖，独立保留日志，不运行学员构建脚本。旧工程显式添加，不覆盖目录。
+- `check 4/all` 与 `learn check` 累计到 B4，显式 `3` 保留原合同。Report v3 记录 JSON 指纹，旧 B3 报告不冒充 B4 通过。
+- 完整离线门禁显式检查 B4 参考 Debug/Release、默认/strict、Clippy、doctest 和平台 E2E；CI 单独 fetch，再验证 Windows/Linux 与实际 Rust 1.74。当前源码实际平台结果以 CI 为准。
+- 主干全绿后创建不可覆盖的轻量 checkpoint 标签；无 Stable 发布。真实异步网络课程 C 尚未交付。
+
+---
+
 # 0.19.0-dev.2 · 进阶 B1–B3（2026-10-31）
 
 - 新增独立多 Package Workspace：TaskCore 业务库、TaskPocket Pro CLI、TaskPocket Report。

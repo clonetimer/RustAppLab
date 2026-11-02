@@ -40,6 +40,8 @@ class SummaryTests(unittest.TestCase):
         # would let evidence for old learner contracts qualify changed materials.
         paths = (
             'projects/advanced-b/reference/taskcore/src/lib.rs',
+            'projects/advanced-b/reference/json-export/Cargo.lock',
+            'projects/advanced-b/learner/json-export/src/lib.rs',
             'projects/advanced-b/learner/taskcore/tests/b1.rs',
             'projects/advanced-b/learner/Cargo.lock',
             'projects/advanced-b/ADVANCED_B.md',
@@ -129,4 +131,52 @@ class WindowsEntryTests(unittest.TestCase):
         self.assertIn("$BrowserCode = Invoke-LoggedProcess 'browser-e2e' $Python.exe $BrowserArgs", browser_runner)
         self.assertNotIn("$Args += @('--browser-path', $Browser)", browser_runner)
 
-if __name__=='__main__':unittest.main()
+
+class B4GateTests(unittest.TestCase):
+    def test_explicit_complete_independent_workspace_matrix(self):
+        full = release.advanced_b4_steps()
+        basic = release.advanced_b4_steps(quality=False)
+        self.assertEqual(len(full), 10)
+        self.assertEqual(len(basic), 7)
+        self.assertEqual(len({name for name, _ in full}), 10)
+        for name, command in full:
+            self.assertTrue(name.startswith('advanced-b4-'))
+            self.assertIn(name, release_decision.REQUIRED)
+            if name == 'advanced-b4-platform-e2e':
+                self.assertEqual(command, ['cargo','test','--locked','--offline','-p','labquest','--features','b4-integration','--test','advanced_b_json_e2e','--','--test-threads=1'])
+                self.assertEqual(release.TEST_LIMITS[name], (5, 0))
+            else:
+                self.assertIn('projects/advanced-b/reference/json-export/Cargo.toml', command)
+                if command[1] != 'fmt':
+                    self.assertIn('--locked', command)
+                    self.assertIn('--offline', command)
+        for profile in ('debug', 'release'):
+            for config in ('default', 'strict'):
+                name = f'advanced-b4-{profile}-{config}'
+                self.assertEqual(release.TEST_LIMITS[name], (20, 0))
+                self.assertIn(name, dict(basic))
+        for config in ('default', 'strict'):
+            self.assertEqual(release.TEST_LIMITS['advanced-b4-doctests-'+config], (1, 0))
+
+    def test_b4_zero_tests_or_ignored_cannot_qualify(self):
+        for label in ('advanced-b4-debug-default', 'advanced-b4-doctests-strict', 'advanced-b4-platform-e2e'):
+            for output in ('', 'test result: ok. 0 passed; 0 failed; 0 ignored;', 'test result: ok. 30 passed; 0 failed; 1 ignored;'):
+                with self.subTest(label=label, output=output), tempfile.TemporaryDirectory() as temp:
+                    result = release.run_step(label, [sys.executable, '-c', f'print({output!r})'], Path(temp))
+                    self.assertFalse(result['passed'])
+
+    def test_all_gate_entrypoints_include_b4(self):
+        for relative in ('scripts/release_check.py', 'scripts/msrv_check.py'):
+            text = (release.ROOT/relative).read_text()
+            self.assertIn('*advanced_b4_steps()' if relative.endswith('/release_check.py') else 'advanced_b4_steps(quality=False)', text)
+        for relative in ('scripts/verify.sh', 'scripts/verify.ps1', 'scripts/verify_release_windows.ps1'):
+            text = (release.ROOT/relative).read_text(encoding='utf-8-sig')
+            self.assertIn('projects/advanced-b/reference/json-export/Cargo.toml', text)
+            self.assertIn('advanced_b_json_e2e', text)
+            self.assertNotIn('cargo fetch', text)
+        for relative in ('scripts/verify.ps1', 'scripts/verify_release_windows.ps1'):
+            self.assertTrue((release.ROOT/relative).read_bytes().startswith(b'\xef\xbb\xbf'))
+
+
+if __name__ == '__main__':
+    unittest.main()

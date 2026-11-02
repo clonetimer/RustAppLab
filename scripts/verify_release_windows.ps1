@@ -122,6 +122,22 @@ try {
     foreach ($Configuration in $Configurations) {
         Step ('advanced-b-doctests-'+$Configuration.Name) 'cargo' (@('test')+$ReferenceCommon+$Configuration.Features+@('--doc')) $true 1 0
     }
+    # Match release_check.py advanced_b4_steps(): 22 behavior tests, one doctest, platform E2E.
+    $JsonManifest = 'projects/advanced-b/reference/json-export/Cargo.toml'
+    $JsonCommon = @('--locked','--offline','--manifest-path',$JsonManifest,'--workspace')
+    Step 'advanced-b4-format' 'cargo' @('fmt','--manifest-path',$JsonManifest,'--all','--','--check')
+    foreach ($Configuration in $Configurations) {
+        Step ('advanced-b4-clippy-'+$Configuration.Name) 'cargo' (@('clippy')+$JsonCommon+@('--all-targets')+$Configuration.Features+@('--','-D','warnings'))
+    }
+    foreach ($BuildProfile in @(@{Name='debug'; Flags=@()}, @{Name='release'; Flags=@('--release')})) {
+        foreach ($Configuration in $Configurations) {
+            Step ('advanced-b4-'+$BuildProfile.Name+'-'+$Configuration.Name) 'cargo' (@('test')+$JsonCommon+$BuildProfile.Flags+@('--all-targets')+$Configuration.Features+@('--','--test-threads=2')) $true 20 0
+        }
+    }
+    foreach ($Configuration in $Configurations) {
+        Step ('advanced-b4-doctests-'+$Configuration.Name) 'cargo' (@('test')+$JsonCommon+$Configuration.Features+@('--doc')) $true 1 0
+    }
+    Step 'advanced-b4-platform-e2e' 'cargo' @('test','--locked','--offline','-p','labquest','--features','b4-integration','--test','advanced_b_json_e2e','--','--test-threads=1') $true 5 0
     foreach ($Script in @('windows_beginner_smoke','windows_database_smoke','windows_studio_smoke')) {
         Step $Script 'powershell.exe' @('-NoLogo','-NoProfile','-ExecutionPolicy','Bypass','-File',(Join-Path $PSScriptRoot ($Script+'.ps1')))
     }

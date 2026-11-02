@@ -10,11 +10,15 @@ pub const HELP: &str = concat!(
   cargo run --offline -p labquest -- advanced start my-workbench    进入进阶 A
   cargo run --offline -p labquest -- advanced check my-workbench 1  累计检查1/2/3
   cargo run --offline -p labquest -- advanced lesson 1              读取进阶讲义
+  cargo run --offline -p labquest -- advanced-b start my-taskpocket-pro  进入多 crate 与 Serde 课程
+  cargo run --offline -p labquest -- advanced-b add-json <旧工程>     显式添加 B4 JSON 扩展
+  cargo run --offline -p labquest -- advanced-b prepare-json <工程>  显式联网准备 B4 固定依赖
+  cargo run --offline -p labquest -- advanced-b check <工程> <1|2|3|4|all>  累计验收；all=4
   cargo run --offline -p labquest -- learn reading [工程]   Book 对照阅读（只读概念导航）
   cargo run --offline -p labquest -- learn route          查看推荐的分层学习路线
   cargo run --offline -p labquest -- learn lesson <工程> [步骤]           当前微任务卡
   cargo run --offline -p labquest -- learn hint <工程> <1|2|3> [步骤]     概念/思路/自测三级提示
-  cargo run --offline -p labquest -- learn check <工程> [1|2|3|all]       真正编译检查，并显示教学反馈
+  cargo run --offline -p labquest -- learn check <工程> [步骤|all]        真正编译检查；进阶 B 有4阶段
   cargo run --offline -p labquest -- learn next my-unitlab  不运行程序，给出当前工程下一步
   cargo run --offline -p labquest -- learn diagnose error.txt 解释第一条常见 Rust 编译报错
   cargo run --offline -p labquest -- ecosystem plan      维护者：查看网络依赖准备（不下载）
@@ -50,7 +54,7 @@ pub const HELP: &str = concat!(
   # 兼容原 app init/check <目录>，默认仍为 TaskPocket
   cargo run -p labquest -- help                 显示本帮助
 
-注意：这是完全离线的教学模拟；start 只创建全新目录，simulate 和 board 只更新案例自己的输出。
+基础教学可以离线运行；B4 首次依赖准备与 ecosystem prepare 会显式联网。start 只创建全新目录，simulate 和 board 只更新案例自己的输出。
 test-app 和 app check 会显式编译并执行你编辑的 Rust 代码，仅对可信的自建练习案例使用；它们不是沙箱。
 新案例使用 v2 多阈值迁移验收；旧版 v1 案例继续保持单配置验证，建议新学员使用新案例。
 "#

@@ -23,12 +23,17 @@ IGNORED_CHALLENGES = 15
 TEST_RESULT = re.compile(r"test result: (ok|FAILED)\. (\d+) passed; (\d+) failed; (\d+) ignored;")
 CODE_SUFFIXES = {'.rs', '.toml', '.lock', '.py', '.ps1', '.cmd', '.sh', '.html', '.css', '.js', '.yml', '.yaml',
                  '.md', '.tsv', '.txt', '.json', '.kv', '.svg'}
+ADVANCED_B4_MANIFEST = 'projects/advanced-b/reference/json-export/Cargo.toml'
 ADVANCED_B_MANIFEST = 'projects/advanced-b/reference/Cargo.toml'
 TEST_LIMITS = {
     'debug-tests': (200, 15), 'release-tests': (200, 15), 'doctests': (2, 0),
     'advanced-b-debug-default': (12, 0), 'advanced-b-debug-strict': (12, 0),
     'advanced-b-release-default': (12, 0), 'advanced-b-release-strict': (12, 0),
     'advanced-b-no-default': (12, 0),
+    'advanced-b4-debug-default': (20, 0), 'advanced-b4-debug-strict': (20, 0),
+    'advanced-b4-release-default': (20, 0), 'advanced-b4-release-strict': (20, 0),
+    'advanced-b4-doctests-default': (1, 0), 'advanced-b4-doctests-strict': (1, 0),
+    'advanced-b4-platform-e2e': (5, 0),
     'advanced-b-doctests-default': (1, 0), 'advanced-b-doctests-strict': (1, 0),
 }
 
@@ -51,6 +56,28 @@ def advanced_b_steps(quality: bool = True) -> list[tuple[str, list[str]]]:
                  ['--all-targets', '--no-default-features', '--', '--test-threads=2']))
     for name, features in [('default', []), ('strict', ['--all-features'])]:
         plan.append(('advanced-b-doctests-' + name, ['cargo', 'test'] + common + features + ['--doc']))
+    return plan
+
+
+def advanced_b4_steps(quality: bool = True) -> list[tuple[str, list[str]]]:
+    """B4 is a separately prepared workspace; every command here stays offline."""
+    common = ['--locked', '--offline', '--manifest-path', ADVANCED_B4_MANIFEST, '--workspace']
+    configs = [('default', []), ('strict', ['--all-features'])]
+    plan = []
+    if quality:
+        plan.append(('advanced-b4-format', ['cargo', 'fmt', '--manifest-path', ADVANCED_B4_MANIFEST,
+                                           '--all', '--', '--check']))
+        for name, features in configs:
+            plan.append(('advanced-b4-clippy-' + name,
+                         ['cargo', 'clippy'] + common + ['--all-targets'] + features + ['--', '-D', 'warnings']))
+    for profile, flags in [('debug', []), ('release', ['--release'])]:
+        for name, features in configs:
+            plan.append((f'advanced-b4-{profile}-{name}',
+                         ['cargo', 'test'] + common + flags + ['--all-targets'] + features + ['--', '--test-threads=2']))
+    for name, features in configs:
+        plan.append(('advanced-b4-doctests-' + name, ['cargo', 'test'] + common + features + ['--doc']))
+    plan.append(('advanced-b4-platform-e2e', ['cargo', 'test', '--locked', '--offline', '-p', 'labquest',
+                 '--features', 'b4-integration', '--test', 'advanced_b_json_e2e', '--', '--test-threads=1']))
     return plan
 
 
@@ -148,6 +175,7 @@ def main() -> int:
         ('doctests',cargo+['test','--locked','--offline','--workspace','--doc']),
         ('release-build',cargo+['build','--locked','--offline','--workspace','--release']),
         *advanced_b_steps(),
+        *advanced_b4_steps(),
         ('studio-smoke',[sys.executable,'scripts/smoke_studio_release.py','--output',str(out/'studio-smoke.json')]),
         ('database-smoke',[sys.executable,'scripts/smoke_state_database.py','--output',str(out/'database-products')]),
         ('minikv-smoke',[sys.executable,'scripts/smoke_minikv.py','--output',str(out/'minikv-products')]),

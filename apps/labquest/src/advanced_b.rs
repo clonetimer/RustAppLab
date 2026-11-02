@@ -13,7 +13,7 @@ use std::{
 };
 
 const MARKER: &str = "RustAppLab Advanced B v1\n";
-const REPORT_HEADER: &str = "RustAppLab Advanced B Report v2\n";
+const REPORT_HEADER: &str = "RustAppLab Advanced B Report v3\n";
 const GUIDE: &str = include_str!("../../../projects/advanced-b/ADVANCED_B.md");
 const START: &str = include_str!("../../../projects/advanced-b/learner/START_HERE.md");
 const FILES: [(&str, &str); 12] = [
@@ -105,6 +105,7 @@ pub fn init(root: &Path) -> Result<(), String> {
         write(&root.join(name), data)?
     }
     write(&root.join("taskreport/src/main.rs"), REPORT_SRC)?;
+    crate::advanced_b_json::install(root, false)?;
     write(&root.join("START_HERE.md"), START)?;
     write(&root.join("ADVANCED_B.md"), GUIDE)?;
     write(&root.join(".applab-advanced-b"), MARKER)?;
@@ -112,7 +113,20 @@ pub fn init(root: &Path) -> Result<(), String> {
     Ok(())
 }
 
-fn learner_sources(root: &Path) -> Result<BTreeMap<String, Vec<u8>>, String> {
+pub fn add_json(root: &Path) -> Result<(), String> {
+    validate(root)?;
+    crate::advanced_b_json::install(root, false)
+}
+pub fn prepare_json(root: &Path) -> Result<(), String> {
+    validate(root)?;
+    crate::advanced_b_json::prepare(root)
+}
+
+fn collect_sources(
+    root: &Path,
+    directories: &[&str],
+    required: &[&str],
+) -> Result<BTreeMap<String, Vec<u8>>, String> {
     validate(root)?;
     fn walk(
         root: &Path,
@@ -136,6 +150,9 @@ fn learner_sources(root: &Path) -> Result<BTreeMap<String, Vec<u8>>, String> {
             if meta.is_dir() {
                 walk(root, &path, files, depth + 1)?
             } else if meta.is_file() && path.extension().is_some_and(|e| e == "rs") {
+                if files.len() >= 80 {
+                    return Err("源码数量超过教学限制".into());
+                }
                 if meta.len() > 1024 * 1024 {
                     return Err("单个源码文件超过1MiB".into());
                 }
@@ -153,19 +170,51 @@ fn learner_sources(root: &Path) -> Result<BTreeMap<String, Vec<u8>>, String> {
         Ok(())
     }
     let mut files = BTreeMap::new();
-    for dir in ["taskcore/src", "taskcli/src", "taskreport/src"] {
+    for dir in directories {
+        // Check parents as well: symlink_metadata(src) alone misses a linked crate directory.
+        let mut parent = root.to_path_buf();
+        for part in Path::new(dir).components() {
+            parent.push(part);
+            let m = fs::symlink_metadata(&parent).map_err(|e| e.to_string())?;
+            if !m.is_dir() || m.file_type().is_symlink() {
+                return Err("源码文件夹非法（不能是符号链接）".into());
+            }
+        }
         walk(root, &root.join(dir), &mut files, 0)?
     }
-    for key in [
-        "taskcore/src/lib.rs",
-        "taskcli/src/main.rs",
-        "taskreport/src/main.rs",
-    ] {
-        if !files.contains_key(key) {
+    for key in required {
+        if !files.contains_key(*key) {
             return Err(format!("缺少 {key}"));
         }
     }
     Ok(files)
+}
+fn learner_sources(root: &Path) -> Result<BTreeMap<String, Vec<u8>>, String> {
+    collect_sources(
+        root,
+        &["taskcore/src", "taskcli/src", "taskreport/src"],
+        &[
+            "taskcore/src/lib.rs",
+            "taskcli/src/main.rs",
+            "taskreport/src/main.rs",
+        ],
+    )
+}
+fn json_sources(root: &Path) -> Result<BTreeMap<String, Vec<u8>>, String> {
+    match fs::symlink_metadata(root.join("json-export")) {
+        Err(e) if e.kind() == std::io::ErrorKind::NotFound => {
+            return Err(
+                "旧工程尚无 JSON 扩展；请显式运行 advanced-b add-json <目录>，再实现 B4。".into(),
+            );
+        }
+        Err(e) => return Err(e.to_string()),
+        Ok(_) => {}
+    }
+    collect_sources(
+        root,
+        &["json-export/src"],
+        &["json-export/src/lib.rs", "json-export/src/main.rs"],
+    )
 }
 fn fingerprint(files: &BTreeMap<String, Vec<u8>>) -> String {
     let mut h = Sha256::new();
@@ -177,12 +226,13 @@ fn fingerprint(files: &BTreeMap<String, Vec<u8>>) -> String {
     }
     hex(&h.finalize())
 }
-fn stage(v: &OsString) -> Result<usize, String> {
+pub(crate) fn stage(v: &OsString) -> Result<usize, String> {
     match v.to_str() {
         Some("1") => Ok(1),
         Some("2") => Ok(2),
-        Some("3" | "all") => Ok(3),
-        _ => Err("检查点应为1、2、3".into()),
+        Some("3") => Ok(3),
+        Some("4" | "all") => Ok(4),
+        _ => Err("检查点应为1、2、3、4或all".into()),
     }
 }
 fn reports(root: &Path) -> Result<PathBuf, String> {
@@ -198,7 +248,8 @@ fn reports(root: &Path) -> Result<PathBuf, String> {
     Ok(path)
 }
 pub fn next(root: &Path) -> Result<String, String> {
-    let hash = fingerprint(&learner_sources(root)?);
+    let mut files = learner_sources(root)?;
+    let hash = fingerprint(&files);
     let report = root.join(".advanced-b-reports");
     if let Ok(metadata) = fs::symlink_metadata(&report) {
         if !metadata.is_dir() || metadata.file_type().is_symlink() {
@@ -220,23 +271,44 @@ pub fn next(root: &Path) -> Result<String, String> {
             if txt.starts_with("RustAppLab Advanced B Report v1\n") {
                 return Ok("进阶 B：验收合同已更新，旧版报告未覆盖 list 和标题 feature 验收；请使用新版平台重新运行 advanced-b check <目录> 3。".into());
             }
-            if txt.starts_with(REPORT_HEADER) {
-                if !txt.lines().any(|s| s == format!("source_sha256={hash}")) {
+            let v3 = txt.starts_with(REPORT_HEADER);
+            if v3 || txt.starts_with("RustAppLab Advanced B Report v2\n") {
+                let fields: Vec<_> = txt.lines().take_while(|line| !line.is_empty()).collect();
+                if !fields.iter().any(|s| *s == format!("source_sha256={hash}")) {
                     return Ok("进阶 B：源码改变，历史报告已过期；请从 B1 回归。".into());
                 }
-                if let Some(passed) = txt
-                    .lines()
+                if let Some(passed) = fields
+                    .iter()
                     .find_map(|s| {
                         s.strip_prefix("passed=")
                             .and_then(|s| s.parse::<usize>().ok())
                     })
-                    .filter(|n| *n <= 3)
+                    .filter(|n| *n <= if v3 { 4 } else { 3 })
                 {
                     if passed == 0 {
                         return Ok("进阶 B：B1 尚未通过。阅读验收报告中的第一项失败，修改数据解析和汇总后重新执行 advanced-b check <目录> 1。".into());
                     }
                     if passed == 3 {
-                        return Ok("进阶 B 3/3 本地检查有通过记录。下一步：自己增加功能、回归测试与个人报告，不能只提交平台PASS。".into());
+                        let migration = if fs::symlink_metadata(root.join("json-export")).is_err() {
+                            "旧工程先运行 advanced-b add-json <目录>。"
+                        } else {
+                            ""
+                        };
+                        return Ok(format!("进阶 B：当前源码已通过 B1..B3；B4 尚未检查。{migration}显式运行 advanced-b prepare-json <目录> 准备依赖，实现 json-export/src，再运行 advanced-b check <目录> 4。"));
+                    }
+                    if passed == 4 {
+                        match json_sources(root) {
+                            Ok(json) => files.extend(json),
+                            Err(error) => return Ok(format!("进阶 B：B4 源码缺失或非法，历史 B4 报告已过期；B1..B3 源码未变。{error}")),
+                        }
+                        let json_hash = fingerprint(&files);
+                        if !fields
+                            .iter()
+                            .any(|s| *s == format!("json_source_sha256={json_hash}"))
+                        {
+                            return Ok("进阶 B：JSON 源码改变，历史 B4 报告已过期；B1..B3 源码未变。请重新运行 advanced-b check <目录> 4。".into());
+                        }
+                        return Ok("进阶 B 4/4 本地检查有通过记录。下一步：添加自己的数据、边界回归与设计说明，展示你如何复用业务库完成只读 JSON 导出。".into());
                     }
                     return Ok(format!("进阶 B：当前源码已通过 B1..B{passed}，建议运行 advanced-b check <目录> {}。",passed+1));
                 }
@@ -246,8 +318,8 @@ pub fn next(root: &Path) -> Result<String, String> {
     Ok("进阶 B：从 B1 开始。阅读 START_HERE.md，实现 taskcore/src/lib.rs 的解析和汇总，再执行 advanced-b check <目录> 1。".into())
 }
 pub fn check(root: &Path, required: usize) -> Result<bool, String> {
-    if !(1..=3).contains(&required) {
-        return Err("检查点为1、2、3".into());
+    if !(1..=4).contains(&required) {
+        return Err("检查点为1、2、3、4".into());
     }
     let files = learner_sources(root)?;
     let hash = fingerprint(&files);
@@ -266,7 +338,9 @@ pub fn check(root: &Path, required: usize) -> Result<bool, String> {
     }
     let mut passed = 0;
     let mut log = String::new();
-    'stages: for s in 1..=required {
+    let mut json_hash = None;
+    let mut environment_failure = false;
+    'stages: for s in 1..=required.min(3) {
         let (package, test) = match s {
             1 => ("taskcore", "b1"),
             2 => ("taskcore", "b2"),
@@ -382,6 +456,32 @@ pub fn check(root: &Path, required: usize) -> Result<bool, String> {
             }
         }
     }
+    if required == 4 && passed == 3 {
+        // Only after B1-B3 succeed do we inspect or build the optional extension.
+        match json_sources(root) {
+            Ok(json) => {
+                let mut combined = files;
+                combined.extend(json.clone());
+                json_hash = Some(fingerprint(&combined));
+                crate::advanced_b_json::install(&project, true)?;
+                for (name, data) in json {
+                    let dest = project.join(name);
+                    fs::create_dir_all(dest.parent().ok_or("JSON 源码路径非法")?)
+                        .map_err(|e| e.to_string())?;
+                    fs::write(dest, data).map_err(|e| e.to_string())?;
+                }
+                let result = crate::advanced_b_json::check(&project, &temp.0, &mut log);
+                environment_failure = result.environment_failure;
+                if result.passed {
+                    passed = 4;
+                }
+            }
+            Err(error) => {
+                println!("{error}");
+                log.push_str(&format!("\n=== B4-source ===\n{error}\n"));
+            }
+        }
+    }
     let timestamp = SystemTime::now()
         .duration_since(UNIX_EPOCH)
         .map_err(|e| e.to_string())?
@@ -392,10 +492,13 @@ pub fn check(root: &Path, required: usize) -> Result<bool, String> {
         .write(true)
         .open(&dest)
         .map_err(|e| e.to_string())?;
-    let report=format!("{REPORT_HEADER}source_sha256={hash}\npassed={passed}\nrequested={required}\n\n固定合同成功 {passed}/{required}。这不是个人设计评审或恶意代码沙箱。\n{log}");
+    let json_field = json_hash
+        .map(|hash| format!("json_source_sha256={hash}\n"))
+        .unwrap_or_default();
+    let report=format!("{REPORT_HEADER}source_sha256={hash}\n{json_field}passed={passed}\nrequested={required}\n\n固定合同成功 {passed}/{required}。这不是个人设计评审或恶意代码沙箱。\n{log}");
     f.write_all(report.as_bytes()).map_err(|e| e.to_string())?;
     println!("通过阶段 {passed}/{required}；报告：{}", dest.display());
-    if passed != required {
+    if passed != required && !environment_failure {
         println!("{}", crate::learning::diagnose_text(&log))
     }
     Ok(passed == required)
@@ -403,7 +506,7 @@ pub fn check(root: &Path, required: usize) -> Result<bool, String> {
 pub fn run(args: &[OsString]) -> Result<(), String> {
     match args.first().and_then(|s| s.to_str()) {
         None | Some("help") => {
-            println!("进阶 B · TaskPocket Pro\nadvanced-b start <新目录>\nadvanced-b lesson\nadvanced-b next <学员目录>\nadvanced-b check <学员目录> <1|2|3>");
+            println!("进阶 B · TaskPocket Pro\nadvanced-b start <新目录>\nadvanced-b add-json <旧学员目录>\nadvanced-b prepare-json <学员目录>（显式联网准备）\nadvanced-b lesson\nadvanced-b next <学员目录>\nadvanced-b check <学员目录> <1|2|3|4|all>");
             Ok(())
         }
         Some("lesson") if args.len() == 1 => {
@@ -419,6 +522,12 @@ pub fn run(args: &[OsString]) -> Result<(), String> {
             println!("{}", next(Path::new(&args[1]))?);
             Ok(())
         }
+        Some("add-json") if args.len() == 2 => {
+            add_json(Path::new(&args[1]))?;
+            println!("B4 JSON 扩展已创建；基础工作区保持原样。下一步：advanced-b prepare-json <目录>。");
+            Ok(())
+        }
+        Some("prepare-json") if args.len() == 2 => prepare_json(Path::new(&args[1])),
         Some("check") if args.len() == 3 => {
             if check(Path::new(&args[1]), stage(&args[2])?)? {
                 Ok(())
@@ -427,7 +536,7 @@ pub fn run(args: &[OsString]) -> Result<(), String> {
             }
         }
         _ => Err(
-            "用法：advanced-b start <新目录> | lesson | next <目录> | check <目录> <1|2|3>".into(),
+            "用法：advanced-b start <新目录> | add-json <目录> | prepare-json <目录> | lesson | next <目录> | check <目录> <1|2|3|4|all>".into(),
         ),
     }
 }

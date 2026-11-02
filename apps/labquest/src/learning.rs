@@ -22,7 +22,7 @@ pub const ROUTE: &str = r#"Rust AppLab · 从零基础到独立软件
 第五段（独立开发）：TaskPocket、PageMint；三个累计行为检查点，不规定内部函数。
 独立开发起点：INDEPENDENT_PATH.html；自写测试、个人产物和发布说明不能用平台PASS替代。
 进阶 A（基础结课后）：TermGarden 工作区；见 ADVANCED_A.html。使用 advanced start 创建独立工程。
-进阶 B1–B3 已提供离线可运行的多 crate Workspace，使用 advanced-b start 开始。第三方 Serde 与真实异步网络仍待在线验证。
+进阶 B1–B3 提供离线可运行的多 crate Workspace；B4 在独立 json-export 工作区练习真实 Serde JSON 导出。使用 advanced-b start 开始，B4 先显式 prepare-json 准备依赖，再离线检查。真实异步网络课程仍待实现。
 LabQuest CASE 01 为综合调查练习。
 MiniKV 等 Studio 工程有提供的外壳，不应当作从零独立开发考核。
 不要把本路线当成必须按天完成的计划。先在当前作品中：
@@ -792,11 +792,12 @@ pub fn run(args: &[OsString]) -> Result<(), String> {
                 print!("{}", crate::book_reading::lesson_reminder(root));
                 Ok(())
             }
-            Some("check") if args.len() == 3 => {
-                let n = args[2]
-                    .to_str()
-                    .and_then(|s| s.parse::<usize>().ok())
-                    .ok_or("步骤应为1..3")?;
+            Some("check") if args.len() == 2 || args.len() == 3 => {
+                let n = if let Some(value) = args.get(2) {
+                    crate::advanced_b::stage(value)?
+                } else {
+                    4
+                };
                 if crate::advanced_b::check(root, n)? {
                     Ok(())
                 } else {

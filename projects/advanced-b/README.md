@@ -1,20 +1,29 @@
-# 进阶 B · 可复用业务库与 Cargo Workspace
+# 进阶 B · 可复用业务库与 Serde JSON 导出
 
-- `reference/`：可实际使用的参考实现，三个 Workspace member：`taskcore`、`taskpocket-pro`、`taskpocket-report`。
-- `learner/`：与参考实现相同的接口，核心函数留给学员实现；提供固定合同测试，初始按设计失败。
-- `README.md`：课程进度与离线限制。
-- `ADVANCED_B.md`：完整教学路线和未完成的第三方依赖专题。
+- `reference/`：基础三成员 Workspace：taskcore、TaskPocket CLI、Markdown 报告；独立的 `reference/json-export/` 使用真实 Serde。
+- `learner/`：相同接口与可编译 TODO、固定可见测试；B1–B4 分步实现。
+- [完整课程](ADVANCED_B.md)：编辑位置、显式准备、DTO/derive、三级提示、个人数据实验和只读边界。
 
-本阶段重点训练 **Cargo Workspace、path dependency、库/CLI 分层、feature、可独立测试的接口**。当前环境无法从 crates.io 获取 Serde，因此成熟第三方依赖课程不计入已完成项，后续与 Rust 1.74 MSRV 一起验证。
+基础 B1–B3 仍不依赖 crates.io。B4 独立 Workspace 使用 Edition 2021 / Rust 1.74 和固定 Cargo.lock；首次需要联网准备，不交付 vendor 缓存。
 
-直接运行参考实现：
+在平台根目录开始学员工程：
 
 ```powershell
-cd projects/advanced-b/reference
-cargo test --offline --workspace
-cargo run --offline -p taskpocket-pro -- add tasks.tsv "完成Rust进阶B"
-cargo run --offline -p taskpocket-pro -- stats tasks.tsv
-cargo run --offline -p taskpocket-report -- tasks.tsv
+cargo run --locked --offline -p labquest -- advanced-b start "my-taskpocket-pro"
+cargo run --locked --offline -p labquest -- advanced-b prepare-json "my-taskpocket-pro"
+cargo run --locked --offline -p labquest -- advanced-b check "my-taskpocket-pro" 4
 ```
 
-开始学员工程：从 `learner` 复制到你自己的新目录，按照 START_HERE.md 做 B1/B2/B3。也可使用 `labquest advanced-b start <新目录>` 生成工程并以 `advanced-b check` 验收。
+旧工程先显式 `advanced-b add-json <目录>`；若扩展已存在则拒绝覆盖。新工程不需再添加。先完成前三阶段，B4 尚未实现时检查失败是正常反馈。
+
+维护者直接验证参考软件（第一条明确联网，其余离线）：
+
+```powershell
+cargo fetch --locked --manifest-path projects/advanced-b/reference/json-export/Cargo.toml
+cargo test --locked --offline --manifest-path projects/advanced-b/reference/Cargo.toml --workspace
+cargo test --locked --offline --manifest-path projects/advanced-b/reference/json-export/Cargo.toml --all-targets
+cargo test --locked --offline --manifest-path projects/advanced-b/reference/json-export/Cargo.toml --all-targets --all-features
+cargo test --locked --offline --manifest-path projects/advanced-b/reference/json-export/Cargo.toml --doc
+```
+
+准备过程使用平台固定源码，不运行学员源码；完成准备不等于通过课程。JSON 导出不写回 TSV，不提供 JSON 导入。只读导航不会自动准备或升级工程。

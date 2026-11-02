@@ -35,7 +35,7 @@ cargo run --locked --offline -p labquest -- learn reading "my-taskpocket-pro"
 | 闭包与迭代器 | TextScope、TermGarden | 比较循环与迭代器的输出；说明闭包读取、修改或取得了哪些数据 |
 | 智能指针、内部可变性 | 进阶 A | 画出强/弱引用关系，解释借用守卫何时释放，以及跨线程为何传拥有型快照 |
 | 线程、消息传递、共享状态 | BatchMeter、MiniKV | 检查最终数量和状态，允许线程输出顺序变化；解释谁拥有共享状态 |
-| 测试、Workspace、feature | 进阶 B | 跑默认与 strict-titles 两种配置，用库测试、两个独立程序和 doctest 验证同一接口 |
+| 测试、Workspace、feature、derive | 进阶 B | 跑默认/strict-titles，用库、CLI、报告和 doctest 验证接口；在独立 B4 适配包中用 DTO/Serialize derive 导出 JSON |
 | I/O、网络、等待 | NetFetch、ServiceDesk、AsyncBoard | 分清同步阻塞、线程并行和 Future 等待；解释当前应用实际使用哪种机制 |
 | 事务与回滚 | StoreDesk | 故意让批次第二项失败，检查库存和流水是否一起回滚，再解释 Rust 错误传播与数据库事务的分工 |
 
@@ -62,9 +62,10 @@ cargo test --locked --offline --workspace --doc
 
 ```powershell
 python scripts/check_error_labs.py
+cargo fetch --locked --manifest-path projects/advanced-b/reference/json-export/Cargo.toml
 python scripts/release_check.py --output ../qualification-current
 ```
 
-输出目录须为新目录。完整工程检查包括主工作区、进阶 B 独立参考工作区、feature 组合及文档测试。`verify.sh` 和 `verify.ps1` 提供不依赖 Python 的 Cargo 检查；Windows 完整工程记录继续使用 `VERIFY_RELEASE_WINDOWS.cmd`。普通学员只需使用 Cargo 和学习入口。
+fetch 是维护者显式联网准备；后续完整门禁不自行联网。Rust 1.74 必须用实际 1.74 工具链单独准备与运行，缓存不从较新工具链结果推断。输出目录须为新目录。完整工程检查包括主工作区、进阶 B 独立参考工作区、feature 组合及文档测试。`verify.sh` 和 `verify.ps1` 提供不依赖 Python 的 Cargo 检查；Windows 完整工程记录继续使用 `VERIFY_RELEASE_WINDOWS.cmd`。普通学员只需使用 Cargo 和学习入口。
 
-本轮完善已有 B1–B3。第三方 Serde 课程 B4 和真实异步网络课程 C 继续按 [课程路线](CURRICULUM.md) 推进。
+B4 在独立 `json-export/` 中复用 `taskcore`，练习 [Serde derive](https://serde.rs/derive.html) 与 [Cargo resolver](https://doc.rust-lang.org/cargo/reference/resolver.html)。旧 Book 可帮助理解 trait、模块和测试；第三方 API 以这些官方资料和固定 Cargo.lock 为准。在平台根目录显式 `advanced-b prepare-json <工程>` 后，再 `advanced-b check <工程> 4`；旧工程先 `advanced-b add-json <工程>`。`3` 保持原合同，`all`/`learn check` 包括 B4；准备不会执行学员源码，只读导航不会准备依赖。完整步骤和个人数据实验见 [B4 讲义](ADVANCED_B.md)。真实异步网络课程 C 继续按 [课程路线](CURRICULUM.md) 推进。
