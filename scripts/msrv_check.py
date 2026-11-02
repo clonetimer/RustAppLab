@@ -5,7 +5,7 @@ import json
 from pathlib import Path
 import platform
 import re
-from release_check import ROOT,run_step,source_id,advanced_b_steps
+from release_check import ROOT,run_step,source_id,advanced_b_steps,advanced_b4_steps
 
 def main():
     p=argparse.ArgumentParser(description=__doc__);p.add_argument('--output',type=Path,required=True);a=p.parse_args()
@@ -23,6 +23,7 @@ def main():
               ('release-tests',['cargo','test','--locked','--offline','--release','--workspace','--all-targets','--','--test-threads=2']),
               ('doctests',['cargo','test','--locked','--offline','--workspace','--doc'])]
         plan.extend(advanced_b_steps(quality=False))
+        plan.extend(advanced_b4_steps(quality=False))
         for label,command in plan:
             item=run_step(label,command,out);report['steps'].append(item)
             if not item['passed']:break

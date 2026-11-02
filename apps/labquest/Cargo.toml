@@ -6,6 +6,14 @@ rust-version = "1.74"
 license = "MIT"
 description = "Case-based, self-checking learning console that connects four Rust AppLab products"
 
+[features]
+b4-integration = []
+
+[[test]]
+name = "advanced_b_json_e2e"
+path = "tests/advanced_b_json_e2e.rs"
+required-features = ["b4-integration"]
+
 [dependencies]
 filequest = { path = "../filequest" }
 loglens = { path = "../loglens" }

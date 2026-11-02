@@ -48,7 +48,7 @@ fn initial_red_then_reference_green_and_stale() {
     )
     .unwrap();
     assert!(advanced_b::check(&p, 3).unwrap());
-    assert!(advanced_b::next(&p).unwrap().contains("3/3"));
+    assert!(advanced_b::next(&p).unwrap().contains("B4"));
     let mut src = fs::read_to_string(p.join("taskcore/src/lib.rs")).unwrap();
     src.push_str("\n// personal regression test\n");
     fs::write(p.join("taskcore/src/lib.rs"), src).unwrap();
@@ -251,9 +251,127 @@ fn old_contract_report_requires_read_only_recheck_for_unchanged_sources() {
 
     assert!(!advanced_b::check(&project, 3).unwrap());
     let current_report = latest_report(&project);
-    assert!(current_report.starts_with("RustAppLab Advanced B Report v2\n"));
+    assert!(current_report.starts_with("RustAppLab Advanced B Report v3\n"));
     assert!(current_report.contains("passed=2\n"));
     assert!(advanced_b::next(&project)
         .unwrap()
         .contains("已通过 B1..B2"));
+}
+
+#[test]
+fn json_extension_is_explicit_for_old_projects_and_never_overwrites() {
+    let tmp = Scratch::new();
+    let project = tmp.project();
+    advanced_b::init(&project).unwrap();
+    let extension = project.join("json-export");
+    let starter = fs::read(extension.join("src/lib.rs")).unwrap();
+    assert!(String::from_utf8_lossy(&starter).contains("TODO"));
+    let manifest = fs::read(project.join("Cargo.toml")).unwrap();
+    let lock = fs::read(project.join("Cargo.lock")).unwrap();
+    let add = || advanced_b::run(&["add-json".into(), project.as_os_str().into()]);
+    assert!(add().is_err());
+    assert_eq!(fs::read(extension.join("src/lib.rs")).unwrap(), starter);
+    fs::remove_dir_all(&extension).unwrap();
+    assert!(add().is_ok());
+    assert_eq!(fs::read(extension.join("src/lib.rs")).unwrap(), starter);
+    assert_eq!(fs::read(project.join("Cargo.toml")).unwrap(), manifest);
+    assert_eq!(fs::read(project.join("Cargo.lock")).unwrap(), lock);
+    fs::remove_dir_all(&extension).unwrap();
+    fs::write(project.join(".applab-advanced-b"), "not a learner project").unwrap();
+    assert!(add().is_err());
+    assert!(!extension.exists());
+}
+
+#[test]
+fn valid_v2_report_keeps_b3_progress_without_creating_json_files() {
+    let tmp = Scratch::new();
+    let project = reference_project(&tmp);
+    assert!(advanced_b::check(&project, 3).unwrap());
+    let report_path = fs::read_dir(project.join(".advanced-b-reports"))
+        .unwrap()
+        .next()
+        .unwrap()
+        .unwrap()
+        .path();
+    let current = fs::read_to_string(&report_path).unwrap();
+    let legacy = current.replacen("Report v3\n", "Report v2\n", 1);
+    fs::write(&report_path, &legacy).unwrap();
+    fs::remove_dir_all(project.join("json-export")).unwrap();
+    let next = advanced_b::next(&project).unwrap();
+    assert!(next.contains("B1..B3") && next.contains("B4"), "{next}");
+    assert!(next.contains("add-json"), "{next}");
+    for command in ["lesson", "reading", "next"] {
+        labquest::learning::run(&[command.into(), project.as_os_str().into()]).unwrap();
+    }
+    assert_eq!(fs::read_to_string(report_path).unwrap(), legacy);
+    assert!(!project.join("json-export").exists());
+    assert!(!project.join(".advanced-b-dependencies").exists());
+}
+
+#[test]
+fn explicit_b3_still_runs_with_an_empty_registry_cache() {
+    let tmp = Scratch::new();
+    let project = reference_project(&tmp);
+    let cache = tmp.0.join("empty-cargo-home");
+    fs::create_dir(&cache).unwrap();
+    let output = std::process::Command::new(env!("CARGO_BIN_EXE_labquest"))
+        .args(["advanced-b", "check"])
+        .arg(&project)
+        .arg("3")
+        .env("CARGO_HOME", &cache)
+        .env("CARGO_NET_OFFLINE", "true")
+        .output()
+        .unwrap();
+    assert!(
+        output.status.success(),
+        "{}\n{}",
+        String::from_utf8_lossy(&output.stdout),
+        String::from_utf8_lossy(&output.stderr)
+    );
+    assert!(!cache.join("registry").exists());
+    assert!(latest_report(&project).contains("passed=3\n"));
+}
+
+#[test]
+fn preparation_refuses_a_foreign_state_directory_without_overwriting() {
+    let tmp = Scratch::new();
+    let project = tmp.project();
+    advanced_b::init(&project).unwrap();
+    let state = project.join(".advanced-b-dependencies");
+    fs::create_dir(&state).unwrap();
+    fs::write(state.join("STATUS.md"), "personal notes").unwrap();
+    assert!(advanced_b::prepare_json(&project).is_err());
+    assert_eq!(
+        fs::read_to_string(state.join("STATUS.md")).unwrap(),
+        "personal notes"
+    );
+    assert_eq!(fs::read_dir(state).unwrap().count(), 1);
+}
+
+#[test]
+fn learn_check_without_a_stage_requests_the_full_b4_contract() {
+    let tmp = Scratch::new();
+    let project = tmp.project();
+    advanced_b::init(&project).unwrap();
+    // The initial B1 TODO should fail the assessment, not command-line parsing.
+    assert!(labquest::learning::run(&["check".into(), project.as_os_str().into()]).is_err());
+    let text = latest_report(&project);
+    assert!(
+        text.contains("requested=4\n") && text.contains("passed=0\n"),
+        "{text}"
+    );
+}
+
+#[cfg(unix)]
+#[test]
+fn linked_crate_parent_is_rejected_before_any_cargo_execution() {
+    use std::os::unix::fs::symlink;
+    let tmp = Scratch::new();
+    let project = tmp.project();
+    advanced_b::init(&project).unwrap();
+    let outside = tmp.0.join("outside-core");
+    fs::rename(project.join("taskcore"), &outside).unwrap();
+    symlink(&outside, project.join("taskcore")).unwrap();
+    assert!(advanced_b::check(&project, 1).is_err());
+    assert!(!project.join(".advanced-b-reports").exists());
 }

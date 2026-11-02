@@ -26,4 +26,16 @@ cargo test --locked --offline --manifest-path "$advanced_b_manifest" --workspace
 cargo test --locked --offline --manifest-path "$advanced_b_manifest" --workspace --all-targets --no-default-features
 cargo test --locked --offline --manifest-path "$advanced_b_manifest" --workspace --doc
 cargo test --locked --offline --manifest-path "$advanced_b_manifest" --workspace --all-features --doc
+echo '[extra] Advanced B4 independently prepared JSON workspace (offline)'
+advanced_b4_manifest=projects/advanced-b/reference/json-export/Cargo.toml
+cargo fmt --manifest-path "$advanced_b4_manifest" --all -- --check
+cargo clippy --locked --offline --manifest-path "$advanced_b4_manifest" --workspace --all-targets -- -D warnings
+cargo clippy --locked --offline --manifest-path "$advanced_b4_manifest" --workspace --all-targets --all-features -- -D warnings
+cargo test --locked --offline --manifest-path "$advanced_b4_manifest" --workspace --all-targets
+cargo test --locked --offline --manifest-path "$advanced_b4_manifest" --workspace --all-targets --all-features
+cargo test --locked --offline --manifest-path "$advanced_b4_manifest" --workspace --all-targets --release
+cargo test --locked --offline --manifest-path "$advanced_b4_manifest" --workspace --all-targets --release --all-features
+cargo test --locked --offline --manifest-path "$advanced_b4_manifest" --workspace --doc
+cargo test --locked --offline --manifest-path "$advanced_b4_manifest" --workspace --all-features --doc
+cargo test --locked --offline -p labquest --features b4-integration --test advanced_b_json_e2e -- --test-threads=1
 printf '%s\n' '所有包的格式、Lint、测试、release 构建命令均已执行；真实用户/跨平台验收还需单独记录。'

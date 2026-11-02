@@ -1,6 +1,7 @@
 //! LabQuest：在具象案例中复用四款应用，交付可复算的学习成果。
 pub mod advanced;
 pub mod advanced_b;
+mod advanced_b_json;
 pub mod beginner;
 pub mod board;
 mod book_reading;

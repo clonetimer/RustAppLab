@@ -71,6 +71,14 @@ for app in ("filequest", "loglens", "localhub", "safesync"):
 for relative in ("ADVANCED_B.html", "START_ADVANCED_B_WINDOWS.cmd", "course/ADVANCED_B.md", "apps/labquest/src/advanced_b.rs", "apps/labquest/tests/advanced_b_e2e.rs", "projects/advanced-b/ADVANCED_B.md", "projects/advanced-b/learner/Cargo.toml", "projects/advanced-b/learner/taskcore/src/lib.rs", "projects/advanced-b/learner/taskreport/src/main.rs", "projects/advanced-b/reference/taskcore/src/lib.rs", "projects/advanced-b/reference/taskreport/src/main.rs"):
     require((ROOT / relative).is_file(), f"进阶 B 交付缺失：{relative}")
 
+# B4 is a separate locked workspace; both shipped teaching variants are required.
+for variant in ('reference', 'learner'):
+    for relative in ('Cargo.toml', 'Cargo.lock', 'src/lib.rs', 'src/main.rs', 'tests/b4_api.rs', 'tests/b4_cli.rs'):
+        target = ROOT / 'projects' / 'advanced-b' / variant / 'json-export' / relative
+        require(target.is_file(), f"B4 交付缺失：{target.relative_to(ROOT)}")
+for relative in ('apps/labquest/src/advanced_b_json.rs', 'apps/labquest/tests/advanced_b_json_e2e.rs', 'scripts/tag_checkpoint.py', 'scripts/tests/test_tag_checkpoint.py'):
+    require((ROOT / relative).is_file(), f"B4 工具或平台文件缺失：{relative}")
+
 for relative in ("apps/labquest/Cargo.toml", "apps/labquest/src/main.rs", "apps/labquest/src/lib.rs",
                  "apps/labquest/src/case.rs", "apps/labquest/src/proof.rs", "apps/labquest/src/checks.rs",
                  "apps/labquest/src/board.rs", "apps/labquest/src/coach.rs", "apps/labquest/src/capstone.rs",

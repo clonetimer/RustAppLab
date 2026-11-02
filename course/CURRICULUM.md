@@ -5,7 +5,7 @@
 - B1 数据契约：使用独立的 `taskcore` 库解析、验证并汇总 TSV 任务。
 - B2 业务逻辑：可测试的增改接口，失败不修改内存中的原记录。
 - B3 Cargo Workspace：两个程序共享同一个业务库，真实运行 CLI 与 Markdown 报告，保留个人测试和交付清单。
-- B4 第三方 Serde 依赖管理：**待实际依赖取得后实现并编译验证**，当前未结课。
+- B4 第三方 Serde 依赖管理：独立 json-export Workspace、固定 lock、显式依赖准备、DTO/Serialize derive、只读 JSON 导出及四阶段累计检查；当前源码跨平台结果见 CI。
 
 参见 [进阶 B 讲义](ADVANCED_B.md)，启动入口 `START_ADVANCED_B_WINDOWS.cmd`。
 
@@ -15,7 +15,7 @@
 
 用户已反馈基础学员通过。新增 [进阶 A](ADVANCED_A.md)：复用 TermGarden 练习共享所有权、内部可变性、弱引用、闭包调用约束、借用接口、泛型/trait对象以及Send/Sync。交付参考实现和16号顶层独立学员工程；不是第21款领域软件。
 
-B1–B3 库工程已交付；B4 第三方依赖生态和 C 成熟异步网络仍待完成。GUI/WASM属于方向选修。
+B1–B4 覆盖库工程与真实 Serde 依赖生态；C 成熟异步网络仍待完成。GUI/WASM属于方向选修。
 
 ## 背景与纠偏
 
