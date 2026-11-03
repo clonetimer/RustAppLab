@@ -15,7 +15,13 @@ def run(exe, *args, env=None, success=True):
     result = subprocess.run([str(exe), *map(str,args)], cwd=ROOT, env=env,
                             text=True, encoding='utf-8', errors='replace', capture_output=True, timeout=600)
     if (result.returncode == 0) != success:
-        raise AssertionError(f'{args}: exit {result.returncode}\n{result.stdout}\n{result.stderr}')
+        diagnostic = ''
+        if len(args) >= 3 and args[0] == 'advanced-c2' and args[1] == 'prepare':
+            folder = Path(args[2]) / '.c2-prepare'
+            logs = sorted(folder.glob('*.txt')) if folder.is_dir() else []
+            if logs:
+                diagnostic = '\nC2 prepare detail:\n' + logs[-1].read_text(encoding='utf-8', errors='replace')[-12000:]
+        raise AssertionError(f'{args}: exit {result.returncode}\n{result.stdout}\n{result.stderr}{diagnostic}')
     return result.stdout + result.stderr
 
 def main():
