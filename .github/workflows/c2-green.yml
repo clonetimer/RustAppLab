@@ -27,8 +27,17 @@ jobs:
           cargo test --locked --manifest-path projects/advanced-c2/reference/Cargo.toml --all-targets 2>&1 | tee c2-debug.txt
           cargo test --locked --release --manifest-path projects/advanced-c2/reference/Cargo.toml --all-targets 2>&1 | tee c2-release.txt
           cargo test --locked --manifest-path projects/advanced-c2/reference/Cargo.toml --doc 2>&1 | tee c2-docs.txt
+      - name: C2 LabQuest starter and fixed assessment (actual Cargo)
+        run: |
+          cargo build --locked --offline -p labquest
+          python scripts/c2_e2e.py --exe target/debug/labquest --output c2-lifecycle.json
+      - name: Relocated C2 reference and learner vendor kits
+        run: python scripts/package_c2.py --output c2-portable
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: c2-feature-green-debug
-          path: c2-*.txt
+          path: |
+            c2-*.txt
+            c2-lifecycle.json
+            c2-portable/
