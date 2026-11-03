@@ -18,7 +18,7 @@ def edit(relative: str, old: str, new: str, encoding: str = "utf-8") -> None:
     if new in text: return
     if text.count(old)!=1:
         raise AssertionError(f"{relative}: expected exactly one anchor {old!r}, found {text.count(old)}")
-    path.write_bytes(text.replace(old,new).encode("utf-8"))
+    path.write_bytes(text.replace(old,new).encode(encoding))
 
 def make_grader() -> None:
     source=(R/"apps/labquest/src/advanced_c1.rs").read_text(encoding="utf-8")
