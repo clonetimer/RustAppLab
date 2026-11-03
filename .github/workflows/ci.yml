@@ -89,10 +89,12 @@ jobs:
         with:
           name: declared-msrv
           path: msrv-evidence/
+  c1:
+    uses: ./.github/workflows/c1.yml
   checkpoint:
     name: Tag successful main checkpoint
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    needs: [native, browser, msrv]
+    needs: [native, browser, msrv, c1]
     runs-on: ubuntu-latest
     timeout-minutes: 5
     permissions:

@@ -28,7 +28,7 @@ def allowed(path: Path) -> bool:
         return path.suffix in (".rs", ".toml", ".md", ".html", ".css", ".js", ".tsv", ".txt", ".svg", ".ps1")
     if parts[0] == "examples":
         return path.suffix in (".svg", ".txt", ".md", ".html", ".json", ".kv", ".tsv")
-    if len(parts) >= 3 and parts[:2] == ("projects", "advanced-b"):
+    if len(parts) >= 3 and parts[:2] in (("projects", "advanced-b"), ("projects", "advanced-c1")):
         return path.suffix in (".rs", ".toml", ".md", ".lock") or path.name == "Cargo.lock"
     if parts[0] == "course":
         return path.suffix == ".md"
@@ -49,25 +49,37 @@ def enumerate_files() -> list[Path]:
     )
 
 
-source_files = enumerate_files()
-MANIFEST.write_text("".join(
-    f"{hashlib.sha256(path.read_bytes()).hexdigest()}  {path.relative_to(ROOT).as_posix()}\n"
-    for path in source_files
-), encoding="utf-8")
-subprocess.run([sys.executable, str(ROOT / "scripts/structural_check.py")], check=True)
+def write_manifest(files: list[Path], root: Path, manifest: Path) -> None:
+    """Keep checksum inventory bytes identical on Windows and POSIX."""
+    text = "".join(
+        f"{hashlib.sha256(path.read_bytes()).hexdigest()}  {path.relative_to(root).as_posix()}\n"
+        for path in files
+    )
+    manifest.write_bytes(text.encode("utf-8"))
 
-with zipfile.ZipFile(OUTPUT, "w", compression=zipfile.ZIP_DEFLATED, compresslevel=9) as archive:
-    for path in [*source_files, MANIFEST]:
-        item = zipfile.ZipInfo(f"RustAppLab/{path.relative_to(ROOT).as_posix()}",
-                               date_time=(2026, 10, 28, 0, 0, 0))
-        item.compress_type = zipfile.ZIP_DEFLATED
-        item.external_attr = (0o100755 if path.suffix == ".sh" else 0o100644) << 16
-        archive.writestr(item, path.read_bytes(), compress_type=zipfile.ZIP_DEFLATED, compresslevel=9)
-with zipfile.ZipFile(OUTPUT, "r") as archive:
-    assert archive.testzip() is None
-    assert len(archive.namelist()) == len(source_files) + 1
 
-sha = hashlib.sha256(OUTPUT.read_bytes()).hexdigest()
-(OUTPUT.parent / f"{OUTPUT.name}.sha256").write_text(f"{sha}  {OUTPUT.name}\n", encoding="utf-8")
-print(f"CREATED: {OUTPUT} ({OUTPUT.stat().st_size} bytes, {len(source_files)+1} files)")
-print(f"SHA-256: {sha}")
+def main() -> None:
+    source_files = enumerate_files()
+    write_manifest(source_files, ROOT, MANIFEST)
+    subprocess.run([sys.executable, str(ROOT / "scripts/structural_check.py")], check=True)
+
+    with zipfile.ZipFile(OUTPUT, "w", compression=zipfile.ZIP_DEFLATED, compresslevel=9) as archive:
+        for path in [*source_files, MANIFEST]:
+            item = zipfile.ZipInfo(f"RustAppLab/{path.relative_to(ROOT).as_posix()}",
+                                   date_time=(2026, 10, 28, 0, 0, 0))
+            item.create_system = 3
+            item.compress_type = zipfile.ZIP_DEFLATED
+            item.external_attr = (0o100755 if path.suffix == ".sh" else 0o100644) << 16
+            archive.writestr(item, path.read_bytes(), compress_type=zipfile.ZIP_DEFLATED, compresslevel=9)
+    with zipfile.ZipFile(OUTPUT, "r") as archive:
+        assert archive.testzip() is None
+        assert len(archive.namelist()) == len(source_files) + 1
+
+    sha = hashlib.sha256(OUTPUT.read_bytes()).hexdigest()
+    (OUTPUT.parent / f"{OUTPUT.name}.sha256").write_bytes(f"{sha}  {OUTPUT.name}\n".encode("utf-8"))
+    print(f"CREATED: {OUTPUT} ({OUTPUT.stat().st_size} bytes, {len(source_files)+1} files)")
+    print(f"SHA-256: {sha}")
+
+
+if __name__ == "__main__":
+    main()

@@ -14,6 +14,9 @@ pub const HELP: &str = concat!(
   cargo run --offline -p labquest -- advanced-b add-json <旧工程>     显式添加 B4 JSON 扩展
   cargo run --offline -p labquest -- advanced-b prepare-json <工程>  显式联网准备 B4 固定依赖
   cargo run --offline -p labquest -- advanced-b check <工程> <1|2|3|4|all>  累计验收；all=4
+  cargo run --offline -p labquest -- advanced-c1 start <新工程>    C1真实异步下载
+  cargo run --offline -p labquest -- advanced-c1 prepare <工程>   显式准备Rust1.85固定依赖
+  cargo run --offline -p labquest -- advanced-c1 check <工程> [1|2|3|all]  累计验收
   cargo run --offline -p labquest -- learn reading [工程]   Book 对照阅读（只读概念导航）
   cargo run --offline -p labquest -- learn route          查看推荐的分层学习路线
   cargo run --offline -p labquest -- learn lesson <工程> [步骤]           当前微任务卡
