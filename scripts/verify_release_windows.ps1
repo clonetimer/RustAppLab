@@ -19,7 +19,7 @@ function Source-Id {
     $Names = [string[]]@(Get-ChildItem -LiteralPath $Root -Recurse -File -Force | ForEach-Object {
         $Rel = $_.FullName.Substring($Root.Length + 1).Replace('\','/')
         if ($Rel -cnotmatch '(^|/)(target|\.git|__pycache__)/' -and
-            (($Rel -notmatch '/') -or ($Rel -cmatch '^(apps|scripts|\.github|course|examples)/') -or ($Rel -cmatch '^projects/(advanced-b|advanced-c1)/')) -and
+            (($Rel -notmatch '/') -or ($Rel -cmatch '^(apps|scripts|\.github|course|examples)/') -or ($Rel -cmatch '^projects/(advanced-b|advanced-c1|advanced-c2)/')) -and
             (($Rel -ceq 'VERSION') -or ($_.Extension -cin @('.rs','.toml','.lock','.py','.ps1','.cmd','.sh','.html','.css','.js','.yml','.yaml','.md','.tsv','.txt','.json','.kv','.svg')))) { $Rel }
     })
     [Array]::Sort($Names, [StringComparer]::Ordinal)

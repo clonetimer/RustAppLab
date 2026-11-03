@@ -1,6 +1,10 @@
+## C2 Axum · 新增异步工单课程
+
+独立 Axum/Tokio 工作区、固定 ServiceDesk 业务日志、三阶段学员接口与回归测试。见 [C2 指南](course/ADVANCED_C2.md)；当前提交的实际支持范围以 CI 结果为准。原同步版本、C1 和基础 Rust1.74 保留。
+
 ## 0.19.0-dev.2 进阶 B 的实际范围
 
-B1–B4 覆盖多 crate Workspace、业务库/CLI/报告分层、feature 与真实 Serde JSON 导出。B4 显式准备固定依赖，之后离线累计检查；当前源码跨平台结果以 CI 为准。Tokio/Axum 真实异步网络课程 C 仍待交付。见 [进阶 B](course/ADVANCED_B.md)。
+B1–B4 覆盖多 crate Workspace、业务库/CLI/报告分层、feature 与真实 Serde JSON 导出。B4 显式准备固定依赖，之后离线累计检查；当前源码跨平台结果以 CI 为准。C1 下载和 C2 Axum 工单服务已加入独立课程，具体测试结果见当前 CI。见 [进阶 B](course/ADVANCED_B.md)。
 
 # Rust AppLab 路线 · 0.19.0-dev.2
 
@@ -14,7 +18,7 @@ B1–B4 覆盖多 crate Workspace、业务库/CLI/报告分层、feature 与真�
 |---|---|---|
 | A 所有权和接口设计 | TermGarden工作区：共享视图、闭包批次、撤销、快照报告 | 本轮交付参考软件、独立学员工程、三阶段检查和设计评审 |
 | B 成熟生态和库工程 | TaskPocket：业务库、两个程序复用、feature、Serde JSON 适配工作区 | B1–B4：固定依赖准备、只读 JSON 导出与累计检查；当前源码平台验证见 CI |
-| C 真实异步应用 | NetFetch/ServiceDesk：成熟运行时、有限并发、取消、正常退出 | 未交付；同步版和教学执行器不能替代 |
+| C 真实异步应用 | NetFetch/ServiceDesk：Tokio/Reqwest 下载与 Axum 工单服务 | C1 已合并；C2 已实现并进入 Windows/Linux 完整验收，限本机回环 HTTP；公网/TLS 不在本阶段范围 |
 
 A完成后进入B和C。已有作品通过 [Book 对照阅读](course/BOOK_GUIDE.md) 衔接语言概念，B4 通过显式准备衔接第三方依赖；后续优先推进 C。GUI/WASM/嵌入式为方向选修。
 

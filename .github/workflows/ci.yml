@@ -63,6 +63,11 @@ jobs:
       - run: python -m playwright install --with-deps chromium
       - name: Actual browser navigation, HTTP, create/close, restart, mobile
         run: python scripts/browser_e2e.py --output browser-evidence
+      - name: C2 real Axum browser workflow
+        run: |
+          cargo fetch --locked --manifest-path projects/advanced-c2/reference/Cargo.toml
+          cargo build --locked --offline --manifest-path projects/advanced-c2/reference/Cargo.toml
+          python scripts/c2_browser_e2e.py --exe projects/advanced-c2/reference/target/debug/servicedesk-c2 --output browser-evidence/c2-browser.json
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -91,10 +96,12 @@ jobs:
           path: msrv-evidence/
   c1:
     uses: ./.github/workflows/c1.yml
+  c2:
+    uses: ./.github/workflows/c2.yml
   checkpoint:
     name: Tag successful main checkpoint
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    needs: [native, browser, msrv, c1]
+    needs: [native, browser, msrv, c1, c2]
     runs-on: ubuntu-latest
     timeout-minutes: 5
     permissions:

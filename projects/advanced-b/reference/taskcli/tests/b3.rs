@@ -1,16 +1,26 @@
 use std::{
     fs,
     process::Command,
+    sync::atomic::{AtomicU64, Ordering},
     time::{SystemTime, UNIX_EPOCH},
 };
+static NEXT: AtomicU64 = AtomicU64::new(0);
 fn root() -> std::path::PathBuf {
     let t = SystemTime::now()
         .duration_since(UNIX_EPOCH)
         .unwrap()
         .as_nanos();
-    let p = std::env::temp_dir().join(format!("taskpocket-pro-b3-{}-{t}", std::process::id()));
-    fs::create_dir(&p).unwrap();
-    p
+    for _ in 0..100 {
+        let n = NEXT.fetch_add(1, Ordering::Relaxed);
+        let p =
+            std::env::temp_dir().join(format!("taskpocket-pro-b3-{}-{t}-{n}", std::process::id()));
+        match fs::create_dir(&p) {
+            Ok(()) => return p,
+            Err(error) if error.kind() == std::io::ErrorKind::AlreadyExists => continue,
+            Err(error) => panic!("cannot create isolated test directory: {error}"),
+        }
+    }
+    panic!("could not allocate a unique B3 test directory")
 }
 fn run(args: &[&str]) -> std::process::Output {
     Command::new(env!("CARGO_BIN_EXE_taskpocket-pro"))

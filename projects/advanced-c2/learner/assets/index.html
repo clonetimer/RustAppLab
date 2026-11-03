@@ -1,0 +1,9 @@
+<!doctype html>
+<html lang="zh-CN"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>ServiceDesk C2 · 异步工单台</title><link rel="stylesheet" href="/assets/app.css">
+<script defer src="/assets/client.js"></script></head>
+<body><main><header><small>RUST APPLAB / C2 AXUM</small><h1>ServiceDesk · 异步工单台</h1>
+<p>本地 HTTP/JSON 工单服务。Tokio/Axum 处理并发请求，磁盘日志由单写者持久化；仅监听 127.0.0.1。</p></header>
+<form id="new"><label for="title">新工单</label><input id="title" maxlength="120" required placeholder="例如：测试优雅关闭"><button type="submit">创建</button></form>
+<div id="status" role="status" aria-live="polite"></div>
+<h2>工单列表 <span id="count"></span></h2><ul id="tickets"></ul></main></body></html>
