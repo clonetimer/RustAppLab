@@ -1,0 +1,34 @@
+name: C2 reference quality (feature branch)
+on:
+  push:
+    branches: [feat/c2-axum-servicedesk]
+permissions:
+  contents: read
+jobs:
+  reference:
+    if: contains(github.event.head_commit.message, '[c2-green]')
+    runs-on: ubuntu-latest
+    timeout-minutes: 25
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@1.85.0
+        with:
+          components: rustfmt, clippy
+      - name: Rust edition/formatting
+        run: |
+          rustc --version
+          cargo fmt --manifest-path projects/advanced-c2/reference/Cargo.toml --all -- --check
+      - name: C2 clippy strict (including tests)
+        run: cargo clippy --locked --manifest-path projects/advanced-c2/reference/Cargo.toml --all-targets -- -D warnings
+      - name: Real Axum Debug/Release contracts and docs
+        shell: bash
+        run: |
+          set -o pipefail
+          cargo test --locked --manifest-path projects/advanced-c2/reference/Cargo.toml --all-targets 2>&1 | tee c2-debug.txt
+          cargo test --locked --release --manifest-path projects/advanced-c2/reference/Cargo.toml --all-targets 2>&1 | tee c2-release.txt
+          cargo test --locked --manifest-path projects/advanced-c2/reference/Cargo.toml --doc 2>&1 | tee c2-docs.txt
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: c2-feature-green-debug
+          path: c2-*.txt
