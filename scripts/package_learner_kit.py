@@ -53,7 +53,7 @@ def add(z: zipfile.ZipFile, relative: str, data: bytes):
 def course_inputs() -> list[tuple[str, bytes]]:
     """Shared course bytes for the real kit and archive-link regression tests."""
     files = [
-        "CURRICULUM.md", "STUDIO_GUIDE.md", "ADVANCED_B.md", "ADVANCED_B_WINDOWS.md", "BOOK_GUIDE.md", "ADVANCED_C1.md", "SQLITE_SETUP.md", "ADVANCED_A.md",
+        "CURRICULUM.md", "STUDIO_GUIDE.md", "ADVANCED_B.md", "ADVANCED_B_WINDOWS.md", "BOOK_GUIDE.md", "ADVANCED_C1.md", "ADVANCED_C2.md", "SQLITE_SETUP.md", "ADVANCED_A.md",
         "28_independent_product.md", "29_product_release.md",
         "30_second_independent_product.md", "31_transfer_release.md",
         "BEGINNER_WINDOWS_GUIDE.md", "00_first_five_minutes.md", "NETWORK_PREPARATION.md", "LEARNING_NAVIGATOR.md", "RUST_ERROR_LABS.md", "FOUNDATION_PATH.md", "FOUNDATION_NEXT_STEPS.md", "PROGRESS_OVERVIEW.md", "SYSTEMS_PATH.md", "RELIABILITY_PATH.md", "INDEPENDENT_PATH.md",

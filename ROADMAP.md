@@ -1,3 +1,7 @@
+## C2 Axum · 新增异步工单课程
+
+独立 Axum/Tokio 工作区、固定 ServiceDesk 业务日志、三阶段学员接口与回归测试。见 [C2 指南](course/ADVANCED_C2.md)；当前提交的实际支持范围以 CI 结果为准。原同步版本、C1 和基础 Rust1.74 保留。
+
 ## 0.19.0-dev.2 进阶 B 的实际范围
 
 B1–B4 覆盖多 crate Workspace、业务库/CLI/报告分层、feature 与真实 Serde JSON 导出。B4 显式准备固定依赖，之后离线累计检查；当前源码跨平台结果以 CI 为准。Tokio/Axum 真实异步网络课程 C 仍待交付。见 [进阶 B](course/ADVANCED_B.md)。

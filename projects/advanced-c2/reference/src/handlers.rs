@@ -18,10 +18,25 @@ pub async fn index() -> ([(header::HeaderName, &'static str); 2], &'static str) 
     ], HTML)
 }
 pub async fn script() -> ([(header::HeaderName, &'static str); 2], &'static str) {
-    ([(header::CONTENT_TYPE, "application/javascript; charset=utf-8"), (header::X_CONTENT_TYPE_OPTIONS, "nosniff")], JS)
+    (
+        [
+            (
+                header::CONTENT_TYPE,
+                "application/javascript; charset=utf-8",
+            ),
+            (header::X_CONTENT_TYPE_OPTIONS, "nosniff"),
+        ],
+        JS,
+    )
 }
 pub async fn stylesheet() -> ([(header::HeaderName, &'static str); 2], &'static str) {
-    ([(header::CONTENT_TYPE, "text/css; charset=utf-8"), (header::X_CONTENT_TYPE_OPTIONS, "nosniff")], CSS)
+    (
+        [
+            (header::CONTENT_TYPE, "text/css; charset=utf-8"),
+            (header::X_CONTENT_TYPE_OPTIONS, "nosniff"),
+        ],
+        CSS,
+    )
 }
 pub async fn health() -> Json<serde_json::Value> {
     Json(serde_json::json!({"ok":true,"service":"C2"}))
@@ -38,14 +53,23 @@ pub struct CreateTicket {
 }
 pub async fn list(State(state): State<AppState>) -> Result<Json<TicketList>, ApiError> {
     let tickets = state.list().await?;
-    Ok(Json(TicketList { count: tickets.len(), tickets }))
+    Ok(Json(TicketList {
+        count: tickets.len(),
+        tickets,
+    }))
 }
 pub fn validate_write(headers: &HeaderMap) -> Result<(), ApiError> {
-    if headers.get("x-rustapplab-client").and_then(|v| v.to_str().ok()) != Some("1") {
+    if headers
+        .get("x-rustapplab-client")
+        .and_then(|v| v.to_str().ok())
+        != Some("1")
+    {
         return Err(ApiError::Forbidden);
     }
     if let Some(origin) = headers.get(header::ORIGIN) {
-        let host = headers.get(header::HOST).and_then(|x| x.to_str().ok())
+        let host = headers
+            .get(header::HOST)
+            .and_then(|x| x.to_str().ok())
             .ok_or(ApiError::Forbidden)?;
         if origin.to_str().ok() != Some(format!("http://{host}").as_str()) {
             return Err(ApiError::Forbidden);

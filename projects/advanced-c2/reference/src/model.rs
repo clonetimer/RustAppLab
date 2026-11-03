@@ -14,7 +14,11 @@ pub struct Ticket {
 }
 impl From<servicedesk::Ticket> for Ticket {
     fn from(value: servicedesk::Ticket) -> Self {
-        Self { id: value.id, title: value.title, done: value.done }
+        Self {
+            id: value.id,
+            title: value.title,
+            done: value.done,
+        }
     }
 }
 
@@ -34,7 +38,10 @@ impl ApiError {
             Self::NotFound
         } else if message.contains("已关闭") {
             Self::Conflict
-        } else if message.contains("标题") || message.contains("最多 1000") || message.contains("编号耗尽") {
+        } else if message.contains("标题")
+            || message.contains("最多 1000")
+            || message.contains("编号耗尽")
+        {
             Self::Invalid(message)
         } else {
             Self::Storage
@@ -45,10 +52,16 @@ impl IntoResponse for ApiError {
     fn into_response(self) -> Response {
         let (status, message) = match self {
             Self::Invalid(message) => (StatusCode::UNPROCESSABLE_ENTITY, message),
-            Self::Forbidden => (StatusCode::FORBIDDEN, "写请求必须来自本地页面或显式客户端".into()),
+            Self::Forbidden => (
+                StatusCode::FORBIDDEN,
+                "写请求必须来自本地页面或显式客户端".into(),
+            ),
             Self::NotFound => (StatusCode::NOT_FOUND, "工单编号不存在".into()),
             Self::Conflict => (StatusCode::CONFLICT, "工单已关闭".into()),
-            Self::Storage => (StatusCode::SERVICE_UNAVAILABLE, "持久化存储不可用或记录已损坏".into()),
+            Self::Storage => (
+                StatusCode::SERVICE_UNAVAILABLE,
+                "持久化存储不可用或记录已损坏".into(),
+            ),
             Self::Unavailable => (StatusCode::SERVICE_UNAVAILABLE, "单写者已关闭".into()),
             Self::Lifecycle(message) => (StatusCode::INTERNAL_SERVER_ERROR, message),
         };
@@ -74,17 +87,26 @@ pub struct AppState {
 impl AppState {
     pub async fn list(&self) -> Result<Vec<Ticket>, ApiError> {
         let (tx, rx) = oneshot::channel();
-        self.tx.send(Command::List(tx)).await.map_err(|_| ApiError::Unavailable)?;
+        self.tx
+            .send(Command::List(tx))
+            .await
+            .map_err(|_| ApiError::Unavailable)?;
         rx.await.map_err(|_| ApiError::Unavailable)?
     }
     pub async fn create(&self, title: String) -> Result<Ticket, ApiError> {
         let (tx, rx) = oneshot::channel();
-        self.tx.send(Command::Create(title, tx)).await.map_err(|_| ApiError::Unavailable)?;
+        self.tx
+            .send(Command::Create(title, tx))
+            .await
+            .map_err(|_| ApiError::Unavailable)?;
         rx.await.map_err(|_| ApiError::Unavailable)?
     }
     pub async fn close(&self, id: u64) -> Result<Ticket, ApiError> {
         let (tx, rx) = oneshot::channel();
-        self.tx.send(Command::Close(id, tx)).await.map_err(|_| ApiError::Unavailable)?;
+        self.tx
+            .send(Command::Close(id, tx))
+            .await
+            .map_err(|_| ApiError::Unavailable)?;
         rx.await.map_err(|_| ApiError::Unavailable)?
     }
 }

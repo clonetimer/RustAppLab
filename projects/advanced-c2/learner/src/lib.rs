@@ -1,8 +1,8 @@
 //! C2 学员代码。只需要完成三个核心函数；也可以自行增加 Rust 模块。
-pub mod model;
 mod handlers;
-pub use model::{ApiError, AppState, Ticket};
+pub mod model;
 use axum::Router;
+pub use model::{ApiError, AppState, Ticket};
 use std::path::Path;
 use tokio::{net::TcpListener, sync::watch};
 
