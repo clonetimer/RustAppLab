@@ -1,0 +1,41 @@
+name: C2 feature integration / format checkpoint
+on:
+  push:
+    branches: [feat/c2-axum-servicedesk]
+permissions:
+  contents: read
+jobs:
+  sync:
+    if: contains(github.event.head_commit.message, '[c2-sync]')
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feat/c2-axum-servicedesk
+      - uses: dtolnay/rust-toolchain@1.85.0
+        with:
+          components: rustfmt
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Generate fixed learner and LabQuest integration
+        run: |
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          python scripts/c2_sync.py
+          python -m unittest discover -s scripts/tests -v
+      - name: Persist generated source
+        shell: bash
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add apps/labquest/src course README.md ROADMAP.md projects/advanced-c2 scripts/package.py scripts/package_learner_kit.py scripts/release_check.py scripts/structural_check.py scripts/verify_release_windows.ps1 SOURCE_MANIFEST.sha256
+          git diff --cached --quiet || git commit -m 'feat(c2): integrate platform, locked learner and reproducible source manifest'
+          git push origin HEAD:refs/heads/feat/c2-axum-servicedesk
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: c2-sync-evidence
+          path: SOURCE_MANIFEST.sha256
