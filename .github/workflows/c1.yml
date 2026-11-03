@@ -68,14 +68,13 @@ jobs:
       - name: Build and replay portable kits from ZIP under empty Cargo cache
         run: python scripts/package_c1.py --output c1-distribution
       - name: Full distributable source inventory
+        shell: bash
         run: |
           python scripts/package.py
           git diff --exit-code -- SOURCE_MANIFEST.sha256
+          python -c "from pathlib import Path; import shutil; [shutil.copy2(p, Path('c1-distribution')/p.name) for p in Path.cwd().parent.glob('RustAppLab-*-source.zip*')]"
       - uses: actions/upload-artifact@v4
         if: always()
         with:
           name: c1-portable-${{ matrix.os }}
-          path: |
-            c1-distribution/
-            ../RustAppLab-*-source.zip
-            ../RustAppLab-*-source.zip.sha256
+          path: c1-distribution/
