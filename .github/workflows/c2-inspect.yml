@@ -1,0 +1,23 @@
+name: C2 exact snapshot for final review
+on:
+  push:
+    branches: [maintenance/c2-review-snapshot]
+permissions:
+  contents: read
+jobs:
+  snapshot:
+    runs-on: ubuntu-latest
+    timeout-minutes: 5
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: e1d2b1176a0d75ddb94d71a1c530bbc983a84862
+      - name: Archive exact branch source without modifying any ref
+        run: |
+          git archive --format=zip --output=c2-review-source.zip HEAD
+          git rev-parse HEAD > c2-review-sha.txt
+          python scripts/structural_check.py > c2-review-structure.txt 2>&1 || true
+      - uses: actions/upload-artifact@v4
+        with:
+          name: c2-review-snapshot
+          path: c2-review-*
