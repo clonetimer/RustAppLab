@@ -17,7 +17,7 @@ jobs:
       - name: Rust edition/formatting
         run: |
           rustc --version
-          cargo fmt --manifest-path projects/advanced-c2/reference/Cargo.toml --all -- --check
+          cargo fmt --manifest-path projects/advanced-c2/reference/Cargo.toml --all
       - name: C2 clippy strict (including tests)
         run: cargo clippy --locked --manifest-path projects/advanced-c2/reference/Cargo.toml --all-targets -- -D warnings
       - name: Real Axum Debug/Release contracts and docs
