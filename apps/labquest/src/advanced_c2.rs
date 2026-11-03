@@ -292,7 +292,8 @@ pub fn check(root: &Path, requested: usize) -> Result<bool, String> {
             Err(e) => (false, e),
         };
         logs.push_str(&text);
-        let expected = TESTS.matches(&format!("fn c2_{stage}_")).count();
+        let expected = TESTS.matches(&format!("fn c2_{stage}_")).count()
+            - usize::from(stage == 1 && !cfg!(unix));
         if !ok
             || expected == 0
             || !text.contains(&format!(
