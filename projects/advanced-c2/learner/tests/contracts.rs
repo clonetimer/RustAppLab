@@ -88,6 +88,16 @@ async fn c2_1_requires_valid_existing_journal_and_never_resets_it() {
     assert_eq!(fs::read(&path).unwrap(), b"corrupt\n");
     assert!(servicedesk::init(&path).is_err());
 }
+#[cfg(unix)]
+#[tokio::test]
+async fn c2_1_rejects_symlink_journal_without_following_it() {
+    let dir = Scratch::new();
+    let real = dir.init();
+    let alias = dir.0.join("alias.db");
+    std::os::unix::fs::symlink(&real, &alias).unwrap();
+    assert!(matches!(start_store(&alias), Err(ApiError::Storage)));
+    assert_eq!(servicedesk::load(&real).unwrap().len(), 0);
+}
 #[tokio::test]
 async fn c2_1_persists_create_close_and_restart() {
     let dir = Scratch::new();
