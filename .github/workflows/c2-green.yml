@@ -16,11 +16,11 @@ jobs:
     steps:
       - uses: actions/checkout@v4
       - uses: dtolnay/rust-toolchain@1.85.0
+        with:
+          components: rustfmt, clippy
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-        with:
-          components: rustfmt, clippy
       - name: Rust edition/formatting
         run: |
           rustc --version
