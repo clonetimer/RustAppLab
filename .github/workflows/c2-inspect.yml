@@ -1,23 +1,97 @@
-name: C2 exact snapshot for final review
+name: C2 final source assembly without branch mutation
 on:
   push:
     branches: [maintenance/c2-review-snapshot]
 permissions:
   contents: read
 jobs:
-  snapshot:
+  assemble:
     runs-on: ubuntu-latest
-    timeout-minutes: 5
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    env:
+      CARGO_TERM_COLOR: never
+      PYTHONUTF8: '1'
     steps:
+      - uses: actions/checkout@v4
       - uses: actions/checkout@v4
         with:
           ref: e1d2b1176a0d75ddb94d71a1c530bbc983a84862
-      - name: Archive exact branch source without modifying any ref
-        run: |
-          git archive --format=zip --output=c2-review-source.zip HEAD
-          git rev-parse HEAD > c2-review-sha.txt
-          python scripts/structural_check.py > c2-review-structure.txt 2>&1 || true
-      - uses: actions/upload-artifact@v4
+          path: candidate
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@1.85.0
         with:
-          name: c2-review-snapshot
-          path: c2-review-*
+          components: rustfmt, clippy
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Observe handoff and storage regressions on original code
+        shell: bash
+        run: |
+          python c2-final-assembly.py tests candidate
+          mkdir evidence
+          cd candidate
+          set +e
+          python -m unittest discover -s scripts/tests -p test_c2_handoff.py -v > ../evidence/python-red.txt 2>&1
+          pcode=$?
+          cargo test --locked --manifest-path projects/advanced-c2/reference/Cargo.toml --test contracts c2_1_storage_corruption_is_not_an_invalid_request > ../evidence/rust-red.txt 2>&1
+          rcode=$?
+          set -e
+          test "$pcode" -eq 1
+          grep -q 'FAILED (failures=3)' ../evidence/python-red.txt
+          test "$rcode" -eq 101
+          grep -q 'test result: FAILED. 0 passed; 1 failed;' ../evidence/rust-red.txt
+          grep -q 'Invalid' ../evidence/rust-red.txt
+      - name: Apply reviewed fixes, format and generate inventory once
+        run: |
+          python c2-final-assembly.py apply candidate
+          cd candidate
+          cargo fmt --all
+          cargo fmt --manifest-path projects/advanced-c2/reference/Cargo.toml --all
+          cargo fmt --manifest-path projects/advanced-c2/learner/Cargo.toml --all
+          python scripts/package.py > ../evidence/package.txt
+      - name: Verify final source and new regressions
+        run: |
+          cd candidate
+          python -m unittest discover -s scripts/tests -v > ../evidence/python-green.txt 2>&1
+          cargo clippy --locked --offline --manifest-path projects/advanced-c2/reference/Cargo.toml --all-targets -- -D warnings > ../evidence/clippy.txt 2>&1
+          cargo test --locked --offline --manifest-path projects/advanced-c2/reference/Cargo.toml --all-targets > ../evidence/debug.txt 2>&1
+          cargo test --locked --offline --release --manifest-path projects/advanced-c2/reference/Cargo.toml --all-targets > ../evidence/release.txt 2>&1
+          cargo test --locked --offline -p labquest advanced_c2::tests > ../evidence/platform-unit.txt 2>&1
+          python scripts/structural_check.py > ../evidence/structure.txt
+      - name: Store verified Git blobs; do not update any ref
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          cd candidate
+          git add -A
+          python - <<'PY'
+          import hashlib,json,os,subprocess,sys,urllib.request
+          from pathlib import Path
+          sys.path.insert(0,'scripts')
+          from release_check import source_id
+          assert subprocess.check_output(['git','rev-parse','HEAD'],text=True).strip()=='e1d2b1176a0d75ddb94d71a1c530bbc983a84862'
+          diff=subprocess.check_output(['git','diff','--cached','--name-status'],text=True)
+          result={'base':'e1d2b1176a0d75ddb94d71a1c530bbc983a84862','tree':subprocess.check_output(['git','write-tree'],text=True).strip(),'source_id':source_id(),'entries':[]}
+          for line in diff.splitlines():
+              status,name=line.split('\t')
+              assert status in ['A','M','D']
+              entry={'path':name,'mode':'100644','type':'blob','sha':None}
+              if status!='D':
+                  raw=Path(name).read_bytes()
+                  expected=hashlib.sha1(b'blob '+str(len(raw)).encode()+b'\0'+raw).hexdigest()
+                  request=urllib.request.Request('https://api.github.com/repos/clonetimer/RustAppLab/git/blobs',data=json.dumps({'content':raw.decode('utf-8'),'encoding':'utf-8'}).encode(),headers={'Authorization':'Bearer '+os.environ['GH_TOKEN'],'Content-Type':'application/json'},method='POST')
+                  with urllib.request.urlopen(request,timeout=30) as response:sha=json.load(response)['sha']
+                  assert sha==expected
+                  entry['sha']=sha
+              result['entries'].append(entry)
+          Path('../evidence/c2-final-objects.json').write_text(json.dumps(result,ensure_ascii=False,indent=2),encoding='utf-8')
+          print(json.dumps(result,ensure_ascii=False,indent=2))
+          subprocess.run(['git','archive','--format=zip','--output=../evidence/c2-final-source.zip',result['tree']],check=True)
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: c2-final-assembly
+          path: evidence/
