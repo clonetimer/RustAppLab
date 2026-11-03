@@ -21,6 +21,11 @@ def run(exe, *args, env=None, success=True):
             logs = sorted(folder.glob('*.txt')) if folder.is_dir() else []
             if logs:
                 diagnostic = '\nC2 prepare detail:\n' + logs[-1].read_text(encoding='utf-8', errors='replace')[-12000:]
+        if len(args) >= 3 and args[0] == 'learn' and args[1] == 'check':
+            folder = Path(args[2]) / '.c2-reports'
+            logs = sorted(folder.glob('*.txt')) if folder.is_dir() else []
+            if logs:
+                diagnostic = '\nC2 learner grading detail:\n' + logs[-1].read_text(encoding='utf-8', errors='replace')[-16000:]
         raise AssertionError(f'{args}: exit {result.returncode}\n{result.stdout}\n{result.stderr}{diagnostic}')
     return result.stdout + result.stderr
 
