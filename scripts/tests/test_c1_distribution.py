@@ -73,5 +73,40 @@ class C1DistributionTests(unittest.TestCase):
             self.assertEqual(after, source_id(root))
 
 
+    def test_offline_learner_has_the_platform_marker_but_reference_does_not(self):
+        module = load('package_c1')
+        with tempfile.TemporaryDirectory() as temp:
+            for kind in ('reference', 'learner'):
+                root = Path(temp) / kind
+                root.mkdir()
+                module.write_kit_configuration(root, kind)
+                self.assertEqual((root / '.cargo/config.toml').read_bytes(), module.CONFIG.encode('utf-8'))
+                marker = root / '.applab-c1'
+                if kind == 'learner':
+                    self.assertEqual(marker.read_bytes(), b'RustAppLab C1 v1\n')
+                else:
+                    self.assertFalse(marker.exists())
+
+    def test_portable_zip_host_metadata_does_not_change_package_bytes(self):
+        module = load('package_c1')
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp) / 'stage'
+            (root / '.cargo').mkdir(parents=True)
+            (root / '.cargo/config.toml').write_bytes(b'config\n')
+            (root / 'vendor/example').mkdir(parents=True)
+            (root / 'vendor/example/.cargo-checksum.json').write_bytes(b'{}')
+            (root / 'Z.txt').write_bytes(b'upper')
+            (root / 'a.txt').write_bytes(b'lower')
+            linux, windows = Path(temp) / 'linux.zip', Path(temp) / 'windows.zip'
+            with patch.object(sys, 'platform', 'linux'):
+                module.pack(root, linux)
+            with patch.object(sys, 'platform', 'win32'):
+                module.pack(root, windows)
+            self.assertEqual(linux.read_bytes(), windows.read_bytes())
+            with zipfile.ZipFile(windows) as archive:
+                self.assertEqual(archive.namelist(), sorted(archive.namelist()))
+                self.assertTrue(all(item.create_system == 3 for item in archive.infolist()))
+
+
 if __name__ == '__main__':
     unittest.main()
