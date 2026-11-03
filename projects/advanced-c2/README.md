@@ -11,3 +11,5 @@ Startup rejects symlink journal paths before opening the legacy ServiceDesk log.
 C2 fixed assessment now accounts for Unix-only filesystem contracts on Windows.
 
 The offline learner kit remains TODO-only; fixed platform grading uses the locked reference contract.
+
+The LabQuest fixed assessment adjusts the Unix-only symlink contract count for Windows.
