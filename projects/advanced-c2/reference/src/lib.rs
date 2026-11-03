@@ -19,6 +19,7 @@ use tokio::{
 /// Reuse the existing ServiceDesk journal and its validation rules. All synchronous
 /// disk work is done inside the dedicated blocking actor, not a Tokio I/O worker.
 pub fn start_store(path: &Path) -> Result<AppState, ApiError> {
+    servicedesk::ensure_store(path).map_err(|_| ApiError::Storage)?;
     let mut tickets = servicedesk::load(path).map_err(|_| ApiError::Storage)?;
     let path = path.to_path_buf();
     let (tx, mut rx) = mpsc::channel::<Command>(64);
