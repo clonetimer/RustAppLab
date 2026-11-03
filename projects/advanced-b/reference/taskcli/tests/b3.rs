@@ -12,7 +12,8 @@ fn root() -> std::path::PathBuf {
         .as_nanos();
     for _ in 0..100 {
         let n = NEXT.fetch_add(1, Ordering::Relaxed);
-        let p = std::env::temp_dir().join(format!("taskpocket-pro-b3-{}-{t}-{n}", std::process::id()));
+        let p =
+            std::env::temp_dir().join(format!("taskpocket-pro-b3-{}-{t}-{n}", std::process::id()));
         match fs::create_dir(&p) {
             Ok(()) => return p,
             Err(error) if error.kind() == std::io::ErrorKind::AlreadyExists => continue,
