@@ -83,6 +83,8 @@ cargo +1.85.0 test --locked --offline --test contracts c1_3_
 
 发布产物分为 `C1-reference-offline.zip` 和 `C1-learner-offline.zip`；学员包只含三个核心 TODO，参考包含完成实现。两者都带 Cargo.lock、vendor、`.cargo/config.toml` 和依赖许可证；需要本机事先装好 Rust1.85.0 与 Windows MSVC 或 Linux C 工具链，包不包含编译器。
 
+学员包带有 `.applab-c1` 工程标记，可直接作为 LabQuest 的学员工程使用；不要在已解压的目录再次运行 start。参考包不带学员标记。
+
 解压后在含 Cargo.toml 的目录运行 `cargo +1.85.0 test --frozen --all-targets`。参考包预期通过，学员包初始业务测试预期失败。不要删除以点开头的 Cargo 配置和校验文件。平台固定评测要使用该离线源时，在 PowerShell 设置 `$env:RUSTAPPLAB_C1_VENDOR = (Resolve-Path "C:/你的路径/vendor").Path`，再运行 `advanced-c1 check`；它只为自己的临时工程设置该源，不改全局配置。迁移和空缓存的实际验证以当前 CI 产物为准。
 
 ## 使用边界与阅读

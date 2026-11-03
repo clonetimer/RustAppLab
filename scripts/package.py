@@ -67,6 +67,7 @@ def main() -> None:
         for path in [*source_files, MANIFEST]:
             item = zipfile.ZipInfo(f"RustAppLab/{path.relative_to(ROOT).as_posix()}",
                                    date_time=(2026, 10, 28, 0, 0, 0))
+            item.create_system = 3
             item.compress_type = zipfile.ZIP_DEFLATED
             item.external_attr = (0o100755 if path.suffix == ".sh" else 0o100644) << 16
             archive.writestr(item, path.read_bytes(), compress_type=zipfile.ZIP_DEFLATED, compresslevel=9)
