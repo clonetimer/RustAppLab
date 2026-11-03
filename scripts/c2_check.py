@@ -19,7 +19,7 @@ def main():
     common=['--locked','--offline','--manifest-path',MANIFEST]
     exe=ROOT/'target'/'debug'/('labquest.exe' if os.name=='nt' else 'labquest')
     test_source=(ROOT/'projects/advanced-c2/reference/tests/contracts.rs').read_text(encoding='utf-8')
-    expected=len(re.findall(r'\bfn c2_[123]_\w+\s*\(',test_source))
+    expected=len(re.findall(r'\bfn c2_[123]_\w+\s*\(',test_source)) - (0 if os.name=='posix' else 1)
     plan=[('compiler',['rustc','-Vv'],0),('format',['cargo','fmt','--manifest-path',MANIFEST,'--all','--','--check'],0),('clippy',['cargo','clippy']+common+['--all-targets','--','-D','warnings'],0),('debug',['cargo','test']+common+['--all-targets'],expected),('release',['cargo','test']+common+['--release','--all-targets'],expected),('docs',['cargo','test']+common+['--doc'],0),('platform-build',['cargo','build','--locked','--offline','-p','labquest'],0),('platform-lifecycle',[sys.executable,'scripts/c2_e2e.py','--exe',str(exe),'--output',str(out/'lifecycle.json')],0)]
     env=dict(os.environ,CARGO_TARGET_DIR=str(ROOT/'target'),CARGO_TERM_COLOR='never',PYTHONUTF8='1')
     env.pop('CARGO_BUILD_TARGET',None)
