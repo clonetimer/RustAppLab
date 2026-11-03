@@ -73,6 +73,9 @@ def sync_learner() -> None:
     assert student.count("TODO(")==3 and "runtime.spawn_blocking(" not in student
 
 def main():
+    edit("ROADMAP.md",
+         "| C 真实异步应用 | NetFetch/ServiceDesk：成熟运行时、有限并发、取消、正常退出 | 未交付；同步版和教学执行器不能替代 |",
+         "| C 真实异步应用 | NetFetch/ServiceDesk：Tokio/Reqwest 下载与 Axum 工单服务 | C1 已合并；C2 已实现并进入 Windows/Linux 完整验收，限本机回环 HTTP；公网/TLS 不在本阶段范围 |")
     make_grader()
     sync_learner()
     edit("apps/labquest/src/lib.rs","pub mod advanced_c1;","pub mod advanced_c1;\npub mod advanced_c2;")

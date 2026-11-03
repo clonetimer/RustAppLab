@@ -18,7 +18,7 @@ B1–B4 覆盖多 crate Workspace、业务库/CLI/报告分层、feature 与真�
 |---|---|---|
 | A 所有权和接口设计 | TermGarden工作区：共享视图、闭包批次、撤销、快照报告 | 本轮交付参考软件、独立学员工程、三阶段检查和设计评审 |
 | B 成熟生态和库工程 | TaskPocket：业务库、两个程序复用、feature、Serde JSON 适配工作区 | B1–B4：固定依赖准备、只读 JSON 导出与累计检查；当前源码平台验证见 CI |
-| C 真实异步应用 | NetFetch/ServiceDesk：成熟运行时、有限并发、取消、正常退出 | 未交付；同步版和教学执行器不能替代 |
+| C 真实异步应用 | NetFetch/ServiceDesk：Tokio/Reqwest 下载与 Axum 工单服务 | C1 已合并；C2 已实现并进入 Windows/Linux 完整验收，限本机回环 HTTP；公网/TLS 不在本阶段范围 |
 
 A完成后进入B和C。已有作品通过 [Book 对照阅读](course/BOOK_GUIDE.md) 衔接语言概念，B4 通过显式准备衔接第三方依赖；后续优先推进 C。GUI/WASM/嵌入式为方向选修。
 
