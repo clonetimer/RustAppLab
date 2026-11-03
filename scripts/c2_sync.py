@@ -66,7 +66,7 @@ def sync_learner() -> None:
         path.parent.mkdir(parents=True,exist_ok=True)
         shutil.copyfile(REF/name,path)
     student=(LEARNER/"src/lib.rs").read_text(encoding="utf-8")
-    assert student.count("TODO(")==3 and "spawn_blocking" not in student
+    assert student.count("TODO(")==3 and "runtime.spawn_blocking(" not in student
 
 def main():
     make_grader()
