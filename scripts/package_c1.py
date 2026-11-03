@@ -45,7 +45,7 @@ def main():
             stage=temp/('stage-'+kind)
             shutil.copytree(ROOT/'projects/advanced-c1'/kind,stage,ignore=shutil.ignore_patterns('target'))
             shutil.copytree(vendor,stage/'vendor');(stage/'.cargo').mkdir(exist_ok=True)
-            (stage/'.cargo/config.toml').write_text(CONFIG,encoding='utf-8')
+            (stage/'.cargo/config.toml').write_bytes(CONFIG.encode('utf-8'))
             shutil.copy2(ROOT/'LICENSE',stage/'LICENSE');shutil.copy2(ROOT/'course/ADVANCED_C1.md',stage/'START_HERE.md')
             archive=out/f'C1-{kind}-offline.zip';digest=pack(stage,archive)
             archive.with_suffix('.zip.sha256').write_text(f'{digest}  {archive.name}\n',encoding='utf-8')
