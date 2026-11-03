@@ -23,6 +23,10 @@ def edit(relative: str, old: str, new: str, encoding: str = "utf-8") -> None:
 def make_grader() -> None:
     source=(R/"apps/labquest/src/advanced_c1.rs").read_text(encoding="utf-8")
     source=source.replace("C1","C2").replace("c1","c2")
+    old='let expected = TESTS.matches(&format!("fn c2_{stage}_")).count();'
+    new='let expected = TESTS.matches(&format!("fn c2_{stage}_")).count() - usize::from(stage == 1 && !cfg!(unix));'
+    assert old in source, "C2 platform-specific contract count anchor missing"
+    source=source.replace(old,new)
     start=source.index("const REFERENCE:")
     end=source.index("const STARTER:",start)
     source=source[:start]+'''const REFERENCE: &str = include_str!("../../../projects/advanced-c2/reference/src/lib.rs");
