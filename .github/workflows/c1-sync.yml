@@ -1,0 +1,52 @@
+name: C1 feature integration checkpoint
+on:
+  push:
+    branches: [feat/async-network-c1-rebuild]
+permissions:
+  contents: read
+jobs:
+  sync:
+    if: contains(github.event.head_commit.message, '[c1-sync]')
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    outputs:
+      head: ${{ steps.save.outputs.head }}
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: feat/async-network-c1-rebuild
+      - uses: dtolnay/rust-toolchain@1.85.0
+        with:
+          components: rustfmt
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Integrate course and format exact source
+        run: |
+          test "$(git rev-parse HEAD)" = "$GITHUB_SHA"
+          python scripts/c1_sync.py
+          cargo fmt --all
+          cargo fmt --manifest-path projects/advanced-c1/reference/Cargo.toml --all
+          cargo fmt --manifest-path projects/advanced-c1/learner/Cargo.toml --all
+          python scripts/package.py
+      - name: Persist all source before qualification
+        id: save
+        run: |
+          git config user.name 'github-actions[bot]'
+          git config user.email '41898282+github-actions[bot]@users.noreply.github.com'
+          git add apps/labquest/src course README.md projects/advanced-c1 scripts/package.py scripts/release_check.py scripts/structural_check.py scripts/verify_release_windows.ps1 SOURCE_MANIFEST.sha256
+          git diff --cached --quiet || git commit -m 'feat: integrate and format C1 course with source inventory'
+          git push origin HEAD:refs/heads/feat/async-network-c1-rebuild
+          echo "head=$(git rev-parse HEAD)" >> "$GITHUB_OUTPUT"
+          git archive --format=zip --output=c1-integrated-source.zip HEAD
+      - uses: actions/upload-artifact@v4
+        with:
+          name: c1-integrated-source
+          path: c1-integrated-source.zip
+  qualify:
+    needs: sync
+    uses: ./.github/workflows/c1.yml
+    with:
+      ref: ${{ needs.sync.outputs.head }}

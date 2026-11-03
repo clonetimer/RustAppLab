@@ -1,0 +1,81 @@
+name: C1 asynchronous download qualification
+on:
+  workflow_call:
+    inputs:
+      ref:
+        type: string
+        required: false
+        default: ''
+permissions:
+  contents: read
+jobs:
+  contracts:
+    name: C1 / ${{ matrix.os }} / ${{ matrix.rust }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        include:
+          - os: ubuntu-latest
+            rust: '1.85.0'
+          - os: ubuntu-latest
+            rust: stable
+          - os: windows-latest
+            rust: stable
+    env:
+      PYTHONUTF8: '1'
+      CARGO_HOME: ${{ github.workspace }}/.cargo-c1
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref || github.sha }}
+      - uses: dtolnay/rust-toolchain@1.85.0
+      - uses: dtolnay/rust-toolchain@master
+        with:
+          toolchain: ${{ matrix.rust }}
+          components: rustfmt, clippy
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Explicit locked dependency preparation
+        run: cargo fetch --locked --manifest-path projects/advanced-c1/reference/Cargo.toml
+      - name: C1 behavior, CLI, documentation and platform lifecycle
+        run: python scripts/c1_check.py --output c1-evidence
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: c1-${{ matrix.os }}-${{ matrix.rust }}
+          path: c1-evidence/
+  portable:
+    name: C1 portable / ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    env:
+      PYTHONUTF8: '1'
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ inputs.ref || github.sha }}
+      - uses: dtolnay/rust-toolchain@1.85.0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Build and replay portable kits from ZIP under empty Cargo cache
+        run: python scripts/package_c1.py --output c1-distribution
+      - name: Full distributable source inventory
+        run: |
+          python scripts/package.py
+          git diff --exit-code -- SOURCE_MANIFEST.sha256
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: c1-portable-${{ matrix.os }}
+          path: |
+            c1-distribution/
+            ../RustAppLab-*-source.zip
+            ../RustAppLab-*-source.zip.sha256
