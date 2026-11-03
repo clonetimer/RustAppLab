@@ -1,3 +1,7 @@
+## 2026-11-03 · C1 异步下载
+
+新增独立 Tokio/Reqwest 回环 HTTP 下载工程、三阶段学员骨架、LabQuest 固定验收和离线 vendor 分发。基础 MSRV 继续1.74，C1单独使用1.85.0；C2 Axum 尚未交付。参见 [C1 讲义](course/ADVANCED_C1.md)；具体跨平台结果以当前提交的 CI 为准。下文带旧版本号的内容保留为历史路线记录。
+
 # Rust AppLab · 0.19.0-dev.2 进阶单元 B（可复用软件）
 
 ## 2026-11-02：Serde JSON 导出与对照阅读

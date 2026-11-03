@@ -28,7 +28,7 @@ def allowed(path: Path) -> bool:
         return path.suffix in (".rs", ".toml", ".md", ".html", ".css", ".js", ".tsv", ".txt", ".svg", ".ps1")
     if parts[0] == "examples":
         return path.suffix in (".svg", ".txt", ".md", ".html", ".json", ".kv", ".tsv")
-    if len(parts) >= 3 and parts[:2] == ("projects", "advanced-b"):
+    if len(parts) >= 3 and parts[:2] in (("projects", "advanced-b"), ("projects", "advanced-c1")):
         return path.suffix in (".rs", ".toml", ".md", ".lock") or path.name == "Cargo.lock"
     if parts[0] == "course":
         return path.suffix == ".md"

@@ -2,6 +2,7 @@
 pub mod advanced;
 pub mod advanced_b;
 mod advanced_b_json;
+pub mod advanced_c1;
 pub mod beginner;
 pub mod board;
 mod book_reading;
@@ -35,6 +36,7 @@ pub fn run(args: &[OsString]) -> Result<(), String> {
             println!("Rust AppLab / LabQuest {}", env!("CARGO_PKG_VERSION"))
         }
         Some("advanced") => advanced::run(&args[1..])?,
+        Some("advanced-c1") => advanced_c1::run(&args[1..])?,
         Some("advanced-b") => advanced_b::run(&args[1..])?,
         Some("studio") => studio::run(&args[1..])?,
         Some("learn") => learning::run(&args[1..])?,

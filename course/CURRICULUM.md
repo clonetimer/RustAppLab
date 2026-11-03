@@ -1,3 +1,7 @@
+## 2026-11-03 · C1 异步下载
+
+新增独立 Tokio/Reqwest 回环 HTTP 下载工程、三阶段学员骨架、LabQuest 固定验收和离线 vendor 分发。基础 MSRV 继续1.74，C1单独使用1.85.0；C2 Axum 尚未交付。参见 [C1 讲义](ADVANCED_C1.md)；具体跨平台结果以当前提交的 CI 为准。下文带旧版本号的内容保留为历史路线记录。
+
 ## 进阶 B（0.19.0-dev.2）：业务库与多程序复用
 
 概念阅读：[Rust Book 对照学习](BOOK_GUIDE.md)；`learn reading <工程路径>` 支持 FirstCard、十二款 Studio、两款独立作品、进阶 A/B。
