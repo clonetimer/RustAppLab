@@ -4,7 +4,7 @@
 
 ## 0.19.0-dev.2 进阶 B 的实际范围
 
-B1–B4 覆盖多 crate Workspace、业务库/CLI/报告分层、feature 与真实 Serde JSON 导出。B4 显式准备固定依赖，之后离线累计检查；当前源码跨平台结果以 CI 为准。Tokio/Axum 真实异步网络课程 C 仍待交付。见 [进阶 B](course/ADVANCED_B.md)。
+B1–B4 覆盖多 crate Workspace、业务库/CLI/报告分层、feature 与真实 Serde JSON 导出。B4 显式准备固定依赖，之后离线累计检查；当前源码跨平台结果以 CI 为准。C1 下载和 C2 Axum 工单服务已加入独立课程，具体测试结果见当前 CI。见 [进阶 B](course/ADVANCED_B.md)。
 
 # Rust AppLab 路线 · 0.19.0-dev.2
 

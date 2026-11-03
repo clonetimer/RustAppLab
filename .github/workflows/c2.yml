@@ -1,4 +1,4 @@
-name: C2 asynchronous download qualification
+name: C2 Axum service qualification
 on:
   workflow_call:
     inputs:

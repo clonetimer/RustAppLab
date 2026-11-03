@@ -128,7 +128,7 @@ fn sources(root: &Path) -> Result<BTreeMap<String, Vec<u8>>, String> {
     }
 
     if !files.contains_key("lib.rs") {
-        return Err("缺少 lib.rs/main.rs".into());
+        return Err("缺少 lib.rs".into());
     }
     if files.values().map(Vec::len).sum::<usize>() > 2 * 1024 * 1024 {
         return Err("源码总量超过2 MiB".into());
@@ -354,7 +354,7 @@ pub fn next(root: &Path) -> Result<String, String> {
         .filter(|n| *n <= 3)
         .ok_or("成绩格式异常")?;
     Ok(if passed == 3 {
-        "C2 已通过 3/3；用自己的回环数据完成练习。C2 Axum 尚未交付。".into()
+        "C2 已通过 3/3；可启动自己的回环工单服务，继续验证并发与持久化行为。".into()
     } else {
         format!("C2 已通过 {passed}/3；下一步检查阶段 {}", passed + 1)
     })

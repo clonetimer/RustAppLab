@@ -66,3 +66,9 @@ GET /health 返回 JSON 的 ok=true。GET /api/tickets 返回 tickets 数组及 
 本阶段仅支持 127.0.0.1 HTTP，不提供 TLS、公网、账号认证、多进程同时写入、强杀或断电原子性。GitHub Windows Server 验证不替代本机 Windows 10 验收。数据保存成功后，即使调用方取消 HTTP future，也不保证撤销已发生的持久化副作用。
 
 参考：[Axum 0.8.8](https://docs.rs/axum/0.8.8/axum/)；[Tokio Channels](https://tokio.rs/tokio/tutorial/channels)；[Serde](https://serde.rs/)；[Cargo vendor](https://doc.rust-lang.org/cargo/commands/cargo-vendor.html)。
+
+## 故障与关闭实验补充
+
+先启动服务再让日志出现语义损坏或无法写入，合法请求应收到存储错误503，之后列表也应拒绝返回陈旧快照；非法用户输入仍返回422。损坏日志不会被自动修复。初始化日志的读取是启动阶段的同步操作，请求期间的磁盘读写才交给阻塞工作线程。
+
+优雅关闭等待已经进入的请求，不设置强制超时截止时间；遇到外部磁盘长期阻塞仍需人工处理。本机回环和请求头限制不是完整身份认证，请在可信本地环境运行。创建请求需要JSON正文，关闭请求不需要正文。

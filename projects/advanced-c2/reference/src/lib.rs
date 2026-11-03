@@ -16,8 +16,8 @@ use tokio::{
     sync::{mpsc, watch},
 };
 
-/// Reuse the existing ServiceDesk journal and its validation rules. All synchronous
-/// disk work is done inside the dedicated blocking actor, not a Tokio I/O worker.
+/// Open and validate the journal synchronously during startup, before serving.
+/// Per-request disk work runs on the blocking actor, not a Tokio I/O worker.
 pub fn start_store(path: &Path) -> Result<AppState, ApiError> {
     servicedesk::ensure_store(path).map_err(|_| ApiError::Storage)?;
     let mut tickets = servicedesk::load(path).map_err(|_| ApiError::Storage)?;
@@ -41,9 +41,7 @@ pub fn start_store(path: &Path) -> Result<AppState, ApiError> {
                     let result = if failed {
                         Err(ApiError::Storage)
                     } else {
-                        servicedesk::persist(&path, servicedesk::Action::Add(title))
-                            .map(Ticket::from)
-                            .map_err(ApiError::domain)
+                        persist_checked(&path, &tickets, servicedesk::Action::Add(title))
                     };
                     if let Ok(ref ticket) = result {
                         tickets.push(servicedesk::Ticket {
@@ -61,9 +59,7 @@ pub fn start_store(path: &Path) -> Result<AppState, ApiError> {
                     let result = if failed {
                         Err(ApiError::Storage)
                     } else {
-                        servicedesk::persist(&path, servicedesk::Action::Close(id))
-                            .map(Ticket::from)
-                            .map_err(ApiError::domain)
+                        persist_checked(&path, &tickets, servicedesk::Action::Close(id))
                     };
                     if let Ok(ref ticket) = result {
                         if let Some(original) = tickets.iter_mut().find(|row| row.id == ticket.id) {
@@ -85,6 +81,22 @@ pub fn start_store(path: &Path) -> Result<AppState, ApiError> {
         }
     });
     Ok(AppState { tx })
+}
+
+// Validate against the owned snapshot first. Errors from the actual persistence
+// path are storage failures, even when a corrupt journal mentions a title or ID.
+fn persist_checked(
+    path: &Path,
+    tickets: &[servicedesk::Ticket],
+    action: servicedesk::Action,
+) -> Result<Ticket, ApiError> {
+    let mut planned = tickets.to_vec();
+    let expected = servicedesk::apply(&mut planned, action.clone()).map_err(ApiError::domain)?;
+    let saved = servicedesk::persist(path, action).map_err(|_| ApiError::Storage)?;
+    if saved != expected {
+        return Err(ApiError::Storage);
+    }
+    Ok(saved.into())
 }
 
 /// Attach all endpoints while keeping the business core and HTML assets fixed.

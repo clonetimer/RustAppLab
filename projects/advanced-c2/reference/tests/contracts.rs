@@ -469,3 +469,34 @@ fn c2_3_cli_init_refuses_overwrite_and_help_is_readable() {
     assert!(!second.status.success());
     assert_eq!(fs::read(db).unwrap(), old);
 }
+
+#[tokio::test]
+async fn c2_1_storage_corruption_is_not_an_invalid_request() {
+    let dir = Scratch::new();
+    let db = dir.init();
+    let app = start_store(&db).unwrap();
+    app.create("saved".into()).await.unwrap();
+    // A complete but semantically corrupt record: hex 20 is a blank title.
+    let corrupt = b"SERVICEDESK1\nA\t1\t20\n";
+    fs::write(&db, corrupt).unwrap();
+    assert_eq!(
+        app.create("valid input".into()).await,
+        Err(ApiError::Storage)
+    );
+    assert_eq!(app.list().await, Err(ApiError::Storage));
+    assert_eq!(fs::read(&db).unwrap(), corrupt);
+}
+#[tokio::test]
+async fn c2_1_failed_write_poisoning_preserves_existing_journal() {
+    let dir = Scratch::new();
+    let db = dir.init();
+    let app = start_store(&db).unwrap();
+    app.create("saved".into()).await.unwrap();
+    let saved = fs::read(&db).unwrap();
+    let backup = dir.0.join("backup.db");
+    fs::rename(&db, &backup).unwrap();
+    fs::create_dir(&db).unwrap();
+    assert_eq!(app.close(1).await, Err(ApiError::Storage));
+    assert_eq!(app.list().await, Err(ApiError::Storage));
+    assert_eq!(fs::read(&backup).unwrap(), saved);
+}

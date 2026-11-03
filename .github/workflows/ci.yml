@@ -1,7 +1,7 @@
 name: Rust AppLab Windows/Linux supported-platform CI
 on:
   push:
-    branches: [main, feat/c2-axum-servicedesk]
+    branches: [main]
   pull_request:
   workflow_dispatch:
 concurrency:
