@@ -34,7 +34,7 @@ const DOMAIN_MANIFEST: &str = include_str!("../../../apps/servicedesk/Cargo.toml
 const DOMAIN: &str = include_str!("../../../apps/servicedesk/src/lib.rs");
 '''+source[end:]
     start=source.index("    if reference {",source.index("fn install("))
-    end=source.index("    Ok(())\\n}\\npub fn init",start)
+    end=source.index("    Ok(())\n}\npub fn init",start)
     source=source[:start]+'''    write(&root.join("Cargo.toml"), &MANIFEST.replace("../../../apps/servicedesk", "support/servicedesk"))?;
     for (path, content) in [
         ("src/handlers.rs", HANDLERS), ("assets/index.html", HTML),
@@ -71,19 +71,19 @@ def sync_learner() -> None:
 def main():
     make_grader()
     sync_learner()
-    edit("apps/labquest/src/lib.rs","pub mod advanced_c1;","pub mod advanced_c1;\\npub mod advanced_c2;")
+    edit("apps/labquest/src/lib.rs","pub mod advanced_c1;","pub mod advanced_c1;\npub mod advanced_c2;")
     edit("apps/labquest/src/lib.rs",'        Some("advanced-c1") => advanced_c1::run(&args[1..])?,',
-         '        Some("advanced-c2") => advanced_c2::run(&args[1..])?,\\n        Some("advanced-c1") => advanced_c1::run(&args[1..])?,')
+         '        Some("advanced-c2") => advanced_c2::run(&args[1..])?,\n        Some("advanced-c1") => advanced_c1::run(&args[1..])?,')
     anchor='    if args.len() >= 2 && crate::advanced_c1::is_project(Path::new(&args[1])) {'
     edit("apps/labquest/src/learning.rs",anchor,
-         '    if args.len() >= 2 && crate::advanced_c2::is_project(Path::new(&args[1])) {\\n        return crate::advanced_c2::run(args);\\n    }\\n'+anchor)
+         '    if args.len() >= 2 && crate::advanced_c2::is_project(Path::new(&args[1])) {\n        return crate::advanced_c2::run(args);\n    }\n'+anchor)
     edit("apps/labquest/src/learning.rs","C2 Axum 仍待实现。",
          "C2 Axum 真实异步工单服务已提供独立学员工程；使用 advanced-c2 start/prepare/check。")
     edit("apps/labquest/src/guide.rs",
          "  cargo run --offline -p labquest -- advanced-c1 start",
-         "  cargo run --offline -p labquest -- advanced-c2 start <新工程>    C2 Axum工单服务\\n"
-         "  cargo run --offline -p labquest -- advanced-c2 prepare <工程>   显式准备固定依赖\\n"
-         "  cargo run --offline -p labquest -- advanced-c2 check <工程> [1|2|3|all]  累计验收\\n"
+         "  cargo run --offline -p labquest -- advanced-c2 start <新工程>    C2 Axum工单服务\n"
+         "  cargo run --offline -p labquest -- advanced-c2 prepare <工程>   显式准备固定依赖\n"
+         "  cargo run --offline -p labquest -- advanced-c2 check <工程> [1|2|3|all]  累计验收\n"
          "  cargo run --offline -p labquest -- advanced-c1 start")
     for name in ("scripts/package.py","scripts/structural_check.py"):
         edit(name,'("projects", "advanced-c1"))','("projects", "advanced-c1"), ("projects", "advanced-c2"))')
@@ -98,9 +98,9 @@ def main():
         source=path.read_text(encoding="utf-8")
         if not source.startswith("## C2 Axum"):
             link=("course/ADVANCED_C2.md" if relative in ("README.md","ROADMAP.md") else "ADVANCED_C2.md")
-            path.write_bytes(("## C2 Axum · 新增异步工单课程\\n\\n独立 Axum/Tokio 工作区、固定 ServiceDesk 业务日志、三阶段学员接口与回归测试。"
+            path.write_bytes(("## C2 Axum · 新增异步工单课程\n\n独立 Axum/Tokio 工作区、固定 ServiceDesk 业务日志、三阶段学员接口与回归测试。"
                               f"见 [C2 指南]({link})；当前提交的实际支持范围以 CI 结果为准。"
-                              "原同步版本、C1 和基础 Rust1.74 保留。\\n\\n"+source).encode("utf-8"))
+                              "原同步版本、C1 和基础 Rust1.74 保留。\n\n"+source).encode("utf-8"))
     subprocess.run(["cargo","fmt","--manifest-path",str(REF/"Cargo.toml"),"--all"],check=True)
     subprocess.run(["cargo","fmt","--manifest-path",str(LEARNER/"Cargo.toml"),"--all"],check=True)
     subprocess.run(["cargo","fmt","--all"],cwd=R,check=True)
