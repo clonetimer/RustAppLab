@@ -4,6 +4,7 @@ import argparse
 import hashlib
 import json
 import os
+import re
 from pathlib import Path
 import shutil
 import subprocess
@@ -79,7 +80,7 @@ def main():
             if kind=='reference':
                 text=run(['cargo','+1.85.0','test','--frozen','--all-targets'],moved,out/(kind+'-replay.txt'),env)
                 test_source=(ROOT/'projects/advanced-c2/reference/tests/contracts.rs').read_text(encoding='utf-8')
-                expected=test_source.count('#[test]')+test_source.count('#[tokio::test]')
+                expected=len(re.findall(r'\bfn c2_[123]_\w+\s*\(',test_source))
                 assert f'{expected} passed; 0 failed; 0 ignored;' in text
                 run(['cargo','+1.85.0','test','--frozen','--doc'],moved,out/(kind+'-docs.txt'),env)
             else:
