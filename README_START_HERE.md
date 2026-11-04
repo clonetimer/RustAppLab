@@ -1,84 +1,92 @@
-> 已完成基础与进阶 A 的学员：见 `ADVANCED_B.html`，可双击 `START_ADVANCED_B_WINDOWS.cmd` 开始多程序复用课程。
+# Rust AppLab 0.19.0-rc.1 · 从下载到第一次使用
 
-## 按当前工程查阅 Rust Book
+## 1. 先选对包
 
-已有学员工程时，在平台根目录执行 `cargo run --locked --offline -p labquest -- learn reading "my-unitlab"`。按当前作品查看中文概念、官方资料与思考实验，阅读后回到原有检查命令。详见 [对照学习指南](course/BOOK_GUIDE.md)。
+**完整学习推荐 `RustAppLab-0.19.0-rc.1-source.zip`。** 解压后包含 `apps/`、`course/`、`START_HERE.html` 和 Windows 向导。GitHub 自动生成的 Source code 归档是仓库快照；正式交付用带版本号的 source.zip 及其校验值。
 
-# 已完成基础课程的学员
+只体验成品，选择本机对应的 `windows-x64-msvc-runtime.zip` 或 `linux-x86_64-runtime.zip`。解压后程序在 `bin/`，先读其中 `START_RUNTIME.md`；它不包含完整源码目录，也不把参考程序的成功视为学员成绩。
 
-0.19.0-dev.1开始进阶A。直接打开 [ADVANCED_A.html](ADVANCED_A.html)，或Windows双击 `START_ADVANCED_WINDOWS.cmd`，生成独立的my-workbench。已有基础工程不用覆盖。旧续学菜单同样识别新工程。
+`learner-kit.zip` 是17个基础/进阶A/B学员工程的源码骨架。C1/C2另有 `learner-offline.zip`（核心 TODO）和 `reference-offline.zip`（完整参考），均带 vendor 依赖源码。**这些源码包都不包含 Rust 编译器、MSVC 或 Linux C 工具链。**
 
-没有完成基础课程的学员继续下面的原入口。
+## 2. 准备开发环境
 
----
-
-# 从这里开始 · 0.18.0-dev.6
-
-正式支持范围是 Windows x64 MSVC 和 Linux x86_64；不声明 macOS。普通学员不运行 VERIFY_RELEASE、VERIFY_BROWSER 或 MSRV 验收入口。
-
-## 你现在只需要选一条路
-
-| 现在的情况 | 做什么 |
-|---|---|
-| 从没写过 Rust | 打开 `START_HERE.html`，按说明安装 Rust，再双击 `START_WINDOWS.cmd` 完成第一张任务卡 |
-| 任务卡做完了，还没有 UnitLab | 双击 `CONTINUE_WINDOWS.cmd`，按 Enter，创建 UnitLab |
-| 已经有自己的练习目录 | 双击 `LEARN_NEXT_WINDOWS.cmd`，输入该目录；旧工程不用重建，也不用删除 |
-| 只下载了学员练习包 | 先读其中 `START_HERE.md`；每个工程可以独立使用 Cargo，不要求平台在旁边 |
-
-当前学习导航的任务卡与真实检查支持 FirstCard 和十二款 Studio 工程。TaskPocket、PageMint 仍使用原来的独立作品合同与 `app check`；`learn next` 会告诉你对应命令。
-
-## 已有工程：一次只做一个函数
-
-在 `LEARN_NEXT_WINDOWS.cmd` 中输入 `my-unitlab`，或者输入旧版练习的完整路径，例如 `D:\学习资料\my-unitlab`。
-
-按 **L** 看当前任务卡，按 **E** 打开自己的源码，只修改任务卡指定函数。按 **Ctrl+S** 保存，返回窗口按 **C** 真正编译和检查。需要帮助时，按 **1 / 2 / 3** 查看逐级提示；按 **S** 可指定检查第 1、2、3 步或 all。Q 只关闭向导，源码和报告都保留。
-
-新源码和旧检查记录不一致时，导航不会宣称通过；实际检查会同时回归前面步骤。例如正在做第 3 步，前两步也会重新运行，改坏第 1 步就会明确停在第 1 步。
-
-## 不要弄混两个文件夹
-
-**平台根目录**包含 `apps`、`course` 和 `LEARN_NEXT_WINDOWS.cmd`。下面这些命令在平台根目录执行：
+按照 [Rust 官方安装说明](https://rust-lang.org/tools/install/) 安装 Rust/Cargo。Windows 选择 x64 MSVC 工具链，并安装 C++ 构建工具和 Windows SDK；安装后重新打开 PowerShell。Linux 需要本机 C 编译/链接工具。
 
 ```powershell
+rustc --version
+cargo --version
+```
+
+基础课和进阶A/B最低Rust1.74。首次进入C1/C2，再安装固定附加工具链，不必修改全局默认版本：
+
+```powershell
+rustup toolchain install 1.85.0 --profile minimal
+```
+
+StoreDesk 是后续数据库课程，另需系统 SQLite；新手开始 FirstCard/UnitLab 不要求先安装 SQLite。详情见 [SQLite 准备](course/SQLITE_SETUP.md)。
+
+## 3. 零基础：FirstCard → UnitLab
+
+在完整源码包根目录打开 PowerShell 或终端：
+
+```powershell
+cargo run --locked --offline -p labquest -- beginner start "my-first-card"
+cargo run --locked --offline -p labquest -- beginner check "my-first-card"
+```
+
+第二条命令初次失败是预期：打开 `my-first-card/src/main.rs`，按照同目录 `跟着做.md` 完成任务卡的一行 TODO，保存后再次执行 `beginner check`。通过后从平台根目录运行自己的作品：
+
+```powershell
+cargo run --offline --manifest-path "my-first-card/Cargo.toml" -- "小林" "写 Rust"
+```
+
+预期输出包含昵称和任务。Windows 也可双击 `START_WINDOWS.cmd`，按照提示编辑自己的源码。完成后用 `CONTINUE_WINDOWS.cmd` 创建 UnitLab，或执行：
+
+```powershell
+cargo run --locked --offline -p labquest -- studio start unitlab "my-unitlab"
 cargo run --locked --offline -p labquest -- learn lesson "my-unitlab"
-cargo run --locked --offline -p labquest -- learn hint "my-unitlab" 1
-cargo run --locked --offline -p labquest -- learn check "my-unitlab"
+cargo run --locked --offline -p labquest -- learn check "my-unitlab" 1
 ```
 
-**你的学员工程**包含自己的 `Cargo.toml`、`src/lib.rs`、`LESSON.md`。完成 UnitLab 三步后，在该目录运行你自己的软件：
+每次仅完成任务卡指定函数。全部三步通过后，才进入学员目录运行完整 CLI：`cargo run --offline -- convert -10 c f`，预期 `-10.00 c = 14.00 f`。
+
+## 4. 已有工程：不重建、不覆盖
+
+使用完整平台的 `LEARN_NEXT_WINDOWS.cmd`，输入已有工程的实际路径。L看任务卡、E编辑、C真实检查、1/2/3分级提示；Q退出不删除作品。命令行也可以：
 
 ```powershell
-cargo run --offline -- convert -10 c f
+cargo run --locked --offline -p labquest -- learn next "D:/学习/my-unitlab"
+cargo run --locked --offline -p labquest -- learn check "D:/学习/my-unitlab"
 ```
 
-预期：`-10.00 c = 14.00 f`。在只完成第一步时，完整 CLI 还不可用，不要因为它失败就认为第一步没学会。
+`start` 只用于全新目录。已经解压的 C1/C2 学员包带工程标记，直接传入路径检查，不要再次 start。路径有中文或空格时加引号。
 
-## 学完一款以后
+## 5. 完成基础后再学 B4、C1、C2
 
-FirstCard → UnitLab → QuizDeck → TextScope。完成每一款后，用自己的输入运行一次、保存实际输出、写下用过的提示，再进入下一款。不要跳到线程或数据库来避开当前不理解的概念。
+B4先看 [进阶B讲义](course/ADVANCED_B.md)，显式执行 `advanced-b prepare-json <工程>` 准备固定依赖；已有B1–B3工程先按讲义执行 `add-json`。
 
-完整的衔接与真实作品练习见 [基础路线](course/FOUNDATION_PATH.md)。命令与常见问题见 [学习导航](course/LEARNING_NAVIGATOR.md)。
+C1/C2依次看 [C1](course/ADVANCED_C1.md) 与 [C2](course/ADVANCED_C2.md)。完整平台的 `advanced-c1 prepare <工程>` / `advanced-c2 prepare <工程>` 首次允许联网；之后固定评分使用离线依赖。单独的离线包在其 `Cargo.toml` 目录使用 `cargo +1.85.0 test --frozen --all-targets`。初始学员 TODO 失败不表示依赖包损坏。
 
-Windows 新版菜单尚待原生实测；之前冻结 RC 的 Windows 通过结果不自动证明这次新增脚本已经通过。
+参考C2离线源码包可直接体验：
 
+```powershell
+cargo +1.85.0 run --frozen -- init "tickets.db"
+cargo +1.85.0 run --frozen -- serve "tickets.db" --port 3000
+```
 
-### 进度与续学（0.18.0-dev.6）
+打开 `http://127.0.0.1:3000/`。重新启动已有数据只执行 serve，不重复 init。C2关闭等待已进入的请求，未提供强制关闭截止时间。
 
-完成 UnitLab、QuizDeck、TextScope 后，建议进入 `course/FOUNDATION_NEXT_STEPS.md` 的 LedgerLite、BadgeForge 和 TermGarden。三个都有每一步具体函数、预测问题和三级提示。
+## 常见问题
 
-多个练习工程散落在一个文件夹时，可运行 `cargo run --offline -p labquest -- learn overview "<练习父目录>"`；Windows 续学入口 `LEARN_NEXT_WINDOWS.cmd` 按 P 查看同级进度。这里只读取历史报告和源码摘要，不会启动测试，历史通过不能代替真实功能检查。
+| 现象 | 处理 |
+|---|---|
+| 找不到 cargo 或链接器 | 完成Rust/MSVC安装，重新打开终端；不要先改项目源码 |
+| 提示目录已存在 | 旧工程用 next/check；新作品换一个未使用的目录 |
+| 提示缺少固定依赖 | 按该课显式 prepare；离线C1/C2固定评分设置相应 `RUSTAPPLAB_C1_VENDOR` / `RUSTAPPLAB_C2_VENDOR` |
+| 检查报 TODO 或断言失败 | 阅读任务卡，只改指定函数，保存后重试；不删除测试 |
+| 进入了错误目录 | `cargo ... -p labquest` 在完整平台根目录；学员自己的 `cargo run/test` 在学员目录 |
+| Rust源码包能解压但不能双击运行 | 源码需要编译；直接体验用对应平台runtime包 |
 
+## 试用与反馈
 
-### 0.18.0-dev.6 · 第四段衔接
-
-BatchMeter → MiniKV → NetFetch → ServiceDesk 的系统应用路线继续保留；StoreDesk、AsyncBoard 本轮补齐 6 张微任务卡、18 条分层提示，总覆盖为 12 款/36 张/108 条。完整路径见 [course/SYSTEMS_PATH.md](course/SYSTEMS_PATH.md)。新建工程有 TASK_CARDS.md，旧工程可直接使用新版 learn lesson/hint，无需覆盖。StoreDesk/AsyncBoard 的引导已补齐，事务与等待实验见 RELIABILITY_PATH.html；成熟异步网络、桌面和 WASM 仍未完成。
-
-
-新版十二款任务卡同时生成可双击的 `TASK_CARDS.html`，提示默认折叠，可逐级查看；Markdown 版仍保留。联合讲义可直接打开根目录 `SYSTEMS_PATH.html`，不需要 Markdown 阅读器或网页服务。已有练习不必重建，继续使用新版命令行导航即可。
-
-本轮具体入口：[第四段：事务与等待](RELIABILITY_PATH.html)。新手不跳级；StoreDesk 先修 LedgerLite，AsyncBoard 先理解 BatchMeter。后续由 TaskPocket/PageMint 检验独立开发，不把 36 个 TODO 完成自动认定为掌握整个 Rust 生态。
-
-
-## 完成分步作品之后
-
-打开 `INDEPENDENT_PATH.html`。第一次独立开发建议先 TaskPocket 再 PageMint；新工程先读 START.html，按只读→业务→完整合同推进。仍使用 LEARN_NEXT_WINDOWS.cmd 的 L/E/C/S/G 操作。不要把 LabQuest 平台根目录当成学员目录。旧工程无新文件时读平台页面即可；不会自动覆盖源码。
+使用 [试用记录](course/USER_TRIAL.md) 保存包名、版本、系统、实际命令、原始错误和自己的结果。它是空白记录模板，未代表真人验收通过。当前候选版先保持范围稳定，后续只根据真实问题修复。

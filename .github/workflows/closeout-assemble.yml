@@ -1,0 +1,70 @@
+name: RC019 exact source assembly
+on:
+  push:
+    branches: [maintenance/rc019-closeout]
+permissions:
+  contents: read
+jobs:
+  assemble:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    permissions:
+      contents: write
+    env:
+      PYTHONUTF8: '1'
+      CARGO_TERM_COLOR: never
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          fetch-depth: 2
+          persist-credentials: false
+      - uses: dtolnay/rust-toolchain@1.85.0
+        with:
+          components: rustfmt
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: Finish exact edits, remove assembly tooling and generate source inventory
+        run: |
+          mkdir closeout-evidence
+          python closeout_finish.py
+          cargo fmt --all -- --check
+          python scripts/package.py > closeout-evidence/package.txt
+          python -m unittest discover -s scripts/tests -v > closeout-evidence/python.txt 2>&1
+          cargo test --locked --offline -p labquest --lib > closeout-evidence/labquest.txt 2>&1
+          python scripts/structural_check.py > closeout-evidence/structure.txt
+      - name: Persist source objects only, never change a shared branch
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          git add -u
+          git diff --cached --check
+          python - <<'PY'
+          from pathlib import Path
+          import hashlib,json,os,subprocess,sys,urllib.request
+          sys.path.insert(0,'scripts')
+          from release_check import source_id
+          base='3add87cdb60a630119535cfb51c7430cbd1ecbf5'
+          result={'base':base,'tree':subprocess.check_output(['git','write-tree'],text=True).strip(),'source_id':source_id(),'entries':[]}
+          diff=subprocess.check_output(['git','diff','--cached','--no-renames','--name-status',base],text=True)
+          for line in diff.splitlines():
+              status,name=line.split('\t')
+              assert status in ('A','M','D')
+              entry={'path':name,'mode':'100644','type':'blob','sha':None}
+              if status!='D':
+                  raw=Path(name).read_bytes()
+                  expected=hashlib.sha1(b'blob '+str(len(raw)).encode()+b'\0'+raw).hexdigest()
+                  request=urllib.request.Request('https://api.github.com/repos/clonetimer/RustAppLab/git/blobs',data=json.dumps({'content':raw.decode('utf-8'),'encoding':'utf-8'}).encode(),headers={'Authorization':'Bearer '+os.environ['GH_TOKEN'],'Content-Type':'application/json'},method='POST')
+                  with urllib.request.urlopen(request,timeout=30) as response: sha=json.load(response)['sha']
+                  assert sha==expected
+                  entry['sha']=sha
+              result['entries'].append(entry)
+          Path('closeout-evidence/objects.json').write_text(json.dumps(result,ensure_ascii=False,indent=2),encoding='utf-8')
+          print(json.dumps(result,ensure_ascii=False,indent=2))
+          subprocess.run(['git','archive','--format=zip','--output=closeout-evidence/source.zip',result['tree']],check=True)
+          PY
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: closeout-assembly
+          path: closeout-evidence/
