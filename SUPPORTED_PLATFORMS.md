@@ -1,16 +1,15 @@
-# Rust AppLab 正式支持平台与验证范围
+# Rust AppLab 0.19.0-rc.1 · 支持平台与环境
 
-**本项目现将发布支持范围限定为 Windows x64（MSVC）和 Linux x86_64。macOS 不在本项目的正式支持声明中，也不作为后续 Stable 资格阻塞项。** 这不等于声称程序在 macOS 必然不能编译，只是不提供兼容性承诺或原生测试资格。
+| 内容 | Windows x64 MSVC | Linux x86_64 |
+|---|---|---|
+| 基础平台、进阶A、B1–B4 | Rust≥1.74，MSVC C++构建工具及Windows SDK | Rust≥1.74，C编译/链接工具 |
+| C1/C2独立工作区 | Rust1.85.0，锁定依赖 | Rust1.85.0，锁定依赖 |
+| 参考运行包 | 当前Windows runner实际构建、解压运行 | 当前Linux runner实际构建、解压运行；glibc/系统库要求见BUILD_INFO.json |
+| 浏览器 | Chromium自动化为工程验证；Win10/11用户体验另记 | Chromium实际页面/API流程 |
+| SQLite | StoreDesk依赖Windows系统SQLite接口，见专项说明 | StoreDesk编译需SQLite开发库，运行需libsqlite3.so.0 |
 
-| 内容 | Windows x64 MSVC | Linux x86_64 | macOS |
-|---|---|---|---|
-| 冻结 RC 0.17.0-rc.2 工程 | 原生通过（用户提供完整工程证据） | 原生通过 | 不声明支持 |
-| 冻结 RC 浏览器交互 | Chrome/Edge 实机 E2E 通过 | Chromium E2E 另有受环境策略阻断记录；Rust HTTP/CLI 通过 | 不声明支持 |
-| 冻结 RC Rust 1.74.0 | 实测 271 Debug / 261 Release、15 个学员工程 | Rust 1.99.1 工程通过；未单独提供 Linux 1.74 全矩阵 | 不声明支持 |
-| 当前 0.19.0-dev.2 工程 | 以当轮 Windows CI / 原生记录为准 | 以当轮 Linux / MSRV 记录为准 | 不声明支持 |
+不声明macOS、ARM或32位支持。Windows CI来自Windows Server，不等同用户的Win10/11真机安装。普通学员不需Python/Playwright；维护者回归与交付脚本需要Python3.11及以上。
 
-当前源码的具体测试提交、命令与结果见 [2026-11-02 测试记录](verification/2026-11-02-book-guided-quality.md)。进阶 B 独立参考工作区现已加入 Windows/Linux 工程脚本和 Rust 1.74 测试计划。
+运行包可直接体验参考软件，但LabQuest编译/检查学员源码仍需要Rust工具链。C1/C2的vendor包仅含依赖源码，不替代编译器。详见 [开始指南](README_START_HERE.md)、[SQLite说明](course/SQLITE_SETUP.md) 和 [候选发布规则](RELEASE_POLICY.md)。
 
-支持边界：StoreDesk 依赖系统 SQLite 开发/运行库；浏览器应用只能绑定 localhost；用户自写 Rust 代码评测不构成不可信代码隔离沙箱。未完成的 Tokio/Reqwest/Axum、桌面 GUI、WASM 课程不计入已经交付的课程范围。
-
-**关于 Stable：** 本项目不再要求 macOS 原生测试。Windows/Linux 两个声明平台的新版本工程记录、对现有业务功能的回归、真实学员对关键教学路线的观察，以及交付物一致性，仍属于发布资格判断内容。RC_READY 只针对已冻结的 0.17.0-rc.2，不自动继承给后续开发版本。
+原同步NetFetch/ServiceDesk和教学执行器AsyncBoard仍保留；C1/C2是独立的真实Tokio/Reqwest/Axum实现。网络均限定可信本机回环使用，不提供公网/TLS或账号体系。

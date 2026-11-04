@@ -1,0 +1,33 @@
+name: Native candidate delivery and first use
+on:
+  workflow_call:
+permissions:
+  contents: read
+jobs:
+  delivery:
+    name: Delivery / ${{ matrix.os }}
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 30
+    env:
+      PYTHONUTF8: '1'
+      CARGO_HOME: ${{ github.workspace }}/.cargo-delivery
+    steps:
+      - uses: actions/checkout@v4
+      - uses: dtolnay/rust-toolchain@1.85.0
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - name: SQLite development library
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y libsqlite3-dev
+      - name: Build, package, relocate and exercise first-use paths
+        run: python scripts/candidate_check.py --output candidate-evidence
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: delivery-${{ matrix.os }}
+          path: candidate-evidence/

@@ -2,10 +2,6 @@
 
 独立 Axum/Tokio 工作区、固定 ServiceDesk 业务日志、三阶段学员接口与回归测试。见 [C2 指南](ADVANCED_C2.md)；当前提交的实际支持范围以 CI 结果为准。原同步版本、C1 和基础 Rust1.74 保留。
 
-## 2026-11-03 · C1 异步下载
-
-新增独立 Tokio/Reqwest 回环 HTTP 下载工程、三阶段学员骨架、LabQuest 固定验收和离线 vendor 分发。基础 MSRV 继续1.74，C1单独使用1.85.0；C2 Axum 尚未交付。参见 [C1 讲义](ADVANCED_C1.md)；具体跨平台结果以当前提交的 CI 为准。下文带旧版本号的内容保留为历史路线记录。
-
 # 用 Rust Book 理解自己的作品
 
 先运行作品、完成当前任务，再针对遇到的问题阅读相关概念。Rust AppLab 继续以已有软件为练习载体；阅读帮助你解释设计，实际检查验证修改后的行为。
@@ -76,4 +72,4 @@ python scripts/release_check.py --output ../qualification-current
 
 fetch 是维护者显式联网准备；后续完整门禁不自行联网。Rust 1.74 必须用实际 1.74 工具链单独准备与运行，缓存不从较新工具链结果推断。输出目录须为新目录。完整工程检查包括主工作区、进阶 B 独立参考工作区、feature 组合及文档测试。`verify.sh` 和 `verify.ps1` 提供不依赖 Python 的 Cargo 检查；Windows 完整工程记录继续使用 `VERIFY_RELEASE_WINDOWS.cmd`。普通学员只需使用 Cargo 和学习入口。
 
-B4 在独立 `json-export/` 中复用 `taskcore`，练习 [Serde derive](https://serde.rs/derive.html) 与 [Cargo resolver](https://doc.rust-lang.org/cargo/reference/resolver.html)。旧 Book 可帮助理解 trait、模块和测试；第三方 API 以这些官方资料和固定 Cargo.lock 为准。在平台根目录显式 `advanced-b prepare-json <工程>` 后，再 `advanced-b check <工程> 4`；旧工程先 `advanced-b add-json <工程>`。`3` 保持原合同，`all`/`learn check` 包括 B4；准备不会执行学员源码，只读导航不会准备依赖。完整步骤和个人数据实验见 [B4 讲义](ADVANCED_B.md)。真实异步网络课程 C 继续按 [课程路线](CURRICULUM.md) 推进。
+B4 在独立 `json-export/` 中复用 `taskcore`，练习 [Serde derive](https://serde.rs/derive.html) 与 [Cargo resolver](https://doc.rust-lang.org/cargo/reference/resolver.html)。旧 Book 可帮助理解 trait、模块和测试；第三方 API 以这些官方资料和固定 Cargo.lock 为准。在平台根目录显式 `advanced-b prepare-json <工程>` 后，再 `advanced-b check <工程> 4`；旧工程先 `advanced-b add-json <工程>`。`3` 保持原合同，`all`/`learn check` 包括 B4；准备不会执行学员源码，只读导航不会准备依赖。完整步骤和个人数据实验见 [B4 讲义](ADVANCED_B.md)。已交付的真实异步网络课程见 [C1](ADVANCED_C1.md) 与 [C2](ADVANCED_C2.md)，按 [课程路线](CURRICULUM.md) 学习。

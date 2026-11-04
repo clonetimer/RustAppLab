@@ -98,10 +98,31 @@ jobs:
     uses: ./.github/workflows/c1.yml
   c2:
     uses: ./.github/workflows/c2.yml
+  delivery:
+    uses: ./.github/workflows/delivery.yml
+  candidate:
+    name: Assemble verified candidate
+    needs: [native, browser, msrv, c1, c2, delivery]
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/download-artifact@v4
+        with:
+          path: collected-evidence
+      - name: Verify reports, source identity and artifact hashes
+        run: python scripts/assemble_candidate.py --input collected-evidence --output candidate-release
+      - uses: actions/upload-artifact@v4
+        with:
+          name: candidate-release
+          path: candidate-release/
   checkpoint:
     name: Tag successful main checkpoint
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    needs: [native, browser, msrv, c1, c2]
+    needs: [native, browser, msrv, c1, c2, delivery, candidate]
     runs-on: ubuntu-latest
     timeout-minutes: 5
     permissions:
@@ -115,3 +136,46 @@ jobs:
           python-version: '3.12'
       - name: Create immutable lightweight checkpoint (idempotent)
         run: python scripts/tag_checkpoint.py
+  publish-candidate:
+    name: Publish immutable RC assets
+    if: github.event_name == 'push' && github.ref == 'refs/heads/main'
+    needs: [candidate, checkpoint]
+    runs-on: ubuntu-latest
+    timeout-minutes: 10
+    permissions:
+      contents: write
+    steps:
+      - uses: actions/checkout@v4
+        with:
+          ref: ${{ github.sha }}
+      - uses: actions/download-artifact@v4
+        with:
+          name: candidate-release
+          path: candidate-release
+      - name: Verify exact tag and create prerelease without replacing assets
+        env:
+          GH_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        shell: bash
+        run: |
+          set -euo pipefail
+          version=$(cat VERSION)
+          [[ "$version" =~ ^0\.19\.0-rc\.[0-9]+$ ]]
+          tag="v$version"
+          remote=$(git ls-remote --tags origin "refs/tags/$tag" | cut -f1)
+          if [[ -n "$remote" && "$remote" != "$GITHUB_SHA" ]]; then
+            echo "Existing release tag points to another commit" >&2; exit 1
+          fi
+          if [[ -z "$remote" ]]; then
+            git tag "$tag" "$GITHUB_SHA"
+            git push origin "refs/tags/$tag"
+          fi
+          (cd candidate-release && sha256sum -c SHA256SUMS.txt)
+          cat > candidate-notes.md <<'EOF'
+          C2范围收尾候选版。完整源码、17工程学员包、C1/C2离线源码包及Windows/Linux参考运行包已验证。
+          先阅读QUICK_START.md；直接体验下载对应平台runtime.zip，完整学习下载source.zip。
+          此发布为RC，不是Stable。真实学习观察仍待填写USER_TRIAL.md，不能以自动测试代替。
+          参考运行包无需Cargo；编译/检查学员工程仍需Rust与系统工具链。Linux系统库要求见包内BUILD_INFO.json，Windows CI不等于用户本机Win10验收。
+          版本、提交、来源指纹与所有文件校验见RELEASE_MANIFEST.json和SHA256SUMS.txt，原始证据见VERIFICATION_EVIDENCE.zip。
+          EOF
+          gh release create "$tag" candidate-release/* --verify-tag --draft --prerelease --latest=false --title "Rust AppLab $version — C2范围候选版" --notes-file candidate-notes.md
+          gh release edit "$tag" --draft=false --prerelease --latest=false
