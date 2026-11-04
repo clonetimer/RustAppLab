@@ -208,7 +208,7 @@ pub fn prepare(root: &Path) -> Result<(), String> {
 pub fn run(args: &[OsString]) -> Result<(), String> {
     match args.first().and_then(|x| x.to_str()).unwrap_or("plan") {
         "plan" if args.len() <= 1 => {
-            println!("网络课程准备：Tokio 1.48.0 / Axum 0.8.6 / Reqwest 0.12.24 / Serde 1.0.228 / serde_json 1.0.145 候选组合。不是最新版声明或安全审计结论。\n基础课程不下载这些依赖。init 仅生成探针；prepare 明确联网并在本机执行依赖构建脚本，生成锁文件和vendor后运行离线探针测试。\nNetFetch/ServiceDesk 同步标准库基础版已可离线运行；Tokio/Reqwest/Axum 异步框架版仍未完成。没有真实 Cargo.lock/vendor 就不声称框架依赖已准备好。\n命令：ecosystem init <新目录> | prepare <新目录或原准备目录>\nWindows打包：在生成目录运行 PACK_WINDOWS.ps1。只打包生成的目录，不包含你的其他项目。");
+            println!("网络课程准备：Tokio 1.48.0 / Axum 0.8.6 / Reqwest 0.12.24 / Serde 1.0.228 / serde_json 1.0.145 候选组合。不是最新版声明或安全审计结论。\n基础课程不下载这些依赖。init 仅生成探针；prepare 明确联网并在本机执行依赖构建脚本，生成锁文件和vendor后运行离线探针测试。\nNetFetch/ServiceDesk 同步标准库基础版已可离线运行；C1/C2 异步课程已交付，请使用 advanced-c1/advanced-c2 prepare 或对应离线包。本入口仅保留依赖探针，不是课程准入。\n命令：ecosystem init <新目录> | prepare <新目录或原准备目录>\nWindows打包：在生成目录运行 PACK_WINDOWS.ps1。只打包生成的目录，不包含你的其他项目。");
             Ok(())
         }
         "init" if args.len() == 2 => init(Path::new(&args[1])),

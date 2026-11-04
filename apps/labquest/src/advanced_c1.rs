@@ -331,7 +331,7 @@ pub fn next(root: &Path) -> Result<String, String> {
         .filter(|n| *n <= 3)
         .ok_or("成绩格式异常")?;
     Ok(if passed == 3 {
-        "C1 已通过 3/3；用自己的回环数据完成练习。C2 Axum 尚未交付。".into()
+        "C1 已通过 3/3；用自己的回环数据完成练习，再学习 C2 Axum 工单服务。".into()
     } else {
         format!("C1 已通过 {passed}/3；下一步检查阶段 {}", passed + 1)
     })

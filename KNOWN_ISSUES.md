@@ -1,26 +1,17 @@
-# 0.19.0-dev.2 当前范围与后续事项
+# Rust AppLab 0.19.0-rc.1 · 已知边界与待验收项
 
-更新：2026-11-02。工程测试结果见 [本轮测试记录](verification/2026-11-02-book-guided-quality.md)，历史变更见 [RELEASE_NOTES.md](RELEASE_NOTES.md)。
+本轮范围冻结于C2。B4 Serde JSON导出、C1 Tokio/Reqwest异步下载、C2 Axum工单服务均已实现；它们不是待开发事项。
 
-## 已交付的当前范围
-
-- 基础教学：十二款 Studio、36 张任务卡、108 条逐级提示；FirstCard 与 TaskPocket/PageMint 独立作品路线。
-- 进阶 A：TermGarden 的共享句柄、弱引用、闭包、快照与接口设计。
-- 进阶 B1–B3：业务库、多 crate Workspace、CLI 与报告程序、默认/strict-titles 两种配置的累计检查。
-- Rust Book 对照阅读：按现有工程显示相关章节和思考实验；新版生成任务卡附同源参考段。
-
-本轮修复了 Windows 编译实验 UTF-8 解码、进阶 B list/feature 漏验和 B1..B0 导航文案，并将独立工作区及教材输入纳入工程验证。
-
-## 后续工作与使用范围
-
-| 项目 | 当前情况与下一步 |
+| 类别 | 当前状态与处理 |
 |---|---|
-| B4 第三方依赖 | Serde/serde_json 课程待实现，需依赖锁定、序列化练习和 Windows/Linux 实测 |
-| C 真实异步网络 | Tokio/Reqwest/Axum 课程待完成；现有 NetFetch/ServiceDesk 为同步本机网络，AsyncBoard 是教学型 Future 执行器 |
-| GUI / WASM | 仍为方向选修规划 |
-| 学习效果 | 自动检查提供程序行为证据；零基础学员的连续独立完成情况需实际观察 |
-| 学习记录 | 本地记录用于导航；源码改变后需重新运行当前检查 |
-| 存储 | StoreDesk 依赖系统 SQLite；TaskPocket/MiniKV 等教学存储的持久化能力按各自讲义说明使用 |
-| 平台 | 正式支持 Windows x64 MSVC、Linux x86_64；macOS 未纳入当前支持范围 |
+| 真人学习效果 | 尚无本候选版的真人学习观察结论；使用 [试用记录](course/USER_TRIAL.md)，自动测试不代填 |
+| Windows本机体验 | CI在Windows Server runner执行；用户本机Windows10/11的安装与连续学习另行记录 |
+| 编译环境 | 基础/A/B要求Rust≥1.74；C1/C2固定1.85.0；源码包和vendor包均不含编译器 |
+| 系统库 | StoreDesk依赖系统SQLite；Linux参考二进制依赖构建环境兼容的glibc/系统库，见包内构建记录 |
+| 网络与安全 | 仅可信本机回环HTTP；无公网/TLS、账号鉴权、多进程共同写入及恶意代码沙箱 |
+| C2退出 | 优雅关闭等待在途请求；无强制截止时间，外部磁盘长期阻塞可能拖延退出 |
+| 数据保护 | 教学日志按各课程合同处理；不承诺断电原子性、生产灾备或自动修复损坏日志 |
+| 学习成绩 | 核心TODO初始失败属预期；源码变动需重跑，参考程序和历史通过记录不代表当前学员已通过 |
+| 选修方向 | GUI、WASM、公网网络能力仅保留为可选方向，不作为本候选版收尾条件 |
 
-本版本保持开发版。冻结 RC 0.17.0-rc.2 的资格仅对应当时源码；当前工程结果、真人教学观察和交付物检查分别记录。
+没有把未完成的真人验收写成已通过，也不因这些边界继续扩张功能。若当前提交的自动验证失败，按候选发布证据保留失败，不发布Stable。版本与证据规则见 [RELEASE_POLICY](RELEASE_POLICY.md)。

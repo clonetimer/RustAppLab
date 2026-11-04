@@ -1,4 +1,4 @@
-# 当前学习路线（0.19.0-dev.2）
+# 当前学习路线（0.19.0-rc.1）
 
 [Rust Book 对照学习](BOOK_GUIDE.md) · [学习导航](LEARNING_NAVIGATOR.md) · [进阶 A](ADVANCED_A.md) · [进阶 B](ADVANCED_B.md)。已有学员可用 `learn reading <工程路径>` 按当前作品查找相关概念。
 

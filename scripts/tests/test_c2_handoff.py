@@ -10,7 +10,7 @@ class C2HandoffTests(unittest.TestCase):
         text=(ROOT/".github/workflows/ci.yml").read_text(encoding="utf-8")
         self.assertTrue("branches: [main]" in text)
         self.assertFalse("branches: [main, feat/" in text)
-        self.assertTrue("needs: [native, browser, msrv, c1, c2]" in text)
+        self.assertTrue("needs: [native, browser, msrv, c1, c2, delivery, candidate]" in text)
     def test_completion_does_not_repeat_the_old_roadmap(self):
         text=(ROOT/"apps/labquest/src/advanced_c2.rs").read_text(encoding="utf-8")
         self.assertFalse("C2 Axum 尚未交付" in text)
