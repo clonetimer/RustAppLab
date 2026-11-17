@@ -57,6 +57,12 @@ The first full D5 native CI run passed structural validation, tooling tests, roo
 
 **Rule:** run the exact isolated-workspace formatting command used by release CI (`cargo fmt --manifest-path projects/book-d5-webserver/Cargo.toml --all -- --check`) with the current stable toolchain before publishing a candidate. A successful root `cargo fmt --all -- --check` does not cover a workspace that is intentionally excluded from the root workspace. When stable rustfmt changes formatting decisions, accept its output in the isolated workspace and rerun the exact check on Linux and Windows.
 
+## 9. Keep one machine-readable evidence path per audit row
+
+The first D6-A CI run passed the new D6-specific workspace and release/MSRV/package registration contract tests, but the existing 81-row coverage audit test failed for appendix A, B and C. The audit parser intentionally treats the evidence column as one repository-relative path; placing two backtick paths in the same cell made it interpret the combined text as a single nonexistent path.
+
+**Rule:** keep exactly one canonical evidence path in the audit evidence column. Put additional implementation paths in the explanatory/reason column or in the dedicated D-stage contract test. Do not weaken the audit parser to accept ambiguous compound paths: the one-path contract keeps each row directly navigable and machine-checkable.
+
 ## 8. D5 acceptance sequence
 
 1. Run the D5 isolated Workspace format, Clippy, debug tests, release tests and doctests.
