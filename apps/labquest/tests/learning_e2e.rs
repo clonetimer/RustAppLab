@@ -14,7 +14,10 @@ impl Temp {
             .unwrap()
             .as_nanos();
         let nonce = TEMP_COUNTER.fetch_add(1, Ordering::Relaxed);
-        let p = std::env::temp_dir().join(format!("learning-e2e-{}-{stamp}-{nonce}", std::process::id()));
+        let p = std::env::temp_dir().join(format!(
+            "learning-e2e-{}-{stamp}-{nonce}",
+            std::process::id()
+        ));
         fs::create_dir(&p).unwrap();
         Self(p)
     }
