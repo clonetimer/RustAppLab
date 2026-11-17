@@ -178,17 +178,23 @@ class B4GateTests(unittest.TestCase):
         for name, command in full:
             self.assertTrue(name.startswith('book-d2-'))
             self.assertIn('projects/book-d2-smart-pointers/Cargo.toml', command)
-            self.assertIn('--locked', command)
-            self.assertIn('--offline', command)
+            if command[1] != 'fmt':
+                self.assertIn('--locked', command)
+                self.assertIn('--offline', command)
 
     def test_all_gate_entrypoints_include_book_d2(self):
         for relative in ('scripts/release_check.py', 'scripts/msrv_check.py'):
             text = (release.ROOT/relative).read_text()
-            self.assertIn('book_d2_steps()', text)
-            self.assertIn('book_d2_steps(quality=False)', text)
+            if relative.endswith('/release_check.py'):
+                self.assertIn('*book_d2_steps()', text)
+                self.assertIn('*book_d1_steps()', text)
+            else:
+                self.assertIn('book_d2_steps(quality=False)', text)
+                self.assertIn('book_d1_steps(quality=False)', text)
         for relative in ('scripts/verify.sh', 'scripts/verify.ps1', 'scripts/verify_release_windows.ps1'):
             text = (release.ROOT/relative).read_text(encoding='utf-8-sig')
             self.assertIn('projects/advanced-b/reference/json-export/Cargo.toml', text)
+            self.assertIn('projects/book-d1-cargo/Cargo.toml', text)
             self.assertIn('projects/book-d2-smart-pointers/Cargo.toml', text)
             self.assertIn('advanced_b_json_e2e', text)
             self.assertNotIn('cargo fetch', text)
