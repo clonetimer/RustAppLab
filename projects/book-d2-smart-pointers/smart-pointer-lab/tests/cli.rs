@@ -21,7 +21,10 @@ fn box_demo_exercises_indirection_and_trait_object() {
 fn deref_demo_exercises_coercion() {
     let output = run("deref");
     assert!(output.status.success());
-    assert_eq!(String::from_utf8(output.stdout).unwrap().trim(), "Hello, Rust!");
+    assert_eq!(
+        String::from_utf8(output.stdout).unwrap().trim(),
+        "Hello, Rust!"
+    );
 }
 
 #[test]
@@ -35,7 +38,9 @@ fn drop_demo_runs_destructor() {
 fn rc_demo_reports_shared_owners() {
     let output = run("rc");
     assert!(output.status.success());
-    assert!(String::from_utf8(output.stdout).unwrap().contains("owners=2"));
+    assert!(String::from_utf8(output.stdout)
+        .unwrap()
+        .contains("owners=2"));
 }
 
 #[test]
@@ -61,5 +66,7 @@ fn unknown_topic_fails_without_fake_stdout() {
     let output = run("unknown");
     assert!(!output.status.success());
     assert!(output.stdout.is_empty());
-    assert!(String::from_utf8(output.stderr).unwrap().contains("主题只能是"));
+    assert!(String::from_utf8(output.stderr)
+        .unwrap()
+        .contains("主题只能是"));
 }
