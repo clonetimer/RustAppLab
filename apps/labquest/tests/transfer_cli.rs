@@ -2,7 +2,10 @@
 use std::fs;
 use std::path::PathBuf;
 use std::process::Command;
+use std::sync::atomic::{AtomicU64, Ordering};
 use std::time::{SystemTime, UNIX_EPOCH};
+
+static TEMP_COUNTER: AtomicU64 = AtomicU64::new(0);
 
 fn cli(parts: &[&std::ffi::OsStr]) -> std::process::Output {
     Command::new(env!("CARGO_BIN_EXE_labquest"))
@@ -39,7 +42,8 @@ fn both_legacy_and_new_init_are_supported() {
         .duration_since(UNIX_EPOCH)
         .unwrap()
         .as_nanos();
-    let base = std::env::temp_dir().join(format!("rustapplab-cli-{}-{nanos}", std::process::id()));
+    let nonce = TEMP_COUNTER.fetch_add(1, Ordering::Relaxed);
+    let base = std::env::temp_dir().join(format!("rustapplab-cli-{}-{nanos}-{nonce}", std::process::id()));
     fs::create_dir(&base).unwrap();
     let pagemint = base.join("web");
     let taskpocket = base.join("tasks");
@@ -88,8 +92,9 @@ fn pagemint_check_failure_creates_report_and_returns_nonzero() {
         .duration_since(UNIX_EPOCH)
         .unwrap()
         .as_nanos();
+    let nonce = TEMP_COUNTER.fetch_add(1, Ordering::Relaxed);
     let base: PathBuf =
-        std::env::temp_dir().join(format!("rustapplab-grade-{}-{nanos}", std::process::id()));
+        std::env::temp_dir().join(format!("rustapplab-grade-{}-{nanos}-{nonce}", std::process::id()));
     fs::create_dir(&base).unwrap();
     let project = base.join("web");
     assert!(cli(&[
