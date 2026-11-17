@@ -34,7 +34,7 @@ class LearnerKitTests(unittest.TestCase):
             with zipfile.ZipFile(archive) as output:
                 self.assertIsNone(output.testzip())
                 names = set(output.namelist())
-                for source in ('ADVANCED_B.html', 'course/ADVANCED_B.md', 'course/ADVANCED_B_WINDOWS.md', 'course/BOOK_GUIDE.md', 'course/BOOK_D1_CARGO.md', 'projects/book-d1-cargo/README.md'):
+                for source in ('ADVANCED_B.html', 'course/ADVANCED_B.md', 'course/ADVANCED_B_WINDOWS.md', 'course/BOOK_GUIDE.md', 'course/BOOK_D1_CARGO.md', 'projects/book-d1-cargo/README.md', 'course/BOOK_D2_SMART_POINTERS.md', 'projects/book-d2-smart-pointers/README.md'):
                     self.assertIn(source, names)
                     text = output.read(source).decode('utf-8')
                     links = re.findall(r'href="([^"]+)"', text) if source.endswith('.html') else re.findall(r'(?<!!)\[[^\]]+\]\(([^)]+)\)', text)
@@ -53,6 +53,18 @@ class LearnerKitTests(unittest.TestCase):
                      "projects/book-d1-cargo/cargo-applab-map/src/main.rs"):
             self.assertIn(path, assets)
         self.assertIn("publish = false", assets["projects/book-d1-cargo/book-card/Cargo.toml"].decode())
+
+    def test_d2_is_shipped_as_a_reference_not_an_extra_student_project(self):
+        assets = dict(self.assets().course_inputs())
+        for path in ("course/BOOK_D2_SMART_POINTERS.md",
+                     "projects/book-d2-smart-pointers/Cargo.toml",
+                     "projects/book-d2-smart-pointers/Cargo.lock",
+                     "projects/book-d2-smart-pointers/smart-pointer-lab/src/lib.rs",
+                     "projects/book-d2-smart-pointers/smart-pointer-lab/src/main.rs",
+                     "projects/book-d2-smart-pointers/smart-pointer-lab/tests/cli.rs"):
+            self.assertIn(path, assets)
+        self.assertIn("publish = false",
+                      assets["projects/book-d2-smart-pointers/smart-pointer-lab/Cargo.toml"].decode())
 
     def test_intro_explains_separate_b4_dependency_preparation(self):
         intro = self.assets().INTRO
