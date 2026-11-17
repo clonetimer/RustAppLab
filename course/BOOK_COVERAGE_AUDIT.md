@@ -69,12 +69,12 @@
 | 16.2 | 消息传递 | 已有实作 | `course/SYSTEMS_PATH.md` | mpsc |
 | 16.3 | 共享状态 | 已有实作 | `course/ADVANCED_A.md` | Arc 与状态边界 |
 | 16.4 | Send 与 Sync | 已有实作 | `course/ADVANCED_A.md` | 跨线程快照 |
-| 17.1 | 面向对象特性 | 部分 | `course/ADVANCED_A.md` | 实现有，缺概念总结与范式比较 |
-| 17.2 | Trait Object | 已有实作 | `course/ADVANCED_A.md` | 静态分发/动态分发 |
-| 17.3 | 状态模式 | 缺口 | `—` | 补业务状态迁移实验 |
-| 18.1 | 使用模式的位置 | 部分 | `course/studio/unitlab.md` | match 与 if let，缺全面语法 |
-| 18.2 | 模式可反驳性 | 缺口 | `—` | 补 irrefutable/refutable 对照 |
-| 18.3 | 模式语法 | 缺口 | `—` | 补 @、..、解构与匹配守卫 |
+| 17.1 | 面向对象特性 | 开发中 | `projects/book-d3-oop-patterns/oop-pattern-lab/src/lib.rs` | 封装不变量、组合与 trait 多态参考实验，待 CI |
+| 17.2 | Trait Object | 开发中 | `projects/book-d3-oop-patterns/oop-pattern-lab/src/lib.rs` | Box<dyn Draw> 多种具体类型运行时分发，待 CI |
+| 17.3 | 状态模式 | 开发中 | `projects/book-d3-oop-patterns/oop-pattern-lab/src/lib.rs` | Draft→PendingReview→Published 消费式状态转换，待 CI |
+| 18.1 | 使用模式的位置 | 开发中 | `projects/book-d3-oop-patterns/oop-pattern-lab/src/lib.rs` | match、if let、while let、for、let-else 与函数参数模式，待 CI |
+| 18.2 | 模式可反驳性 | 开发中 | `projects/book-d3-oop-patterns/oop-pattern-lab/src/lib.rs` | let-else/if let 对照与 compile_fail doctest，待 CI |
+| 18.3 | 模式语法 | 开发中 | `projects/book-d3-oop-patterns/oop-pattern-lab/src/lib.rs` | 字面量、多模式、范围、结构体/枚举/切片/元组解构、ref、@、守卫，待 CI |
 | 19.1 | Unsafe Rust | 缺口 | `apps/storedesk/src/sqlite.rs` | 实现含 FFI，但学员没有隔离实验与安全论证 |
 | 19.2 | 高级 Trait | 缺口 | `—` | 补关联类型、操作符重载与超 Trait |
 | 19.3 | 高级类型 | 缺口 | `—` | 补 newtype、类型别名与 never type 边界 |
