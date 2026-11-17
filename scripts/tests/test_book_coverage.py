@@ -80,6 +80,13 @@ class BookCoverageTests(unittest.TestCase):
                 self.assertIn(contract, implementation)
 
 
+    def test_d5_is_in_release_and_declared_msrv_gates(self):
+        release = (ROOT / "scripts/release_check.py").read_text(encoding="utf-8")
+        msrv = (ROOT / "scripts/msrv_check.py").read_text(encoding="utf-8")
+        self.assertIn("*book_d5_steps()", release)
+        self.assertIn("plan.extend(book_d5_steps(quality=False))", msrv)
+
+
 
 if __name__ == "__main__":
     unittest.main()
