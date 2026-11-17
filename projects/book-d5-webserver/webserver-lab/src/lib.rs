@@ -16,7 +16,7 @@
 use std::io::{self, BufRead, BufReader, Write};
 use std::net::{TcpListener, TcpStream};
 use std::sync::mpsc::{self, Receiver, RecvTimeoutError, Sender, TryRecvError};
-use std::sync::{Arc, Condvar, Mutex};
+use std::sync::{Arc, Mutex};
 use std::thread::{self, JoinHandle};
 use std::time::Duration;
 
@@ -477,6 +477,7 @@ mod tests {
     use std::io::{Read, Write};
     use std::net::{Shutdown, SocketAddr};
     use std::sync::atomic::{AtomicUsize, Ordering};
+    use std::sync::Condvar;
 
     fn valid_request() -> &'static [u8] {
         b"GET / HTTP/1.1\r\nHost: localhost\r\nConnection: close\r\n\r\n"
