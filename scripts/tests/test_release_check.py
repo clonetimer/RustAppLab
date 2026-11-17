@@ -232,7 +232,7 @@ class B4GateTests(unittest.TestCase):
             self.assertIn('advanced_b_json_e2e', text)
             self.assertNotIn('cargo fetch', text)
         for relative in ('scripts/verify.ps1', 'scripts/verify_release_windows.ps1'):
-            self.assertTrue((release.ROOT/relative).read_bytes().startswith(b'\\xef\\xbb\\xbf'))
+            self.assertTrue((release.ROOT/relative).read_bytes().startswith(b'\xef\xbb\xbf'))
 
 
 if __name__ == '__main__':
