@@ -138,7 +138,9 @@ mod tests {
     #[test]
     fn bitwise_and_is_not_logical_and() {
         assert_eq!(apply_mask(0b1010, 0b1100), 0b1000);
-        assert!(true && true);
+        let enabled = true;
+        let allowed = false;
+        assert!(enabled && !allowed);
     }
 
     #[test]
