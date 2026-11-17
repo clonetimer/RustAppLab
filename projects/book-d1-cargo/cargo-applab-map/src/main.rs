@@ -3,9 +3,9 @@ use std::process::ExitCode;
 
 fn respond(args: impl IntoIterator<Item = String>) -> Result<String, String> {
     let mut args = args.into_iter();
-    let first = args
-        .next()
-        .ok_or_else(|| "用法：cargo applab-map <profiles|publish|workspace|install|extension>".to_string())?;
+    let first = args.next().ok_or_else(|| {
+        "用法：cargo applab-map <profiles|publish|workspace|install|extension>".to_string()
+    })?;
     // Cargo may prepend the external subcommand name; a direct binary invocation does not.
     let topic = if first == "applab-map" {
         args.next().ok_or_else(|| "请指定主题".to_string())?
