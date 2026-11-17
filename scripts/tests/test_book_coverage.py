@@ -280,7 +280,13 @@ class BookCoverageTests(unittest.TestCase):
         self.assertIn("publish = false", manifest)
         self.assertNotIn("[dependencies]", manifest)
         root_workspace = (ROOT / "Cargo.toml").read_text(encoding="utf-8")
+        members = re.search(r"members\s*=\s*\[(.*?)\]", root_workspace, re.S)
+        self.assertIsNotNone(members)
+        member_names = re.findall(r'"([^"]+)"', members.group(1))
+        self.assertEqual(len(member_names), 17)
+        self.assertTrue(all(name.startswith("apps/") for name in member_names))
         self.assertNotIn('"projects/book-d6-foundations"', root_workspace)
+        self.assertNotIn('"projects/book-d6-appendices"', root_workspace)
 
         lesson = (ROOT / "course/BOOK_D6_FOUNDATIONS.md").read_text(encoding="utf-8")
         implementation = (base / "foundation-lab/src/lib.rs").read_text(encoding="utf-8")
@@ -295,7 +301,7 @@ class BookCoverageTests(unittest.TestCase):
                          "pub fn benchmark_sums"):
             with self.subTest(contract=contract):
                 self.assertIn(contract, implementation)
-        self.assertEqual(len(re.findall(r"#\[test\]", implementation)), 13)
+        self.assertEqual(len(re.findall(r"#\[test\]", implementation)), 14)
         cli = (base / "foundation-lab/tests/cli.rs").read_text(encoding="utf-8")
         self.assertEqual(len(re.findall(r"#\[test\]", cli)), 6)
         self.assertEqual(len(re.findall(r"compile_fail", implementation)), 1)
