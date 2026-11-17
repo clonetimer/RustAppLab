@@ -166,6 +166,20 @@ class B4GateTests(unittest.TestCase):
                     result = release.run_step(label, [sys.executable, '-c', f'print({output!r})'], Path(temp))
                     self.assertFalse(result['passed'])
 
+    def test_book_d1_workspace_has_install_and_package_checks(self):
+        full = release.book_d1_steps()
+        basic = release.book_d1_steps(quality=False)
+        self.assertEqual([name for name, _ in full],
+                         ['book-d1-format', 'book-d1-clippy', 'book-d1-tests',
+                          'book-d1-doctests', 'book-d1-install-smoke', 'book-d1-package-list'])
+        self.assertEqual([name for name, _ in basic],
+                         ['book-d1-tests', 'book-d1-doctests', 'book-d1-install-smoke'])
+        self.assertEqual(release.TEST_LIMITS['book-d1-tests'], (10, 0))
+        self.assertEqual(release.TEST_LIMITS['book-d1-doctests'], (1, 0))
+        for name in ('book-d1-format', 'book-d1-clippy', 'book-d1-tests',
+                     'book-d1-doctests', 'book-d1-install-smoke', 'book-d1-package-list'):
+            self.assertIn(name, release_decision.REQUIRED)
+
     def test_book_d2_workspace_has_explicit_release_and_msrv_matrix(self):
         full = release.book_d2_steps()
         basic = release.book_d2_steps(quality=False)
