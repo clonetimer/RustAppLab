@@ -105,8 +105,8 @@ class LearnerKitTests(unittest.TestCase):
         self.assertIn("publish = false",
                       assets["projects/book-d6-appendices/appendix-lab/Cargo.toml"].decode())
         intro = self.assets().INTRO
-        self.assertIn("D6 附录参考实验", intro)
-        self.assertIn("D6 是独立参考实验", intro)
+        self.assertIn("D6-A 附录参考实验", intro)
+        self.assertIn("D6-A/D6-B 都是独立参考实验", intro)
 
     def test_d6_foundations_workspace_is_shipped_as_reference(self):
         assets = dict(self.assets().course_inputs())
