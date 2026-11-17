@@ -19,7 +19,7 @@ function Source-Id {
     $Names = [string[]]@(Get-ChildItem -LiteralPath $Root -Recurse -File -Force | ForEach-Object {
         $Rel = $_.FullName.Substring($Root.Length + 1).Replace('\','/')
         if ($Rel -cnotmatch '(^|/)(target|\.git|__pycache__)/' -and
-            (($Rel -notmatch '/') -or ($Rel -cmatch '^(apps|scripts|\.github|course|examples)/') -or ($Rel -cmatch '^projects/(advanced-b|advanced-c1|advanced-c2)/')) -and
+            (($Rel -notmatch '/') -or ($Rel -cmatch '^(apps|scripts|\.github|course|examples)/') -or ($Rel -cmatch '^projects/(advanced-b|advanced-c1|advanced-c2|book-d1-cargo)/')) -and
             (($Rel -ceq 'VERSION') -or ($_.Extension -cin @('.rs','.toml','.lock','.py','.ps1','.cmd','.sh','.html','.css','.js','.yml','.yaml','.md','.tsv','.txt','.json','.kv','.svg')))) { $Rel }
     })
     [Array]::Sort($Names, [StringComparer]::Ordinal)
@@ -138,6 +138,14 @@ try {
         Step ('advanced-b4-doctests-'+$Configuration.Name) 'cargo' (@('test')+$JsonCommon+$Configuration.Features+@('--doc')) $true 1 0
     }
     Step 'advanced-b4-platform-e2e' 'cargo' @('test','--locked','--offline','-p','labquest','--features','b4-integration','--test','advanced_b_json_e2e','--','--test-threads=1') $true 5 0
+    # Book D1: separate workspace, root package count remains 17.
+    $BookManifest = 'projects/book-d1-cargo/Cargo.toml'
+    $BookCommon = @('--locked','--offline','--manifest-path',$BookManifest,'--workspace')
+    Step 'book-d1-format' 'cargo' @('fmt','--manifest-path',$BookManifest,'--all','--','--check')
+    Step 'book-d1-clippy' 'cargo' (@('clippy')+$BookCommon+@('--all-targets','--','-D','warnings'))
+    Step 'book-d1-tests' 'cargo' (@('test')+$BookCommon+@('--all-targets')) $true 10 0
+    Step 'book-d1-doctests' 'cargo' (@('test')+$BookCommon+@('--doc')) $true 1 0
+    Step 'book-d1-package-list' 'cargo' @('package','--list','--allow-dirty','--manifest-path','projects/book-d1-cargo/book-card/Cargo.toml')
     foreach ($Script in @('windows_beginner_smoke','windows_database_smoke','windows_studio_smoke')) {
         Step $Script 'powershell.exe' @('-NoLogo','-NoProfile','-ExecutionPolicy','Bypass','-File',(Join-Path $PSScriptRoot ($Script+'.ps1')))
     }
