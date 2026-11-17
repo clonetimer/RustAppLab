@@ -56,6 +56,7 @@ make_record!(GeneratedReading {
     source: String,
     pages: usize,
 });
+make_record!(EmptyReading {});
 
 /// Sums a slice by walking its raw pointer inside a safe abstraction.
 pub fn sum_via_raw_pointer(values: &[i32]) -> i32 {
@@ -69,6 +70,26 @@ pub fn sum_via_raw_pointer(values: &[i32]) -> i32 {
         offset += 1;
     }
     total
+}
+
+/// Splits a mutable slice into two disjoint mutable slices.
+///
+/// # Panics
+///
+/// Panics if mid exceeds the slice length.
+pub fn split_at_mut(values: &mut [i32], mid: usize) -> (&mut [i32], &mut [i32]) {
+    let length = values.len();
+    assert!(mid <= length, "midpoint exceeds slice length");
+    let pointer = values.as_mut_ptr();
+    // SAFETY: pointer originates from the uniquely borrowed slice. Both ranges
+    // are within the original allocation, and [0, mid) does not overlap
+    // [mid, length). The returned borrows are bounded by the input borrow.
+    unsafe {
+        (
+            std::slice::from_raw_parts_mut(pointer, mid),
+            std::slice::from_raw_parts_mut(pointer.add(mid), length - mid),
+        )
+    }
 }
 
 /// Adds delta to a caller-provided raw pointer.
@@ -388,6 +409,16 @@ pub struct Packet {
     pub payload: [u8; 4],
 }
 
+/// An enum also exercises the derive and attribute procedural macros.
+#[audit_tag(state)]
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Describe)]
+pub enum PacketState {
+    /// A ready packet.
+    Ready,
+    /// A packet with a fault.
+    Fault,
+}
+
 /// Returns stable command output for the five D4 topics.
 pub fn demo(topic: &str) -> Result<Vec<String>, &'static str> {
     match topic {
@@ -395,10 +426,14 @@ pub fn demo(topic: &str) -> Result<Vec<String>, &'static str> {
             let values = [2, 3, 5];
             let label = AsciiLabel::new("SAT")?;
             let union = NumberUnion { integer: 42 };
+            let mut split_values = [1, 2, 3, 4];
+            let (left, right) = split_at_mut(&mut split_values, 2);
             // SAFETY: the integer field is the field initialized above.
             let integer = unsafe { read_union_integer(union) };
             Ok(vec![
                 format!("raw-sum={}", sum_via_raw_pointer(&values)),
+                format!("split-left={left:?}"),
+                format!("split-right={right:?}"),
                 format!("ascii={}", label.as_str()),
                 format!("union-integer={integer}"),
                 format!("ffi-identity={}", call_ffi_identity(17)),
@@ -453,6 +488,29 @@ mod tests {
     #[test]
     fn raw_pointer_sum_reads_only_slice_elements() {
         assert_eq!(sum_via_raw_pointer(&[2, 3, 5]), 10);
+    }
+
+    #[test]
+    fn split_at_mut_returns_disjoint_mutable_slices() {
+        let mut values = [1, 2, 3, 4];
+        {
+            let (left, right) = split_at_mut(&mut values, 2);
+            left[0] = 10;
+            right[0] = 30;
+        }
+        assert_eq!(values, [10, 2, 30, 4]);
+
+        let mut empty = [];
+        let (left, right) = split_at_mut(&mut empty, 0);
+        assert!(left.is_empty());
+        assert!(right.is_empty());
+    }
+
+    #[test]
+    #[should_panic(expected = "midpoint exceeds slice length")]
+    fn split_at_mut_rejects_a_midpoint_past_the_end() {
+        let mut values = [1, 2];
+        let _ = split_at_mut(&mut values, 3);
     }
 
     #[test]
@@ -570,6 +628,8 @@ mod tests {
     #[test]
     fn function_pointer_runs_a_named_function_twice() {
         assert_eq!(apply_twice(add_one, 3), 5);
+        // A non-capturing closure can coerce to the same function-pointer type.
+        assert_eq!(apply_twice(|value| value + 1, 3), 5);
     }
 
     #[test]
@@ -602,6 +662,9 @@ mod tests {
         };
         assert_eq!(reading.pages, 3);
         assert_eq!(reading.source, "telemetry");
+
+        let empty = EmptyReading {};
+        assert_eq!(empty, EmptyReading {});
     }
 
     #[test]
@@ -611,11 +674,13 @@ mod tests {
             payload: [0; 4],
         };
         assert_eq!(packet.describe(), "Packet");
+        assert_eq!(PacketState::Ready.describe(), "PacketState");
     }
 
     #[test]
     fn attribute_macro_adds_a_compile_time_tag() {
         assert_eq!(Packet::AUDIT_TAG, "telemetry");
+        assert_eq!(PacketState::AUDIT_TAG, "state");
     }
 
     #[test]

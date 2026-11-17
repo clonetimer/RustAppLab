@@ -222,7 +222,7 @@ class B4GateTests(unittest.TestCase):
                          ['book-d4-format', 'book-d4-clippy', 'book-d4-tests', 'book-d4-doctests'])
         self.assertEqual([name for name, _ in basic],
                          ['book-d4-tests', 'book-d4-doctests'])
-        self.assertEqual(release.TEST_LIMITS['book-d4-tests'], (37, 0))
+        self.assertEqual(release.TEST_LIMITS['book-d4-tests'], (39, 0))
         self.assertEqual(release.TEST_LIMITS['book-d4-doctests'], (2, 0))
         for name, command in full:
             self.assertTrue(name.startswith('book-d4-'))

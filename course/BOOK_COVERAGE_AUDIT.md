@@ -4,7 +4,7 @@
 - **源码基准**：`clonetimer/RustAppLab` main `fed4a2d37a72de88dfb353474544efde9bdd537a`（2026-11-17 审计时）。
 - **证据规则**：表格中“已有实作”只表示可以定位到相关教学或可执行实例，**不表示**该小节原书所有示例、知识点、学员练习与测试均已完整覆盖；“部分”表示只有关联知识或实现；“缺口”明确有需要补的专项内容；“开发中”只证明开发分支已有材料、仍须 CI。
 - **验收判据**：每项最终需要有教学目标、版本适配、学员实验或合理的知识索引、可重现检查及用户体验验证。官方原书代码无需照抄，允许使用现有真实作品替换；不能用出现某个关键词冒充教学覆盖。
-- **当前统计**：共 **81** 项审计条目，其中 已有实作 37、部分 17、缺口 4、开发中 22、资料索引 1。D1（14.1–14.5）、D2（15.1–15.6）、D3（17.1–17.3、18.1–18.3）和 D4（19.1–19.5）已进入可运行参考实验与跨平台门禁，CI 签核前仍标记为开发中。这是条目盘点数，**不是**知识点覆盖率或学习达标率。
+- **当前统计**：共 **81** 项审计条目，其中 已有实作 42、部分 17、缺口 4、开发中 17、资料索引 1。D1（14.1–14.5）、D2（15.1–15.6）、D3（17.1–17.3、18.1–18.3）和 D4（19.1–19.5）已进入可运行参考实验与跨平台门禁；D4 已完成 Linux/Windows、Rust 1.74 与交付候选包验收。这是条目盘点数，**不是**知识点覆盖率或学习达标率。
 - **推进路线**：D1 Cargo（14.1–14.5）→ D2 智能指针（15.1–15.6）→ D3 对象模型/模式（17–18）→ D4 Unsafe/高级 Trait/宏（19）→ D5 原生多线程 Web Server（20）→ D6 附录与残余基础缺口；随每阶段修订本表。
 
 | 原书小节 | 主题 | 审计状态 | 现有代码/讲义证据（仓库相对路径） | 后续核查或补充 |
@@ -75,11 +75,11 @@
 | 18.1 | 使用模式的位置 | 开发中 | `projects/book-d3-oop-patterns/oop-pattern-lab/src/lib.rs` | match、if let、while let、for、let-else 与函数参数模式，待 CI |
 | 18.2 | 模式可反驳性 | 开发中 | `projects/book-d3-oop-patterns/oop-pattern-lab/src/lib.rs` | let-else/if let 对照与 compile_fail doctest，待 CI |
 | 18.3 | 模式语法 | 开发中 | `projects/book-d3-oop-patterns/oop-pattern-lab/src/lib.rs` | 字面量、多模式、范围、结构体/枚举/切片/元组解构、ref、@、守卫，待 CI |
-| 19.1 | Unsafe Rust | 开发中 | `projects/book-d4-advanced-features/advanced-lab/src/lib.rs` | 裸指针安全抽象、unsafe fn、extern C、unsafe trait、union、受限 static mut，待 CI |
-| 19.2 | 高级 Trait | 开发中 | `projects/book-d4-advanced-features/advanced-lab/src/lib.rs` | 关联类型、默认泛型参数、完全限定语法、超 Trait、Newtype，待 CI |
-| 19.3 | 高级类型 | 开发中 | `projects/book-d4-advanced-features/advanced-lab/src/lib.rs` | Newtype、类型别名、Never、DST、?Sized，待 CI |
-| 19.4 | 高级函数/闭包 | 开发中 | `projects/book-d4-advanced-features/advanced-lab/src/lib.rs` | 函数指针、枚举构造函数、返回闭包与 Box<dyn Fn>，待 CI |
-| 19.5 | 宏 | 开发中 | `projects/book-d4-advanced-features/advanced-lab/src/lib.rs` | macro_rules!、derive、属性宏与函数式过程宏由本地 d4-proc-macros crate 实现，待 CI |
+| 19.1 | Unsafe Rust | 已有实作 | `projects/book-d4-advanced-features/advanced-lab/src/lib.rs` | 裸指针、split_at_mut 安全抽象、unsafe fn、extern C、unsafe trait、union、受限 static mut；Linux/Windows PASS |
+| 19.2 | 高级 Trait | 已有实作 | `projects/book-d4-advanced-features/advanced-lab/src/lib.rs` | 关联类型、默认泛型参数、运算符重载、完全限定语法、超 Trait、Newtype；Linux/Windows PASS |
+| 19.3 | 高级类型 | 已有实作 | `projects/book-d4-advanced-features/advanced-lab/src/lib.rs` | Newtype、类型别名、Never、DST、?Sized；Linux/Windows PASS |
+| 19.4 | 高级函数/闭包 | 已有实作 | `projects/book-d4-advanced-features/advanced-lab/src/lib.rs` | 函数指针、非捕获闭包强制转换、枚举构造函数、返回闭包与 Box<dyn Fn>；Linux/Windows PASS |
+| 19.5 | 宏 | 已有实作 | `projects/book-d4-advanced-features/advanced-lab/src/lib.rs`；`projects/book-d4-advanced-features/d4-proc-macros/src/lib.rs` | macro_rules!、derive、属性宏与函数式过程宏；结构体/枚举展开测试通过 |
 | 20.1 | 单线程 Web Server | 部分 | `course/SYSTEMS_PATH.md` | ServiceDesk 同步 HTTP 服务器，不完全同于原书项目 |
 | 20.2 | 多线程 Web Server | 缺口 | `—` | BatchMeter 线程与 C2 Tokio 不等于手写线程池 |
 | 20.3 | 优雅关闭 | 部分 | `course/ADVANCED_C2.md` | Axum 优雅关闭已有，缺原书线程池收尾机制 |
@@ -105,6 +105,6 @@
 | D1 | 5 节 Cargo 讲义 + 隔离 Workspace + Cargo 外部子命令 + 真 CI | 已提交实验工程，持续集成待验证 |
 | D2 | 智能指针 6 节 + RAII/Deref/Weak 实验 | 待实施 |
 | D3 | 面向对象与模式匹配 6 节 | 待实施 |
-| D4 | 第 19 章 5 节安全隔离实验 | 已实现独立 Workspace，跨平台 CI 待签核 |
+| D4 | 第 19 章 5 节安全隔离实验 | 独立 Workspace 已实现；17/17 CI Jobs PASS，候选包已组装 |
 | D5 | 第 20 章 3 节线程池与关闭 | 待实施 |
 | D6 | 附录 A–G + 基础零散缺口 | 待实施 |

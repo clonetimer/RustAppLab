@@ -45,13 +45,15 @@ unsafe 并不等于“这里可以随意写内存”。Rust 仍然检查普通�
 4. 实现 unsafe trait。
 5. 访问 union 字段。
 
-本实验分别展示裸指针、unsafe fn、extern C 函数与外部 ABI 声明、unsafe trait、union 与可变静态数据。每处 unsafe 都有局部 SAFETY 注释，说明不变量由谁保证。
+本实验分别展示裸指针、split_at_mut 安全抽象、unsafe fn、extern C 函数与外部 ABI 声明、unsafe trait、union 与可变静态数据。每处 unsafe 都有局部 SAFETY 注释，说明不变量由谁保证。
 
 ## 先从安全抽象开始
 
 sum_via_raw_pointer 从一个有效 slice 获取指针，循环边界严格限制在 0..values.len()。调用者只传 &[i32]，因此安全契约由函数内部封装；空 slice 也不会解引用指针。
 
-**练习**：将循环改成错误的 0..=values.len()，观察测试或审查为何会指出越界。不要运行可能触发未定义行为的版本；通过代码审查和 Miri 等工具了解边界即可。
+本节还复现原书的核心例子 split_at_mut：安全 API 接收一个 &mut [i32]，通过裸指针与 from_raw_parts_mut 创建两个互不重叠的可变子切片。关键不变量是 mid 不超过原切片长度、两个范围均在原分配内，且 [0, mid) 与 [mid, len) 不重叠。函数将这些不变量封装在一个小型 unsafe 块中，调用者仍使用安全接口。
+
+**练习**：将循环改成错误的 0..=values.len()，观察边界为什么不成立；再尝试在 split_at_mut 中把第二个起点改成 pointer.add(mid - 1)，分析它如何破坏不重叠条件。不要运行可能触发未定义行为的版本。可在 nightly 工具链上使用 Miri 动态检查实际执行路径中的未定义行为，但它不能代替安全契约与代码审查。
 
 ## unsafe 函数与调用者契约
 
@@ -106,7 +108,7 @@ Human::baby_name 与 Pilot::baby_name 同名，使用 <Human as Pilot>::baby_nam
 
 # 19.4 · 高级函数与闭包
 
-fn(i32) -> i32 是函数指针类型，可以接收普通函数，也可以接收不捕获环境的闭包。Fn 是闭包 trait，不是函数指针的拼写变体。
+fn(i32) -> i32 是函数指针类型，可以接收普通函数，也可以接收不捕获环境的闭包（编译器可将其强制转换为函数指针）。Fn 是闭包 trait，不是函数指针的拼写变体。
 
 make_adder 返回 impl Fn(i32) -> i32，闭包通过 move 捕获 amount。当不同分支返回不同闭包具体类型时，使用 Box<dyn Fn...> 进行类型擦除。
 

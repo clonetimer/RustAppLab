@@ -13,6 +13,8 @@ fn unsafe_demo_exposes_bounded_raw_pointer_and_union_examples() {
     assert!(output.status.success());
     let stdout = String::from_utf8(output.stdout).unwrap();
     assert!(stdout.contains("raw-sum=10"));
+    assert!(stdout.contains("split-left=[1, 2]"));
+    assert!(stdout.contains("split-right=[3, 4]"));
     assert!(stdout.contains("ascii=SAT"));
     assert!(stdout.contains("union-integer=42"));
     assert!(stdout.contains("ffi-identity=17"));

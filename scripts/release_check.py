@@ -42,7 +42,7 @@ TEST_LIMITS = {
     'book-d1-tests': (10, 0), 'book-d1-doctests': (1, 0),
     'book-d2-tests': (26, 0), 'book-d2-doctests': (1, 0),
     'book-d3-tests': (44, 0), 'book-d3-doctests': (1, 0),
-    'book-d4-tests': (37, 0), 'book-d4-doctests': (2, 0),
+    'book-d4-tests': (39, 0), 'book-d4-doctests': (2, 0),
 }
 
 
