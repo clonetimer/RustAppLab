@@ -11,7 +11,9 @@ fn run(args: &[&str]) -> std::process::Output {
 fn direct_execution_prints_one_chapter() {
     let output = run(&["profiles"]);
     assert!(output.status.success());
-    assert!(String::from_utf8(output.stdout).unwrap().starts_with("14.1 "));
+    assert!(String::from_utf8(output.stdout)
+        .unwrap()
+        .starts_with("14.1 "));
     assert!(output.stderr.is_empty());
 }
 
@@ -19,7 +21,9 @@ fn direct_execution_prints_one_chapter() {
 fn cargo_style_invocation_uses_same_path() {
     let output = run(&["applab-map", "workspace"]);
     assert!(output.status.success());
-    assert!(String::from_utf8(output.stdout).unwrap().starts_with("14.3 "));
+    assert!(String::from_utf8(output.stdout)
+        .unwrap()
+        .starts_with("14.3 "));
     assert!(output.stderr.is_empty());
 }
 
@@ -28,7 +32,9 @@ fn wrong_topic_has_nonzero_exit_and_no_stdout() {
     let output = run(&["applab-map", "not-a-topic"]);
     assert!(!output.status.success());
     assert!(output.stdout.is_empty());
-    assert!(String::from_utf8(output.stderr).unwrap().contains("未知主题"));
+    assert!(String::from_utf8(output.stderr)
+        .unwrap()
+        .contains("未知主题"));
 }
 
 #[test]
