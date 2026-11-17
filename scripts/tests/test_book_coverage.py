@@ -13,7 +13,7 @@ class BookCoverageTests(unittest.TestCase):
         text = AUDIT.read_text(encoding="utf-8")
         rows = []
         for line in text.splitlines():
-            if not re.match(r"^\| (?:\d+\.\d+|\d+|[A-G]) \|", line):
+            if not re.match(r"^\\| (?:\\d+\\.\\d+|\\d+|[A-G]) \\|", line):
                 continue
             cols = [x.strip() for x in line.split("|")[1:-1]]
             self.assertEqual(len(cols), 5, line)
@@ -79,14 +79,11 @@ class BookCoverageTests(unittest.TestCase):
             with self.subTest(contract=contract):
                 self.assertIn(contract, implementation)
 
-
     def test_d5_is_in_release_and_declared_msrv_gates(self):
         release = (ROOT / "scripts/release_check.py").read_text(encoding="utf-8")
         msrv = (ROOT / "scripts/msrv_check.py").read_text(encoding="utf-8")
         self.assertIn("*book_d5_steps()", release)
         self.assertIn("plan.extend(book_d5_steps(quality=False))", msrv)
-
-
 
     def test_d6_appendix_reference_workspace_is_isolated_and_executable(self):
         base = ROOT / "projects/book-d6-appendices"
@@ -104,84 +101,20 @@ class BookCoverageTests(unittest.TestCase):
 
         lesson = (ROOT / "course/BOOK_D6_APPENDICES.md").read_text(encoding="utf-8")
         implementation = (base / "appendix-lab/src/lib.rs").read_text(encoding="utf-8")
+        keywords = (
+            "_", "as", "async", "await", "break", "const", "continue", "crate",
+            "dyn", "else", "enum", "extern", "false", "fn", "for", "if", "impl",
+            "in", "let", "loop", "match", "mod", "move", "mut", "pub", "ref",
+            "return", "self", "Self", "static", "struct", "super", "trait",
+            "true", "type", "unsafe", "use", "where", "while", "abstract",
+            "become", "box", "do", "final", "gen", "macro", "override", "priv",
+            "try", "typeof", "unsized", "virtual", "yield", "'static",
+            "macro_rules", "raw", "safe", "union",
+        )
         for topic in ("附录 A", "附录 B", "附录 C", "附录 D", "附录 E", "附录 F", "附录 G",
                       "Strict keywords", "Reserved keywords", "Weak keywords",
                       "Edition 2024", "rust-analyzer", "Stable", "Beta", "Nightly",
-                      "_", "as", "async", "await", "break", "const", "continue",
-                      "crate", "dyn", "else", "enum", "extern", "false", "fn", "for",
-                      "if", "impl", "in", "let", "loop", "match", "mod", "move", "mut",
-                      "pub", "ref", "return", "self", "Self", "static", "struct",
-                      "super", "trait", "true", "type", "unsafe", "use", "where", "while",
-                      "abstract", "become", "box", "do", "final", "gen", "macro",
-                      "override", "priv", "try", "typeof", "unsized", "virtual", "yield",
-                      "'static", "macro_rules", "raw", "safe", "union",
-                      "::", "->", "=>", "@", "#!", "$"):
-            with self.subTest(topic=topic):
-                self.assertIn(topic, lesson)
-        for contract in ("serve_sequential", "pub fn serve(", "Message::Shutdown",
-                         "impl Drop for ThreadPool", "MAX_HEADER_BYTES"):
-            with self.subTest(contract=contract):
-                self.assertIn(contract, implementation)
-
-
-    def test_d5_is_in_release_and_declared_msrv_gates(self):
-        release = (ROOT / "scripts/release_check.py").read_text(encoding="utf-8")
-        msrv = (ROOT / "scripts/msrv_check.py").read_text(encoding="utf-8")
-        self.assertIn("*book_d5_steps()", release)
-        self.assertIn("plan.extend(book_d5_steps(quality=False))", msrv)
-
-
-
-    def test_d6_appendix_reference_workspace_is_isolated_and_executable(self):
-        base = ROOT / "projects/book-d6-appendices"
-        for relative in ("Cargo.toml", "Cargo.lock", "README.md",
-                         "appendix-lab/Cargo.toml", "appendix-lab/src/lib.rs"):
-            with self.subTest(path=relative):
-                self.assertTrue((base / relative).is_file())
-        manifest = (base / "appendix-lab/Cargo.toml").read_text(encoding="utf-8")
-        self.assertIn('edition = "2021"', manifest)
-        self.assertIn('rust-version = "1.74"', manifest)
-        self.assertIn("publish = false", manifest)
-        self.assertNotIn("[dependencies]", manifest)
-        root_workspace = (ROOT / "Cargo.toml").read_text(encoding="utf-8")
-        self.assertNotIn('"projects/book-d6-appendices"', root_workspace)
-
-        lesson = (ROOT / "course/BOOK_D6_APPENDICES.md").read_text(encoding="utf-8")
-        implementation = (base / "appendix-lab/src/lib.rs").read_text(encoding="utf-8")
-        ")
-            with self.subTest(topic=topic):
-                self.assertIn(topic, lesson)
-        for contract in ("serve_sequential", "pub fn serve(", "Message::Shutdown",
-                         "impl Drop for ThreadPool", "MAX_HEADER_BYTES"):
-            with self.subTest(contract=contract):
-                self.assertIn(contract, implementation)
-
-
-    def test_d5_is_in_release_and_declared_msrv_gates(self):
-        release = (ROOT / "scripts/release_check.py").read_text(encoding="utf-8")
-        msrv = (ROOT / "scripts/msrv_check.py").read_text(encoding="utf-8")
-        self.assertIn("*book_d5_steps()", release)
-        self.assertIn("plan.extend(book_d5_steps(quality=False))", msrv)
-
-
-
-    def test_d6_appendix_reference_workspace_is_isolated_and_executable(self):
-        base = ROOT / "projects/book-d6-appendices"
-        for relative in ("Cargo.toml", "Cargo.lock", "README.md",
-                         "appendix-lab/Cargo.toml", "appendix-lab/src/lib.rs"):
-            with self.subTest(path=relative):
-                self.assertTrue((base / relative).is_file())
-        manifest = (base / "appendix-lab/Cargo.toml").read_text(encoding="utf-8")
-        self.assertIn('edition = "2021"', manifest)
-        self.assertIn('rust-version = "1.74"', manifest)
-        self.assertIn("publish = false", manifest)
-        self.assertNotIn("[dependencies]", manifest)
-        root_workspace = (ROOT / "Cargo.toml").read_text(encoding="utf-8")
-        self.assertNotIn('"projects/book-d6-appendices"', root_workspace)
-
-        lesson = (ROOT / "course/BOOK_D6_APPENDICES.md").read_text(encoding="utf-8")
-        implementation = (base / "appendix-lab/src/lib.rs").read_text(encoding="utf-8")
-"):
+                      "::", "->", "=>", "@", "#!", "$", *keywords):
             with self.subTest(topic=topic):
                 self.assertIn(topic, lesson)
         for contract in ("pub fn r#match", "impl Add for Point",
@@ -189,7 +122,7 @@ class BookCoverageTests(unittest.TestCase):
                          "impl fmt::Display for Task", "f64::NAN", "compile_fail"):
             with self.subTest(contract=contract):
                 self.assertIn(contract, implementation)
-        self.assertEqual(len(re.findall(r"#\[test\]", implementation)), 11)
+        self.assertEqual(len(re.findall(r"#\\[test\\]", implementation)), 11)
         self.assertEqual(len(re.findall(r"compile_fail", implementation)), 2)
 
     def test_d6_foundations_workspace_covers_remaining_chapter_gaps(self):
@@ -204,8 +137,9 @@ class BookCoverageTests(unittest.TestCase):
         self.assertIn('rust-version = "1.74"', manifest)
         self.assertIn("publish = false", manifest)
         self.assertNotIn("[dependencies]", manifest)
+
         root_workspace = (ROOT / "Cargo.toml").read_text(encoding="utf-8")
-        members = re.search(r"members\s*=\s*\[(.*?)\]", root_workspace, re.S)
+        members = re.search(r"members\\s*=\\s*\\[(.*?)\\]", root_workspace, re.S)
         self.assertIsNotNone(members)
         member_names = re.findall(r'"([^"]+)"', members.group(1))
         self.assertEqual(len(member_names), 17)
@@ -223,12 +157,12 @@ class BookCoverageTests(unittest.TestCase):
                          "pub fn word_frequencies", "pub fn parse_non_empty",
                          "pub fn config_dir_from", "pub fn count_non_empty_lines",
                          "pub fn sum_with_loop", "pub fn sum_with_iterator",
-                         "pub fn benchmark_sums"):
+                         "pub fn benchmark_sums", "buffered_line_count_propagates_io_failures"):
             with self.subTest(contract=contract):
                 self.assertIn(contract, implementation)
-        self.assertEqual(len(re.findall(r"#\[test\]", implementation)), 14)
+        self.assertEqual(len(re.findall(r"#\\[test\\]", implementation)), 14)
         cli = (base / "foundation-lab/tests/cli.rs").read_text(encoding="utf-8")
-        self.assertEqual(len(re.findall(r"#\[test\]", cli)), 6)
+        self.assertEqual(len(re.findall(r"#\\[test\\]", cli)), 6)
         self.assertEqual(len(re.findall(r"compile_fail", implementation)), 1)
 
     def test_d6_is_registered_in_release_msrv_and_learner_package(self):
@@ -249,8 +183,6 @@ class BookCoverageTests(unittest.TestCase):
         self.assertIn("book-d6-foundations", package)
         self.assertIn("BOOK_D6_FOUNDATIONS.md", learner)
         self.assertIn('projects" / "book-d6-foundations', learner)
-
-
 
 
 if __name__ == "__main__":
