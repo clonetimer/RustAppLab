@@ -49,6 +49,10 @@ fn read_bounded(path: &Path) -> Result<Vec<u8>, String> {
 pub(crate) fn learner_cargo(command: &mut Command) -> &mut Command {
     command
         .args(["--jobs", "2"])
+        // Do not let the parent release gate's CARGO_TARGET_DIR redirect
+        // learner outputs into the root workspace. Each call site explicitly
+        // selects its own isolated --target-dir.
+        .env_remove("CARGO_TARGET_DIR")
         .env_remove("CARGO_BUILD_TARGET")
         .env_remove("CARGO_MAKEFLAGS")
         .env_remove("MAKEFLAGS")
@@ -153,6 +157,17 @@ mod tests {
             .args(["--exact", "process::tests::child_fixture", "--nocapture"])
             .env("RUSTAPPLAB_CAPTURE_TEST_MODE", mode);
         command
+    }
+    #[test]
+    fn learner_cargo_does_not_inherit_parent_build_destination() {
+        let mut cmd = Command::new("cargo");
+        learner_cargo(&mut cmd);
+        let removed: Vec<_> = cmd
+            .get_envs()
+            .filter_map(|(name, value)| if value.is_none() { Some(name.to_string_lossy().into_owned()) } else { None })
+            .collect();
+        assert!(removed.iter().any(|x| x == "CARGO_TARGET_DIR"));
+        assert!(removed.iter().any(|x| x == "CARGO_BUILD_TARGET"));
     }
     #[test]
     fn verbose_stdout_and_stderr_do_not_block_and_files_are_cleaned() {
