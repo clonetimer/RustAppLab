@@ -113,4 +113,17 @@ if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 & cargo test @AdvancedCommon --doc
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+Write-Host 'Rust Book D5 multithreaded web server workspace (offline)'
+$ServerManifest = 'projects/book-d5-webserver/Cargo.toml'
+$ServerCommon = @('--locked','--offline','--manifest-path',$ServerManifest,'--workspace')
+& cargo fmt --manifest-path $ServerManifest --all -- --check
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+& cargo clippy @ServerCommon --all-targets -- -D warnings
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+& cargo test @ServerCommon --all-targets -- --test-threads=2
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+& cargo test @ServerCommon --all-targets --release -- --test-threads=2
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+& cargo test @ServerCommon --doc
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 Write-Host 'Completed. Manual application and cross-platform verification are still required.'
