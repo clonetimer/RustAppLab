@@ -51,7 +51,8 @@ impl Topic {
 }
 
 pub fn describe(input: &str) -> Result<String, &'static str> {
-    let topic = Topic::parse(input).ok_or("未知主题；可选 profiles/publish/workspace/install/extension")?;
+    let topic =
+        Topic::parse(input).ok_or("未知主题；可选 profiles/publish/workspace/install/extension")?;
     Ok(format!("{} {}\n", topic.chapter(), topic.description()))
 }
 
