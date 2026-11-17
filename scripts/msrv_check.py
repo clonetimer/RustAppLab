@@ -5,7 +5,7 @@ import json
 from pathlib import Path
 import platform
 import re
-from release_check import ROOT,run_step,source_id,advanced_b_steps,advanced_b4_steps,book_d1_steps,book_d2_steps
+from release_check import ROOT,run_step,source_id,advanced_b_steps,advanced_b4_steps,book_d1_steps,book_d2_steps,book_d3_steps
 
 def main():
     p=argparse.ArgumentParser(description=__doc__);p.add_argument('--output',type=Path,required=True);a=p.parse_args()
@@ -26,6 +26,7 @@ def main():
         plan.extend(advanced_b4_steps(quality=False))
         plan.extend(book_d1_steps(quality=False))
         plan.extend(book_d2_steps(quality=False))
+        plan.extend(book_d3_steps(quality=False))
         for label,command in plan:
             item=run_step(label,command,out);report['steps'].append(item)
             if not item['passed']:break
