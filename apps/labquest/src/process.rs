@@ -164,7 +164,13 @@ mod tests {
         learner_cargo(&mut cmd);
         let removed: Vec<_> = cmd
             .get_envs()
-            .filter_map(|(name, value)| if value.is_none() { Some(name.to_string_lossy().into_owned()) } else { None })
+            .filter_map(|(name, value)| {
+                if value.is_none() {
+                    Some(name.to_string_lossy().into_owned())
+                } else {
+                    None
+                }
+            })
             .collect();
         assert!(removed.iter().any(|x| x == "CARGO_TARGET_DIR"));
         assert!(removed.iter().any(|x| x == "CARGO_BUILD_TARGET"));
