@@ -13,7 +13,7 @@ class BookCoverageTests(unittest.TestCase):
         text = AUDIT.read_text(encoding="utf-8")
         rows = []
         for line in text.splitlines():
-            if not re.match(r"^\\| (?:\\d+\\.\\d+|\\d+|[A-G]) \\|", line):
+            if not re.match(r"^\| (?:\d+\.\d+|\d+|[A-G]) \|", line):
                 continue
             cols = [x.strip() for x in line.split("|")[1:-1]]
             self.assertEqual(len(cols), 5, line)
@@ -122,7 +122,7 @@ class BookCoverageTests(unittest.TestCase):
                          "impl fmt::Display for Task", "f64::NAN", "compile_fail"):
             with self.subTest(contract=contract):
                 self.assertIn(contract, implementation)
-        self.assertEqual(len(re.findall(r"#\\[test\\]", implementation)), 11)
+        self.assertEqual(len(re.findall(r"#\[test\]", implementation)), 11)
         self.assertEqual(len(re.findall(r"compile_fail", implementation)), 2)
 
     def test_d6_foundations_workspace_covers_remaining_chapter_gaps(self):
@@ -139,7 +139,7 @@ class BookCoverageTests(unittest.TestCase):
         self.assertNotIn("[dependencies]", manifest)
 
         root_workspace = (ROOT / "Cargo.toml").read_text(encoding="utf-8")
-        members = re.search(r"members\\s*=\\s*\\[(.*?)\\]", root_workspace, re.S)
+        members = re.search(r"members\s*=\s*\[(.*?)\]", root_workspace, re.S)
         self.assertIsNotNone(members)
         member_names = re.findall(r'"([^"]+)"', members.group(1))
         self.assertEqual(len(member_names), 17)
@@ -160,9 +160,9 @@ class BookCoverageTests(unittest.TestCase):
                          "pub fn benchmark_sums", "buffered_line_count_propagates_io_failures"):
             with self.subTest(contract=contract):
                 self.assertIn(contract, implementation)
-        self.assertEqual(len(re.findall(r"#\\[test\\]", implementation)), 14)
+        self.assertEqual(len(re.findall(r"#\[test\]", implementation)), 14)
         cli = (base / "foundation-lab/tests/cli.rs").read_text(encoding="utf-8")
-        self.assertEqual(len(re.findall(r"#\\[test\\]", cli)), 6)
+        self.assertEqual(len(re.findall(r"#\[test\]", cli)), 6)
         self.assertEqual(len(re.findall(r"compile_fail", implementation)), 1)
 
     def test_d6_is_registered_in_release_msrv_and_learner_package(self):
