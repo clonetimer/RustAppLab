@@ -174,8 +174,7 @@ impl AveragedCollection {
     }
 
     pub fn average(&self) -> Option<f64> {
-        (!self.values.is_empty())
-            .then(|| self.sum as f64 / self.values.len() as f64)
+        (!self.values.is_empty()).then(|| self.sum as f64 / self.values.len() as f64)
     }
 
     pub fn len(&self) -> usize {
@@ -222,7 +221,10 @@ impl Screen {
     }
 
     pub fn run(&self) -> Vec<String> {
-        self.components.iter().map(|component| component.draw()).collect()
+        self.components
+            .iter()
+            .map(|component| component.draw())
+            .collect()
     }
 
     pub fn len(&self) -> usize {
@@ -504,7 +506,10 @@ mod tests {
     #[test]
     fn let_else_handles_missing_and_blank_values() {
         assert_eq!(require_username(None), Err("username is required"));
-        assert_eq!(require_username(Some("  ")), Err("username cannot be empty"));
+        assert_eq!(
+            require_username(Some("  ")),
+            Err("username cannot be empty")
+        );
     }
 
     #[test]
