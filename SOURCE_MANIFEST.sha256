@@ -467,7 +467,7 @@ c40ba15b70fedb1958f0dec1c6c36cf9a960f8b2849b10ccc020b887f6d512c3  projects/book-
 143bb1291d26994343992d992ef87c57b6fad44d16dc883a4e0e8851676c0f41  projects/book-d4-advanced-features/d4-proc-macros/src/lib.rs
 7aae4cfbb30d8d5cbdf861d9a14ebde18068a7726acc8aa2542f5d9119b15dbd  projects/book-d5-webserver/Cargo.lock
 0c233ae89b8e651055590fd2e9b777cd34a778b983b0ebf0a74e8bddf841b46b  projects/book-d5-webserver/Cargo.toml
-6e4f396c224336ed82317c8caccf5d1fbbf0a12c69b4bca12a6bccbed1fbd1f  projects/book-d5-webserver/README.md
+6e4f396c224336ed277aeed7b27946ceab27b2dbf78083609b1a08b2335e7aa1  projects/book-d5-webserver/README.md
 7aef342d640865b5541dcb80126ac83c344fee781280ea68d9ecd54f3752b49b  projects/book-d5-webserver/webserver-lab/Cargo.toml
 5a32786fbf5275ecd912d1ef65abd52d427d2516b27990b6f779de200193ad58  projects/book-d5-webserver/webserver-lab/samples/index.html
 ca36a6284a864411ff35ef994ce3cf15f08b2d65b529ab92a44ae5532693eca0  projects/book-d5-webserver/webserver-lab/src/lib.rs
