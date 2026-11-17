@@ -93,6 +93,21 @@ class LearnerKitTests(unittest.TestCase):
         self.assertIn("proc-macro = true",
                       assets["projects/book-d4-advanced-features/d4-proc-macros/Cargo.toml"].decode())
 
+    def test_d6_appendices_workspace_is_shipped_as_reference(self):
+        assets = dict(self.assets().course_inputs())
+        for path in ("course/BOOK_D6_APPENDICES.md",
+                     "projects/book-d6-appendices/Cargo.toml",
+                     "projects/book-d6-appendices/Cargo.lock",
+                     "projects/book-d6-appendices/README.md",
+                     "projects/book-d6-appendices/appendix-lab/Cargo.toml",
+                     "projects/book-d6-appendices/appendix-lab/src/lib.rs"):
+            self.assertIn(path, assets)
+        self.assertIn("publish = false",
+                      assets["projects/book-d6-appendices/appendix-lab/Cargo.toml"].decode())
+        intro = self.assets().INTRO
+        self.assertIn("D6 附录参考实验", intro)
+        self.assertIn("D6 是独立参考实验", intro)
+
     def test_intro_explains_separate_b4_dependency_preparation(self):
         intro = self.assets().INTRO
         self.assertNotIn('不需要下载外部 Rust crate', intro)

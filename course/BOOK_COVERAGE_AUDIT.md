@@ -4,8 +4,8 @@
 - **源码基准**：`clonetimer/RustAppLab` main `fed4a2d37a72de88dfb353474544efde9bdd537a`（2026-11-17 审计时）。
 - **证据规则**：表格中“已有实作”只表示可以定位到相关教学或可执行实例，**不表示**该小节原书所有示例、知识点、学员练习与测试均已完整覆盖；“部分”表示只有关联知识或实现；“缺口”明确有需要补的专项内容；“开发中”只证明开发分支已有材料、仍须 CI。
 - **验收判据**：每项最终需要有教学目标、版本适配、学员实验或合理的知识索引、可重现检查及用户体验验证。官方原书代码无需照抄，允许使用现有真实作品替换；不能用出现某个关键词冒充教学覆盖。
-- **当前统计**：共 **81** 项审计条目，其中 已有实作 42、部分 17、缺口 4、开发中 17、资料索引 1。D1（14.1–14.5）、D2（15.1–15.6）、D3（17.1–17.3、18.1–18.3）和 D4（19.1–19.5）已进入可运行参考实验与跨平台门禁；D4 已完成 Linux/Windows、Rust 1.74 与交付候选包验收。这是条目盘点数，**不是**知识点覆盖率或学习达标率。
-- **推进路线**：D1 Cargo（14.1–14.5）→ D2 智能指针（15.1–15.6）→ D3 对象模型/模式（17–18）→ D4 Unsafe/高级 Trait/宏（19）→ D5 原生多线程 Web Server（20）→ D6 附录与残余基础缺口；随每阶段修订本表。
+- **当前统计**：共 **81** 项审计条目，其中 已有实作 59、部分 11、缺口 1、开发中 10、资料索引 0。D1–D4 独立参考 Workspace 已随 PR #6 合并，D0–D4 验收矩阵 17/17 CI Jobs PASS；D5 的 20.1–20.3 正在进行最终跨平台验收；D6-A 已形成附录 A–G 讲义与独立参考实验，待 CI 签核。这是条目盘点数，**不是**知识点覆盖率或学习达标率。
+- **推进路线**：D1 Cargo（14.1–14.5）→ D2 智能指针（15.1–15.6）→ D3 对象模型/模式（17–18）→ D4 Unsafe/高级 Trait/宏（19）→ D5 原生多线程 Web Server（20）→ D6-A 附录 A–G → D6-B 基础知识残余缺口；随每阶段修订本表。
 
 | 原书小节 | 主题 | 审计状态 | 现有代码/讲义证据（仓库相对路径） | 后续核查或补充 |
 |---|---|---|---|---|
@@ -54,42 +54,42 @@
 | 13.2 | 迭代器 | 已有实作 | `course/studio/textscope.md` | 过滤、聚合与排序 |
 | 13.3 | 用迭代器改进 I/O 项目 | 部分 | `course/25_labquest_rust_code.md` | 含迭代器，但原书对照未复测 |
 | 13.4 | 循环与迭代器性能比较 | 缺口 | `—` | 缺可重复的独立对比实验 |
-| 14.1 | Profile 构建配置 | 开发中 | `course/BOOK_D1_CARGO.md` | D1 已添加 profile 实验，待 CI |
-| 14.2 | crate 打包与发布 | 开发中 | `course/BOOK_D1_CARGO.md` | 仅安全打包检查，不做实际 registry 上传 |
-| 14.3 | Cargo Workspace | 开发中 | `projects/book-d1-cargo/Cargo.toml` | 复用原 B 课程，再加 D1 独立工作区 |
-| 14.4 | cargo install | 开发中 | `course/BOOK_D1_CARGO.md` | 仅本地路径和隔离 root |
-| 14.5 | Cargo 自定义子命令 | 开发中 | `projects/book-d1-cargo/cargo-applab-map/src/main.rs` | 添加真实 cargo-* 命令，待 CI |
-| 15.1 | Box | 开发中 | `projects/book-d2-smart-pointers/smart-pointer-lab/src/lib.rs` | 递归类型、堆间接层与 Box trait object 已有可运行示例，待 CI |
-| 15.2 | Deref | 开发中 | `projects/book-d2-smart-pointers/smart-pointer-lab/src/lib.rs` | 自定义 MyBox、Deref/DerefMut 与 String 到 str 强制转换，待 CI |
-| 15.3 | Drop | 开发中 | `projects/book-d2-smart-pointers/smart-pointer-lab/src/lib.rs` | 自动析构与 std::mem::drop 时机实验，待 CI |
-| 15.4 | Rc | 开发中 | `projects/book-d2-smart-pointers/smart-pointer-lab/src/lib.rs` | Rc clone、strong_count 与单线程共享所有权实验，待 CI |
-| 15.5 | RefCell | 开发中 | `projects/book-d2-smart-pointers/smart-pointer-lab/src/lib.rs` | RefCell 运行时借用冲突、try_borrow_mut 与 Rc<RefCell<T>> 实验，待 CI |
-| 15.6 | 引用循环 | 开发中 | `projects/book-d2-smart-pointers/smart-pointer-lab/src/lib.rs` | parent-child 强拥有/Weak 回边与父节点释放实验，待 CI |
+| 14.1 | Profile 构建配置 | 已有实作 | `course/BOOK_D1_CARGO.md` | D1 已添加 profile 实验；独立 Workspace 已随 PR #6 合并，D0–D4 验收矩阵 17/17 CI Jobs PASS |
+| 14.2 | crate 打包与发布 | 已有实作 | `course/BOOK_D1_CARGO.md` | 仅安全打包检查，不做实际 registry 上传；独立 Workspace 已随 PR #6 合并，D0–D4 验收矩阵 17/17 CI Jobs PASS |
+| 14.3 | Cargo Workspace | 已有实作 | `projects/book-d1-cargo/Cargo.toml` | 复用原 B 课程，再加 D1 独立工作区；独立 Workspace 已随 PR #6 合并，D0–D4 验收矩阵 17/17 CI Jobs PASS |
+| 14.4 | cargo install | 已有实作 | `course/BOOK_D1_CARGO.md` | 仅本地路径和隔离 root；独立 Workspace 已随 PR #6 合并，D0–D4 验收矩阵 17/17 CI Jobs PASS |
+| 14.5 | Cargo 自定义子命令 | 已有实作 | `projects/book-d1-cargo/cargo-applab-map/src/main.rs` | 添加真实 cargo-* 命令；独立 Workspace 已随 PR #6 合并，D0–D4 验收矩阵 17/17 CI Jobs PASS |
+| 15.1 | Box | 已有实作 | `projects/book-d2-smart-pointers/smart-pointer-lab/src/lib.rs` | 递归类型、堆间接层与 Box trait object 已有可运行示例；独立 Workspace 已随 PR #6 合并，D0–D4 验收矩阵 17/17 CI Jobs PASS |
+| 15.2 | Deref | 已有实作 | `projects/book-d2-smart-pointers/smart-pointer-lab/src/lib.rs` | 自定义 MyBox、Deref/DerefMut 与 String 到 str 强制转换；独立 Workspace 已随 PR #6 合并，D0–D4 验收矩阵 17/17 CI Jobs PASS |
+| 15.3 | Drop | 已有实作 | `projects/book-d2-smart-pointers/smart-pointer-lab/src/lib.rs` | 自动析构与 std::mem::drop 时机实验；独立 Workspace 已随 PR #6 合并，D0–D4 验收矩阵 17/17 CI Jobs PASS |
+| 15.4 | Rc | 已有实作 | `projects/book-d2-smart-pointers/smart-pointer-lab/src/lib.rs` | Rc clone、strong_count 与单线程共享所有权实验；独立 Workspace 已随 PR #6 合并，D0–D4 验收矩阵 17/17 CI Jobs PASS |
+| 15.5 | RefCell | 已有实作 | `projects/book-d2-smart-pointers/smart-pointer-lab/src/lib.rs` | RefCell 运行时借用冲突、try_borrow_mut 与 Rc<RefCell<T>> 实验；独立 Workspace 已随 PR #6 合并，D0–D4 验收矩阵 17/17 CI Jobs PASS |
+| 15.6 | 引用循环 | 已有实作 | `projects/book-d2-smart-pointers/smart-pointer-lab/src/lib.rs` | parent-child 强拥有/Weak 回边与父节点释放实验；独立 Workspace 已随 PR #6 合并，D0–D4 验收矩阵 17/17 CI Jobs PASS |
 | 16.1 | 线程 | 已有实作 | `course/SYSTEMS_PATH.md` | BatchMeter 并发 |
 | 16.2 | 消息传递 | 已有实作 | `course/SYSTEMS_PATH.md` | mpsc |
 | 16.3 | 共享状态 | 已有实作 | `course/ADVANCED_A.md` | Arc 与状态边界 |
 | 16.4 | Send 与 Sync | 已有实作 | `course/ADVANCED_A.md` | 跨线程快照 |
-| 17.1 | 面向对象特性 | 开发中 | `projects/book-d3-oop-patterns/oop-pattern-lab/src/lib.rs` | 封装不变量、组合与 trait 多态参考实验，待 CI |
-| 17.2 | Trait Object | 开发中 | `projects/book-d3-oop-patterns/oop-pattern-lab/src/lib.rs` | Box<dyn Draw> 多种具体类型运行时分发，待 CI |
-| 17.3 | 状态模式 | 开发中 | `projects/book-d3-oop-patterns/oop-pattern-lab/src/lib.rs` | Draft→PendingReview→Published 消费式状态转换，待 CI |
-| 18.1 | 使用模式的位置 | 开发中 | `projects/book-d3-oop-patterns/oop-pattern-lab/src/lib.rs` | match、if let、while let、for、let-else 与函数参数模式，待 CI |
-| 18.2 | 模式可反驳性 | 开发中 | `projects/book-d3-oop-patterns/oop-pattern-lab/src/lib.rs` | let-else/if let 对照与 compile_fail doctest，待 CI |
-| 18.3 | 模式语法 | 开发中 | `projects/book-d3-oop-patterns/oop-pattern-lab/src/lib.rs` | 字面量、多模式、范围、结构体/枚举/切片/元组解构、ref、@、守卫，待 CI |
+| 17.1 | 面向对象特性 | 已有实作 | `projects/book-d3-oop-patterns/oop-pattern-lab/src/lib.rs` | 封装不变量、组合与 trait 多态参考实验；独立 Workspace 已随 PR #6 合并，D0–D4 验收矩阵 17/17 CI Jobs PASS |
+| 17.2 | Trait Object | 已有实作 | `projects/book-d3-oop-patterns/oop-pattern-lab/src/lib.rs` | Box<dyn Draw> 多种具体类型运行时分发；独立 Workspace 已随 PR #6 合并，D0–D4 验收矩阵 17/17 CI Jobs PASS |
+| 17.3 | 状态模式 | 已有实作 | `projects/book-d3-oop-patterns/oop-pattern-lab/src/lib.rs` | Draft→PendingReview→Published 消费式状态转换；独立 Workspace 已随 PR #6 合并，D0–D4 验收矩阵 17/17 CI Jobs PASS |
+| 18.1 | 使用模式的位置 | 已有实作 | `projects/book-d3-oop-patterns/oop-pattern-lab/src/lib.rs` | match、if let、while let、for、let-else 与函数参数模式；独立 Workspace 已随 PR #6 合并，D0–D4 验收矩阵 17/17 CI Jobs PASS |
+| 18.2 | 模式可反驳性 | 已有实作 | `projects/book-d3-oop-patterns/oop-pattern-lab/src/lib.rs` | let-else/if let 对照与 compile_fail doctest；独立 Workspace 已随 PR #6 合并，D0–D4 验收矩阵 17/17 CI Jobs PASS |
+| 18.3 | 模式语法 | 已有实作 | `projects/book-d3-oop-patterns/oop-pattern-lab/src/lib.rs` | 字面量、多模式、范围、结构体/枚举/切片/元组解构、ref、@、守卫；独立 Workspace 已随 PR #6 合并，D0–D4 验收矩阵 17/17 CI Jobs PASS |
 | 19.1 | Unsafe Rust | 已有实作 | `projects/book-d4-advanced-features/advanced-lab/src/lib.rs` | 裸指针、split_at_mut 安全抽象、unsafe fn、extern C、unsafe trait、union、受限 static mut；Linux/Windows PASS |
 | 19.2 | 高级 Trait | 已有实作 | `projects/book-d4-advanced-features/advanced-lab/src/lib.rs` | 关联类型、默认泛型参数、运算符重载、完全限定语法、超 Trait、Newtype；Linux/Windows PASS |
 | 19.3 | 高级类型 | 已有实作 | `projects/book-d4-advanced-features/advanced-lab/src/lib.rs` | Newtype、类型别名、Never、DST、?Sized；Linux/Windows PASS |
 | 19.4 | 高级函数/闭包 | 已有实作 | `projects/book-d4-advanced-features/advanced-lab/src/lib.rs` | 函数指针、非捕获闭包强制转换、枚举构造函数、返回闭包与 Box<dyn Fn>；Linux/Windows PASS |
 | 19.5 | 宏 | 已有实作 | `projects/book-d4-advanced-features/advanced-lab/src/lib.rs` | macro_rules!、derive、属性宏与函数式过程宏由本地 d4-proc-macros crate 实现；结构体/枚举展开测试通过 |
-| 20.1 | 单线程 Web Server | 部分 | `course/SYSTEMS_PATH.md` | ServiceDesk 同步 HTTP 服务器，不完全同于原书项目 |
-| 20.2 | 多线程 Web Server | 缺口 | `—` | BatchMeter 线程与 C2 Tokio 不等于手写线程池 |
-| 20.3 | 优雅关闭 | 部分 | `course/ADVANCED_C2.md` | Axum 优雅关闭已有，缺原书线程池收尾机制 |
-| A | 关键字 | 缺口 | `—` | 创建按 Edition 2018/2021 区分的离线索引 |
-| B | 运算符与符号 | 部分 | `course/studio/unitlab.md` | 示例覆盖部分，缺完整参考索引 |
-| C | 可派生 Trait | 部分 | `course/ADVANCED_B.md` | Serde derive 已实作，标准库 derive 清单待补 |
-| D | 实用开发工具 | 部分 | `course/ADVANCED_B.md` | cargo fmt/clippy/test 已覆盖，rustdoc/IDE 辅助待补 |
-| E | Edition 与版本 | 部分 | `course/BOOK_GUIDE.md` | 2018、2021、2024 差异导航已有，需系统化 |
-| F | 翻译版本 | 资料索引 | `course/BOOK_GUIDE.md` | 不要求编码练习，明确旧译本与官方书对应 |
-| G | Rust 开发流程与 Nightly | 缺口 | `—` | 补 Stable/Beta/Nightly 及不稳定特性边界 |
+| 20.1 | 单线程 Web Server | 开发中 | `projects/book-d5-webserver/webserver-lab/src/lib.rs` | 原生 TcpListener/TcpStream、HTTP 请求解析、响应 framing 与有限连接的单线程基线，待 CI |
+| 20.2 | 多线程 Web Server | 开发中 | `projects/book-d5-webserver/webserver-lab/src/lib.rs` | 固定大小 Worker、MPSC Job 队列与 Arc/Mutex 接收端，待 CI |
+| 20.3 | 优雅关闭 | 开发中 | `projects/book-d5-webserver/webserver-lab/src/lib.rs` | shutdown channel、Drop 发送全部终止消息后 join、排空已提交任务，待 CI |
+| A | 关键字 | 开发中 | `course/BOOK_D6_APPENDICES.md` | strict/reserved/weak 分类、raw identifiers、Edition 差异与编译实验；可执行证据见 `projects/book-d6-appendices/appendix-lab/src/lib.rs`；待 CI |
+| B | 运算符与符号 | 开发中 | `course/BOOK_D6_APPENDICES.md` | 运算符/非运算符语境、优先级、重载与可执行实验；代码证据见 `projects/book-d6-appendices/appendix-lab/src/lib.rs`；待 CI |
+| C | 可派生 Trait | 开发中 | `course/BOOK_D6_APPENDICES.md` | 九种标准 derive trait 的能力、约束、Debug/Display 区分与 compile-fail 实验；代码证据见 `projects/book-d6-appendices/appendix-lab/src/lib.rs`；待 CI |
+| D | 实用开发工具 | 开发中 | `course/BOOK_D6_APPENDICES.md` | rustfmt、cargo fix/rustfix、Clippy、rust-analyzer、rustdoc 的现代用法与复现命令；待 CI |
+| E | Edition 与版本 | 开发中 | `course/BOOK_D6_APPENDICES.md` | 2015/2018/2021/2024 对照、MSRV 边界与迁移流程；待 CI |
+| F | 翻译版本 | 开发中 | `course/BOOK_D6_APPENDICES.md` | 区分旧中文译本基线与当前官方书，提供翻译/版本导航；参考型内容，待审查 |
+| G | Rust 开发流程与 Nightly | 开发中 | `course/BOOK_D6_APPENDICES.md` | Stable/Beta/Nightly 通道、rustup 命令与不稳定功能隔离规则；待 CI |
 
 ## 不纳入覆盖率的情况
 
@@ -102,9 +102,9 @@
 | 里程碑 | 交付定义 | 当前情况 |
 |---|---|---|
 | D0 | 原书全目录逐节证据和风险映射 | 本表已创建，待人工复核 |
-| D1 | 5 节 Cargo 讲义 + 隔离 Workspace + Cargo 外部子命令 + 真 CI | 已提交实验工程，持续集成待验证 |
-| D2 | 智能指针 6 节 + RAII/Deref/Weak 实验 | 待实施 |
-| D3 | 面向对象与模式匹配 6 节 | 待实施 |
-| D4 | 第 19 章 5 节安全隔离实验 | 独立 Workspace 已实现；17/17 CI Jobs PASS，候选包已组装 |
-| D5 | 第 20 章 3 节线程池与关闭 | 待实施 |
-| D6 | 附录 A–G + 基础零散缺口 | 待实施 |
+| D1 | 5 节 Cargo 讲义 + 隔离 Workspace + Cargo 外部子命令 + 真 CI | PR #6 已合并；D0–D4 验收矩阵 17/17 CI Jobs PASS |
+| D2 | 智能指针 6 节 + RAII/Deref/Weak 实验 | PR #6 已合并；D0–D4 验收矩阵 17/17 CI Jobs PASS |
+| D3 | 面向对象与模式匹配 6 节 | PR #6 已合并；D0–D4 验收矩阵 17/17 CI Jobs PASS |
+| D4 | 第 19 章 5 节安全隔离实验 | D4-A2 17/17 CI Jobs PASS，PR #6 已合并 |
+| D5 | 第 20 章 3 节线程池与关闭 | 独立 Workspace 已实现，跨平台 CI 待签核 |
+| D6 | 附录 A–G + 基础零散缺口 | D6-A 附录讲义与独立参考实验已实现，跨平台 CI 待签核；D6-B 基础缺口待实施 |

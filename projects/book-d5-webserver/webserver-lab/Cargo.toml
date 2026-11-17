@@ -1,0 +1,15 @@
+[package]
+name = "rustapplab-book-d5-webserver"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.74"
+description = "Offline Rust Book chapter 20 synchronous multithreaded web server lab"
+license = "MIT"
+publish = false
+
+[lib]
+path = "src/lib.rs"
+
+[[bin]]
+name = "book_d5"
+path = "src/main.rs"

@@ -28,11 +28,15 @@
 
 **D2 智能指针**：[六节讲义](BOOK_D2_SMART_POINTERS.md) 与 [独立实验](../projects/book-d2-smart-pointers/README.md) 覆盖 Box、Deref、Drop、Rc、RefCell 和 Weak/引用循环。
 
-**D3 面向对象与模式匹配**：[讲义](BOOK_D3_OOP_PATTERNS.md) 与 [独立实验](../projects/book-d3-oop-patterns/README.md) 覆盖封装、trait object、状态模式，以及 18.1–18.3 的模式语法与可反驳性。D1/D2/D3 均为 RC 之外的补充，须经跨平台 CI 验证。
+**D3 面向对象与模式匹配**：[讲义](BOOK_D3_OOP_PATTERNS.md) 与 [独立实验](../projects/book-d3-oop-patterns/README.md) 覆盖封装、trait object、状态模式，以及 18.1–18.3 的模式语法与可反驳性。D1/D2/D3 已随 PR #6 合并并通过跨平台验收，作为 RC 之外的独立补充 Workspace。
 
-**D4 高级特性**：[讲义](BOOK_D4_ADVANCED_FEATURES.md) 与 [独立实验](../projects/book-d4-advanced-features/README.md) 覆盖 unsafe Rust、高级 Trait/类型/函数与三类过程宏。实验使用 Rust 1.74、零第三方依赖，并把不安全操作限制在有安全契约的局部代码中；待跨平台 CI 签核。
+**D4 高级特性**：[讲义](BOOK_D4_ADVANCED_FEATURES.md) 与 [独立实验](../projects/book-d4-advanced-features/README.md) 覆盖 unsafe Rust、高级 Trait/类型/函数与三类过程宏。实验使用 Rust 1.74、零第三方依赖，并把不安全操作限制在有安全契约的局部代码中；D4-A2 已通过 17/17 CI Jobs，并随 PR #6 合并。
 
-后续顺序：D5（原生线程池 Web Server）、D6（附录与基础散点）。
+**D5 多线程 Web Server**：[讲义](BOOK_D5_WEB_SERVER.md) 与 [独立实验](../projects/book-d5-webserver/README.md) 覆盖 TCP/HTTP 请求响应、固定大小 Worker 线程池、MPSC 消息队列和 Drop 优雅清理。独立 Workspace 使用 Rust 1.74、零第三方依赖；当前进入跨平台 CI 验证。
+
+**D6-A 附录参考与实践**：[讲义](BOOK_D6_APPENDICES.md) 与 [独立参考 Workspace](../projects/book-d6-appendices/README.md) 覆盖关键字、运算符与符号、可派生 Trait、现代开发工具、Edition、翻译版本和 Stable/Beta/Nightly。实验使用 Edition 2021、Rust 1.74、零第三方依赖，不改变根 Workspace 的 17 个学员包。
+
+**D6-B 基础知识缺口**：下一阶段逐项补齐猜数字游戏、结构体/方法、if let、HashMap、panic 与 Result 的选择、环境变量、迭代器 I/O 和循环/迭代器性能比较；保留原作品为载体，避免为每个语法点制造无意义的新项目。
 
 ## 当前材料数量与性质
 

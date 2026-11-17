@@ -113,4 +113,30 @@ if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 & cargo test @AdvancedCommon --doc
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+Write-Host 'Rust Book D5 multithreaded web server workspace (offline)'
+$ServerManifest = 'projects/book-d5-webserver/Cargo.toml'
+$ServerCommon = @('--locked','--offline','--manifest-path',$ServerManifest,'--workspace')
+& cargo fmt --manifest-path $ServerManifest --all -- --check
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+& cargo clippy @ServerCommon --all-targets -- -D warnings
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+& cargo test @ServerCommon --all-targets -- --test-threads=2
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+& cargo test @ServerCommon --all-targets --release -- --test-threads=2
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+& cargo test @ServerCommon --doc
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+Write-Host 'Rust Book D6 appendix reference workspace (offline)'
+$AppendixManifest = 'projects/book-d6-appendices/Cargo.toml'
+$AppendixCommon = @('--locked','--offline','--manifest-path',$AppendixManifest,'--workspace')
+& cargo fmt --manifest-path $AppendixManifest --all -- --check
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+& cargo clippy @AppendixCommon --all-targets -- -D warnings
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+& cargo test @AppendixCommon --all-targets
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+& cargo test @AppendixCommon --all-targets --release
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+& cargo test @AppendixCommon --doc
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 Write-Host 'Completed. Manual application and cross-platform verification are still required.'

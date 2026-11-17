@@ -4,7 +4,7 @@
 
 # 用 Rust Book 理解自己的作品
 
-**新增**：每一节有无对应内容，请看 [D0 逐节覆盖审计](BOOK_COVERAGE_AUDIT.md)；Cargo 的漏项进入 [D1 可运行专题](BOOK_D1_CARGO.md)，智能指针专题进入 [D2 讲义](BOOK_D2_SMART_POINTERS.md)，对象模型与模式匹配进入 [D3 讲义](BOOK_D3_OOP_PATTERNS.md)，高级特性进入 [D4 讲义](BOOK_D4_ADVANCED_FEATURES.md)。D1/D2/D3/D4 都是独立 Workspace，不改变主工作区 17 个包及 RC 冻结范围。
+**新增**：每一节有无对应内容，请看 [D0 逐节覆盖审计](BOOK_COVERAGE_AUDIT.md)；Cargo 的漏项进入 [D1 可运行专题](BOOK_D1_CARGO.md)，智能指针专题进入 [D2 讲义](BOOK_D2_SMART_POINTERS.md)，对象模型与模式匹配进入 [D3 讲义](BOOK_D3_OOP_PATTERNS.md)，高级特性进入 [D4 讲义](BOOK_D4_ADVANCED_FEATURES.md)，第 20 章同步线程池项目进入 [D5 讲义](BOOK_D5_WEB_SERVER.md)，附录 A–G 进入 [D6 讲义](BOOK_D6_APPENDICES.md) 与 [独立参考实验](../projects/book-d6-appendices/README.md)。D1/D2/D3/D4/D5/D6 都是独立 Workspace，不改变主工作区 17 个包及 RC 冻结范围。
 
 先运行作品、完成当前任务，再针对遇到的问题阅读相关概念。Rust AppLab 继续以已有软件为练习载体；阅读帮助你解释设计，实际检查验证修改后的行为。
 
@@ -42,7 +42,7 @@ cargo run --locked --offline -p labquest -- learn reading "my-taskpocket-pro"
 | 智能指针、内部可变性 | 进阶 A | 画出强/弱引用关系，解释借用守卫何时释放，以及跨线程为何传拥有型快照 |
 | 线程、消息传递、共享状态 | BatchMeter、MiniKV | 检查最终数量和状态，允许线程输出顺序变化；解释谁拥有共享状态 |
 | 测试、Workspace、feature、derive | 进阶 B | 跑默认/strict-titles，用库、CLI、报告和 doctest 验证接口；在独立 B4 适配包中用 DTO/Serialize derive 导出 JSON |
-| I/O、网络、等待 | NetFetch、ServiceDesk、AsyncBoard | 分清同步阻塞、线程并行和 Future 等待；解释当前应用实际使用哪种机制 |
+| I/O、网络、等待 | NetFetch、ServiceDesk、D5 Web Server、AsyncBoard | 分清同步阻塞、线程池并行和 Future 等待；解释当前应用实际使用哪种机制 |
 | 事务与回滚 | StoreDesk | 故意让批次第二项失败，检查库存和流水是否一起回滚，再解释 Rust 错误传播与数据库事务的分工 |
 
 对照阅读时记录三项：**我预测的行为、实际得到的结果、我用 Rust 规则解释的原因**。可以先查中文概念，再用官方资料核对 API，最后回到自己的代码验证。

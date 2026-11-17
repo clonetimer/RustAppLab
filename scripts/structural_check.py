@@ -37,7 +37,7 @@ def allowed(path: Path) -> bool:
         return path.suffix in (".rs", ".toml", ".md", ".html", ".css", ".js", ".tsv", ".txt", ".svg", ".ps1")
     if parts[0] == "examples":
         return path.suffix in (".svg", ".txt", ".md", ".html", ".json", ".kv", ".tsv")
-    if len(parts) >= 3 and parts[:2] in (("projects", "advanced-b"), ("projects", "advanced-c1"), ("projects", "advanced-c2"), ("projects", "book-d1-cargo"), ("projects", "book-d2-smart-pointers"), ("projects", "book-d3-oop-patterns"), ("projects", "book-d4-advanced-features")):
+    if len(parts) >= 3 and parts[:2] in (("projects", "advanced-b"), ("projects", "advanced-c1"), ("projects", "advanced-c2"), ("projects", "book-d1-cargo"), ("projects", "book-d2-smart-pointers"), ("projects", "book-d3-oop-patterns"), ("projects", "book-d4-advanced-features"), ("projects", "book-d5-webserver"), ("projects", "book-d6-appendices")):
         return path.suffix in (".rs", ".toml", ".md", ".lock", ".html", ".css", ".js") or path.name == "Cargo.lock"
     if parts[0] == "course":
         return path.suffix == ".md"
@@ -109,6 +109,24 @@ for relative in ("Cargo.toml", "Cargo.lock", "README.md",
             f"Book D4 缺少独立课程工程：{relative}")
 require((ROOT / "course/BOOK_D4_ADVANCED_FEATURES.md").is_file(),
         "Book D4 讲义缺失")
+
+# Book D5 is an isolated synchronous TCP/HTTP and worker-pool workspace.
+for relative in ("Cargo.toml", "Cargo.lock", "README.md",
+                 "webserver-lab/Cargo.toml", "webserver-lab/src/lib.rs",
+                 "webserver-lab/src/main.rs", "webserver-lab/tests/cli.rs",
+                 "webserver-lab/samples/index.html"):
+    require((ROOT / "projects/book-d5-webserver" / relative).is_file(),
+            f"Book D5 缺少独立课程工程：{relative}")
+require((ROOT / "course/BOOK_D5_WEB_SERVER.md").is_file(),
+        "Book D5 讲义缺失")
+
+# Book D6 is an isolated, dependency-free appendix reference workspace.
+for relative in ("Cargo.toml", "Cargo.lock", "README.md",
+                 "appendix-lab/Cargo.toml", "appendix-lab/src/lib.rs"):
+    require((ROOT / "projects/book-d6-appendices" / relative).is_file(),
+            f"Book D6 缺少独立课程工程：{relative}")
+require((ROOT / "course/BOOK_D6_APPENDICES.md").is_file(),
+        "Book D6 附录讲义缺失")
 
 # B4 is a separate locked workspace; both shipped teaching variants are required.
 for variant in ('reference', 'learner'):
@@ -205,5 +223,5 @@ if problems:
     for item in problems:
         print("  -", item)
     sys.exit(1)
-print("STRUCTURE CHECK PASSED: 17 packages, twelve Studio lessons, beginner flow, 32 legacy chapters, links, challenges, demo contract, manifest")
+print("STRUCTURE CHECK PASSED: 17 packages, twelve Studio lessons, beginner flow, Book D0-D6 reference labs, 32 legacy chapters, links, challenges, demo contract, manifest")
 print("NOTE: this is NOT a Rust compile, formatting, Clippy, or runtime test.")
