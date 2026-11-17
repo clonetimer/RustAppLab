@@ -37,7 +37,7 @@ def allowed(path: Path) -> bool:
         return path.suffix in (".rs", ".toml", ".md", ".html", ".css", ".js", ".tsv", ".txt", ".svg", ".ps1")
     if parts[0] == "examples":
         return path.suffix in (".svg", ".txt", ".md", ".html", ".json", ".kv", ".tsv")
-    if len(parts) >= 3 and parts[:2] in (("projects", "advanced-b"), ("projects", "advanced-c1"), ("projects", "advanced-c2"), ("projects", "book-d1-cargo"), ("projects", "book-d2-smart-pointers"), ("projects", "book-d3-oop-patterns"), ("projects", "book-d4-advanced-features")):
+    if len(parts) >= 3 and parts[:2] in (("projects", "advanced-b"), ("projects", "advanced-c1"), ("projects", "advanced-c2"), ("projects", "book-d1-cargo"), ("projects", "book-d2-smart-pointers"), ("projects", "book-d3-oop-patterns"), ("projects", "book-d4-advanced-features"), ("projects", "book-d5-threaded-web-server")):
         return path.suffix in (".rs", ".toml", ".md", ".lock", ".html", ".css", ".js") or path.name == "Cargo.lock"
     if parts[0] == "course":
         return path.suffix == ".md"
@@ -109,6 +109,15 @@ for relative in ("Cargo.toml", "Cargo.lock", "README.md",
             f"Book D4 缺少独立课程工程：{relative}")
 require((ROOT / "course/BOOK_D4_ADVANCED_FEATURES.md").is_file(),
         "Book D4 讲义缺失")
+# Book D5 is a separate std-only web-server and thread-pool workspace.
+for relative in ("Cargo.toml", "Cargo.lock", "README.md",
+                 "web-server/Cargo.toml", "web-server/src/lib.rs",
+                 "web-server/src/main.rs", "web-server/src/thread_pool.rs",
+                 "web-server/tests/server.rs"):
+    require((ROOT / "projects/book-d5-threaded-web-server" / relative).is_file(),
+            f"Book D5 缺少独立课程工程：{relative}")
+require((ROOT / "course/BOOK_D5_THREADPOOL_WEB_SERVER.md").is_file(),
+        "Book D5 讲义缺失")
 
 # B4 is a separate locked workspace; both shipped teaching variants are required.
 for variant in ('reference', 'learner'):

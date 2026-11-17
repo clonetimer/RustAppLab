@@ -19,7 +19,7 @@ function Source-Id {
     $Names = [string[]]@(Get-ChildItem -LiteralPath $Root -Recurse -File -Force | ForEach-Object {
         $Rel = $_.FullName.Substring($Root.Length + 1).Replace('\','/')
         if ($Rel -cnotmatch '(^|/)(target|\.git|__pycache__)/' -and
-            (($Rel -notmatch '/') -or ($Rel -cmatch '^(apps|scripts|\.github|course|examples)/') -or ($Rel -cmatch '^projects/(advanced-b|advanced-c1|advanced-c2|book-d1-cargo|book-d2-smart-pointers|book-d3-oop-patterns|book-d4-advanced-features)/')) -and
+            (($Rel -notmatch '/') -or ($Rel -cmatch '^(apps|scripts|\.github|course|examples)/') -or ($Rel -cmatch '^projects/(advanced-b|advanced-c1|advanced-c2|book-d1-cargo|book-d2-smart-pointers|book-d3-oop-patterns|book-d4-advanced-features|book-d5-threaded-web-server)/')) -and
             (($Rel -ceq 'VERSION') -or ($_.Extension -cin @('.rs','.toml','.lock','.py','.ps1','.cmd','.sh','.html','.css','.js','.yml','.yaml','.md','.tsv','.txt','.json','.kv','.svg')))) { $Rel }
     })
     [Array]::Sort($Names, [StringComparer]::Ordinal)
@@ -170,6 +170,13 @@ try {
     Step 'book-d4-clippy' 'cargo' (@('clippy')+$AdvancedCommon+@('--all-targets','--','-D','warnings'))
     Step 'book-d4-tests' 'cargo' (@('test')+$AdvancedCommon+@('--all-targets')) $true 39 0
     Step 'book-d4-doctests' 'cargo' (@('test')+$AdvancedCommon+@('--doc')) $true 2 0
+    # Book D5: single-threaded server, fixed worker pool and graceful shutdown.
+    $WebManifest = 'projects/book-d5-threaded-web-server/Cargo.toml'
+    $WebCommon = @('--locked','--offline','--manifest-path',$WebManifest,'--workspace')
+    Step 'book-d5-format' 'cargo' @('fmt','--manifest-path',$WebManifest,'--all','--','--check')
+    Step 'book-d5-clippy' 'cargo' (@('clippy')+$WebCommon+@('--all-targets','--','-D','warnings'))
+    Step 'book-d5-tests' 'cargo' (@('test')+$WebCommon+@('--all-targets')) $true 12 0
+    Step 'book-d5-doctests' 'cargo' (@('test')+$WebCommon+@('--doc')) $true 2 0
     $EndId = Source-Id
     $Report.source_id_after = $EndId
     if ($EndId -ne $StartId) { throw 'Source changed during validation; results do not qualify this tree.' }
