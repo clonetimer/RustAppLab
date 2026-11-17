@@ -13,7 +13,7 @@
 //! pool.execute(|| println!("{borrowed}")).unwrap();
 //! ```
 
-use std::io::{self, BufRead, BufReader, Write};
+use std::io::{self, BufRead, BufReader, Read, Write};
 use std::net::{TcpListener, TcpStream};
 use std::sync::mpsc::{self, Receiver, RecvTimeoutError, Sender, TryRecvError};
 use std::sync::{Arc, Mutex};
@@ -137,38 +137,29 @@ pub fn parse_request(bytes: &[u8]) -> Result<Request, RequestError> {
     })
 }
 
-fn read_request(stream: &TcpStream) -> Result<Request, RequestError> {
-    let mut reader = BufReader::new(stream);
+fn read_request<R: BufRead>(reader: &mut R) -> Result<Request, RequestError> {
     let mut bytes = Vec::new();
-    let mut current_line_bytes = 0usize;
 
     loop {
-        let (chunk, has_newline) = {
-            let available = reader
-                .fill_buf()
-                .map_err(|error| RequestError::Io(error.kind()))?;
-            if available.is_empty() {
-                return Err(RequestError::Incomplete);
-            }
-            let newline = available.iter().position(|byte| *byte == b'\n');
-            let length = newline.map_or(available.len(), |index| index + 1);
-            (available[..length].to_vec(), newline.is_some())
-        };
+        let mut line = Vec::new();
+        let limit = (MAX_LINE_BYTES + 1) as u64;
+        let count = reader
+            .by_ref()
+            .take(limit)
+            .read_until(b'\n', &mut line)
+            .map_err(|error| RequestError::Io(error.kind()))?;
 
-        if bytes.len().saturating_add(chunk.len()) > MAX_HEADER_BYTES
-            || current_line_bytes.saturating_add(chunk.len()) > MAX_LINE_BYTES
+        if count == 0 {
+            return Err(RequestError::Incomplete);
+        }
+        if line.len() > MAX_LINE_BYTES
+            || bytes.len().saturating_add(line.len()) > MAX_HEADER_BYTES
         {
             return Err(RequestError::TooLarge);
         }
 
-        let blank_line = chunk == b"\r\n" || chunk == b"\n";
-        reader.consume(chunk.len());
-        bytes.extend_from_slice(&chunk);
-        if has_newline {
-            current_line_bytes = 0;
-        } else {
-            current_line_bytes += chunk.len();
-        }
+        let blank_line = line == b"\r\n";
+        bytes.extend_from_slice(&line);
         if blank_line {
             break;
         }
@@ -285,7 +276,11 @@ fn error_response(error: RequestError) -> Response {
 
 fn handle_connection(mut stream: TcpStream) {
     let _ = stream.set_read_timeout(Some(READ_TIMEOUT));
-    let response = match read_request(&stream) {
+    let request = {
+        let mut reader = BufReader::new(&stream);
+        read_request(&mut reader)
+    };
+    let response = match request {
         Ok(request) => route(&request),
         Err(error) => error_response(error),
     };
@@ -511,6 +506,33 @@ mod tests {
         assert_eq!(parsed.method, "GET");
         assert_eq!(parsed.target, "/");
         assert_eq!(parsed.version, "HTTP/1.1");
+        assert_eq!(parsed.headers[0], ("host".into(), "localhost".into()));
+    }
+
+    struct OneByteReader<'a> {
+        remaining: &'a [u8],
+    }
+
+    impl<'a> Read for OneByteReader<'a> {
+        fn read(&mut self, output: &mut [u8]) -> io::Result<usize> {
+            if output.is_empty() || self.remaining.is_empty() {
+                return Ok(0);
+            }
+            output[0] = self.remaining[0];
+            self.remaining = &self.remaining[1..];
+            Ok(1)
+        }
+    }
+
+    #[test]
+    fn request_reader_handles_crlf_split_across_read_boundaries() {
+        let source = OneByteReader {
+            remaining: valid_request(),
+        };
+        let mut reader = BufReader::new(source);
+        let parsed = read_request(&mut reader).unwrap();
+        assert_eq!(parsed.method, "GET");
+        assert_eq!(parsed.target, "/");
         assert_eq!(parsed.headers[0], ("host".into(), "localhost".into()));
     }
 
