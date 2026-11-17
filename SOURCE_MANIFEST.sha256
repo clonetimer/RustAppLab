@@ -470,7 +470,7 @@ c40ba15b70fedb1958f0dec1c6c36cf9a960f8b2849b10ccc020b887f6d512c3  projects/book-
 5429d6513c52356be82317c8caccf5d1fbbf0a12c69b4dca12a6bccbed1fbd1f  projects/book-d5-webserver/README.md
 dc38df1f21fa6ffe817aa59ff1aea158e1aff2779719c1773e3e9dc5664551dd  projects/book-d5-webserver/webserver-lab/Cargo.toml
 9b1a092fb6173977fcdee6e0295d11891b6b2280270a3639e7dff2dd0151e805  projects/book-d5-webserver/webserver-lab/samples/index.html
-6f1295d7409fe36b6edb4d79e45cd32ea0573f26cb21fea85730198bf51f7a3f  projects/book-d5-webserver/webserver-lab/src/lib.rs
+887501e3a7d4ad2392e4699c4b8ac4b6a6c5f23b38900a834d451941b2ea6be0  projects/book-d5-webserver/webserver-lab/src/lib.rs
 16de62fa7bfb6957604a71373eb64cd09bf8705bf11116a00374b7e294af6011  projects/book-d5-webserver/webserver-lab/src/main.rs
 49ba907fbc99f4918b40499373b35b5c85d59a77111017613283b147f1df918c  projects/book-d5-webserver/webserver-lab/tests/cli.rs
 42cc6780414b171b3fd8109ca817a19e53b43df68d80e4fbd721ce0211eae251  scripts/advanced_windows.ps1
