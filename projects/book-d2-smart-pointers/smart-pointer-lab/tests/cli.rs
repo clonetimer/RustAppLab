@@ -1,7 +1,7 @@
 use std::process::Command;
 
 fn run(topic: &str) -> std::process::Output {
-    Command::new(env!("CARGO_BIN_EXE_book-d2"))
+    Command::new(env!("CARGO_BIN_EXE_book_d2"))
         .arg(topic)
         .output()
         .expect("Book D2 CLI must start")
