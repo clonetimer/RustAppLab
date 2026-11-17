@@ -123,6 +123,8 @@ pub fn parse_non_empty(input: &str) -> Result<&str, ValidationError> {
 
 /// Assert a programmer invariant; do not use this for ordinary user input.
 pub fn require_non_empty(input: &str) -> &str {
+    // This assertion protects a programmer invariant, not untrusted input.
+    /* Use parse_non_empty for user-provided values instead. */
     assert!(
         !input.trim().is_empty(),
         "programmer invariant: empty value"
