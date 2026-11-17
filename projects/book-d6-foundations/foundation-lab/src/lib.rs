@@ -270,6 +270,29 @@ mod tests {
         assert_eq!(count_non_empty_lines(input).unwrap(), 3);
     }
 
+    struct FailingReader;
+
+    impl std::io::Read for FailingReader {
+        fn read(&mut self, _buffer: &mut [u8]) -> io::Result<usize> {
+            Err(io::Error::new(io::ErrorKind::Other, "synthetic read failure"))
+        }
+    }
+
+    impl BufRead for FailingReader {
+        fn fill_buf(&mut self) -> io::Result<&[u8]> {
+            Err(io::Error::new(io::ErrorKind::Other, "synthetic read failure"))
+        }
+
+        fn consume(&mut self, _amount: usize) {}
+    }
+
+    #[test]
+    fn buffered_line_count_propagates_io_failures() {
+        let error = count_non_empty_lines(FailingReader).unwrap_err();
+        assert_eq!(error.kind(), io::ErrorKind::Other);
+        assert_eq!(error.to_string(), "synthetic read failure");
+    }
+
     #[test]
     fn loop_and_iterator_sums_produce_identical_results() {
         let values = [1, 2, 3, 4, 5];
