@@ -191,8 +191,8 @@ try {
     $FoundationsCommon = @('--locked','--offline','--manifest-path',$FoundationsManifest,'--workspace')
     Step 'book-d6-foundations-format' 'cargo' @('fmt','--manifest-path',$FoundationsManifest,'--all','--','--check')
     Step 'book-d6-foundations-clippy' 'cargo' (@('clippy')+$FoundationsCommon+@('--all-targets','--','-D','warnings'))
-    Step 'book-d6-foundations-tests' 'cargo' (@('test')+$FoundationsCommon+@('--all-targets')) $true 19 0
-    Step 'book-d6-foundations-release-tests' 'cargo' (@('test')+$FoundationsCommon+@('--all-targets','--release')) $true 19 0
+    Step 'book-d6-foundations-tests' 'cargo' (@('test')+$FoundationsCommon+@('--all-targets')) $true 20 0
+    Step 'book-d6-foundations-release-tests' 'cargo' (@('test')+$FoundationsCommon+@('--all-targets','--release')) $true 20 0
     Step 'book-d6-foundations-doctests' 'cargo' (@('test')+$FoundationsCommon+@('--doc')) $true 2 0
     $EndId = Source-Id
     $Report.source_id_after = $EndId
