@@ -274,13 +274,13 @@ mod tests {
 
     impl std::io::Read for FailingReader {
         fn read(&mut self, _buffer: &mut [u8]) -> io::Result<usize> {
-            Err(io::Error::new(io::ErrorKind::Other, "synthetic read failure"))
+            Err(io::Error::new(io::ErrorKind::InvalidData, "synthetic read failure"))
         }
     }
 
     impl BufRead for FailingReader {
         fn fill_buf(&mut self) -> io::Result<&[u8]> {
-            Err(io::Error::new(io::ErrorKind::Other, "synthetic read failure"))
+            Err(io::Error::new(io::ErrorKind::InvalidData, "synthetic read failure"))
         }
 
         fn consume(&mut self, _amount: usize) {}
@@ -289,7 +289,7 @@ mod tests {
     #[test]
     fn buffered_line_count_propagates_io_failures() {
         let error = count_non_empty_lines(FailingReader).unwrap_err();
-        assert_eq!(error.kind(), io::ErrorKind::Other);
+        assert_eq!(error.kind(), io::ErrorKind::InvalidData);
         assert_eq!(error.to_string(), "synthetic read failure");
     }
 
