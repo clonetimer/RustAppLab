@@ -6,6 +6,7 @@ A dependency-free reference workspace for the remaining practical gaps in Rust B
 - No registry dependencies; offline builds
 - Not part of the root workspace or the 17 learner products
 - One small CLI and library connect the original concepts to executable tests
+- 14 unit tests, 6 CLI integration tests and 2 doctests (including one compile-fail case)
 
 From the RustAppLab source root:
 
