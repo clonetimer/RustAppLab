@@ -37,7 +37,7 @@ def allowed(path: Path) -> bool:
         return path.suffix in (".rs", ".toml", ".md", ".html", ".css", ".js", ".tsv", ".txt", ".svg", ".ps1")
     if parts[0] == "examples":
         return path.suffix in (".svg", ".txt", ".md", ".html", ".json", ".kv", ".tsv")
-    if len(parts) >= 3 and parts[:2] in (("projects", "advanced-b"), ("projects", "advanced-c1"), ("projects", "advanced-c2"), ("projects", "book-d1-cargo")):
+    if len(parts) >= 3 and parts[:2] in (("projects", "advanced-b"), ("projects", "advanced-c1"), ("projects", "advanced-c2"), ("projects", "book-d1-cargo"), ("projects", "book-d2-smart-pointers")):
         return path.suffix in (".rs", ".toml", ".md", ".lock", ".html", ".css", ".js") or path.name == "Cargo.lock"
     if parts[0] == "course":
         return path.suffix == ".md"
@@ -81,6 +81,15 @@ for relative in ("Cargo.toml", "Cargo.lock", "README.md",
 for relative in ("course/BOOK_COVERAGE_AUDIT.md", "course/BOOK_D1_CARGO.md",
                  "scripts/book_d1_check.py", "scripts/tests/test_book_coverage.py"):
     require((ROOT / relative).is_file(), f"Book D0/D1 审计或门禁缺失：{relative}")
+
+# Book D2 is a separate smart-pointer workspace, with runnable reference tests.
+for relative in ("Cargo.toml", "Cargo.lock", "README.md",
+                 "smart-pointer-lab/Cargo.toml", "smart-pointer-lab/src/lib.rs",
+                 "smart-pointer-lab/src/main.rs", "smart-pointer-lab/tests/cli.rs"):
+    require((ROOT / "projects/book-d2-smart-pointers" / relative).is_file(),
+            f"Book D2 缺少独立课程工程：{relative}")
+for relative in ("course/BOOK_D2_SMART_POINTERS.md",):
+    require((ROOT / relative).is_file(), f"Book D2 讲义缺失：{relative}")
 
 # B4 is a separate locked workspace; both shipped teaching variants are required.
 for variant in ('reference', 'learner'):
