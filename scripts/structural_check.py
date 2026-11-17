@@ -127,6 +127,8 @@ for relative in ("Cargo.toml", "Cargo.lock", "README.md",
             f"Book D6 缺少独立课程工程：{relative}")
 require((ROOT / "course/BOOK_D6_APPENDICES.md").is_file(),
         "Book D6 附录讲义缺失")
+require((ROOT / "course/BOOK_D6_PRACTICAL.md").is_file(),
+        "Book D6 D/E/G 实操指南缺失")
 
 # Book D6-B is an isolated, dependency-free foundations-gap workspace.
 for relative in ("Cargo.toml", "Cargo.lock", "README.md",
