@@ -1,16 +1,15 @@
 //! 每关实验的失败态：学员选择运行一项，修改功能直到转绿。默认全部跳过。
 use std::fs;
 use std::process::Command;
-use std::time::{SystemTime, UNIX_EPOCH};
+use std::sync::atomic::{AtomicU64, Ordering};
+
+static NEXT_WORKSPACE_ID: AtomicU64 = AtomicU64::new(0);
 
 fn workspace() -> std::path::PathBuf {
     let p = std::env::temp_dir().join(format!(
         "sfs-challenge-{}-{}",
         std::process::id(),
-        SystemTime::now()
-            .duration_since(UNIX_EPOCH)
-            .unwrap()
-            .as_nanos()
+        NEXT_WORKSPACE_ID.fetch_add(1, Ordering::Relaxed)
     ));
     fs::create_dir(&p).unwrap();
     p
