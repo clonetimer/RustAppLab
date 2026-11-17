@@ -326,4 +326,4 @@ cargo test --locked --offline --manifest-path projects/book-d6-appendices/Cargo.
 - 能区分 Edition、编译器版本和 Stable/Beta/Nightly 发布通道。
 - D6 Workspace 在 Rust 1.74、Linux 和 Windows 上通过格式、Clippy、debug、release 与 doctest 检查。
 
-本课完成的是附录参考和最小可执行实验，不代表 D6 全部结束。剩余基础章节缺口（猜数字游戏、结构体/方法、HashMap、panic/Result 决策、环境变量、迭代器 I/O 与性能比较）进入 D6-B，单独逐项补齐。
+D6-A 与 D6-B 构成当前 D6 交付批次：本课完成附录 A–G 的参考说明与 A–C 可执行实验；[D6-B](BOOK_D6_FOUNDATIONS.md) 补齐 12 项基础章节专项练习。两套独立 Workspace 均在 Linux、Windows 与 Rust 1.74 上通过格式、Clippy、Debug、Release 和 Doctest 验收。覆盖审计仍将 D/E/G 标记为“部分”，因为工具链操作、Edition 迁移与 Nightly 隔离仍需要学习者亲自完成；自动化通过不等于学习者已经掌握。
