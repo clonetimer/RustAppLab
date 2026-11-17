@@ -3,15 +3,19 @@ use std::ffi::OsStr;
 use std::fs;
 use std::path::PathBuf;
 use std::process::Command;
+use std::sync::atomic::{AtomicU64, Ordering};
 use std::time::{SystemTime, UNIX_EPOCH};
+
+static TEMP_COUNTER: AtomicU64 = AtomicU64::new(0);
 
 fn temp_workspace(suffix: &str) -> PathBuf {
     let nanos = SystemTime::now()
         .duration_since(UNIX_EPOCH)
         .unwrap()
         .as_nanos();
+    let nonce = TEMP_COUNTER.fetch_add(1, Ordering::Relaxed);
     let base = std::env::temp_dir().join(format!(
-        "rustapplab-beginner-{}-{nanos}-{suffix}",
+        "rustapplab-beginner-{}-{nanos}-{nonce}-{suffix}",
         std::process::id()
     ));
     fs::create_dir(&base).unwrap();
