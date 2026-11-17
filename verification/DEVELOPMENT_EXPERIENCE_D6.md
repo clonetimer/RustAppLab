@@ -90,3 +90,21 @@ D6-B passed the source/structural/tooling checks and Linux/Rust 1.74 compilation
 
 **Rule:** every isolated workspace must be checked with its exact manifest command. A root-workspace `cargo fmt --all -- --check` does not include reference workspaces excluded from the root workspace. Formatting is a real gate, not a cosmetic afterthought.
 
+
+## 10. Treat D6 as one acceptance batch, and verify the actual archives
+
+The final D6 acceptance must cover more than compiling the reference crate. Run 215 validated Linux and Windows native engineering, browser, C1/C2 regressions, offline portable archives, delivery relocation, and the actual Rust 1.74 MSRV. D6-B's exact evidence is 14 library unit tests + 6 CLI integration tests + 2 doctests, all passing in Debug/Release where applicable.
+
+The assembled candidate was opened and inspected independently:
+- The source archive contains 651 manifest-tracked files; every entry exists and every SHA-256 matches.
+- The learner kit contains both D6-A and D6-B lesson/reference files.
+- All 17 expected learner projects remain present; D6 reference workspaces are not counted as new learner projects.
+- All 12 outer candidate file hashes match the release checksum list.
+
+**Rule:** inspect the actual assembled ZIPs, not just the packaging script's success message. Count the learner projects by the published package contract, verify the source manifest against extracted bytes, and check that reference labs are included without changing the learner-project inventory.
+
+## 11. Separate implementation coverage from learner mastery
+
+The audit now records 77 implemented items, 3 partial items, 0 open gaps, and 1 reference index across 81 rows. D6-A's Appendix D/E/G entries remain partial because tool use, Edition migration, and Nightly isolation still require learner-run practical work; Appendix F is a reference index. A fully passing reference implementation does not justify marking every associated learning objective mastered.
+
+**Rule:** report implementation evidence and learner evidence separately. CI, doctests, package integrity, and browser tests prove engineering contracts; learner mastery still requires the learner to complete exercises and explain the results.
