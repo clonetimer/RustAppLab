@@ -34,7 +34,7 @@ class LearnerKitTests(unittest.TestCase):
             with zipfile.ZipFile(archive) as output:
                 self.assertIsNone(output.testzip())
                 names = set(output.namelist())
-                for source in ('ADVANCED_B.html', 'course/ADVANCED_B.md', 'course/ADVANCED_B_WINDOWS.md', 'course/BOOK_GUIDE.md', 'course/BOOK_D1_CARGO.md', 'projects/book-d1-cargo/README.md', 'course/BOOK_D2_SMART_POINTERS.md', 'projects/book-d2-smart-pointers/README.md', 'course/BOOK_D3_OOP_PATTERNS.md', 'projects/book-d3-oop-patterns/README.md', 'course/BOOK_D4_ADVANCED_FEATURES.md', 'projects/book-d4-advanced-features/README.md'):
+                for source in ('ADVANCED_B.html', 'course/ADVANCED_B.md', 'course/ADVANCED_B_WINDOWS.md', 'course/BOOK_GUIDE.md', 'course/BOOK_D1_CARGO.md', 'projects/book-d1-cargo/README.md', 'course/BOOK_D2_SMART_POINTERS.md', 'projects/book-d2-smart-pointers/README.md', 'course/BOOK_D3_OOP_PATTERNS.md', 'projects/book-d3-oop-patterns/README.md', 'course/BOOK_D4_ADVANCED_FEATURES.md', 'projects/book-d4-advanced-features/README.md', 'course/BOOK_D5_THREADPOOL_WEB_SERVER.md', 'projects/book-d5-threaded-web-server/README.md'):
                     self.assertIn(source, names)
                     text = output.read(source).decode('utf-8')
                     links = re.findall(r'href="([^"]+)"', text) if source.endswith('.html') else re.findall(r'(?<!!)\[[^\]]+\]\(([^)]+)\)', text)
@@ -92,6 +92,20 @@ class LearnerKitTests(unittest.TestCase):
                       assets["projects/book-d4-advanced-features/advanced-lab/Cargo.toml"].decode())
         self.assertIn("proc-macro = true",
                       assets["projects/book-d4-advanced-features/d4-proc-macros/Cargo.toml"].decode())
+
+    def test_d5_threaded_web_server_workspace_is_shipped_as_reference(self):
+        assets = dict(self.assets().course_inputs())
+        for path in ("course/BOOK_D5_THREADPOOL_WEB_SERVER.md",
+                     "projects/book-d5-threaded-web-server/Cargo.toml",
+                     "projects/book-d5-threaded-web-server/Cargo.lock",
+                     "projects/book-d5-threaded-web-server/web-server/Cargo.toml",
+                     "projects/book-d5-threaded-web-server/web-server/src/lib.rs",
+                     "projects/book-d5-threaded-web-server/web-server/src/thread_pool.rs",
+                     "projects/book-d5-threaded-web-server/web-server/src/main.rs",
+                     "projects/book-d5-threaded-web-server/web-server/tests/server.rs"):
+            self.assertIn(path, assets)
+        self.assertIn("publish = false",
+                      assets["projects/book-d5-threaded-web-server/web-server/Cargo.toml"].decode())
 
     def test_intro_explains_separate_b4_dependency_preparation(self):
         intro = self.assets().INTRO

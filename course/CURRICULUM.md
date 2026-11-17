@@ -32,7 +32,9 @@
 
 **D4 高级特性**：[讲义](BOOK_D4_ADVANCED_FEATURES.md) 与 [独立实验](../projects/book-d4-advanced-features/README.md) 覆盖 unsafe Rust、高级 Trait/类型/函数与三类过程宏。实验使用 Rust 1.74、零第三方依赖，并把不安全操作限制在有安全契约的局部代码中；待跨平台 CI 签核。
 
-后续顺序：D5（原生线程池 Web Server）、D6（附录与基础散点）。
+**D5 多线程 Web Server**：[讲义](BOOK_D5_THREADPOOL_WEB_SERVER.md) 与 [独立实验](../projects/book-d5-threaded-web-server/README.md) 对照原书 20.1–20.3，覆盖单线程 TCP/HTTP 服务、std mpsc 固定线程池与 Drop/Terminate/join 优雅关闭。使用 Rust 1.74、零第三方依赖、仅绑定 127.0.0.1；跨平台 CI 待签核。
+
+后续顺序：D6（附录与基础散点）。
 
 ## 当前材料数量与性质
 

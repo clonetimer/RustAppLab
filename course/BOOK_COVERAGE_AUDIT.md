@@ -4,7 +4,7 @@
 - **源码基准**：`clonetimer/RustAppLab` main `fed4a2d37a72de88dfb353474544efde9bdd537a`（2026-11-17 审计时）。
 - **证据规则**：表格中“已有实作”只表示可以定位到相关教学或可执行实例，**不表示**该小节原书所有示例、知识点、学员练习与测试均已完整覆盖；“部分”表示只有关联知识或实现；“缺口”明确有需要补的专项内容；“开发中”只证明开发分支已有材料、仍须 CI。
 - **验收判据**：每项最终需要有教学目标、版本适配、学员实验或合理的知识索引、可重现检查及用户体验验证。官方原书代码无需照抄，允许使用现有真实作品替换；不能用出现某个关键词冒充教学覆盖。
-- **当前统计**：共 **81** 项审计条目，其中 已有实作 42、部分 17、缺口 4、开发中 17、资料索引 1。D1（14.1–14.5）、D2（15.1–15.6）、D3（17.1–17.3、18.1–18.3）和 D4（19.1–19.5）已进入可运行参考实验与跨平台门禁；D4 已完成 Linux/Windows、Rust 1.74 与交付候选包验收。这是条目盘点数，**不是**知识点覆盖率或学习达标率。
+- **当前统计**：共 **81** 项审计条目，其中 已有实作 42、部分 15、缺口 3、开发中 20、资料索引 1。D1（14.1–14.5）、D2（15.1–15.6）、D3（17.1–17.3、18.1–18.3）和 D4（19.1–19.5）已进入可运行参考实验与跨平台门禁；D4 已完成 Linux/Windows、Rust 1.74 与交付候选包验收。这是条目盘点数，**不是**知识点覆盖率或学习达标率。
 - **推进路线**：D1 Cargo（14.1–14.5）→ D2 智能指针（15.1–15.6）→ D3 对象模型/模式（17–18）→ D4 Unsafe/高级 Trait/宏（19）→ D5 原生多线程 Web Server（20）→ D6 附录与残余基础缺口；随每阶段修订本表。
 
 | 原书小节 | 主题 | 审计状态 | 现有代码/讲义证据（仓库相对路径） | 后续核查或补充 |
@@ -80,9 +80,9 @@
 | 19.3 | 高级类型 | 已有实作 | `projects/book-d4-advanced-features/advanced-lab/src/lib.rs` | Newtype、类型别名、Never、DST、?Sized；Linux/Windows PASS |
 | 19.4 | 高级函数/闭包 | 已有实作 | `projects/book-d4-advanced-features/advanced-lab/src/lib.rs` | 函数指针、非捕获闭包强制转换、枚举构造函数、返回闭包与 Box<dyn Fn>；Linux/Windows PASS |
 | 19.5 | 宏 | 已有实作 | `projects/book-d4-advanced-features/advanced-lab/src/lib.rs` | macro_rules!、derive、属性宏与函数式过程宏由本地 d4-proc-macros crate 实现；结构体/枚举展开测试通过 |
-| 20.1 | 单线程 Web Server | 部分 | `course/SYSTEMS_PATH.md` | ServiceDesk 同步 HTTP 服务器，不完全同于原书项目 |
-| 20.2 | 多线程 Web Server | 缺口 | `—` | BatchMeter 线程与 C2 Tokio 不等于手写线程池 |
-| 20.3 | 优雅关闭 | 部分 | `course/ADVANCED_C2.md` | Axum 优雅关闭已有，缺原书线程池收尾机制 |
+| 20.1 | 单线程 Web Server | 开发中 | `projects/book-d5-threaded-web-server/web-server/src/lib.rs` | 独立 TcpListener/HTTP 请求响应实验，待跨平台 CI |
+| 20.2 | 多线程 Web Server | 开发中 | `projects/book-d5-threaded-web-server/web-server/src/thread_pool.rs` | Job/Message/Worker、mpsc 与 Arc<Mutex<Receiver>> 固定线程池，待跨平台 CI |
+| 20.3 | 优雅关闭 | 开发中 | `projects/book-d5-threaded-web-server/web-server/src/thread_pool.rs` | Terminate 消息、Drop 排空队列并 join Worker，待跨平台 CI |
 | A | 关键字 | 缺口 | `—` | 创建按 Edition 2018/2021 区分的离线索引 |
 | B | 运算符与符号 | 部分 | `course/studio/unitlab.md` | 示例覆盖部分，缺完整参考索引 |
 | C | 可派生 Trait | 部分 | `course/ADVANCED_B.md` | Serde derive 已实作，标准库 derive 清单待补 |
@@ -106,5 +106,5 @@
 | D2 | 智能指针 6 节 + RAII/Deref/Weak 实验 | 待实施 |
 | D3 | 面向对象与模式匹配 6 节 | 待实施 |
 | D4 | 第 19 章 5 节安全隔离实验 | 独立 Workspace 已实现；17/17 CI Jobs PASS，候选包已组装 |
-| D5 | 第 20 章 3 节线程池与关闭 | 待实施 |
+| D5 | 第 20 章 3 节线程池与关闭 | 独立 Workspace 已实现；跨平台 CI 待签核 |
 | D6 | 附录 A–G + 基础零散缺口 | 待实施 |
