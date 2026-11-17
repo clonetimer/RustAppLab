@@ -2,8 +2,10 @@ use labquest::advanced;
 use std::{
     fs,
     path::{Path, PathBuf},
+    sync::atomic::{AtomicU64, Ordering},
     time::{SystemTime, UNIX_EPOCH},
 };
+static TEMP_COUNTER: AtomicU64 = AtomicU64::new(0);
 struct Temp(PathBuf);
 impl Temp {
     fn new() -> Self {
@@ -11,8 +13,8 @@ impl Temp {
             .duration_since(UNIX_EPOCH)
             .unwrap()
             .as_nanos();
-        let p =
-            std::env::temp_dir().join(format!("applab-advanced-test-{}-{n}", std::process::id()));
+        let nonce = TEMP_COUNTER.fetch_add(1, Ordering::Relaxed);
+        let p = std::env::temp_dir().join(format!("applab-advanced-test-{}-{n}-{nonce}", std::process::id()));
         fs::create_dir(&p).unwrap();
         Self(p)
     }
