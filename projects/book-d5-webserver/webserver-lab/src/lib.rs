@@ -254,8 +254,8 @@ fn route(request: &Request) -> Response {
 fn error_response(error: RequestError) -> Response {
     match error {
         RequestError::TooLarge => Response::new(
-            413,
-            "Payload Too Large",
+            431,
+            "Request Header Fields Too Large",
             "text/plain; charset=utf-8",
             b"request headers too large\n".to_vec(),
         ),
@@ -709,6 +709,22 @@ mod tests {
             b"GET /missing HTTP/1.1\r\nHost: localhost\r\n\r\n",
         );
         assert!(missing.starts_with("HTTP/1.1 404 Not Found\r\n"));
+
+        shutdown.send(()).unwrap();
+        server.join().unwrap().unwrap();
+    }
+
+    #[test]
+    fn real_tcp_server_returns_431_for_oversized_request_headers() {
+        let (address, shutdown, server) = start_server();
+        let mut oversized = b"GET / HTTP/1.1\r\nX-Test: ".to_vec();
+        oversized.extend(std::iter::repeat(b'a').take(MAX_LINE_BYTES));
+        oversized.extend_from_slice(b"\r\n\r\n");
+
+        let response = request(address, &oversized);
+        assert!(response.starts_with(
+            "HTTP/1.1 431 Request Header Fields Too Large\r\n"
+        ));
 
         shutdown.send(()).unwrap();
         server.join().unwrap().unwrap();
