@@ -34,7 +34,7 @@ class LearnerKitTests(unittest.TestCase):
             with zipfile.ZipFile(archive) as output:
                 self.assertIsNone(output.testzip())
                 names = set(output.namelist())
-                for source in ('ADVANCED_B.html', 'course/ADVANCED_B.md', 'course/ADVANCED_B_WINDOWS.md', 'course/BOOK_GUIDE.md'):
+                for source in ('ADVANCED_B.html', 'course/ADVANCED_B.md', 'course/ADVANCED_B_WINDOWS.md', 'course/BOOK_GUIDE.md', 'course/BOOK_D1_CARGO.md', 'projects/book-d1-cargo/README.md'):
                     self.assertIn(source, names)
                     text = output.read(source).decode('utf-8')
                     links = re.findall(r'href="([^"]+)"', text) if source.endswith('.html') else re.findall(r'(?<!!)\[[^\]]+\]\(([^)]+)\)', text)
@@ -43,6 +43,16 @@ class LearnerKitTests(unittest.TestCase):
                             continue
                         resolved = posixpath.normpath(posixpath.join(posixpath.dirname(source), target.split('#', 1)[0]))
                         self.assertIn(resolved, names, f'{source} links to missing archive asset {target}')
+
+    def test_d1_is_shipped_as_a_reference_not_an_extra_student_project(self):
+        assets = dict(self.assets().course_inputs())
+        for path in ("course/BOOK_COVERAGE_AUDIT.md", "course/BOOK_D1_CARGO.md",
+                     "projects/book-d1-cargo/Cargo.toml",
+                     "projects/book-d1-cargo/Cargo.lock",
+                     "projects/book-d1-cargo/book-card/src/lib.rs",
+                     "projects/book-d1-cargo/cargo-applab-map/src/main.rs"):
+            self.assertIn(path, assets)
+        self.assertIn("publish = false", assets["projects/book-d1-cargo/book-card/Cargo.toml"].decode())
 
     def test_intro_explains_separate_b4_dependency_preparation(self):
         intro = self.assets().INTRO
