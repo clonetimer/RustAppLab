@@ -79,7 +79,7 @@
 | 19.2 | 高级 Trait | 开发中 | `projects/book-d4-advanced-features/advanced-lab/src/lib.rs` | 关联类型、默认泛型参数、完全限定语法、超 Trait、Newtype，待 CI |
 | 19.3 | 高级类型 | 开发中 | `projects/book-d4-advanced-features/advanced-lab/src/lib.rs` | Newtype、类型别名、Never、DST、?Sized，待 CI |
 | 19.4 | 高级函数/闭包 | 开发中 | `projects/book-d4-advanced-features/advanced-lab/src/lib.rs` | 函数指针、枚举构造函数、返回闭包与 Box<dyn Fn>，待 CI |
-| 19.5 | 宏 | 开发中 | `projects/book-d4-advanced-features/advanced-lab/src/lib.rs`；`projects/book-d4-advanced-features/d4-proc-macros/src/lib.rs` | macro_rules!、derive、属性宏、函数式过程宏，待 CI |
+| 19.5 | 宏 | 开发中 | `projects/book-d4-advanced-features/advanced-lab/src/lib.rs` | macro_rules!、derive、属性宏与函数式过程宏由本地 d4-proc-macros crate 实现，待 CI |
 | 20.1 | 单线程 Web Server | 部分 | `course/SYSTEMS_PATH.md` | ServiceDesk 同步 HTTP 服务器，不完全同于原书项目 |
 | 20.2 | 多线程 Web Server | 缺口 | `—` | BatchMeter 线程与 C2 Tokio 不等于手写线程池 |
 | 20.3 | 优雅关闭 | 部分 | `course/ADVANCED_C2.md` | Axum 优雅关闭已有，缺原书线程池收尾机制 |
