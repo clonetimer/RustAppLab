@@ -229,7 +229,12 @@ pub fn demo(topic: &str) -> Result<String, &'static str> {
         "box" => {
             let list = List::from_slice(&[1, 2, 3]);
             let label = boxed_label("owned by Box");
-            Ok(format!("sum={}; boxed={}; draw={}", list.sum(), *boxed_number(42), label.draw()))
+            Ok(format!(
+                "sum={}; boxed={}; draw={}",
+                list.sum(),
+                *boxed_number(42),
+                label.draw()
+            ))
         }
         "deref" => {
             let name = MyBox::new(String::from("Rust"));
@@ -239,7 +244,11 @@ pub fn demo(topic: &str) -> Result<String, &'static str> {
         "rc" => {
             let first = SharedText::new("shared");
             let second = first.clone_shared();
-            Ok(format!("text={}; owners={}", second.as_str(), first.strong_count()))
+            Ok(format!(
+                "text={}; owners={}",
+                second.as_str(),
+                first.strong_count()
+            ))
         }
         "refcell" => {
             let counter = SharedCounter::new(1);
@@ -247,7 +256,10 @@ pub fn demo(topic: &str) -> Result<String, &'static str> {
             let conflict_handled = counter.try_increment().is_err();
             std::mem::drop(held);
             counter.try_increment()?;
-            Ok(format!("value={}; conflict_handled={conflict_handled}", counter.get()))
+            Ok(format!(
+                "value={}; conflict_handled={conflict_handled}",
+                counter.get()
+            ))
         }
         "weak" => {
             let root = TreeNode::new("root");
