@@ -1,0 +1,15 @@
+[package]
+name = "cargo-applab-map"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.74"
+description = "Local Cargo extension teaching the Rust Book chapter 14"
+license = "MIT"
+publish = false
+
+[dependencies]
+rustapplab-book-card = { path = "../book-card" }
+
+[[bin]]
+name = "cargo-applab-map"
+path = "src/main.rs"
