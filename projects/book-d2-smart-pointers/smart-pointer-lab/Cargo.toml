@@ -11,5 +11,5 @@ publish = false
 path = "src/lib.rs"
 
 [[bin]]
-name = "book-d2"
+name = "book_d2"
 path = "src/main.rs"
