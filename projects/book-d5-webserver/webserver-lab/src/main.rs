@@ -133,9 +133,6 @@ mod tests {
 
     #[test]
     fn rejects_extra_arguments() {
-        assert!(parse_args(
-            ["127.0.0.1:7878".into(), "2".into(), "extra".into()]
-        )
-        .is_err());
+        assert!(parse_args(["127.0.0.1:7878".into(), "2".into(), "extra".into()]).is_err());
     }
 }
