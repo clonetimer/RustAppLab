@@ -152,8 +152,7 @@ fn read_request<R: BufRead>(reader: &mut R) -> Result<Request, RequestError> {
         if count == 0 {
             return Err(RequestError::Incomplete);
         }
-        if line.len() > MAX_LINE_BYTES
-            || bytes.len().saturating_add(line.len()) > MAX_HEADER_BYTES
+        if line.len() > MAX_LINE_BYTES || bytes.len().saturating_add(line.len()) > MAX_HEADER_BYTES
         {
             return Err(RequestError::TooLarge);
         }
