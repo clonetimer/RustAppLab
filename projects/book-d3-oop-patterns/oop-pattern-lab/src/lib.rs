@@ -82,6 +82,8 @@ pub fn classify_optional(value: Option<i32>, threshold: i32) -> &'static str {
 }
 
 /// A for loop uses an irrefutable binding for each item.
+// Keep the explicit loop visible: it is the chapter's for-pattern example.
+#[allow(clippy::manual_find)]
 pub fn first_even(values: &[i32]) -> Option<i32> {
     for &value in values {
         if value.rem_euclid(2) == 0 {
@@ -120,7 +122,7 @@ pub fn require_username(name: Option<&str>) -> Result<String, &'static str> {
 
 /// if let accepts a refutable pattern and keeps the success path concise.
 // This explicit branch is intentional: it is the chapter's if-let example.
-#[allow(clippy::manual_map)]
+#[allow(clippy::needless_match)]
 pub fn extract_optional(value: Option<i32>) -> Option<i32> {
     if let Some(number) = value {
         Some(number)
