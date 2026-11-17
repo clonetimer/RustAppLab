@@ -29,6 +29,7 @@ BOOK_D3_MANIFEST = 'projects/book-d3-oop-patterns/Cargo.toml'
 BOOK_D4_MANIFEST = 'projects/book-d4-advanced-features/Cargo.toml'
 BOOK_D5_MANIFEST = 'projects/book-d5-webserver/Cargo.toml'
 BOOK_D6_MANIFEST = 'projects/book-d6-appendices/Cargo.toml'
+BOOK_D6_FOUNDATIONS_MANIFEST = 'projects/book-d6-foundations/Cargo.toml'
 ADVANCED_B4_MANIFEST = 'projects/advanced-b/reference/json-export/Cargo.toml'
 ADVANCED_B_MANIFEST = 'projects/advanced-b/reference/Cargo.toml'
 TEST_LIMITS = {
@@ -47,6 +48,8 @@ TEST_LIMITS = {
     'book-d4-tests': (39, 0), 'book-d4-doctests': (2, 0),
     'book-d5-tests': (20, 0), 'book-d5-release-tests': (20, 0), 'book-d5-doctests': (1, 0),
     'book-d6-tests': (11, 0), 'book-d6-release-tests': (11, 0), 'book-d6-doctests': (3, 0),
+    'book-d6-foundations-tests': (13, 0), 'book-d6-foundations-release-tests': (13, 0),
+    'book-d6-foundations-doctests': (2, 0),
 }
 
 
@@ -211,6 +214,27 @@ def book_d6_steps(quality: bool = True) -> list[tuple[str, list[str]]]:
     return steps
 
 
+
+def book_d6_foundations_steps(quality: bool = True) -> list[tuple[str, list[str]]]:
+    """Book D6-B is an isolated, dependency-free foundations-gap workspace."""
+    common = ['--locked', '--offline', '--manifest-path', BOOK_D6_FOUNDATIONS_MANIFEST, '--workspace']
+    steps = []
+    if quality:
+        steps.extend([
+            ('book-d6-foundations-format', ['cargo', 'fmt', '--manifest-path', BOOK_D6_FOUNDATIONS_MANIFEST,
+                                            '--all', '--', '--check']),
+            ('book-d6-foundations-clippy', ['cargo', 'clippy'] + common +
+             ['--all-targets', '--', '-D', 'warnings']),
+        ])
+    steps.extend([
+        ('book-d6-foundations-tests', ['cargo', 'test'] + common + ['--all-targets']),
+        ('book-d6-foundations-release-tests', ['cargo', 'test'] + common +
+         ['--all-targets', '--release']),
+        ('book-d6-foundations-doctests', ['cargo', 'test'] + common + ['--doc']),
+    ])
+    return steps
+
+
 def source_id(root: Path = ROOT) -> str:
     """Code, build and lesson inputs; excludes generated evidence and build caches."""
     h = hashlib.sha256()
@@ -220,7 +244,7 @@ def source_id(root: Path = ROOT) -> str:
         if not path.is_file() or any(x in {'target', '.git', '__pycache__'} for x in rel.parts):
             continue
         if (rel.parts[0] not in {'apps', 'scripts', '.github', 'course', 'examples'}
-                and rel.parts[:2] not in {('projects', 'advanced-b'), ('projects', 'advanced-c1'), ('projects', 'advanced-c2'), ('projects', 'book-d1-cargo'), ('projects', 'book-d2-smart-pointers'), ('projects', 'book-d3-oop-patterns'), ('projects', 'book-d4-advanced-features'), ('projects', 'book-d5-webserver'), ('projects', 'book-d6-appendices')} and len(rel.parts) != 1):
+                and rel.parts[:2] not in {('projects', 'advanced-b'), ('projects', 'advanced-c1'), ('projects', 'advanced-c2'), ('projects', 'book-d1-cargo'), ('projects', 'book-d2-smart-pointers'), ('projects', 'book-d3-oop-patterns'), ('projects', 'book-d4-advanced-features'), ('projects', 'book-d5-webserver'), ('projects', 'book-d6-appendices'), ('projects', 'book-d6-foundations')} and len(rel.parts) != 1):
             continue
         if path.suffix in CODE_SUFFIXES or rel.as_posix() == 'VERSION':
             paths.append(path)
@@ -312,6 +336,7 @@ def main() -> int:
         *book_d4_steps(),
         *book_d5_steps(),
         *book_d6_steps(),
+        *book_d6_foundations_steps(),
         ('studio-smoke',[sys.executable,'scripts/smoke_studio_release.py','--output',str(out/'studio-smoke.json')]),
         ('database-smoke',[sys.executable,'scripts/smoke_state_database.py','--output',str(out/'database-products')]),
         ('minikv-smoke',[sys.executable,'scripts/smoke_minikv.py','--output',str(out/'minikv-products')]),
