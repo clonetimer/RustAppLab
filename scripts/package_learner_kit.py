@@ -33,7 +33,7 @@ B4 先阅读 course/ADVANCED_B.md 和 course/ADVANCED_B_WINDOWS.md。在完整�
 
 TaskPocket / PageMint 新增 START.html、DEVELOPMENT_PLAN.md、TEST_PLAN.md、RELEASE_CHECKLIST.md 和 tests/self_check.rs。初始 cargo test 只有一项入口烟测通过、一项个人测试按设计忽略，不能当成业务完成。完整平台 learn lesson/hint/check 现在也支持它们的三个累计检查点；检查点3仍是原完整合同。
 
-D0 Rust Book 逐节审计、D1 Cargo、D2 智能指针、D3 面向对象/模式匹配和 D4 高级特性参考项目一并在本包 course/ 与 projects/ 中提供。D1/D2/D3/D4 是独立参考实验，不是新增的学员作品，也不计作个人学习成绩。\n\nC1/C2请另取对应learner-offline.zip；本包不内置这两门课程或其vendor依赖。
+D0 Rust Book 逐节审计、D1 Cargo、D2 智能指针、D3 面向对象/模式匹配、D4 高级特性和 D5 多线程 Web Server 参考项目一并在本包 course/ 与 projects/ 中提供。D1/D2/D3/D4/D5 是独立参考实验，不是新增的学员作品，也不计作个人学习成绩。\n\nC1/C2请另取对应learner-offline.zip；本包不内置这两门课程或其vendor依赖。
 
 本包不包含已经完成的核心业务参考实现。MiniKV 的 journal.rs、TermGarden 的 storage.rs、StoreDesk 的 sqlite.rs 和 AsyncBoard 的 runtime.rs 是提供给学员的基础设施，不是要求学员先实现的底层作业。CLI 外壳和基础类型已经提供，它不是“从零空文件开发”考核；后续TaskPocket和PageMint才要求更独立地实现。
 
@@ -56,7 +56,7 @@ def add(z: zipfile.ZipFile, relative: str, data: bytes):
 def course_inputs() -> list[tuple[str, bytes]]:
     """Shared course bytes for the real kit and archive-link regression tests."""
     files = [
-        "CURRICULUM.md", "BOOK_COVERAGE_AUDIT.md", "BOOK_D1_CARGO.md", "BOOK_D2_SMART_POINTERS.md", "BOOK_D3_OOP_PATTERNS.md", "BOOK_D4_ADVANCED_FEATURES.md", "STUDIO_GUIDE.md", "ADVANCED_B.md", "ADVANCED_B_WINDOWS.md", "BOOK_GUIDE.md", "ADVANCED_C1.md", "ADVANCED_C2.md", "USER_TRIAL.md", "SQLITE_SETUP.md", "ADVANCED_A.md",
+        "CURRICULUM.md", "BOOK_COVERAGE_AUDIT.md", "BOOK_D1_CARGO.md", "BOOK_D2_SMART_POINTERS.md", "BOOK_D3_OOP_PATTERNS.md", "BOOK_D4_ADVANCED_FEATURES.md", "BOOK_D5_WEB_SERVER.md", "STUDIO_GUIDE.md", "ADVANCED_B.md", "ADVANCED_B_WINDOWS.md", "BOOK_GUIDE.md", "ADVANCED_C1.md", "ADVANCED_C2.md", "USER_TRIAL.md", "SQLITE_SETUP.md", "ADVANCED_A.md",
         "28_independent_product.md", "29_product_release.md",
         "30_second_independent_product.md", "31_transfer_release.md",
         "BEGINNER_WINDOWS_GUIDE.md", "00_first_five_minutes.md", "NETWORK_PREPARATION.md", "LEARNING_NAVIGATOR.md", "RUST_ERROR_LABS.md", "FOUNDATION_PATH.md", "FOUNDATION_NEXT_STEPS.md", "PROGRESS_OVERVIEW.md", "SYSTEMS_PATH.md", "RELIABILITY_PATH.md", "INDEPENDENT_PATH.md",
@@ -82,6 +82,12 @@ def course_inputs() -> list[tuple[str, bytes]]:
     lab = ROOT / "projects" / "book-d4-advanced-features"
     for path in sorted(lab.rglob("*")):
         if path.is_file() and path.suffix in {".toml", ".lock", ".md", ".rs"}:
+            result.append((path.relative_to(ROOT).as_posix(), path.read_bytes()))
+    # D5 is a runnable reference lab, not an additional learner project.
+    # Include the HTML page served by the real TCP server.
+    lab = ROOT / "projects" / "book-d5-webserver"
+    for path in sorted(lab.rglob("*")):
+        if path.is_file() and path.suffix in {".toml", ".lock", ".md", ".rs", ".html"}:
             result.append((path.relative_to(ROOT).as_posix(), path.read_bytes()))
     return result
 
