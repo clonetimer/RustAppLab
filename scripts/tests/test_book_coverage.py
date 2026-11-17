@@ -191,6 +191,19 @@ class BookCoverageTests(unittest.TestCase):
         self.assertEqual(len(re.findall(r"#\[test\]", cli)), 6)
         self.assertEqual(len(re.findall(r"compile_fail", implementation)), 1)
 
+
+    def test_d6_toolchain_practice_is_shipped_and_keeps_risky_work_isolated(self):
+        guide = (ROOT / "course/BOOK_D6_PRACTICAL.md").read_text(encoding="utf-8")
+        learner = (ROOT / "scripts/package_learner_kit.py").read_text(encoding="utf-8")
+        structural = (ROOT / "scripts/structural_check.py").read_text(encoding="utf-8")
+        for term in ("cargo fmt", "cargo clippy", "rust-analyzer", "cargo +1.85.0 fix --edition",
+                     'edition = "2024"', "nightly-2026-11-17", "generic_const_exprs",
+                     "临时副本", "MSRV", "不计入 Stable"):
+            with self.subTest(term=term):
+                self.assertIn(term, guide)
+        self.assertIn("BOOK_D6_PRACTICAL.md", learner)
+        self.assertIn("BOOK_D6_PRACTICAL.md", structural)
+
     def test_d6_is_registered_in_release_msrv_and_learner_package(self):
         release = (ROOT / "scripts/release_check.py").read_text(encoding="utf-8")
         msrv = (ROOT / "scripts/msrv_check.py").read_text(encoding="utf-8")
