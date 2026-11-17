@@ -4,7 +4,7 @@
 - **源码基准**：`clonetimer/RustAppLab` main `fed4a2d37a72de88dfb353474544efde9bdd537a`（2026-11-17 审计时）。
 - **证据规则**：表格中“已有实作”只表示可以定位到相关教学或可执行实例，**不表示**该小节原书所有示例、知识点、学员练习与测试均已完整覆盖；“部分”表示只有关联知识或实现；“缺口”明确有需要补的专项内容；“开发中”只证明开发分支已有材料、仍须 CI。
 - **验收判据**：每项最终需要有教学目标、版本适配、学员实验或合理的知识索引、可重现检查及用户体验验证。官方原书代码无需照抄，允许使用现有真实作品替换；不能用出现某个关键词冒充教学覆盖。
-- **当前统计**：共 **81** 项审计条目，其中 已有实作 42、部分 15、缺口 3、开发中 20、资料索引 1。D1（14.1–14.5）、D2（15.1–15.6）、D3（17.1–17.3、18.1–18.3）和 D4（19.1–19.5）已进入可运行参考实验与跨平台门禁；D4 上一轮基线已完成 Linux/Windows、Rust 1.74 与交付候选包验收；D4-A2 最新候选正在复核。D5 的 20.1–20.3 已有独立实现，待跨平台 CI。这是条目盘点数，**不是**知识点覆盖率或学习达标率。
+- **当前统计**：共 **81** 项审计条目，其中 已有实作 59、部分 15、缺口 3、开发中 3、资料索引 1。D1–D4 独立参考 Workspace 已随 PR #6 合并，D0–D4 验收矩阵 17/17 CI Jobs PASS；D5 的 20.1–20.3 已有独立实现，正在进行跨平台与 Rust 1.74 验收。这是条目盘点数，**不是**知识点覆盖率或学习达标率。
 - **推进路线**：D1 Cargo（14.1–14.5）→ D2 智能指针（15.1–15.6）→ D3 对象模型/模式（17–18）→ D4 Unsafe/高级 Trait/宏（19）→ D5 原生多线程 Web Server（20）→ D6 附录与残余基础缺口；随每阶段修订本表。
 
 | 原书小节 | 主题 | 审计状态 | 现有代码/讲义证据（仓库相对路径） | 后续核查或补充 |
@@ -54,27 +54,27 @@
 | 13.2 | 迭代器 | 已有实作 | `course/studio/textscope.md` | 过滤、聚合与排序 |
 | 13.3 | 用迭代器改进 I/O 项目 | 部分 | `course/25_labquest_rust_code.md` | 含迭代器，但原书对照未复测 |
 | 13.4 | 循环与迭代器性能比较 | 缺口 | `—` | 缺可重复的独立对比实验 |
-| 14.1 | Profile 构建配置 | 开发中 | `course/BOOK_D1_CARGO.md` | D1 已添加 profile 实验，待 CI |
-| 14.2 | crate 打包与发布 | 开发中 | `course/BOOK_D1_CARGO.md` | 仅安全打包检查，不做实际 registry 上传 |
-| 14.3 | Cargo Workspace | 开发中 | `projects/book-d1-cargo/Cargo.toml` | 复用原 B 课程，再加 D1 独立工作区 |
-| 14.4 | cargo install | 开发中 | `course/BOOK_D1_CARGO.md` | 仅本地路径和隔离 root |
-| 14.5 | Cargo 自定义子命令 | 开发中 | `projects/book-d1-cargo/cargo-applab-map/src/main.rs` | 添加真实 cargo-* 命令，待 CI |
-| 15.1 | Box | 开发中 | `projects/book-d2-smart-pointers/smart-pointer-lab/src/lib.rs` | 递归类型、堆间接层与 Box trait object 已有可运行示例，待 CI |
-| 15.2 | Deref | 开发中 | `projects/book-d2-smart-pointers/smart-pointer-lab/src/lib.rs` | 自定义 MyBox、Deref/DerefMut 与 String 到 str 强制转换，待 CI |
-| 15.3 | Drop | 开发中 | `projects/book-d2-smart-pointers/smart-pointer-lab/src/lib.rs` | 自动析构与 std::mem::drop 时机实验，待 CI |
-| 15.4 | Rc | 开发中 | `projects/book-d2-smart-pointers/smart-pointer-lab/src/lib.rs` | Rc clone、strong_count 与单线程共享所有权实验，待 CI |
-| 15.5 | RefCell | 开发中 | `projects/book-d2-smart-pointers/smart-pointer-lab/src/lib.rs` | RefCell 运行时借用冲突、try_borrow_mut 与 Rc<RefCell<T>> 实验，待 CI |
-| 15.6 | 引用循环 | 开发中 | `projects/book-d2-smart-pointers/smart-pointer-lab/src/lib.rs` | parent-child 强拥有/Weak 回边与父节点释放实验，待 CI |
+| 14.1 | Profile 构建配置 | 已有实作 | `course/BOOK_D1_CARGO.md` | D1 已添加 profile 实验；独立 Workspace 已随 PR #6 合并，D0–D4 验收矩阵 17/17 CI Jobs PASS |
+| 14.2 | crate 打包与发布 | 已有实作 | `course/BOOK_D1_CARGO.md` | 仅安全打包检查，不做实际 registry 上传；独立 Workspace 已随 PR #6 合并，D0–D4 验收矩阵 17/17 CI Jobs PASS |
+| 14.3 | Cargo Workspace | 已有实作 | `projects/book-d1-cargo/Cargo.toml` | 复用原 B 课程，再加 D1 独立工作区；独立 Workspace 已随 PR #6 合并，D0–D4 验收矩阵 17/17 CI Jobs PASS |
+| 14.4 | cargo install | 已有实作 | `course/BOOK_D1_CARGO.md` | 仅本地路径和隔离 root；独立 Workspace 已随 PR #6 合并，D0–D4 验收矩阵 17/17 CI Jobs PASS |
+| 14.5 | Cargo 自定义子命令 | 已有实作 | `projects/book-d1-cargo/cargo-applab-map/src/main.rs` | 添加真实 cargo-* 命令；独立 Workspace 已随 PR #6 合并，D0–D4 验收矩阵 17/17 CI Jobs PASS |
+| 15.1 | Box | 已有实作 | `projects/book-d2-smart-pointers/smart-pointer-lab/src/lib.rs` | 递归类型、堆间接层与 Box trait object 已有可运行示例；独立 Workspace 已随 PR #6 合并，D0–D4 验收矩阵 17/17 CI Jobs PASS |
+| 15.2 | Deref | 已有实作 | `projects/book-d2-smart-pointers/smart-pointer-lab/src/lib.rs` | 自定义 MyBox、Deref/DerefMut 与 String 到 str 强制转换；独立 Workspace 已随 PR #6 合并，D0–D4 验收矩阵 17/17 CI Jobs PASS |
+| 15.3 | Drop | 已有实作 | `projects/book-d2-smart-pointers/smart-pointer-lab/src/lib.rs` | 自动析构与 std::mem::drop 时机实验；独立 Workspace 已随 PR #6 合并，D0–D4 验收矩阵 17/17 CI Jobs PASS |
+| 15.4 | Rc | 已有实作 | `projects/book-d2-smart-pointers/smart-pointer-lab/src/lib.rs` | Rc clone、strong_count 与单线程共享所有权实验；独立 Workspace 已随 PR #6 合并，D0–D4 验收矩阵 17/17 CI Jobs PASS |
+| 15.5 | RefCell | 已有实作 | `projects/book-d2-smart-pointers/smart-pointer-lab/src/lib.rs` | RefCell 运行时借用冲突、try_borrow_mut 与 Rc<RefCell<T>> 实验；独立 Workspace 已随 PR #6 合并，D0–D4 验收矩阵 17/17 CI Jobs PASS |
+| 15.6 | 引用循环 | 已有实作 | `projects/book-d2-smart-pointers/smart-pointer-lab/src/lib.rs` | parent-child 强拥有/Weak 回边与父节点释放实验；独立 Workspace 已随 PR #6 合并，D0–D4 验收矩阵 17/17 CI Jobs PASS |
 | 16.1 | 线程 | 已有实作 | `course/SYSTEMS_PATH.md` | BatchMeter 并发 |
 | 16.2 | 消息传递 | 已有实作 | `course/SYSTEMS_PATH.md` | mpsc |
 | 16.3 | 共享状态 | 已有实作 | `course/ADVANCED_A.md` | Arc 与状态边界 |
 | 16.4 | Send 与 Sync | 已有实作 | `course/ADVANCED_A.md` | 跨线程快照 |
-| 17.1 | 面向对象特性 | 开发中 | `projects/book-d3-oop-patterns/oop-pattern-lab/src/lib.rs` | 封装不变量、组合与 trait 多态参考实验，待 CI |
-| 17.2 | Trait Object | 开发中 | `projects/book-d3-oop-patterns/oop-pattern-lab/src/lib.rs` | Box<dyn Draw> 多种具体类型运行时分发，待 CI |
-| 17.3 | 状态模式 | 开发中 | `projects/book-d3-oop-patterns/oop-pattern-lab/src/lib.rs` | Draft→PendingReview→Published 消费式状态转换，待 CI |
-| 18.1 | 使用模式的位置 | 开发中 | `projects/book-d3-oop-patterns/oop-pattern-lab/src/lib.rs` | match、if let、while let、for、let-else 与函数参数模式，待 CI |
-| 18.2 | 模式可反驳性 | 开发中 | `projects/book-d3-oop-patterns/oop-pattern-lab/src/lib.rs` | let-else/if let 对照与 compile_fail doctest，待 CI |
-| 18.3 | 模式语法 | 开发中 | `projects/book-d3-oop-patterns/oop-pattern-lab/src/lib.rs` | 字面量、多模式、范围、结构体/枚举/切片/元组解构、ref、@、守卫，待 CI |
+| 17.1 | 面向对象特性 | 已有实作 | `projects/book-d3-oop-patterns/oop-pattern-lab/src/lib.rs` | 封装不变量、组合与 trait 多态参考实验；独立 Workspace 已随 PR #6 合并，D0–D4 验收矩阵 17/17 CI Jobs PASS |
+| 17.2 | Trait Object | 已有实作 | `projects/book-d3-oop-patterns/oop-pattern-lab/src/lib.rs` | Box<dyn Draw> 多种具体类型运行时分发；独立 Workspace 已随 PR #6 合并，D0–D4 验收矩阵 17/17 CI Jobs PASS |
+| 17.3 | 状态模式 | 已有实作 | `projects/book-d3-oop-patterns/oop-pattern-lab/src/lib.rs` | Draft→PendingReview→Published 消费式状态转换；独立 Workspace 已随 PR #6 合并，D0–D4 验收矩阵 17/17 CI Jobs PASS |
+| 18.1 | 使用模式的位置 | 已有实作 | `projects/book-d3-oop-patterns/oop-pattern-lab/src/lib.rs` | match、if let、while let、for、let-else 与函数参数模式；独立 Workspace 已随 PR #6 合并，D0–D4 验收矩阵 17/17 CI Jobs PASS |
+| 18.2 | 模式可反驳性 | 已有实作 | `projects/book-d3-oop-patterns/oop-pattern-lab/src/lib.rs` | let-else/if let 对照与 compile_fail doctest；独立 Workspace 已随 PR #6 合并，D0–D4 验收矩阵 17/17 CI Jobs PASS |
+| 18.3 | 模式语法 | 已有实作 | `projects/book-d3-oop-patterns/oop-pattern-lab/src/lib.rs` | 字面量、多模式、范围、结构体/枚举/切片/元组解构、ref、@、守卫；独立 Workspace 已随 PR #6 合并，D0–D4 验收矩阵 17/17 CI Jobs PASS |
 | 19.1 | Unsafe Rust | 已有实作 | `projects/book-d4-advanced-features/advanced-lab/src/lib.rs` | 裸指针、split_at_mut 安全抽象、unsafe fn、extern C、unsafe trait、union、受限 static mut；Linux/Windows PASS |
 | 19.2 | 高级 Trait | 已有实作 | `projects/book-d4-advanced-features/advanced-lab/src/lib.rs` | 关联类型、默认泛型参数、运算符重载、完全限定语法、超 Trait、Newtype；Linux/Windows PASS |
 | 19.3 | 高级类型 | 已有实作 | `projects/book-d4-advanced-features/advanced-lab/src/lib.rs` | Newtype、类型别名、Never、DST、?Sized；Linux/Windows PASS |
@@ -102,9 +102,9 @@
 | 里程碑 | 交付定义 | 当前情况 |
 |---|---|---|
 | D0 | 原书全目录逐节证据和风险映射 | 本表已创建，待人工复核 |
-| D1 | 5 节 Cargo 讲义 + 隔离 Workspace + Cargo 外部子命令 + 真 CI | 独立 Workspace 已实现，最新跨平台 CI 签核中 |
-| D2 | 智能指针 6 节 + RAII/Deref/Weak 实验 | 独立 Workspace 已实现，最新跨平台 CI 签核中 |
-| D3 | 面向对象与模式匹配 6 节 | 独立 Workspace 已实现，最新跨平台 CI 签核中 |
-| D4 | 第 19 章 5 节安全隔离实验 | 上一轮 17/17 CI Jobs PASS、候选包已组装；D4-A2 最新候选复核中 |
+| D1 | 5 节 Cargo 讲义 + 隔离 Workspace + Cargo 外部子命令 + 真 CI | PR #6 已合并；D0–D4 验收矩阵 17/17 CI Jobs PASS |
+| D2 | 智能指针 6 节 + RAII/Deref/Weak 实验 | PR #6 已合并；D0–D4 验收矩阵 17/17 CI Jobs PASS |
+| D3 | 面向对象与模式匹配 6 节 | PR #6 已合并；D0–D4 验收矩阵 17/17 CI Jobs PASS |
+| D4 | 第 19 章 5 节安全隔离实验 | D4-A2 17/17 CI Jobs PASS，PR #6 已合并 |
 | D5 | 第 20 章 3 节线程池与关闭 | 独立 Workspace 已实现，跨平台 CI 待签核 |
 | D6 | 附录 A–G + 基础零散缺口 | 待实施 |
