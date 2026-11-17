@@ -1,0 +1,18 @@
+[package]
+name = "rustapplab-book-d4-lab"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.74"
+description = "Offline Rust Book chapter 19 advanced features reference lab"
+license = "MIT"
+publish = false
+
+[dependencies]
+rustapplab-book-d4-macros = { path = "../d4-proc-macros" }
+
+[lib]
+path = "src/lib.rs"
+
+[[bin]]
+name = "book_d4"
+path = "src/main.rs"
