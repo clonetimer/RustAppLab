@@ -420,24 +420,52 @@ fn copy_source(
     Ok(())
 }
 fn find_test_binary(scratch: &Path) -> Result<PathBuf, String> {
-    let dir = scratch.join("target/debug/deps");
-    let files = fs::read_dir(dir).map_err(|e| e.to_string())?;
-    for item in files {
-        let path = item.map_err(|e| e.to_string())?.path();
-        let name = path.file_name().and_then(|s| s.to_str()).unwrap_or("");
-        let extension = path.extension().and_then(|s| s.to_str());
-        if name.starts_with("milestones-")
-            && path.is_file()
-            && (if cfg!(windows) {
-                extension == Some("exe")
-            } else {
-                extension.is_none()
-            })
-        {
-            return Ok(path);
+    // Cargo can place test executables in debug/deps (classic layout) or
+    // debug/build/<package>/<hash>/out (new build-dir layout). Only inspect
+    // our newly created target directory, never the parent's workspace.
+    let base = scratch.join("target/debug");
+    if !base.is_dir() {
+        return Err("Cargo 构建结束但缺少本工程 target/debug；检查独立目标目录".into());
+    }
+    let mut pending = vec![(base, 0usize)];
+    let mut candidates = Vec::new();
+    let mut examined = 0usize;
+    while let Some((dir, depth)) = pending.pop() {
+        for entry in fs::read_dir(&dir).map_err(|e| e.to_string())? {
+            let entry = entry.map_err(|e| e.to_string())?;
+            examined += 1;
+            if examined > 10_000 {
+                return Err("学员构建目录条目过多，停止搜索测试程序".into());
+            }
+            let kind = entry.file_type().map_err(|e| e.to_string())?;
+            if kind.is_symlink() {
+                continue;
+            }
+            let path = entry.path();
+            if kind.is_dir() && depth < 4 {
+                pending.push((path, depth + 1));
+            } else if kind.is_file() {
+                let name = path.file_name().and_then(|s| s.to_str()).unwrap_or("");
+                let extension = path.extension().and_then(|s| s.to_str());
+                if name.starts_with("milestones-")
+                    && (if cfg!(windows) {
+                        extension == Some("exe")
+                    } else {
+                        extension.is_none()
+                    })
+                {
+                    candidates.push(path);
+                }
+            }
         }
     }
-    Err("编译完成但没有找到 milestones 测试程序；检查 Cargo 配置".into())
+    if candidates.len() != 1 {
+        return Err(format!(
+            "Cargo 构建后找到 {} 个 milestones 测试程序，预期恰好一个；检查目标目录布局",
+            candidates.len()
+        ));
+    }
+    Ok(candidates.remove(0))
 }
 fn save_report(root: &Path, text: &str) -> Result<PathBuf, String> {
     let dir = root.join(".studio-reports");
@@ -635,7 +663,32 @@ fn compilation_guidance(stderr: &str) -> &'static str {
 }
 #[cfg(test)]
 mod diagnostics_tests {
-    use super::compilation_guidance;
+    use super::{compilation_guidance, find_test_binary};
+    use crate::capstone::TempWorkspace;
+    use std::fs;
+
+    #[test]
+    fn finds_test_binary_in_both_cargo_layouts_without_misidentifying_other_files() {
+        let sandbox = TempWorkspace::new_named("cargo-layout").unwrap();
+        let debug = sandbox.0.join("target/debug");
+        let classic = debug.join("deps");
+        let modern = debug.join("build/demo/abc123/out");
+        fs::create_dir_all(&classic).unwrap();
+        fs::create_dir_all(&modern).unwrap();
+        let name = format!("milestones-abc123{}", std::env::consts::EXE_SUFFIX);
+        let old = classic.join(&name);
+        let new = modern.join(&name);
+        fs::write(&old, "").unwrap();
+        assert_eq!(find_test_binary(&sandbox.0).unwrap(), old);
+        fs::remove_file(&old).unwrap();
+        fs::write(&new, "").unwrap();
+        assert_eq!(find_test_binary(&sandbox.0).unwrap(), new);
+        fs::write(&old, "").unwrap();
+        assert!(
+            find_test_binary(&sandbox.0).is_err(),
+            "ambiguous output is not a pass"
+        );
+    }
     #[test]
     fn missing_sqlite_is_environment_error() {
         assert!(compilation_guidance(

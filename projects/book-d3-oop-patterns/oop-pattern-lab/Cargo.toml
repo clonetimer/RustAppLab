@@ -1,0 +1,15 @@
+[package]
+name = "rustapplab-oop-pattern-lab"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.74"
+description = "Offline Rust Book chapters 17 and 18 reference lab"
+license = "MIT"
+publish = false
+
+[lib]
+path = "src/lib.rs"
+
+[[bin]]
+name = "book_d3"
+path = "src/main.rs"

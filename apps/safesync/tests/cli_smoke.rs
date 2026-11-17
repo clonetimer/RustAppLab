@@ -1,7 +1,9 @@
 use std::fs;
 use std::path::PathBuf;
 use std::process::{Command, Output};
-use std::time::{SystemTime, UNIX_EPOCH};
+use std::sync::atomic::{AtomicU64, Ordering};
+
+static NEXT_FIXTURE_ID: AtomicU64 = AtomicU64::new(0);
 
 struct Fixture(PathBuf);
 impl Fixture {
@@ -9,10 +11,7 @@ impl Fixture {
         let folder = std::env::temp_dir().join(format!(
             "sfs-cli-{}-{}",
             std::process::id(),
-            SystemTime::now()
-                .duration_since(UNIX_EPOCH)
-                .unwrap()
-                .as_nanos()
+            NEXT_FIXTURE_ID.fetch_add(1, Ordering::Relaxed)
         ));
         fs::create_dir(&folder).unwrap();
         Self(folder)

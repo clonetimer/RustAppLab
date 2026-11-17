@@ -67,4 +67,50 @@ foreach ($Configuration in @(@{Name='default'; Features=@()}, @{Name='strict'; F
 }
 & cargo test --locked --offline -p labquest --features b4-integration --test advanced_b_json_e2e -- --test-threads=1
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+Write-Host 'Rust Book D1 Cargo workspace (offline)'
+$BookManifest = 'projects/book-d1-cargo/Cargo.toml'
+$BookCommon = @('--locked','--offline','--manifest-path',$BookManifest,'--workspace')
+& cargo fmt --manifest-path $BookManifest --all -- --check
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+& cargo clippy @BookCommon --all-targets -- -D warnings
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+& cargo test @BookCommon --all-targets
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+& cargo test @BookCommon --doc
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+& cargo package --list --allow-dirty --manifest-path projects/book-d1-cargo/book-card/Cargo.toml
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+Write-Host 'Rust Book D2 smart pointer workspace (offline)'
+$SmartManifest = 'projects/book-d2-smart-pointers/Cargo.toml'
+$SmartCommon = @('--locked','--offline','--manifest-path',$SmartManifest,'--workspace')
+& cargo fmt --manifest-path $SmartManifest --all -- --check
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+& cargo clippy @SmartCommon --all-targets -- -D warnings
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+& cargo test @SmartCommon --all-targets
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+& cargo test @SmartCommon --doc
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+Write-Host 'Rust Book D3 object model and pattern matching workspace (offline)'
+$ObjectManifest = 'projects/book-d3-oop-patterns/Cargo.toml'
+$ObjectCommon = @('--locked','--offline','--manifest-path',$ObjectManifest,'--workspace')
+& cargo fmt --manifest-path $ObjectManifest --all -- --check
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+& cargo clippy @ObjectCommon --all-targets -- -D warnings
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+& cargo test @ObjectCommon --all-targets
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+& cargo test @ObjectCommon --doc
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+Write-Host 'Rust Book D4 advanced features workspace (offline)'
+$AdvancedManifest = 'projects/book-d4-advanced-features/Cargo.toml'
+$AdvancedCommon = @('--locked','--offline','--manifest-path',$AdvancedManifest,'--workspace')
+& cargo fmt --manifest-path $AdvancedManifest --all -- --check
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+& cargo clippy @AdvancedCommon --all-targets -- -D warnings
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+& cargo test @AdvancedCommon --all-targets
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+& cargo test @AdvancedCommon --doc
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 Write-Host 'Completed. Manual application and cross-platform verification are still required.'

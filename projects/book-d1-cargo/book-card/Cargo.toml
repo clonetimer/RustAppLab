@@ -1,0 +1,11 @@
+[package]
+name = "rustapplab-book-card"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.74"
+description = "Offline Cargo learning cards for RustAppLab Book D1"
+license = "MIT"
+publish = false
+
+[lib]
+path = "src/lib.rs"

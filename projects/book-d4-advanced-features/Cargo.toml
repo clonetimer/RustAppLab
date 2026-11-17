@@ -1,0 +1,9 @@
+[workspace]
+members = ["advanced-lab", "d4-proc-macros"]
+resolver = "2"
+
+[profile.dev]
+opt-level = 0
+
+[profile.release]
+opt-level = 2

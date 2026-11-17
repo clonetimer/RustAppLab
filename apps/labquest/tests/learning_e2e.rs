@@ -3,7 +3,9 @@ use std::{
     fs,
     path::{Path, PathBuf},
     process::{Command, Output},
+    sync::atomic::{AtomicU64, Ordering},
 };
+static TEMP_COUNTER: AtomicU64 = AtomicU64::new(0);
 struct Temp(PathBuf);
 impl Temp {
     fn new() -> Self {
@@ -11,7 +13,11 @@ impl Temp {
             .duration_since(std::time::UNIX_EPOCH)
             .unwrap()
             .as_nanos();
-        let p = std::env::temp_dir().join(format!("learning-e2e-{}-{stamp}", std::process::id()));
+        let nonce = TEMP_COUNTER.fetch_add(1, Ordering::Relaxed);
+        let p = std::env::temp_dir().join(format!(
+            "learning-e2e-{}-{stamp}-{nonce}",
+            std::process::id()
+        ));
         fs::create_dir(&p).unwrap();
         Self(p)
     }

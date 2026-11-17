@@ -45,6 +45,10 @@ class SummaryTests(unittest.TestCase):
             'projects/advanced-b/learner/taskcore/tests/b1.rs',
             'projects/advanced-b/learner/Cargo.lock',
             'projects/advanced-b/ADVANCED_B.md',
+            'projects/book-d2-smart-pointers/smart-pointer-lab/src/lib.rs',
+            'projects/book-d3-oop-patterns/oop-pattern-lab/src/lib.rs',
+            'projects/book-d4-advanced-features/advanced-lab/src/lib.rs',
+            'projects/book-d4-advanced-features/d4-proc-macros/src/lib.rs',
             'course/RUST_ERROR_LABS.md',
             'apps/labquest/studio/README.md',
             'examples/foundation/tasks.tsv',
@@ -165,13 +169,85 @@ class B4GateTests(unittest.TestCase):
                     result = release.run_step(label, [sys.executable, '-c', f'print({output!r})'], Path(temp))
                     self.assertFalse(result['passed'])
 
-    def test_all_gate_entrypoints_include_b4(self):
+    def test_book_d1_workspace_has_install_and_package_checks(self):
+        full = release.book_d1_steps()
+        basic = release.book_d1_steps(quality=False)
+        self.assertEqual([name for name, _ in full],
+                         ['book-d1-format', 'book-d1-clippy', 'book-d1-tests',
+                          'book-d1-doctests', 'book-d1-install-smoke', 'book-d1-package-list'])
+        self.assertEqual([name for name, _ in basic],
+                         ['book-d1-tests', 'book-d1-doctests', 'book-d1-install-smoke'])
+        self.assertEqual(release.TEST_LIMITS['book-d1-tests'], (10, 0))
+        self.assertEqual(release.TEST_LIMITS['book-d1-doctests'], (1, 0))
+        for name in ('book-d1-format', 'book-d1-clippy', 'book-d1-tests',
+                     'book-d1-doctests', 'book-d1-install-smoke', 'book-d1-package-list'):
+            self.assertIn(name, release_decision.REQUIRED)
+
+    def test_book_d2_workspace_has_explicit_release_and_msrv_matrix(self):
+        full = release.book_d2_steps()
+        basic = release.book_d2_steps(quality=False)
+        self.assertEqual([name for name, _ in full],
+                         ['book-d2-format', 'book-d2-clippy', 'book-d2-tests', 'book-d2-doctests'])
+        self.assertEqual([name for name, _ in basic],
+                         ['book-d2-tests', 'book-d2-doctests'])
+        self.assertEqual(release.TEST_LIMITS['book-d2-tests'], (26, 0))
+        self.assertEqual(release.TEST_LIMITS['book-d2-doctests'], (1, 0))
+        for name, command in full:
+            self.assertTrue(name.startswith('book-d2-'))
+            self.assertIn('projects/book-d2-smart-pointers/Cargo.toml', command)
+            if command[1] != 'fmt':
+                self.assertIn('--locked', command)
+                self.assertIn('--offline', command)
+
+    def test_book_d3_workspace_has_explicit_release_and_msrv_matrix(self):
+        full = release.book_d3_steps()
+        basic = release.book_d3_steps(quality=False)
+        self.assertEqual([name for name, _ in full],
+                         ['book-d3-format', 'book-d3-clippy', 'book-d3-tests', 'book-d3-doctests'])
+        self.assertEqual([name for name, _ in basic],
+                         ['book-d3-tests', 'book-d3-doctests'])
+        self.assertEqual(release.TEST_LIMITS['book-d3-tests'], (44, 0))
+        self.assertEqual(release.TEST_LIMITS['book-d3-doctests'], (1, 0))
+        for name, command in full:
+            self.assertTrue(name.startswith('book-d3-'))
+            self.assertIn('projects/book-d3-oop-patterns/Cargo.toml', command)
+            if command[1] != 'fmt':
+                self.assertIn('--locked', command)
+                self.assertIn('--offline', command)
+
+    def test_book_d4_workspace_has_explicit_release_and_msrv_matrix(self):
+        full = release.book_d4_steps()
+        basic = release.book_d4_steps(quality=False)
+        self.assertEqual([name for name, _ in full],
+                         ['book-d4-format', 'book-d4-clippy', 'book-d4-tests', 'book-d4-doctests'])
+        self.assertEqual([name for name, _ in basic],
+                         ['book-d4-tests', 'book-d4-doctests'])
+        self.assertEqual(release.TEST_LIMITS['book-d4-tests'], (39, 0))
+        self.assertEqual(release.TEST_LIMITS['book-d4-doctests'], (2, 0))
+        for name, command in full:
+            self.assertTrue(name.startswith('book-d4-'))
+            self.assertIn('projects/book-d4-advanced-features/Cargo.toml', command)
+            if command[1] != 'fmt':
+                self.assertIn('--locked', command)
+                self.assertIn('--offline', command)
+
+    def test_all_gate_entrypoints_include_book_d3(self):
         for relative in ('scripts/release_check.py', 'scripts/msrv_check.py'):
             text = (release.ROOT/relative).read_text()
-            self.assertIn('*advanced_b4_steps()' if relative.endswith('/release_check.py') else 'advanced_b4_steps(quality=False)', text)
+            if relative.endswith('/release_check.py'):
+                for name in ('book_d1_steps()', 'book_d2_steps()', 'book_d3_steps()', 'book_d4_steps()'):
+                    self.assertIn('*' + name, text)
+            else:
+                for name in ('book_d1_steps(quality=False)', 'book_d2_steps(quality=False)',
+                             'book_d3_steps(quality=False)', 'book_d4_steps(quality=False)'):
+                    self.assertIn(name, text)
         for relative in ('scripts/verify.sh', 'scripts/verify.ps1', 'scripts/verify_release_windows.ps1'):
             text = (release.ROOT/relative).read_text(encoding='utf-8-sig')
             self.assertIn('projects/advanced-b/reference/json-export/Cargo.toml', text)
+            self.assertIn('projects/book-d1-cargo/Cargo.toml', text)
+            self.assertIn('projects/book-d2-smart-pointers/Cargo.toml', text)
+            self.assertIn('projects/book-d3-oop-patterns/Cargo.toml', text)
+            self.assertIn('projects/book-d4-advanced-features/Cargo.toml', text)
             self.assertIn('advanced_b_json_e2e', text)
             self.assertNotIn('cargo fetch', text)
         for relative in ('scripts/verify.ps1', 'scripts/verify_release_windows.ps1'):

@@ -5,7 +5,9 @@ use std::{
     fs,
     path::{Path, PathBuf},
     process::{Command, Output},
+    sync::atomic::{AtomicU64, Ordering},
 };
+static TEMP_COUNTER: AtomicU64 = AtomicU64::new(0);
 struct Temp(PathBuf);
 impl Temp {
     fn new() -> Self {
@@ -13,7 +15,9 @@ impl Temp {
             .duration_since(std::time::UNIX_EPOCH)
             .unwrap()
             .as_nanos();
-        let root = std::env::temp_dir().join(format!("reading-{}-{stamp}", std::process::id()));
+        let nonce = TEMP_COUNTER.fetch_add(1, Ordering::Relaxed);
+        let root =
+            std::env::temp_dir().join(format!("reading-{}-{stamp}-{nonce}", std::process::id()));
         fs::create_dir(&root).unwrap();
         Self(root)
     }

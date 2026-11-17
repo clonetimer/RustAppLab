@@ -1,0 +1,11 @@
+[package]
+name = "rustapplab-book-d4-macros"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.74"
+description = "Dependency-free procedural macros for the Rust Book D4 lab"
+license = "MIT"
+publish = false
+
+[lib]
+proc-macro = true

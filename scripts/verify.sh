@@ -38,4 +38,29 @@ cargo test --locked --offline --manifest-path "$advanced_b4_manifest" --workspac
 cargo test --locked --offline --manifest-path "$advanced_b4_manifest" --workspace --doc
 cargo test --locked --offline --manifest-path "$advanced_b4_manifest" --workspace --all-features --doc
 cargo test --locked --offline -p labquest --features b4-integration --test advanced_b_json_e2e -- --test-threads=1
-printf '%s\n' '所有包的格式、Lint、测试、release 构建命令均已执行；真实用户/跨平台验收还需单独记录。'
+echo '[extra] Rust Book D1 Cargo workspace (offline)'
+book_d1_manifest=projects/book-d1-cargo/Cargo.toml
+cargo fmt --manifest-path "$book_d1_manifest" --all -- --check
+cargo clippy --locked --offline --manifest-path "$book_d1_manifest" --workspace --all-targets -- -D warnings
+cargo test --locked --offline --manifest-path "$book_d1_manifest" --workspace --all-targets
+cargo test --locked --offline --manifest-path "$book_d1_manifest" --workspace --doc
+cargo package --list --allow-dirty --manifest-path projects/book-d1-cargo/book-card/Cargo.toml
+echo '[extra] Rust Book D2 smart pointer workspace (offline)'
+book_d2_manifest=projects/book-d2-smart-pointers/Cargo.toml
+cargo fmt --manifest-path "$book_d2_manifest" --all -- --check
+cargo clippy --locked --offline --manifest-path "$book_d2_manifest" --workspace --all-targets -- -D warnings
+cargo test --locked --offline --manifest-path "$book_d2_manifest" --workspace --all-targets
+cargo test --locked --offline --manifest-path "$book_d2_manifest" --workspace --doc
+echo '[extra] Rust Book D3 object model and patterns workspace (offline)'
+book_d3_manifest=projects/book-d3-oop-patterns/Cargo.toml
+cargo fmt --manifest-path "$book_d3_manifest" --all -- --check
+cargo clippy --locked --offline --manifest-path "$book_d3_manifest" --workspace --all-targets -- -D warnings
+cargo test --locked --offline --manifest-path "$book_d3_manifest" --workspace --all-targets
+cargo test --locked --offline --manifest-path "$book_d3_manifest" --workspace --doc
+echo '[extra] Rust Book D4 advanced features workspace (offline)'
+book_d4_manifest=projects/book-d4-advanced-features/Cargo.toml
+cargo fmt --manifest-path "$book_d4_manifest" --all -- --check
+cargo clippy --locked --offline --manifest-path "$book_d4_manifest" --workspace --all-targets -- -D warnings
+cargo test --locked --offline --manifest-path "$book_d4_manifest" --workspace --all-targets
+cargo test --locked --offline --manifest-path "$book_d4_manifest" --workspace --doc
+printf '%s\n' '所有包与独立 Book D1/D2/D3/D4 Workspace 的格式、Lint、测试、release 构建命令均已执行；真实用户/跨平台验收还需单独记录。'

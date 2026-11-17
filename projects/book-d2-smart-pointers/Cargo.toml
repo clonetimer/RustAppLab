@@ -1,0 +1,9 @@
+[workspace]
+members = ["smart-pointer-lab"]
+resolver = "2"
+
+[profile.dev]
+opt-level = 0
+
+[profile.release]
+opt-level = 2

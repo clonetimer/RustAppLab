@@ -20,6 +20,20 @@
 
 基础阶段同时保留FileQuest、LogLens、LocalHub、SafeSync与32章原有应用教程，章节入口见 [课程首页](README.md)。对照阅读见 [Rust Book指南](BOOK_GUIDE.md)。
 
+## Rust Book 内容完整性补课（独立于 0.19.0-rc.1 课程范围）
+
+[逐节审计矩阵](BOOK_COVERAGE_AUDIT.md) 以中文版 Rust Book 第 1–20 章及附录 A–G 为基准，区分已有教学、关联实作、待补缺口与新课待 CI；不以关键词出现作为教学完成证明。
+
+**D1 Cargo 进阶**：[完整讲义](BOOK_D1_CARGO.md) 与 [独立实验](../projects/book-d1-cargo/README.md) 覆盖构建 profile、打包检查、Workspace、专用安装根与自定义 Cargo 子命令。
+
+**D2 智能指针**：[六节讲义](BOOK_D2_SMART_POINTERS.md) 与 [独立实验](../projects/book-d2-smart-pointers/README.md) 覆盖 Box、Deref、Drop、Rc、RefCell 和 Weak/引用循环。
+
+**D3 面向对象与模式匹配**：[讲义](BOOK_D3_OOP_PATTERNS.md) 与 [独立实验](../projects/book-d3-oop-patterns/README.md) 覆盖封装、trait object、状态模式，以及 18.1–18.3 的模式语法与可反驳性。D1/D2/D3 均为 RC 之外的补充，须经跨平台 CI 验证。
+
+**D4 高级特性**：[讲义](BOOK_D4_ADVANCED_FEATURES.md) 与 [独立实验](../projects/book-d4-advanced-features/README.md) 覆盖 unsafe Rust、高级 Trait/类型/函数与三类过程宏。实验使用 Rust 1.74、零第三方依赖，并把不安全操作限制在有安全契约的局部代码中；待跨平台 CI 签核。
+
+后续顺序：D5（原生线程池 Web Server）、D6（附录与基础散点）。
+
 ## 当前材料数量与性质
 
 根Cargo工作区17个包：FileQuest、LogLens、LocalHub、SafeSync、LabQuest、UnitLab、QuizDeck、TextScope、LedgerLite、BadgeForge、BatchMeter、TermGarden、StoreDesk、MiniKV、NetFetch、ServiceDesk、AsyncBoard。LabQuest是学习平台，不冒充学生作品。

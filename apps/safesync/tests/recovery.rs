@@ -7,7 +7,9 @@ use std::fs;
 #[cfg(debug_assertions)]
 use std::path::Path;
 use std::path::PathBuf;
-use std::time::{SystemTime, UNIX_EPOCH};
+use std::sync::atomic::{AtomicU64, Ordering};
+
+static NEXT_FIXTURE_ID: AtomicU64 = AtomicU64::new(0);
 
 struct Fixture(PathBuf);
 impl Fixture {
@@ -15,10 +17,7 @@ impl Fixture {
         let base = std::env::temp_dir().join(format!(
             "sfs-recovery-{}-{}",
             std::process::id(),
-            SystemTime::now()
-                .duration_since(UNIX_EPOCH)
-                .unwrap()
-                .as_nanos()
+            NEXT_FIXTURE_ID.fetch_add(1, Ordering::Relaxed)
         ));
         fs::create_dir(&base).unwrap();
         Self(base)

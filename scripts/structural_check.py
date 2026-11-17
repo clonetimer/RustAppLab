@@ -37,7 +37,7 @@ def allowed(path: Path) -> bool:
         return path.suffix in (".rs", ".toml", ".md", ".html", ".css", ".js", ".tsv", ".txt", ".svg", ".ps1")
     if parts[0] == "examples":
         return path.suffix in (".svg", ".txt", ".md", ".html", ".json", ".kv", ".tsv")
-    if len(parts) >= 3 and parts[:2] in (("projects", "advanced-b"), ("projects", "advanced-c1"), ("projects", "advanced-c2")):
+    if len(parts) >= 3 and parts[:2] in (("projects", "advanced-b"), ("projects", "advanced-c1"), ("projects", "advanced-c2"), ("projects", "book-d1-cargo"), ("projects", "book-d2-smart-pointers"), ("projects", "book-d3-oop-patterns"), ("projects", "book-d4-advanced-features")):
         return path.suffix in (".rs", ".toml", ".md", ".lock", ".html", ".css", ".js") or path.name == "Cargo.lock"
     if parts[0] == "course":
         return path.suffix == ".md"
@@ -70,6 +70,45 @@ for app in ("filequest", "loglens", "localhub", "safesync"):
 
 for relative in ("ADVANCED_B.html", "START_ADVANCED_B_WINDOWS.cmd", "course/ADVANCED_B.md", "apps/labquest/src/advanced_b.rs", "apps/labquest/tests/advanced_b_e2e.rs", "projects/advanced-b/ADVANCED_B.md", "projects/advanced-b/learner/Cargo.toml", "projects/advanced-b/learner/taskcore/src/lib.rs", "projects/advanced-b/learner/taskreport/src/main.rs", "projects/advanced-b/reference/taskcore/src/lib.rs", "projects/advanced-b/reference/taskreport/src/main.rs"):
     require((ROOT / relative).is_file(), f"进阶 B 交付缺失：{relative}")
+
+# Book D1 is additive, never a root workspace member.
+for relative in ("Cargo.toml", "Cargo.lock", "README.md",
+                 "book-card/Cargo.toml", "book-card/src/lib.rs",
+                 "cargo-applab-map/Cargo.toml", "cargo-applab-map/src/main.rs",
+                 "cargo-applab-map/tests/cli.rs"):
+    require((ROOT / "projects/book-d1-cargo" / relative).is_file(),
+            f"Book D1 缺少独立课程工程：{relative}")
+for relative in ("course/BOOK_COVERAGE_AUDIT.md", "course/BOOK_D1_CARGO.md",
+                 "scripts/book_d1_check.py", "scripts/tests/test_book_coverage.py"):
+    require((ROOT / relative).is_file(), f"Book D0/D1 审计或门禁缺失：{relative}")
+
+# Book D2 is a separate smart-pointer workspace, with runnable reference tests.
+for relative in ("Cargo.toml", "Cargo.lock", "README.md",
+                 "smart-pointer-lab/Cargo.toml", "smart-pointer-lab/src/lib.rs",
+                 "smart-pointer-lab/src/main.rs", "smart-pointer-lab/tests/cli.rs"):
+    require((ROOT / "projects/book-d2-smart-pointers" / relative).is_file(),
+            f"Book D2 缺少独立课程工程：{relative}")
+for relative in ("course/BOOK_D2_SMART_POINTERS.md",):
+    require((ROOT / relative).is_file(), f"Book D2 讲义缺失：{relative}")
+
+# Book D3 is a separate OOP and pattern-matching workspace.
+for relative in ("Cargo.toml", "Cargo.lock", "README.md",
+                 "oop-pattern-lab/Cargo.toml", "oop-pattern-lab/src/lib.rs",
+                 "oop-pattern-lab/src/main.rs", "oop-pattern-lab/tests/cli.rs"):
+    require((ROOT / "projects/book-d3-oop-patterns" / relative).is_file(),
+            f"Book D3 缺少独立课程工程：{relative}")
+require((ROOT / "course/BOOK_D3_OOP_PATTERNS.md").is_file(),
+        "Book D3 讲义缺失")
+
+# Book D4 is a separate advanced-features workspace with a local proc-macro crate.
+for relative in ("Cargo.toml", "Cargo.lock", "README.md",
+                 "advanced-lab/Cargo.toml", "advanced-lab/src/lib.rs",
+                 "advanced-lab/src/main.rs", "advanced-lab/tests/cli.rs",
+                 "d4-proc-macros/Cargo.toml", "d4-proc-macros/src/lib.rs"):
+    require((ROOT / "projects/book-d4-advanced-features" / relative).is_file(),
+            f"Book D4 缺少独立课程工程：{relative}")
+require((ROOT / "course/BOOK_D4_ADVANCED_FEATURES.md").is_file(),
+        "Book D4 讲义缺失")
 
 # B4 is a separate locked workspace; both shipped teaching variants are required.
 for variant in ('reference', 'learner'):

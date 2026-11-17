@@ -23,6 +23,10 @@ IGNORED_CHALLENGES = 15
 TEST_RESULT = re.compile(r"test result: (ok|FAILED)\. (\d+) passed; (\d+) failed; (\d+) ignored;")
 CODE_SUFFIXES = {'.rs', '.toml', '.lock', '.py', '.ps1', '.cmd', '.sh', '.html', '.css', '.js', '.yml', '.yaml',
                  '.md', '.tsv', '.txt', '.json', '.kv', '.svg'}
+BOOK_D1_MANIFEST = 'projects/book-d1-cargo/Cargo.toml'
+BOOK_D2_MANIFEST = 'projects/book-d2-smart-pointers/Cargo.toml'
+BOOK_D3_MANIFEST = 'projects/book-d3-oop-patterns/Cargo.toml'
+BOOK_D4_MANIFEST = 'projects/book-d4-advanced-features/Cargo.toml'
 ADVANCED_B4_MANIFEST = 'projects/advanced-b/reference/json-export/Cargo.toml'
 ADVANCED_B_MANIFEST = 'projects/advanced-b/reference/Cargo.toml'
 TEST_LIMITS = {
@@ -35,6 +39,10 @@ TEST_LIMITS = {
     'advanced-b4-doctests-default': (1, 0), 'advanced-b4-doctests-strict': (1, 0),
     'advanced-b4-platform-e2e': (5, 0),
     'advanced-b-doctests-default': (1, 0), 'advanced-b-doctests-strict': (1, 0),
+    'book-d1-tests': (10, 0), 'book-d1-doctests': (1, 0),
+    'book-d2-tests': (26, 0), 'book-d2-doctests': (1, 0),
+    'book-d3-tests': (44, 0), 'book-d3-doctests': (1, 0),
+    'book-d4-tests': (39, 0), 'book-d4-doctests': (2, 0),
 }
 
 
@@ -81,6 +89,82 @@ def advanced_b4_steps(quality: bool = True) -> list[tuple[str, list[str]]]:
     return plan
 
 
+def book_d1_steps(quality: bool = True) -> list[tuple[str, list[str]]]:
+    """Book D1 stays independent of the frozen 17-package root workspace."""
+    common = ['--locked', '--offline', '--manifest-path', BOOK_D1_MANIFEST, '--workspace']
+    steps = []
+    if quality:
+        steps.extend([
+            ('book-d1-format', ['cargo', 'fmt', '--manifest-path', BOOK_D1_MANIFEST,
+                                '--all', '--', '--check']),
+            ('book-d1-clippy', ['cargo', 'clippy'] + common +
+             ['--all-targets', '--', '-D', 'warnings']),
+        ])
+    steps.extend([
+        ('book-d1-tests', ['cargo', 'test'] + common + ['--all-targets']),
+        ('book-d1-doctests', ['cargo', 'test'] + common + ['--doc']),
+        ('book-d1-install-smoke', [sys.executable, 'scripts/book_d1_check.py']),
+    ])
+    if quality:
+        steps.append(('book-d1-package-list', ['cargo', 'package', '--list', '--allow-dirty',
+                      '--manifest-path', 'projects/book-d1-cargo/book-card/Cargo.toml']))
+    return steps
+
+
+def book_d2_steps(quality: bool = True) -> list[tuple[str, list[str]]]:
+    """Book D2 is a separate, dependency-free smart-pointer workspace."""
+    common = ['--locked', '--offline', '--manifest-path', BOOK_D2_MANIFEST, '--workspace']
+    steps = []
+    if quality:
+        steps.extend([
+            ('book-d2-format', ['cargo', 'fmt', '--manifest-path', BOOK_D2_MANIFEST,
+                                '--all', '--', '--check']),
+            ('book-d2-clippy', ['cargo', 'clippy'] + common +
+             ['--all-targets', '--', '-D', 'warnings']),
+        ])
+    steps.extend([
+        ('book-d2-tests', ['cargo', 'test'] + common + ['--all-targets']),
+        ('book-d2-doctests', ['cargo', 'test'] + common + ['--doc']),
+    ])
+    return steps
+
+
+def book_d3_steps(quality: bool = True) -> list[tuple[str, list[str]]]:
+    """Book D3 is an isolated object-model and pattern-matching workspace."""
+    common = ['--locked', '--offline', '--manifest-path', BOOK_D3_MANIFEST, '--workspace']
+    steps = []
+    if quality:
+        steps.extend([
+            ('book-d3-format', ['cargo', 'fmt', '--manifest-path', BOOK_D3_MANIFEST,
+                                '--all', '--', '--check']),
+            ('book-d3-clippy', ['cargo', 'clippy'] + common +
+             ['--all-targets', '--', '-D', 'warnings']),
+        ])
+    steps.extend([
+        ('book-d3-tests', ['cargo', 'test'] + common + ['--all-targets']),
+        ('book-d3-doctests', ['cargo', 'test'] + common + ['--doc']),
+    ])
+    return steps
+
+
+def book_d4_steps(quality: bool = True) -> list[tuple[str, list[str]]]:
+    """Book D4 is an isolated advanced-features workspace with a proc-macro crate."""
+    common = ['--locked', '--offline', '--manifest-path', BOOK_D4_MANIFEST, '--workspace']
+    steps = []
+    if quality:
+        steps.extend([
+            ('book-d4-format', ['cargo', 'fmt', '--manifest-path', BOOK_D4_MANIFEST,
+                                '--all', '--', '--check']),
+            ('book-d4-clippy', ['cargo', 'clippy'] + common +
+             ['--all-targets', '--', '-D', 'warnings']),
+        ])
+    steps.extend([
+        ('book-d4-tests', ['cargo', 'test'] + common + ['--all-targets']),
+        ('book-d4-doctests', ['cargo', 'test'] + common + ['--doc']),
+    ])
+    return steps
+
+
 def source_id(root: Path = ROOT) -> str:
     """Code, build and lesson inputs; excludes generated evidence and build caches."""
     h = hashlib.sha256()
@@ -90,7 +174,7 @@ def source_id(root: Path = ROOT) -> str:
         if not path.is_file() or any(x in {'target', '.git', '__pycache__'} for x in rel.parts):
             continue
         if (rel.parts[0] not in {'apps', 'scripts', '.github', 'course', 'examples'}
-                and rel.parts[:2] not in {('projects', 'advanced-b'), ('projects', 'advanced-c1'), ('projects', 'advanced-c2')} and len(rel.parts) != 1):
+                and rel.parts[:2] not in {('projects', 'advanced-b'), ('projects', 'advanced-c1'), ('projects', 'advanced-c2'), ('projects', 'book-d1-cargo'), ('projects', 'book-d2-smart-pointers'), ('projects', 'book-d3-oop-patterns'), ('projects', 'book-d4-advanced-features')} and len(rel.parts) != 1):
             continue
         if path.suffix in CODE_SUFFIXES or rel.as_posix() == 'VERSION':
             paths.append(path)
@@ -176,6 +260,10 @@ def main() -> int:
         ('release-build',cargo+['build','--locked','--offline','--workspace','--release']),
         *advanced_b_steps(),
         *advanced_b4_steps(),
+        *book_d1_steps(),
+        *book_d2_steps(),
+        *book_d3_steps(),
+        *book_d4_steps(),
         ('studio-smoke',[sys.executable,'scripts/smoke_studio_release.py','--output',str(out/'studio-smoke.json')]),
         ('database-smoke',[sys.executable,'scripts/smoke_state_database.py','--output',str(out/'database-products')]),
         ('minikv-smoke',[sys.executable,'scripts/smoke_minikv.py','--output',str(out/'minikv-products')]),
