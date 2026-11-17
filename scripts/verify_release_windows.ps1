@@ -19,7 +19,7 @@ function Source-Id {
     $Names = [string[]]@(Get-ChildItem -LiteralPath $Root -Recurse -File -Force | ForEach-Object {
         $Rel = $_.FullName.Substring($Root.Length + 1).Replace('\','/')
         if ($Rel -cnotmatch '(^|/)(target|\.git|__pycache__)/' -and
-            (($Rel -notmatch '/') -or ($Rel -cmatch '^(apps|scripts|\.github|course|examples)/') -or ($Rel -cmatch '^projects/(advanced-b|advanced-c1|advanced-c2|book-d1-cargo)/')) -and
+            (($Rel -notmatch '/') -or ($Rel -cmatch '^(apps|scripts|\.github|course|examples)/') -or ($Rel -cmatch '^projects/(advanced-b|advanced-c1|advanced-c2|book-d1-cargo|book-d2-smart-pointers)/')) -and
             (($Rel -ceq 'VERSION') -or ($_.Extension -cin @('.rs','.toml','.lock','.py','.ps1','.cmd','.sh','.html','.css','.js','.yml','.yaml','.md','.tsv','.txt','.json','.kv','.svg')))) { $Rel }
     })
     [Array]::Sort($Names, [StringComparer]::Ordinal)
@@ -146,6 +146,13 @@ try {
     Step 'book-d1-tests' 'cargo' (@('test')+$BookCommon+@('--all-targets')) $true 10 0
     Step 'book-d1-doctests' 'cargo' (@('test')+$BookCommon+@('--doc')) $true 1 0
     Step 'book-d1-package-list' 'cargo' @('package','--list','--allow-dirty','--manifest-path','projects/book-d1-cargo/book-card/Cargo.toml')
+    # Book D2: independent, dependency-free smart-pointer chapter.
+    $SmartManifest = 'projects/book-d2-smart-pointers/Cargo.toml'
+    $SmartCommon = @('--locked','--offline','--manifest-path',$SmartManifest,'--workspace')
+    Step 'book-d2-format' 'cargo' @('fmt','--manifest-path',$SmartManifest,'--all','--','--check')
+    Step 'book-d2-clippy' 'cargo' (@('clippy')+$SmartCommon+@('--all-targets','--','-D','warnings'))
+    Step 'book-d2-tests' 'cargo' (@('test')+$SmartCommon+@('--all-targets')) $true 24 0
+    Step 'book-d2-doctests' 'cargo' (@('test')+$SmartCommon+@('--doc')) $true 1 0
     foreach ($Script in @('windows_beginner_smoke','windows_database_smoke','windows_studio_smoke')) {
         Step $Script 'powershell.exe' @('-NoLogo','-NoProfile','-ExecutionPolicy','Bypass','-File',(Join-Path $PSScriptRoot ($Script+'.ps1')))
     }
