@@ -39,15 +39,19 @@ Worker-pool tests should coordinate with channels, a Condvar or a barrier. Do no
 
 For shutdown, enqueue all worker termination messages before joining any worker. Joining immediately after sending one shutdown message can deadlock if a different worker consumes that message. The pool's Drop contract is: queued jobs drain, each worker receives a shutdown message, then all worker handles are joined.
 
-## 5. State the HTTP teaching subset explicitly
+## 5. Respect TCP stream boundaries
+
+TCP does not preserve application write or packet boundaries. A CRLF terminator may arrive in separate reads, so a buffer fragment must never be treated as a complete HTTP line. The request reader now accumulates one bounded line through LF with `read_until`, applies both per-line and total-header limits, and has a one-byte-at-a-time reader regression test. Keep this test when changing the socket reader; it protects a real stream-framing edge case without depending on packet timing.
+
+## 6. State the HTTP teaching subset explicitly
 
 This lab is a learning implementation, not a replacement for a production HTTP stack. Its supported subset and exclusions must be stated in the lesson and README: HTTP/1.1 GET, bounded headers, no request body, no keep-alive, no TLS and no production-grade backpressure. Parser limits and unsupported inputs need explicit tests so the implementation does not imply broader protocol support than it provides.
 
-## 6. Keep release and MSRV gates in sync
+## 7. Keep release and MSRV gates in sync
 
 Each isolated reference workspace must be registered in both `scripts/release_check.py` and `scripts/msrv_check.py`. The native release gate alone proves behavior on the installed stable compiler; it does not prove the declared minimum Rust version. Add a regression assertion that the workspace appears in both plans whenever a new D-stage workspace is introduced.
 
-## 7. D5 acceptance sequence
+## 8. D5 acceptance sequence
 
 1. Run the D5 isolated Workspace format, Clippy, debug tests, release tests and doctests.
 2. Run the structural gate and tooling tests.
