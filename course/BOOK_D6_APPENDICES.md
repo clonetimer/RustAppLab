@@ -27,6 +27,23 @@
 - Edition 2024 将 `gen` 加入 reserved keywords。
 - 关键字表会随语言版本演进；旧中文版的表不能直接当作 2026 年工具链的完整清单。
 
+### 当前 Edition 的完整关键词清单
+
+下面按当前 Rust Reference 的词法分类列出完整集合。Edition 2015 的解析规则有历史差异；跨 Edition 迁移时仍要查看 Edition Guide，不能把当前清单倒推到旧 Edition。
+
+| 类别 | 完整清单 |
+|---|---|
+| Strict | `_`, `as`, `async`, `await`, `break`, `const`, `continue`, `crate`, `dyn`, `else`, `enum`, `extern`, `false`, `fn`, `for`, `if`, `impl`, `in`, `let`, `loop`, `match`, `mod`, `move`, `mut`, `pub`, `ref`, `return`, `self`, `Self`, `static`, `struct`, `super`, `trait`, `true`, `type`, `unsafe`, `use`, `where`, `while` |
+| Reserved | `abstract`, `become`, `box`, `do`, `final`, `gen`, `macro`, `override`, `priv`, `try`, `typeof`, `unsized`, `virtual`, `yield` |
+| Weak | `'static`, `macro_rules`, `raw`, `safe`, `union` |
+
+**Edition 注意事项：**
+- `async`、`await`、`dyn` 在 Edition 2018 成为 strict keywords；Edition 2015 对 `dyn` 有上下文相关的旧规则。
+- `try` 在 Edition 2018 加入 reserved keywords。
+- `gen` 在 Edition 2024 加入 reserved keywords。
+- `safe` 只在外部块的函数/静态项声明中具有弱关键字语义；`raw` 只在 raw borrow 等特定语法中具有该语义。
+- `'static` 是生命周期标记，不可作为普通生命周期参数名；`union` 只在 union 声明上下文中是关键字。
+
 ### Raw identifiers
 
 当外部 API 或旧 Edition crate 暴露了一个与新关键字同名的函数时，可以使用原始标识符：
@@ -77,6 +94,123 @@ assert!(r#match("learn rust", "rust"));
 | `..` | `0..10`：右端排除的范围 | 结构体更新、模式中也可能出现 |
 | `::` | `module::item`：路径分隔 | `::<T>`：显式指定泛型参数（turbofish） |
 | `?` | `read_config()?`：错误传播 | 宏 matcher 和 trait bound 中也有其他语法用途 |
+
+### 其他常见符号速查
+
+| 符号 | 主要用途 |
+|---|---|
+| `::` | 路径分隔、关联项访问、显式泛型参数路径 |
+| `->` | 函数/闭包返回类型、匹配 arm 的返回类型语法 |
+| `=>` | `match` 分支分隔符、宏规则转写符 |
+| `@` | 模式绑定，同时匹配整个值与内部结构 |
+| `?` | `Option`/`Result` 错误或空值传播 |
+| `#` / `#!` | 外部属性 / crate 或模块内部属性 |
+| `# D6-A · Rust Book 附录 A–G 参考与实践
+
+**基准版本**：本课对照 [rust.bootcss.com 中文版](https://rust.bootcss.com/)，其书稿基于 Rust 1.37.0 / Edition 2018。  
+**当前工程基线**：Rust AppLab 采用 Edition 2021；D6 参考实验最低 Rust 1.74。  
+**当前语法核查**：关键字与语法以 [Rust Reference](https://doc.rust-lang.org/reference/) 和当前 [官方 Rust Book](https://doc.rust-lang.org/book/) 为准。
+
+附录是参考资料，不应把它们变成需要死记硬背的词表。本课的目标是：遇到一个语法符号、派生 trait、开发工具或 Edition 差异时，能够判断它的语义、找到权威资料，并用最小实验验证。
+
+配套 [D6 Appendix Reference Lab](../projects/book-d6-appendices/README.md) 是独立 Workspace，不加入根 Workspace，也不增加第 18 个学员作品。
+
+---
+
+## A · 关键字（Keywords）
+
+关键字在特定语法位置具有语言定义的含义，不能像普通标识符一样随意命名。当前 Rust Reference 将关键字分为三类：
+
+| 类别 | 含义 | 代表项 |
+|---|---|---|
+| Strict keywords | 在语言规定的语法位置有固定含义，不能作为普通标识符 | `fn`、`let`、`match`、`struct`、`trait`、`async`、`await` |
+| Reserved keywords | 暂未普遍启用，但为未来语法保留 | `abstract`、`become`、`box`、`gen`、`try`、`yield` |
+| Weak keywords | 只在特定语法上下文具有关键字含义 | `union`、`macro_rules`、`raw`、`safe`、`'static` |
+
+### 版本差异不能忽略
+
+- Edition 2018 将 `async`、`await`、`dyn` 纳入 strict keywords。
+- Edition 2018 将 `try` 加入 reserved keywords。
+- Edition 2024 将 `gen` 加入 reserved keywords。
+- 关键字表会随语言版本演进；旧中文版的表不能直接当作 2026 年工具链的完整清单。
+
+### 当前 Edition 的完整关键词清单
+
+下面按当前 Rust Reference 的词法分类列出完整集合。Edition 2015 的解析规则有历史差异；跨 Edition 迁移时仍要查看 Edition Guide，不能把当前清单倒推到旧 Edition。
+
+| 类别 | 完整清单 |
+|---|---|
+| Strict | `_`, `as`, `async`, `await`, `break`, `const`, `continue`, `crate`, `dyn`, `else`, `enum`, `extern`, `false`, `fn`, `for`, `if`, `impl`, `in`, `let`, `loop`, `match`, `mod`, `move`, `mut`, `pub`, `ref`, `return`, `self`, `Self`, `static`, `struct`, `super`, `trait`, `true`, `type`, `unsafe`, `use`, `where`, `while` |
+| Reserved | `abstract`, `become`, `box`, `do`, `final`, `gen`, `macro`, `override`, `priv`, `try`, `typeof`, `unsized`, `virtual`, `yield` |
+| Weak | `'static`, `macro_rules`, `raw`, `safe`, `union` |
+
+**Edition 注意事项：**
+- `async`、`await`、`dyn` 在 Edition 2018 成为 strict keywords；Edition 2015 对 `dyn` 有上下文相关的旧规则。
+- `try` 在 Edition 2018 加入 reserved keywords。
+- `gen` 在 Edition 2024 加入 reserved keywords。
+- `safe` 只在外部块的函数/静态项声明中具有弱关键字语义；`raw` 只在 raw borrow 等特定语法中具有该语义。
+- `'static` 是生命周期标记，不可作为普通生命周期参数名；`union` 只在 union 声明上下文中是关键字。
+
+### Raw identifiers
+
+当外部 API 或旧 Edition crate 暴露了一个与新关键字同名的函数时，可以使用原始标识符：
+
+```rust
+fn r#match(text: &str, needle: &str) -> bool {
+    text.contains(needle)
+}
+
+assert!(r#match("learn rust", "rust"));
+```
+
+`r#` 是源码语法前缀，不属于标识符本身。它不能用于所有特殊路径关键字；例如 `r#self`、`r#Self`、`r#super`、`r#crate` 和 `r#_` 都不是合法替代写法。
+
+**动手实验**：运行 D6 lab 的 `raw_identifier_allows_a_keyword_as_a_function_name` 测试；再阅读源码中的两个 `compile_fail` doctest，观察哪些特殊名称不能被 raw identifier 转义。
+
+参考：[中文附录 A](https://rust.bootcss.com/appendix-01-keywords.html) · [Rust Reference: Keywords](https://doc.rust-lang.org/reference/keywords.html) · [Rust Reference: Identifiers](https://doc.rust-lang.org/reference/identifiers.html)
+
+---
+
+## B · 运算符与符号（Operators and Symbols）
+
+同一个符号可能在不同语境承担不同职责。阅读代码时，先判断它处于表达式、类型、模式、路径、宏还是属性上下文，再解释语义。
+
+### 常见运算符
+
+| 类别 | 符号 | 主要语义 | 可重载 trait（适用时） |
+|---|---|---|---|
+| 算术 | `+`、`-`、`*`、`/`、`%` | 加、减、乘、除、余数 | `Add`、`Sub`、`Mul`、`Div`、`Rem` |
+| 比较 | `==`、`!=` | 相等/不等 | `PartialEq` |
+| 比较 | `<`、`<=`、`>`、`>=` | 次序比较 | `PartialOrd` |
+| 逻辑 | `!`、`&&`、`||` | 逻辑非、短路与、短路或 | `Not` 适用于一元 `!` |
+| 位运算 | `&`、`|`、`^`、`<<`、`>>` | 按位与/或/异或、移位 | `BitAnd`、`BitOr`、`BitXor`、`Shl`、`Shr` |
+| 复合赋值 | `+=`、`-=`、`*=` 等 | 运算并写回左操作数 | 对应的 `*Assign` trait |
+| 借用/解引用 | `&`、`&mut`、`*` | 创建引用、可变引用、解引用 | 不是普通算术重载 |
+| 类型转换 | `as` | 显式类型转换 | 语言语法 |
+| 错误传播 | `?` | 成功时取出值，失败时提前返回 | 由 `Try` 相关语言机制支持；日常代码直接使用即可 |
+| 范围 | `..`、`..=` | 右端排除/包含范围 | 构造 Range 类型 |
+
+### 高频“同符号、不同语义”
+
+| 符号 | 语境一 | 语境二 |
+|---|---|---|
+| `&` | `&value`：借用 | `a & b`：按位与 |
+| `*` | `*reference`：解引用 | `a * b`：乘法 |
+| `!` | `!condition`：逻辑非 | `macro!(...)`：宏调用标记 |
+| `|` | `left | right`：按位或 | `|x| x + 1`：闭包参数分隔符；模式中也表示或模式 |
+| `..` | `0..10`：右端排除的范围 | 结构体更新、模式中也可能出现 |
+| `::` | `module::item`：路径分隔 | `::<T>`：显式指定泛型参数（turbofish） |
+| `?` | `read_config()?`：错误传播 | 宏 matcher 和 trait bound 中也有其他语法用途 |
+
+ | 声明宏中的元变量与重复匹配 |
+| `_` | 忽略值、类型推断占位、模式通配符 |
+| `.` | 字段访问、方法调用、元组索引 |
+| `()` | 分组、函数调用、元组与 unit 类型 |
+| `[]` | 数组/切片类型、索引、数组表达式 |
+| `{}` | 代码块、结构体表达式、宏分组 |
+| `,` / `;` | 项目、参数、字段、语句分隔；二者不能任意互换 |
+
+同一字符在不同语法位置可能完全不同。例如 `|x| x + 1` 中的竖线是闭包参数边界；`a | b` 是位或；`Some(x) | None` 是 or-pattern。判断符号含义时先确定语法上下文。
 
 ### 运算符优先级
 
