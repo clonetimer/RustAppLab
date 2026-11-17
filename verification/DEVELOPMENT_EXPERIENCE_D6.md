@@ -35,6 +35,12 @@ Loop and iterator versions receive the same slice and repeat count, and the test
 
 The buffered line-count example uses `BufRead::lines` with `try_fold`. Each line read can fail, and `?` propagates the error. Do not convert an I/O error into an empty line or silently skip it unless the application contract explicitly permits that behavior.
 
+## 7. Keep Appendix keyword and symbol references edition-aware
+
+D6-A now includes the complete current Strict/Reserved/Weak keyword sets and explains the Edition 2018/2024 changes. The older Chinese book is retained as the audit chapter baseline, while current token classification is linked to the Rust Reference.
+
+**Rule:** never copy a historical keyword table forward without checking the current Rust Reference and Edition Guide. Distinguish current syntax from historical Edition behavior.
+
 ## 8. Treat documentation tables and generated lesson text as tested deliverables
 
 During D6-A verification, a symbol-table insertion left a duplicated document body and omitted the macro metavariable symbol `# RustAppLab · D6 开发经验记录
@@ -84,8 +90,3 @@ D6-B passed the source/structural/tooling checks and Linux/Rust 1.74 compilation
 
 **Rule:** every isolated workspace must be checked with its exact manifest command. A root-workspace `cargo fmt --all -- --check` does not include reference workspaces excluded from the root workspace. Formatting is a real gate, not a cosmetic afterthought.
 
-## 7. Keep Appendix keyword and symbol references edition-aware
-
-D6-A now includes the complete current Strict/Reserved/Weak keyword sets and explains the Edition 2018/2024 changes. The older Chinese book is retained as the audit chapter baseline, while current token classification is linked to the Rust Reference.
-
-**Rule:** never copy a historical keyword table forward without checking the current Rust Reference and Edition Guide. Distinguish current syntax from historical Edition behavior.
