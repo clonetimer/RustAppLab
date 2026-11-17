@@ -4,29 +4,29 @@
 - **源码基准**：`clonetimer/RustAppLab` main `fed4a2d37a72de88dfb353474544efde9bdd537a`（2026-11-17 审计时）。
 - **证据规则**：表格中“已有实作”只表示可以定位到相关教学或可执行实例，**不表示**该小节原书所有示例、知识点、学员练习与测试均已完整覆盖；“部分”表示只有关联知识或实现；“缺口”明确有需要补的专项内容；“开发中”只证明开发分支已有材料、仍须 CI。
 - **验收判据**：每项最终需要有教学目标、版本适配、学员实验或合理的知识索引、可重现检查及用户体验验证。官方原书代码无需照抄，允许使用现有真实作品替换；不能用出现某个关键词冒充教学覆盖。
-- **当前统计**：共 **81** 项审计条目，其中 已有实作 77、部分 3、缺口 0、开发中 0、资料索引 1。D1–D4 随 PR #6 合并；D5 与 D6-A 随 PR #8 合并，Run 197 的 17 个 Jobs 全部成功（含 Linux/Windows 原生、Rust 1.74 MSRV、源码/学员包与交付验证）。D6-B 的 12 个基础知识缺口已由独立参考实验补齐；PR #9 的 Run 204 全部 17 个验收 Jobs 成功。这是条目盘点数，**不是**知识点覆盖率或学习达标率。
+- **当前统计**：共 **81** 项审计条目，其中 已有实作 77、部分 3、缺口 0、开发中 0、资料索引 1。D1–D4 随 PR #6 合并；D5 与 D6-A 随 PR #8 合并，Run 197 的 17 个 Jobs 全部成功（含 Linux/Windows 原生、Rust 1.74 MSRV、源码/学员包与交付验证）。D6-B 的 12 个基础知识缺口已由独立参考实验补齐；PR #9 的 Run 215 共 17 个验收/候选组 Jobs 成功，2 个仅在 main push 执行的发布 Jobs 按 PR 事件规则跳过。这是条目盘点数，**不是**知识点覆盖率或学习达标率。
 - **推进路线**：D1 Cargo（14.1–14.5）→ D2 智能指针（15.1–15.6）→ D3 对象模型/模式（17–18）→ D4 Unsafe/高级 Trait/宏（19）→ D5 原生多线程 Web Server（20）→ D6-A 附录 A–G → D6-B 基础知识残余缺口；随每阶段修订本表。
 
 | 原书小节 | 主题 | 审计状态 | 现有代码/讲义证据（仓库相对路径） | 后续核查或补充 |
 |---|---|---|---|---|
 | 1.1 | 安装 Rust 与工具链 | 已有实作 | `README_START_HERE.md` | 系统工具安装由用户完成；无需重复开发 |
-| 1.2 | Hello World | 已有实作 | `course/BOOK_D6_FOUNDATIONS.md` | 最小 crate、main、println 与 Cargo 运行实验；代码见 `projects/book-d6-foundations/foundation-lab/src/main.rs`；Run 204 Linux/Windows、Rust 1.74 MSRV、Debug/Release/Doctest PASS |
+| 1.2 | Hello World | 已有实作 | `course/BOOK_D6_FOUNDATIONS.md` | 最小 crate、main、println 与 Cargo 运行实验；代码见 `projects/book-d6-foundations/foundation-lab/src/main.rs`；Run 215 Linux/Windows、Rust 1.74 MSRV、Debug/Release/Doctest PASS |
 | 1.3 | Hello Cargo | 已有实作 | `course/BEGINNER_WINDOWS_GUIDE.md` | 补充 Cargo 术语复习即可 |
-| 2 | 猜数字游戏教程 | 已有实作 | `course/BOOK_D6_FOUNDATIONS.md` | 输入、解析、比较、循环、无效输入与退出；可运行 guess 子命令；Run 204 Linux/Windows、Rust 1.74 MSRV、Debug/Release/Doctest PASS |
+| 2 | 猜数字游戏教程 | 已有实作 | `course/BOOK_D6_FOUNDATIONS.md` | 输入、解析、比较、循环、无效输入与退出；可运行 guess 子命令；Run 215 Linux/Windows、Rust 1.74 MSRV、Debug/Release/Doctest PASS |
 | 3.1 | 变量与可变性 | 已有实作 | `course/FOUNDATION_PATH.md` | 已有任务卡 |
 | 3.2 | 数据类型 | 已有实作 | `course/studio/unitlab.md` | 需补数组/元组专题验证 |
 | 3.3 | 函数 | 已有实作 | `course/studio/unitlab.md` | 现有公开合同测试 |
-| 3.4 | 注释 | 已有实作 | `course/BOOK_D6_FOUNDATIONS.md` | 行/块注释、项文档、crate 文档与 doctest；Run 204 Linux/Windows、Rust 1.74 MSRV、Debug/Release/Doctest PASS |
+| 3.4 | 注释 | 已有实作 | `course/BOOK_D6_FOUNDATIONS.md` | 行/块注释、项文档、crate 文档与 doctest；Run 215 Linux/Windows、Rust 1.74 MSRV、Debug/Release/Doctest PASS |
 | 3.5 | 控制流 | 已有实作 | `course/studio/quizdeck.md` | 继续复用分支与循环 |
 | 4.1 | 所有权 | 已有实作 | `course/studio/textscope.md` | 含移动错误实验 |
 | 4.2 | 引用与借用 | 已有实作 | `course/RUST_ERROR_LABS.md` | 含借用编译错误实验 |
 | 4.3 | 切片 | 已有实作 | `course/studio/textscope.md` | UTF-8 与字符串切片 |
 | 5.1 | 定义结构体 | 已有实作 | `course/studio/quizdeck.md` | 业务数据结构 |
-| 5.2 | 结构体示例程序 | 已有实作 | `course/BOOK_D6_FOUNDATIONS.md` | Rectangle 结构体、字段、构造与面积；Run 204 Linux/Windows、Rust 1.74 MSRV、Debug/Release/Doctest PASS |
-| 5.3 | 方法语法 | 已有实作 | `course/BOOK_D6_FOUNDATIONS.md` | impl、self、关联函数与方法调用；Run 204 Linux/Windows、Rust 1.74 MSRV、Debug/Release/Doctest PASS |
+| 5.2 | 结构体示例程序 | 已有实作 | `course/BOOK_D6_FOUNDATIONS.md` | Rectangle 结构体、字段、构造与面积；Run 215 Linux/Windows、Rust 1.74 MSRV、Debug/Release/Doctest PASS |
+| 5.3 | 方法语法 | 已有实作 | `course/BOOK_D6_FOUNDATIONS.md` | impl、self、关联函数与方法调用；Run 215 Linux/Windows、Rust 1.74 MSRV、Debug/Release/Doctest PASS |
 | 6.1 | 枚举 | 已有实作 | `course/studio/unitlab.md` | Unit enum |
 | 6.2 | match | 已有实作 | `course/studio/unitlab.md` | 分支转换 |
-| 6.3 | if let | 已有实作 | `course/BOOK_D6_FOUNDATIONS.md` | Option 分支的 if let 与 match 对照；Run 204 Linux/Windows、Rust 1.74 MSRV、Debug/Release/Doctest PASS |
+| 6.3 | if let | 已有实作 | `course/BOOK_D6_FOUNDATIONS.md` | Option 分支的 if let 与 match 对照；Run 215 Linux/Windows、Rust 1.74 MSRV、Debug/Release/Doctest PASS |
 | 7.1 | 包和 crate | 已有实作 | `course/ADVANCED_B.md` | B1–B3 多 crate 工程 |
 | 7.2 | 模块作用域与私有性 | 已有实作 | `course/ADVANCED_B.md` | 业务库与应用入口 |
 | 7.3 | 路径 | 已有实作 | `course/ADVANCED_B.md` | 路径依赖 |
@@ -34,10 +34,10 @@
 | 7.5 | 拆分模块文件 | 已有实作 | `course/ADVANCED_B.md` | 多模块/多 crate |
 | 8.1 | Vector | 已有实作 | `course/studio/quizdeck.md` | 题库列表 |
 | 8.2 | String | 已有实作 | `course/studio/textscope.md` | UTF-8 与所有权 |
-| 8.3 | HashMap | 已有实作 | `course/BOOK_D6_FOUNDATIONS.md` | HashMap、Entry API、词频统计与确定性输出；Run 204 Linux/Windows、Rust 1.74 MSRV、Debug/Release/Doctest PASS |
-| 9.1 | panic! | 已有实作 | `course/BOOK_D6_FOUNDATIONS.md` | panic 与程序不变量边界，catch_unwind 仅作行为实验；Run 204 Linux/Windows、Rust 1.74 MSRV、Debug/Release/Doctest PASS |
+| 8.3 | HashMap | 已有实作 | `course/BOOK_D6_FOUNDATIONS.md` | HashMap、Entry API、词频统计与确定性输出；Run 215 Linux/Windows、Rust 1.74 MSRV、Debug/Release/Doctest PASS |
+| 9.1 | panic! | 已有实作 | `course/BOOK_D6_FOUNDATIONS.md` | panic 与程序不变量边界，catch_unwind 仅作行为实验；Run 215 Linux/Windows、Rust 1.74 MSRV、Debug/Release/Doctest PASS |
 | 9.2 | Result | 已有实作 | `course/studio/ledgerlite.md` | 错误传播及文件失败 |
-| 9.3 | panic 还是返回错误 | 已有实作 | `course/BOOK_D6_FOUNDATIONS.md` | 外部输入 Result 与内部不变量 panic 的决策练习；Run 204 Linux/Windows、Rust 1.74 MSRV、Debug/Release/Doctest PASS |
+| 9.3 | panic 还是返回错误 | 已有实作 | `course/BOOK_D6_FOUNDATIONS.md` | 外部输入 Result 与内部不变量 panic 的决策练习；Run 215 Linux/Windows、Rust 1.74 MSRV、Debug/Release/Doctest PASS |
 | 10.1 | 泛型 | 已有实作 | `course/studio/badgeforge.md` | 泛型渲染 |
 | 10.2 | Trait | 已有实作 | `course/ADVANCED_A.md` | Renderer 与 trait object |
 | 10.3 | 生命周期 | 已有实作 | `course/ADVANCED_A.md` | 签名、借用作用域、compile_fail |
@@ -48,12 +48,12 @@
 | 12.2 | 读取文件 | 已有实作 | `course/02_filesystem.md` | 文件扫描与读取 |
 | 12.3 | 模块化与错误处理 | 已有实作 | `course/ADVANCED_B.md` | 业务库抽离 |
 | 12.4 | 测试驱动开发 | 已有实作 | `course/INDEPENDENT_PATH.md` | 先写公开行为合同 |
-| 12.5 | 环境变量 | 已有实作 | `course/BOOK_D6_FOUNDATIONS.md` | 环境变量优先级、OsString 与可注入配置路径测试；Run 204 Linux/Windows、Rust 1.74 MSRV、Debug/Release/Doctest PASS |
+| 12.5 | 环境变量 | 已有实作 | `course/BOOK_D6_FOUNDATIONS.md` | 环境变量优先级、OsString 与可注入配置路径测试；Run 215 Linux/Windows、Rust 1.74 MSRV、Debug/Release/Doctest PASS |
 | 12.6 | 标准错误输出 | 已有实作 | `course/03_error_handling.md` | 非零退出码、stderr |
 | 13.1 | 闭包 | 已有实作 | `course/ADVANCED_A.md` | Fn / FnMut / FnOnce |
 | 13.2 | 迭代器 | 已有实作 | `course/studio/textscope.md` | 过滤、聚合与排序 |
-| 13.3 | 用迭代器改进 I/O 项目 | 已有实作 | `course/BOOK_D6_FOUNDATIONS.md` | BufRead、lines、try_fold 与 I/O 错误传播；Run 204 Linux/Windows、Rust 1.74 MSRV、Debug/Release/Doctest PASS |
-| 13.4 | 循环与迭代器性能比较 | 已有实作 | `course/BOOK_D6_FOUNDATIONS.md` | 同输入等价实现、black_box、release 模式计时与测量纪律；Run 204 Linux/Windows、Rust 1.74 MSRV、Debug/Release/Doctest PASS |
+| 13.3 | 用迭代器改进 I/O 项目 | 已有实作 | `course/BOOK_D6_FOUNDATIONS.md` | BufRead、lines、try_fold 与 I/O 错误传播；Run 215 Linux/Windows、Rust 1.74 MSRV、Debug/Release/Doctest PASS |
+| 13.4 | 循环与迭代器性能比较 | 已有实作 | `course/BOOK_D6_FOUNDATIONS.md` | 同输入等价实现、black_box、release 模式计时与测量纪律；Run 215 Linux/Windows、Rust 1.74 MSRV、Debug/Release/Doctest PASS |
 | 14.1 | Profile 构建配置 | 已有实作 | `course/BOOK_D1_CARGO.md` | D1 已添加 profile 实验；独立 Workspace 已随 PR #6 合并，D0–D4 验收矩阵 17/17 CI Jobs PASS |
 | 14.2 | crate 打包与发布 | 已有实作 | `course/BOOK_D1_CARGO.md` | 仅安全打包检查，不做实际 registry 上传；独立 Workspace 已随 PR #6 合并，D0–D4 验收矩阵 17/17 CI Jobs PASS |
 | 14.3 | Cargo Workspace | 已有实作 | `projects/book-d1-cargo/Cargo.toml` | 复用原 B 课程，再加 D1 独立工作区；独立 Workspace 已随 PR #6 合并，D0–D4 验收矩阵 17/17 CI Jobs PASS |
@@ -83,8 +83,8 @@
 | 20.1 | 单线程 Web Server | 已有实作 | `projects/book-d5-webserver/webserver-lab/src/lib.rs` | 原生 TcpListener/TcpStream、HTTP 请求解析与有限连接基线；Run 197 Linux/Windows、Debug/Release、Doctest PASS |
 | 20.2 | 多线程 Web Server | 已有实作 | `projects/book-d5-webserver/webserver-lab/src/lib.rs` | 固定大小 Worker、MPSC Job 队列与 Arc/Mutex 接收端；Run 197 Linux/Windows、Debug/Release、Doctest PASS |
 | 20.3 | 优雅关闭 | 已有实作 | `projects/book-d5-webserver/webserver-lab/src/lib.rs` | shutdown channel、Drop 发送全部终止消息后 join、排空已提交任务；Run 197 Linux/Windows、Debug/Release、Doctest PASS |
-| A | 关键字 | 已有实作 | `course/BOOK_D6_APPENDICES.md` | 当前 Strict/Reserved/Weak 完整清单、raw identifiers 与 Edition 差异；11 项测试、2 项 compile-fail 文档测试，Run 197 PASS |
-| B | 运算符与符号 | 已有实作 | `course/BOOK_D6_APPENDICES.md` | 常见运算符、符号语境、优先级与 Add 重载实验；Run 197 Linux/Windows/MSRV PASS |
+| A | 关键字 | 已有实作 | `course/BOOK_D6_APPENDICES.md` | 当前 Strict/Reserved/Weak 完整清单、raw identifiers 与 Edition 差异；精确表格回归与 2 项 compile-fail 文档测试，Run 215 PASS |
+| B | 运算符与符号 | 已有实作 | `course/BOOK_D6_APPENDICES.md` | 常见运算符、符号语境、完整优先级与 Add 重载实验；位运算层级及比较/范围约束回归，Run 215 PASS |
 | C | 可派生 Trait | 已有实作 | `course/BOOK_D6_APPENDICES.md` | 九种标准 derive trait 的能力、约束、Debug/Display 区分与 compile-fail 实验；Run 197 Linux/Windows/MSRV PASS |
 | D | 实用开发工具 | 部分 | `course/BOOK_D6_APPENDICES.md` | rustfmt、cargo fix/rustfix、Clippy、rust-analyzer、rustdoc 的现代用法与复现命令；工具链使用需结合实际工程进一步练习 |
 | E | Edition 与版本 | 部分 | `course/BOOK_D6_APPENDICES.md` | 2015/2018/2021/2024 对照、MSRV 边界与迁移流程；独立迁移实操仍需学员完成 |
@@ -108,4 +108,4 @@
 | D4 | 第 19 章 5 节安全隔离实验 | D4-A2 17/17 CI Jobs PASS，PR #6 已合并 |
 | D5 | 第 20 章 3 节线程池与关闭 | PR #8 已合并；Run 197 的 Linux/Windows/MSRV、交付与浏览器矩阵 17 Jobs 全部成功 |
 | D6-A | 附录 A–G | A–C 已有可执行实验并通过 Run 197；D/E/G 为参考讲义，F 为资料索引 |
-| D6-B | 12 项基础知识残余缺口 | PR #9；Run 204 的 Linux/Windows、Rust 1.74、学员包与候选包验证全部 PASS |
+| D6-B | 12 项基础知识残余缺口 | PR #9；Run 215 的 Linux/Windows、Rust 1.74、学员包与候选包验证全部 PASS |
