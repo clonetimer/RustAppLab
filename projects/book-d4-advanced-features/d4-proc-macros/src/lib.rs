@@ -17,7 +17,8 @@ fn named_type(input: &TokenStream) -> Result<String, &'static str> {
                 let Some(TokenTree::Ident(name)) = tokens.next() else {
                     return Err("D4 macros require a named struct or enum");
                 };
-                if matches!(tokens.next(), Some(TokenTree::Punct(punct)) if punct.as_char() == '<') {
+                if matches!(tokens.next(), Some(TokenTree::Punct(punct)) if punct.as_char() == '<')
+                {
                     return Err("D4 teaching macros currently support non-generic types only");
                 }
                 return Ok(name.to_string());
@@ -68,6 +69,5 @@ pub fn audit_tag(attribute: TokenStream, item: TokenStream) -> TokenStream {
 #[proc_macro]
 pub fn token_count(input: TokenStream) -> TokenStream {
     let count = input.into_iter().count();
-    TokenStream::from_str(&format!("{count}usize"))
-        .expect("integer literal expansion must parse")
+    TokenStream::from_str(&format!("{count}usize")).expect("integer literal expansion must parse")
 }

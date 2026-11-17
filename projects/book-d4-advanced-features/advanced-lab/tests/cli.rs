@@ -63,5 +63,7 @@ fn unknown_topic_fails_without_fake_stdout() {
     let output = run("unknown");
     assert!(!output.status.success());
     assert!(output.stdout.is_empty());
-    assert!(String::from_utf8(output.stderr).unwrap().contains("主题只能是"));
+    assert!(String::from_utf8(output.stderr)
+        .unwrap()
+        .contains("主题只能是"));
 }

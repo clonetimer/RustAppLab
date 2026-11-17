@@ -574,10 +574,7 @@ mod tests {
 
     #[test]
     fn enum_variant_constructor_works_as_a_function_pointer() {
-        assert_eq!(
-            statuses(&[1, 2]),
-            vec![Status::Value(1), Status::Value(2)]
-        );
+        assert_eq!(statuses(&[1, 2]), vec![Status::Value(1), Status::Value(2)]);
     }
 
     #[test]
