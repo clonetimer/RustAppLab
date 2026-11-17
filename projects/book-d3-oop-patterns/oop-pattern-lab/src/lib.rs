@@ -116,6 +116,40 @@ pub fn require_username(name: Option<&str>) -> Result<String, &'static str> {
     Ok(trimmed.to_owned())
 }
 
+/// if let accepts a refutable pattern and keeps the success path concise.
+pub fn extract_optional(value: Option<i32>) -> Option<i32> {
+    if let Some(number) = value {
+        Some(number)
+    } else {
+        None
+    }
+}
+
+/// Slice patterns can bind the first/last item and ignore the middle with `..`.
+pub fn describe_slice(values: &[i32]) -> String {
+    match values {
+        [] => "empty".into(),
+        [only] => format!("single:{only}"),
+        [first, .., last] => format!("ends:{first},{last}"),
+    }
+}
+
+/// Match ergonomics bind a reference when matching through &Option<T>.
+pub fn describe_reference(value: &Option<i32>) -> String {
+    match value {
+        Some(number) => format!("some:{number}"),
+        None => "none".into(),
+    }
+}
+
+/// The ref pattern borrows the payload instead of moving it out of the enum.
+pub fn describe_ref_pattern(value: Option<String>) -> String {
+    match value {
+        Some(ref text) => format!("text:{text}"),
+        None => "none".into(),
+    }
+}
+
 /// 17.1: private state protects an invariant; callers use methods, not fields.
 #[derive(Debug, Default, PartialEq)]
 pub struct AveragedCollection {
@@ -467,6 +501,31 @@ mod tests {
     fn let_else_handles_missing_and_blank_values() {
         assert_eq!(require_username(None), Err("username is required"));
         assert_eq!(require_username(Some("  ")), Err("username cannot be empty"));
+    }
+
+    #[test]
+    fn if_let_accepts_a_refutable_some_pattern() {
+        assert_eq!(extract_optional(Some(7)), Some(7));
+        assert_eq!(extract_optional(None), None);
+    }
+
+    #[test]
+    fn slice_pattern_handles_empty_single_and_multiple_values() {
+        assert_eq!(describe_slice(&[]), "empty");
+        assert_eq!(describe_slice(&[4]), "single:4");
+        assert_eq!(describe_slice(&[4, 5, 6]), "ends:4,6");
+    }
+
+    #[test]
+    fn match_ergonomics_bind_reference_payloads() {
+        assert_eq!(describe_reference(&Some(12)), "some:12");
+        assert_eq!(describe_reference(&None), "none");
+    }
+
+    #[test]
+    fn ref_pattern_borrows_enum_payload() {
+        assert_eq!(describe_ref_pattern(Some("Rust".into())), "text:Rust");
+        assert_eq!(describe_ref_pattern(None), "none");
     }
 
     #[test]
