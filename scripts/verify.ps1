@@ -126,4 +126,17 @@ if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 & cargo test @ServerCommon --doc
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+Write-Host 'Rust Book D6 appendix reference workspace (offline)'
+$AppendixManifest = 'projects/book-d6-appendices/Cargo.toml'
+$AppendixCommon = @('--locked','--offline','--manifest-path',$AppendixManifest,'--workspace')
+& cargo fmt --manifest-path $AppendixManifest --all -- --check
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+& cargo clippy @AppendixCommon --all-targets -- -D warnings
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+& cargo test @AppendixCommon --all-targets
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+& cargo test @AppendixCommon --all-targets --release
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+& cargo test @AppendixCommon --doc
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 Write-Host 'Completed. Manual application and cross-platform verification are still required.'
