@@ -226,6 +226,37 @@ class BookCoverageTests(unittest.TestCase):
         self.assertEqual(len(re.findall(r"#\[test\]", implementation)), 11)
         self.assertEqual(len(re.findall(r"compile_fail", implementation)), 2)
 
+    def test_d6_foundations_workspace_covers_remaining_chapter_gaps(self):
+        base = ROOT / "projects/book-d6-foundations"
+        for relative in ("Cargo.toml", "Cargo.lock", "README.md",
+                         "foundation-lab/Cargo.toml", "foundation-lab/src/lib.rs",
+                         "foundation-lab/src/main.rs", "foundation-lab/tests/cli.rs"):
+            with self.subTest(path=relative):
+                self.assertTrue((base / relative).is_file())
+        manifest = (base / "foundation-lab/Cargo.toml").read_text(encoding="utf-8")
+        self.assertIn('edition = "2021"', manifest)
+        self.assertIn('rust-version = "1.74"', manifest)
+        self.assertIn("publish = false", manifest)
+        self.assertNotIn("[dependencies]", manifest)
+        root_workspace = (ROOT / "Cargo.toml").read_text(encoding="utf-8")
+        self.assertNotIn('"projects/book-d6-foundations"', root_workspace)
+
+        lesson = (ROOT / "course/BOOK_D6_FOUNDATIONS.md").read_text(encoding="utf-8")
+        implementation = (base / "foundation-lab/src/lib.rs").read_text(encoding="utf-8")
+        for topic in ("1.2", "猜数字", "3.4", "5.2", "5.3", "6.3", "8.3",
+                      "9.1", "9.3", "12.5", "13.3", "13.4"):
+            with self.subTest(topic=topic):
+                self.assertIn(topic, lesson)
+        for contract in ("pub struct Rectangle", "pub fn compare_guess",
+                         "pub fn word_frequencies", "pub fn parse_non_empty",
+                         "pub fn config_dir_from", "pub fn count_non_empty_lines",
+                         "pub fn sum_with_loop", "pub fn sum_with_iterator",
+                         "pub fn benchmark_sums"):
+            with self.subTest(contract=contract):
+                self.assertIn(contract, implementation)
+        self.assertEqual(len(re.findall(r"#\[test\]", implementation)), 13)
+        self.assertEqual(len(re.findall(r"compile_fail", implementation)), 1)
+
     def test_d6_is_registered_in_release_msrv_and_learner_package(self):
         release = (ROOT / "scripts/release_check.py").read_text(encoding="utf-8")
         msrv = (ROOT / "scripts/msrv_check.py").read_text(encoding="utf-8")
@@ -238,6 +269,12 @@ class BookCoverageTests(unittest.TestCase):
         self.assertIn("book-d6-appendices", package)
         self.assertIn("BOOK_D6_APPENDICES.md", learner)
         self.assertIn('projects" / "book-d6-appendices', learner)
+        self.assertIn("*book_d6_foundations_steps()", release)
+        self.assertIn("plan.extend(book_d6_foundations_steps(quality=False))", msrv)
+        self.assertIn("projects/book-d6-foundations", structural)
+        self.assertIn("book-d6-foundations", package)
+        self.assertIn("BOOK_D6_FOUNDATIONS.md", learner)
+        self.assertIn('projects" / "book-d6-foundations', learner)
 
 
 
