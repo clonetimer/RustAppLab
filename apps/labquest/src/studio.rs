@@ -684,7 +684,10 @@ mod diagnostics_tests {
         fs::write(&new, "").unwrap();
         assert_eq!(find_test_binary(&sandbox.0).unwrap(), new);
         fs::write(&old, "").unwrap();
-        assert!(find_test_binary(&sandbox.0).is_err(), "ambiguous output is not a pass");
+        assert!(
+            find_test_binary(&sandbox.0).is_err(),
+            "ambiguous output is not a pass"
+        );
     }
     #[test]
     fn missing_sqlite_is_environment_error() {
