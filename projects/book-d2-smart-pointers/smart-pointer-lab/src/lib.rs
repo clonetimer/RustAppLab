@@ -184,9 +184,27 @@ impl TreeNode {
         })
     }
 
-    pub fn attach(parent: &Rc<Self>, child: Rc<Self>) {
+    pub fn attach(parent: &Rc<Self>, child: Rc<Self>) -> Result<(), &'static str> {
+        if Rc::ptr_eq(parent, &child) {
+            return Err("节点不能成为自己的子节点");
+        }
+        if child.parent.borrow().upgrade().is_some() {
+            return Err("子节点已经有父节点");
+        }
+
+        // Walk the non-owning parent chain before adding a strong parent -> child edge.
+        // Otherwise attaching an ancestor below its descendant would create an Rc cycle.
+        let mut ancestor = Some(Rc::clone(parent));
+        while let Some(node) = ancestor {
+            if Rc::ptr_eq(&node, &child) {
+                return Err("不能把祖先节点挂到自己的后代下面");
+            }
+            ancestor = node.parent.borrow().upgrade();
+        }
+
         *child.parent.borrow_mut() = Rc::downgrade(parent);
         parent.children.borrow_mut().push(child);
+        Ok(())
     }
 
     pub fn name(&self) -> &str {
@@ -234,7 +252,7 @@ pub fn demo(topic: &str) -> Result<String, &'static str> {
         "weak" => {
             let root = TreeNode::new("root");
             let leaf = TreeNode::new("leaf");
-            TreeNode::attach(&root, Rc::clone(&leaf));
+            TreeNode::attach(&root, Rc::clone(&leaf))?;
             let parent_before_drop = leaf.parent_name().unwrap_or_else(|| "none".into());
             std::mem::drop(root);
             let parent_after_drop = leaf.parent_name().unwrap_or_else(|| "none".into());
@@ -349,10 +367,34 @@ mod tests {
     }
 
     #[test]
+    fn weak_tree_rejects_self_attachment_and_reparenting() {
+        let first_parent = TreeNode::new("first");
+        let second_parent = TreeNode::new("second");
+        let child = TreeNode::new("child");
+
+        assert!(TreeNode::attach(&first_parent, Rc::clone(&first_parent)).is_err());
+        TreeNode::attach(&first_parent, Rc::clone(&child)).unwrap();
+        assert!(TreeNode::attach(&second_parent, child).is_err());
+        assert_eq!(first_parent.child_count(), 1);
+        assert_eq!(second_parent.child_count(), 0);
+    }
+
+    #[test]
+    fn weak_tree_rejects_attaching_an_ancestor_under_its_descendant() {
+        let root = TreeNode::new("root");
+        let child = TreeNode::new("child");
+        TreeNode::attach(&root, Rc::clone(&child)).unwrap();
+
+        assert!(TreeNode::attach(&child, Rc::clone(&root)).is_err());
+        assert_eq!(root.child_count(), 1);
+        assert_eq!(child.child_count(), 0);
+    }
+
+    #[test]
     fn weak_back_reference_can_upgrade_while_parent_is_alive() {
         let parent = TreeNode::new("root");
         let child = TreeNode::new("leaf");
-        TreeNode::attach(&parent, Rc::clone(&child));
+        TreeNode::attach(&parent, Rc::clone(&child)).unwrap();
         assert_eq!(child.parent_name().as_deref(), Some("root"));
         assert_eq!(parent.child_count(), 1);
     }
@@ -361,7 +403,7 @@ mod tests {
     fn weak_back_reference_does_not_keep_parent_alive() {
         let parent = TreeNode::new("root");
         let child = TreeNode::new("leaf");
-        TreeNode::attach(&parent, Rc::clone(&child));
+        TreeNode::attach(&parent, Rc::clone(&child)).unwrap();
         std::mem::drop(parent);
         assert_eq!(child.parent_name(), None);
     }
@@ -371,7 +413,7 @@ mod tests {
         let parent = TreeNode::new("root");
         let child = TreeNode::new("leaf");
         assert_eq!(Rc::strong_count(&parent), 1);
-        TreeNode::attach(&parent, child);
+        TreeNode::attach(&parent, child).unwrap();
         assert_eq!(Rc::strong_count(&parent), 1);
     }
 }
