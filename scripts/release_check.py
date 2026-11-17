@@ -24,6 +24,7 @@ TEST_RESULT = re.compile(r"test result: (ok|FAILED)\. (\d+) passed; (\d+) failed
 CODE_SUFFIXES = {'.rs', '.toml', '.lock', '.py', '.ps1', '.cmd', '.sh', '.html', '.css', '.js', '.yml', '.yaml',
                  '.md', '.tsv', '.txt', '.json', '.kv', '.svg'}
 BOOK_D1_MANIFEST = 'projects/book-d1-cargo/Cargo.toml'
+BOOK_D2_MANIFEST = 'projects/book-d2-smart-pointers/Cargo.toml'
 ADVANCED_B4_MANIFEST = 'projects/advanced-b/reference/json-export/Cargo.toml'
 ADVANCED_B_MANIFEST = 'projects/advanced-b/reference/Cargo.toml'
 TEST_LIMITS = {
@@ -37,6 +38,7 @@ TEST_LIMITS = {
     'advanced-b4-platform-e2e': (5, 0),
     'advanced-b-doctests-default': (1, 0), 'advanced-b-doctests-strict': (1, 0),
     'book-d1-tests': (10, 0), 'book-d1-doctests': (1, 0),
+    'book-d2-tests': (24, 0), 'book-d2-doctests': (1, 0),
 }
 
 
@@ -105,6 +107,24 @@ def book_d1_steps(quality: bool = True) -> list[tuple[str, list[str]]]:
     return steps
 
 
+def book_d2_steps(quality: bool = True) -> list[tuple[str, list[str]]]:
+    """Book D2 is a separate, dependency-free smart-pointer workspace."""
+    common = ['--locked', '--offline', '--manifest-path', BOOK_D2_MANIFEST, '--workspace']
+    steps = []
+    if quality:
+        steps.extend([
+            ('book-d2-format', ['cargo', 'fmt', '--manifest-path', BOOK_D2_MANIFEST,
+                                '--all', '--', '--check']),
+            ('book-d2-clippy', ['cargo', 'clippy'] + common +
+             ['--all-targets', '--', '-D', 'warnings']),
+        ])
+    steps.extend([
+        ('book-d2-tests', ['cargo', 'test'] + common + ['--all-targets']),
+        ('book-d2-doctests', ['cargo', 'test'] + common + ['--doc']),
+    ])
+    return steps
+
+
 def source_id(root: Path = ROOT) -> str:
     """Code, build and lesson inputs; excludes generated evidence and build caches."""
     h = hashlib.sha256()
@@ -114,7 +134,7 @@ def source_id(root: Path = ROOT) -> str:
         if not path.is_file() or any(x in {'target', '.git', '__pycache__'} for x in rel.parts):
             continue
         if (rel.parts[0] not in {'apps', 'scripts', '.github', 'course', 'examples'}
-                and rel.parts[:2] not in {('projects', 'advanced-b'), ('projects', 'advanced-c1'), ('projects', 'advanced-c2'), ('projects', 'book-d1-cargo')} and len(rel.parts) != 1):
+                and rel.parts[:2] not in {('projects', 'advanced-b'), ('projects', 'advanced-c1'), ('projects', 'advanced-c2'), ('projects', 'book-d1-cargo'), ('projects', 'book-d2-smart-pointers')} and len(rel.parts) != 1):
             continue
         if path.suffix in CODE_SUFFIXES or rel.as_posix() == 'VERSION':
             paths.append(path)
@@ -201,6 +221,7 @@ def main() -> int:
         *advanced_b_steps(),
         *advanced_b4_steps(),
         *book_d1_steps(),
+        *book_d2_steps(),
         ('studio-smoke',[sys.executable,'scripts/smoke_studio_release.py','--output',str(out/'studio-smoke.json')]),
         ('database-smoke',[sys.executable,'scripts/smoke_state_database.py','--output',str(out/'database-products')]),
         ('minikv-smoke',[sys.executable,'scripts/smoke_minikv.py','--output',str(out/'minikv-products')]),
