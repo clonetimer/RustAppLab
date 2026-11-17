@@ -100,6 +100,30 @@ class BookCoverageTests(unittest.TestCase):
         self.assertNotIn('"projects/book-d6-appendices"', root_workspace)
 
         lesson = (ROOT / "course/BOOK_D6_APPENDICES.md").read_text(encoding="utf-8")
+        keyword_rows = {}
+        token_pattern = chr(96) + r"([^" + chr(96) + r"]+)" + chr(96)
+        for line in lesson.splitlines():
+            for label in ("Strict", "Reserved", "Weak"):
+                if line.startswith(f"| {label} |"):
+                    keyword_rows[label] = re.findall(token_pattern, line)
+        self.assertEqual(keyword_rows["Strict"], [
+            "_", "as", "async", "await", "break", "const", "continue", "crate",
+            "dyn", "else", "enum", "extern", "false", "fn", "for", "if", "impl",
+            "in", "let", "loop", "match", "mod", "move", "mut", "pub", "ref",
+            "return", "self", "Self", "static", "struct", "super", "trait",
+            "true", "type", "unsafe", "use", "where", "while",
+        ])
+        self.assertEqual(keyword_rows["Reserved"], [
+            "abstract", "become", "box", "do", "final", "gen", "macro",
+            "override", "priv", "try", "typeof", "unsized", "virtual", "yield",
+        ])
+        self.assertEqual(keyword_rows["Weak"], [
+            "'static", "macro_rules", "raw", "safe", "union",
+        ])
+        for row in ("| 11 | 位与", "| 12 | 位异或", "| 13 | 位或",
+                    "| 14 |", "| 15 |", "| 16 |", "| 17 |", "| 18 |", "| 19 |"):
+            with self.subTest(precedence=row):
+                self.assertIn(row, lesson)
         implementation = (base / "appendix-lab/src/lib.rs").read_text(encoding="utf-8")
         keywords = (
             "_", "as", "async", "await", "break", "const", "continue", "crate",
