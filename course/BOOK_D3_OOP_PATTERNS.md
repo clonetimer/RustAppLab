@@ -141,4 +141,4 @@ PendingReview --approve--> Published
 
 参考实验目标是让你能解释设计取舍，而不是只通过固定输出。请在个人副本增加一个新 Draw 类型、一个 Post 状态或一个模式分支，并新增测试。
 
-官方资料：[Object-Oriented Features](https://doc.rust-lang.org/book/ch17-00-oop.html) · [Using Trait Objects](https://doc.rust-lang.org/book/ch18-02-trait-objects.html) · [State Pattern](https://doc.rust-lang.org/book/ch18-03-oo-design-patterns.html) · [Patterns](https://doc.rust-lang.org/book/ch19-00-patterns.html)。中文版 Rust 2018 与当前官方书的章节编号可能不同，以主题对照为准。
+官方资料：[Object-Oriented Features](https://doc.rust-lang.org/book/ch17-00-oop.html) · [Using Trait Objects](https://doc.rust-lang.org/book/ch17-02-trait-objects.html) · [State Pattern](https://doc.rust-lang.org/book/ch17-03-oo-design-patterns.html) · [Patterns](https://doc.rust-lang.org/book/ch19-00-patterns.html)。中文版 Rust 2018 与当前官方书的章节编号可能不同，以主题对照为准。
