@@ -43,7 +43,11 @@ For shutdown, enqueue all worker termination messages before joining any worker.
 
 This lab is a learning implementation, not a replacement for a production HTTP stack. Its supported subset and exclusions must be stated in the lesson and README: HTTP/1.1 GET, bounded headers, no request body, no keep-alive, no TLS and no production-grade backpressure. Parser limits and unsupported inputs need explicit tests so the implementation does not imply broader protocol support than it provides.
 
-## 6. D5 acceptance sequence
+## 6. Keep release and MSRV gates in sync
+
+Each isolated reference workspace must be registered in both `scripts/release_check.py` and `scripts/msrv_check.py`. The native release gate alone proves behavior on the installed stable compiler; it does not prove the declared minimum Rust version. Add a regression assertion that the workspace appears in both plans whenever a new D-stage workspace is introduced.
+
+## 7. D5 acceptance sequence
 
 1. Run the D5 isolated Workspace format, Clippy, debug tests, release tests and doctests.
 2. Run the structural gate and tooling tests.
