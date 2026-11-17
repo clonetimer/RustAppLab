@@ -91,4 +91,15 @@ if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 & cargo test @SmartCommon --doc
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+Write-Host 'Rust Book D3 object model and pattern matching workspace (offline)'
+$ObjectManifest = 'projects/book-d3-oop-patterns/Cargo.toml'
+$ObjectCommon = @('--locked','--offline','--manifest-path',$ObjectManifest,'--workspace')
+& cargo fmt --manifest-path $ObjectManifest --all -- --check
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+& cargo clippy @ObjectCommon --all-targets -- -D warnings
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+& cargo test @ObjectCommon --all-targets
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+& cargo test @ObjectCommon --doc
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 Write-Host 'Completed. Manual application and cross-platform verification are still required.'
