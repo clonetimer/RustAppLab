@@ -26,9 +26,11 @@
 
 **D1 Cargo 进阶**：[完整讲义](BOOK_D1_CARGO.md) 与 [独立实验](../projects/book-d1-cargo/README.md) 覆盖构建 profile、打包检查、Workspace、专用安装根与自定义 Cargo 子命令。
 
-**D2 智能指针**：[六节讲义](BOOK_D2_SMART_POINTERS.md) 与 [独立实验](../projects/book-d2-smart-pointers/README.md) 覆盖 Box、Deref、Drop、Rc、RefCell 和 Weak/引用循环。两批课程均为 RC 之外的补充，须经跨平台 CI 验证。
+**D2 智能指针**：[六节讲义](BOOK_D2_SMART_POINTERS.md) 与 [独立实验](../projects/book-d2-smart-pointers/README.md) 覆盖 Box、Deref、Drop、Rc、RefCell 和 Weak/引用循环。
 
-后续顺序：D3（面向对象与模式）、D4（Unsafe/高级 Trait/宏）、D5（原生线程池 Web Server）、D6（附录与基础散点）。
+**D3 面向对象与模式匹配**：[讲义](BOOK_D3_OOP_PATTERNS.md) 与 [独立实验](../projects/book-d3-oop-patterns/README.md) 覆盖封装、trait object、状态模式，以及 18.1–18.3 的模式语法与可反驳性。D1/D2/D3 均为 RC 之外的补充，须经跨平台 CI 验证。
+
+后续顺序：D4（Unsafe/高级 Trait/宏）、D5（原生线程池 Web Server）、D6（附录与基础散点）。
 
 ## 当前材料数量与性质
 
