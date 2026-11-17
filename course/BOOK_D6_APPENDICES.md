@@ -246,7 +246,10 @@ let explicit = (2 + 3) * 4;
 assert_eq!(explicit, 20);
 
 // Comparison chains require parentheses.
-assert!((1 < 2) == true);
+let a = 1;
+let b = 2;
+let c = 3;
+assert!((a < b) == (b < c));
 ```
 
 **动手实验**：运行 D6 lab 中的 precedence、range、bitwise 和 `Point + Point` 测试。注意 `+` 对自定义类型可以通过 `std::ops::Add` 重载；但借用、路径和控制流语法不能被当作普通算术运算符处理。对复杂表达式优先添加括号，而不是依赖读者记忆优先级。
