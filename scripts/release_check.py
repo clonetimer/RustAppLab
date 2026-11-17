@@ -38,7 +38,7 @@ TEST_LIMITS = {
     'advanced-b4-platform-e2e': (5, 0),
     'advanced-b-doctests-default': (1, 0), 'advanced-b-doctests-strict': (1, 0),
     'book-d1-tests': (10, 0), 'book-d1-doctests': (1, 0),
-    'book-d2-tests': (24, 0), 'book-d2-doctests': (1, 0),
+    'book-d2-tests': (26, 0), 'book-d2-doctests': (1, 0),
 }
 
 
