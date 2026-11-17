@@ -37,7 +37,7 @@ def allowed(path: Path) -> bool:
         return path.suffix in (".rs", ".toml", ".md", ".html", ".css", ".js", ".tsv", ".txt", ".svg", ".ps1")
     if parts[0] == "examples":
         return path.suffix in (".svg", ".txt", ".md", ".html", ".json", ".kv", ".tsv")
-    if len(parts) >= 3 and parts[:2] in (("projects", "advanced-b"), ("projects", "advanced-c1"), ("projects", "advanced-c2"), ("projects", "book-d1-cargo"), ("projects", "book-d2-smart-pointers"), ("projects", "book-d3-oop-patterns"), ("projects", "book-d4-advanced-features"), ("projects", "book-d5-webserver"), ("projects", "book-d6-appendices")):
+    if len(parts) >= 3 and parts[:2] in (("projects", "advanced-b"), ("projects", "advanced-c1"), ("projects", "advanced-c2"), ("projects", "book-d1-cargo"), ("projects", "book-d2-smart-pointers"), ("projects", "book-d3-oop-patterns"), ("projects", "book-d4-advanced-features"), ("projects", "book-d5-webserver"), ("projects", "book-d6-appendices"), ("projects", "book-d6-foundations")):
         return path.suffix in (".rs", ".toml", ".md", ".lock", ".html", ".css", ".js") or path.name == "Cargo.lock"
     if parts[0] == "course":
         return path.suffix == ".md"
@@ -127,6 +127,15 @@ for relative in ("Cargo.toml", "Cargo.lock", "README.md",
             f"Book D6 缺少独立课程工程：{relative}")
 require((ROOT / "course/BOOK_D6_APPENDICES.md").is_file(),
         "Book D6 附录讲义缺失")
+
+# Book D6-B is an isolated, dependency-free foundations-gap workspace.
+for relative in ("Cargo.toml", "Cargo.lock", "README.md",
+                 "foundation-lab/Cargo.toml", "foundation-lab/src/lib.rs",
+                 "foundation-lab/src/main.rs", "foundation-lab/tests/cli.rs"):
+    require((ROOT / "projects/book-d6-foundations" / relative).is_file(),
+            f"Book D6-B 缺少独立课程工程：{relative}")
+require((ROOT / "course/BOOK_D6_FOUNDATIONS.md").is_file(),
+        "Book D6-B 基础知识缺口讲义缺失")
 
 # B4 is a separate locked workspace; both shipped teaching variants are required.
 for variant in ('reference', 'learner'):

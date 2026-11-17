@@ -139,4 +139,17 @@ if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 & cargo test @AppendixCommon --doc
 if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+Write-Host 'Rust Book D6-B foundations gap workspace (offline)'
+$FoundationsManifest = 'projects/book-d6-foundations/Cargo.toml'
+$FoundationsCommon = @('--locked','--offline','--manifest-path',$FoundationsManifest,'--workspace')
+& cargo fmt --manifest-path $FoundationsManifest --all -- --check
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+& cargo clippy @FoundationsCommon --all-targets -- -D warnings
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+& cargo test @FoundationsCommon --all-targets
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+& cargo test @FoundationsCommon --all-targets --release
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
+& cargo test @FoundationsCommon --doc
+if ($LASTEXITCODE -ne 0) { exit $LASTEXITCODE }
 Write-Host 'Completed. Manual application and cross-platform verification are still required.'

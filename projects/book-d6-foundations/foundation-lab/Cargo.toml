@@ -1,0 +1,13 @@
+[package]
+name = "book-d6-foundation-lab"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.74"
+publish = false
+
+[lib]
+path = "src/lib.rs"
+
+[[bin]]
+name = "foundation-lab"
+path = "src/main.rs"

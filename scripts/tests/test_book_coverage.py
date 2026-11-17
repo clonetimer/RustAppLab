@@ -79,14 +79,11 @@ class BookCoverageTests(unittest.TestCase):
             with self.subTest(contract=contract):
                 self.assertIn(contract, implementation)
 
-
     def test_d5_is_in_release_and_declared_msrv_gates(self):
         release = (ROOT / "scripts/release_check.py").read_text(encoding="utf-8")
         msrv = (ROOT / "scripts/msrv_check.py").read_text(encoding="utf-8")
         self.assertIn("*book_d5_steps()", release)
         self.assertIn("plan.extend(book_d5_steps(quality=False))", msrv)
-
-
 
     def test_d6_appendix_reference_workspace_is_isolated_and_executable(self):
         base = ROOT / "projects/book-d6-appendices"
@@ -103,10 +100,45 @@ class BookCoverageTests(unittest.TestCase):
         self.assertNotIn('"projects/book-d6-appendices"', root_workspace)
 
         lesson = (ROOT / "course/BOOK_D6_APPENDICES.md").read_text(encoding="utf-8")
+        keyword_rows = {}
+        token_pattern = chr(96) + r"([^" + chr(96) + r"]+)" + chr(96)
+        for line in lesson.splitlines():
+            for label in ("Strict", "Reserved", "Weak"):
+                if line.startswith(f"| {label} |"):
+                    keyword_rows[label] = re.findall(token_pattern, line)
+        self.assertEqual(keyword_rows["Strict"], [
+            "_", "as", "async", "await", "break", "const", "continue", "crate",
+            "dyn", "else", "enum", "extern", "false", "fn", "for", "if", "impl",
+            "in", "let", "loop", "match", "mod", "move", "mut", "pub", "ref",
+            "return", "self", "Self", "static", "struct", "super", "trait",
+            "true", "type", "unsafe", "use", "where", "while",
+        ])
+        self.assertEqual(keyword_rows["Reserved"], [
+            "abstract", "become", "box", "do", "final", "gen", "macro",
+            "override", "priv", "try", "typeof", "unsized", "virtual", "yield",
+        ])
+        self.assertEqual(keyword_rows["Weak"], [
+            "'static", "macro_rules", "raw", "safe", "union",
+        ])
+        for row in ("| 11 | 位与", "| 12 | 位异或", "| 13 | 位或",
+                    "| 14 |", "| 15 |", "| 16 |", "| 17 |", "| 18 |", "| 19 |"):
+            with self.subTest(precedence=row):
+                self.assertIn(row, lesson)
         implementation = (base / "appendix-lab/src/lib.rs").read_text(encoding="utf-8")
+        keywords = (
+            "_", "as", "async", "await", "break", "const", "continue", "crate",
+            "dyn", "else", "enum", "extern", "false", "fn", "for", "if", "impl",
+            "in", "let", "loop", "match", "mod", "move", "mut", "pub", "ref",
+            "return", "self", "Self", "static", "struct", "super", "trait",
+            "true", "type", "unsafe", "use", "where", "while", "abstract",
+            "become", "box", "do", "final", "gen", "macro", "override", "priv",
+            "try", "typeof", "unsized", "virtual", "yield", "'static",
+            "macro_rules", "raw", "safe", "union",
+        )
         for topic in ("附录 A", "附录 B", "附录 C", "附录 D", "附录 E", "附录 F", "附录 G",
                       "Strict keywords", "Reserved keywords", "Weak keywords",
-                      "Edition 2024", "rust-analyzer", "Stable", "Beta", "Nightly"):
+                      "Edition 2024", "rust-analyzer", "Stable", "Beta", "Nightly",
+                      "::", "->", "=>", "@", "#!", "$", *keywords):
             with self.subTest(topic=topic):
                 self.assertIn(topic, lesson)
         for contract in ("pub fn r#match", "impl Add for Point",
@@ -116,6 +148,48 @@ class BookCoverageTests(unittest.TestCase):
                 self.assertIn(contract, implementation)
         self.assertEqual(len(re.findall(r"#\[test\]", implementation)), 11)
         self.assertEqual(len(re.findall(r"compile_fail", implementation)), 2)
+
+    def test_d6_foundations_workspace_covers_remaining_chapter_gaps(self):
+        base = ROOT / "projects/book-d6-foundations"
+        for relative in ("Cargo.toml", "Cargo.lock", "README.md",
+                         "foundation-lab/Cargo.toml", "foundation-lab/src/lib.rs",
+                         "foundation-lab/src/main.rs", "foundation-lab/tests/cli.rs"):
+            with self.subTest(path=relative):
+                self.assertTrue((base / relative).is_file())
+        manifest = (base / "foundation-lab/Cargo.toml").read_text(encoding="utf-8")
+        self.assertIn('edition = "2021"', manifest)
+        self.assertIn('rust-version = "1.74"', manifest)
+        self.assertIn("publish = false", manifest)
+        self.assertNotIn("[dependencies]", manifest)
+
+        root_workspace = (ROOT / "Cargo.toml").read_text(encoding="utf-8")
+        members = re.search(r"members\s*=\s*\[(.*?)\]", root_workspace, re.S)
+        self.assertIsNotNone(members)
+        member_names = re.findall(r'"([^"]+)"', members.group(1))
+        self.assertEqual(len(member_names), 17)
+        self.assertTrue(all(name.startswith("apps/") for name in member_names))
+        self.assertNotIn('"projects/book-d6-foundations"', root_workspace)
+        self.assertNotIn('"projects/book-d6-appendices"', root_workspace)
+
+        lesson = (ROOT / "course/BOOK_D6_FOUNDATIONS.md").read_text(encoding="utf-8")
+        implementation = (base / "foundation-lab/src/lib.rs").read_text(encoding="utf-8")
+        for topic in ("1.2", "猜数字", "3.4", "5.2", "5.3", "6.3", "8.3",
+                      "9.1", "9.3", "12.5", "13.3", "13.4"):
+            with self.subTest(topic=topic):
+                self.assertIn(topic, lesson)
+        for contract in ("pub struct Rectangle", "pub fn compare_guess",
+                         "pub fn word_frequencies", "pub fn parse_non_empty",
+                         "pub fn config_dir_from", "pub fn count_non_empty_lines",
+                         "pub fn sum_with_loop", "pub fn sum_with_iterator",
+                         "pub fn benchmark_sums", "buffered_line_count_propagates_io_failures",
+                         "// This assertion protects a programmer invariant",
+                         "/* Use parse_non_empty for user-provided values instead. */"):
+            with self.subTest(contract=contract):
+                self.assertIn(contract, implementation)
+        self.assertEqual(len(re.findall(r"#\[test\]", implementation)), 14)
+        cli = (base / "foundation-lab/tests/cli.rs").read_text(encoding="utf-8")
+        self.assertEqual(len(re.findall(r"#\[test\]", cli)), 6)
+        self.assertEqual(len(re.findall(r"compile_fail", implementation)), 1)
 
     def test_d6_is_registered_in_release_msrv_and_learner_package(self):
         release = (ROOT / "scripts/release_check.py").read_text(encoding="utf-8")
@@ -129,8 +203,12 @@ class BookCoverageTests(unittest.TestCase):
         self.assertIn("book-d6-appendices", package)
         self.assertIn("BOOK_D6_APPENDICES.md", learner)
         self.assertIn('projects" / "book-d6-appendices', learner)
-
-
+        self.assertIn("*book_d6_foundations_steps()", release)
+        self.assertIn("plan.extend(book_d6_foundations_steps(quality=False))", msrv)
+        self.assertIn("projects/book-d6-foundations", structural)
+        self.assertIn("book-d6-foundations", package)
+        self.assertIn("BOOK_D6_FOUNDATIONS.md", learner)
+        self.assertIn('projects" / "book-d6-foundations', learner)
 
 
 if __name__ == "__main__":

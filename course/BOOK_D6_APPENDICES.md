@@ -27,6 +27,23 @@
 - Edition 2024 将 `gen` 加入 reserved keywords。
 - 关键字表会随语言版本演进；旧中文版的表不能直接当作 2026 年工具链的完整清单。
 
+### 当前 Edition 的完整关键词清单
+
+下面按当前 Rust Reference 的词法分类列出完整集合。Edition 2015 的解析规则有历史差异；跨 Edition 迁移时仍要查看 Edition Guide，不能把当前清单倒推到旧 Edition。
+
+| 类别 | 完整清单 |
+|---|---|
+| Strict | `_`, `as`, `async`, `await`, `break`, `const`, `continue`, `crate`, `dyn`, `else`, `enum`, `extern`, `false`, `fn`, `for`, `if`, `impl`, `in`, `let`, `loop`, `match`, `mod`, `move`, `mut`, `pub`, `ref`, `return`, `self`, `Self`, `static`, `struct`, `super`, `trait`, `true`, `type`, `unsafe`, `use`, `where`, `while` |
+| Reserved | `abstract`, `become`, `box`, `do`, `final`, `gen`, `macro`, `override`, `priv`, `try`, `typeof`, `unsized`, `virtual`, `yield` |
+| Weak | `'static`, `macro_rules`, `raw`, `safe`, `union` |
+
+**Edition 注意事项：**
+- `async`、`await`、`dyn` 在 Edition 2018 成为 strict keywords；Edition 2015 对 `dyn` 有上下文相关的旧规则。
+- `try` 在 Edition 2018 加入 reserved keywords。
+- `gen` 在 Edition 2024 加入 reserved keywords。
+- `safe` 只在外部块的函数/静态项声明中具有弱关键字语义；`raw` 只在 raw borrow 等特定语法中具有该语义。
+- `'static` 是生命周期标记，不可作为普通生命周期参数名；`union` 只在 union 声明上下文中是关键字。
+
 ### Raw identifiers
 
 当外部 API 或旧 Edition crate 暴露了一个与新关键字同名的函数时，可以使用原始标识符：
@@ -78,9 +95,43 @@ assert!(r#match("learn rust", "rust"));
 | `::` | `module::item`：路径分隔 | `::<T>`：显式指定泛型参数（turbofish） |
 | `?` | `read_config()?`：错误传播 | 宏 matcher 和 trait bound 中也有其他语法用途 |
 
+### 其他常见符号速查
+
+| 符号 | 主要用途 |
+|---|---|
+| `::` | 路径分隔、关联项访问、显式泛型参数路径 |
+| `->` | 函数/闭包返回类型 |
+| `=>` | `match` 分支分隔符、宏规则转写符 |
+| `@` | 模式绑定，同时匹配整个值与内部结构 |
+| `?` | `Option`/`Result` 错误或空值传播 |
+| `#` / `#!` | 外部属性 / crate 或模块内部属性 |
+| $ | 声明宏 matcher 中的元变量与重复匹配标记 |
+
 ### 运算符优先级
 
-不要靠记忆猜测复杂表达式。先使用括号表达意图，再通过最小测试验证。常见优先级从高到低包括：路径/方法调用、函数调用与索引、`?`、一元运算、`as`、乘除取余、加减、移位、位运算、比较、逻辑与、逻辑或、范围、赋值。
+以下顺序按当前 Rust Reference 从高到低排列。相同优先级的二元运算符按表中结合性分组；比较链和范围表达式在需要组合时必须显式使用括号。
+
+| 优先级（高→低） | 表达式/运算符 | 结合性或约束 |
+|---|---|---|
+| 1 | 路径（Paths） | — |
+| 2 | 方法调用（Method calls） | — |
+| 3 | 字段访问（Field expressions） | 从左到右 |
+| 4 | 函数调用、数组索引 | — |
+| 5 | `?` 错误传播 | — |
+| 6 | 一元 `-`、`!`、`*`、借用 `&` / `&mut` | — |
+| 7 | `as` 类型转换 | 从左到右 |
+| 8 | `*`、`/`、`%` | 从左到右 |
+| 9 | `+`、`-` | 从左到右 |
+| 10 | `<<`、`>>` | 从左到右 |
+| 11 | 位与 `&` | 从左到右 |
+| 12 | 位异或 `^` | 从左到右 |
+| 13 | 位或 `|` | 从左到右 |
+| 14 | `==`、`!=`、`<`、`>`、`<=`、`>=` | 比较链必须加括号 |
+| 15 | 逻辑与 `&&` | 从左到右，短路求值 |
+| 16 | 逻辑或 `||` | 从左到右，短路求值 |
+| 17 | 范围 `..`、`..=` | 组合时必须加括号 |
+| 18 | 赋值及复合赋值（`=`、`+=`、`-=` 等） | 从右到左 |
+| 19 | `return`、`break`、闭包表达式 | — |
 
 ```rust
 let value = 2 + 3 * 4;
@@ -88,11 +139,17 @@ assert_eq!(value, 14);
 
 let explicit = (2 + 3) * 4;
 assert_eq!(explicit, 20);
+
+// Comparison chains require parentheses.
+let a = 1;
+let b = 2;
+let c = 3;
+assert!((a < b) == (b < c));
 ```
 
-**动手实验**：运行 D6 lab 中的 precedence、range、bitwise 和 `Point + Point` 测试。注意 `+` 对自定义类型可以通过 `std::ops::Add` 重载；但借用、路径和控制流语法不能被当作普通算术运算符处理。
+**动手实验**：运行 D6 lab 中的 precedence、range、bitwise 和 `Point + Point` 测试。注意 `+` 对自定义类型可以通过 `std::ops::Add` 重载；但借用、路径和控制流语法不能被当作普通算术运算符处理。对复杂表达式优先添加括号，而不是依赖读者记忆优先级。
 
-参考：[中文附录 B](https://rust.bootcss.com/appendix-02-operators.html) · [Rust Reference: Expressions](https://doc.rust-lang.org/reference/expressions.html) · [Operator expressions](https://doc.rust-lang.org/reference/expressions/operator-expr.html)
+参考：[中文附录 B](https://rust.bootcss.com/appendix-02-operators.html) · [Rust Reference: Expression precedence](https://doc.rust-lang.org/reference/expressions.html) · [Operator expressions](https://doc.rust-lang.org/reference/expressions/operator-expr.html)
 
 ---
 
@@ -269,4 +326,4 @@ cargo test --locked --offline --manifest-path projects/book-d6-appendices/Cargo.
 - 能区分 Edition、编译器版本和 Stable/Beta/Nightly 发布通道。
 - D6 Workspace 在 Rust 1.74、Linux 和 Windows 上通过格式、Clippy、debug、release 与 doctest 检查。
 
-本课完成的是附录参考和最小可执行实验，不代表 D6 全部结束。剩余基础章节缺口（猜数字游戏、结构体/方法、HashMap、panic/Result 决策、环境变量、迭代器 I/O 与性能比较）进入 D6-B，单独逐项补齐。
+D6-A 与 D6-B 构成当前 D6 交付批次：本课完成附录 A–G 的参考说明与 A–C 可执行实验；[D6-B](BOOK_D6_FOUNDATIONS.md) 补齐 12 项基础章节专项练习。两套独立 Workspace 均在 Linux、Windows 与 Rust 1.74 上通过格式、Clippy、Debug、Release 和 Doctest 验收。覆盖审计仍将 D/E/G 标记为“部分”，因为工具链操作、Edition 迁移与 Nightly 隔离仍需要学习者亲自完成；自动化通过不等于学习者已经掌握。

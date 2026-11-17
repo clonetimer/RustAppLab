@@ -4,7 +4,9 @@
 
 # 用 Rust Book 理解自己的作品
 
-**新增**：每一节有无对应内容，请看 [D0 逐节覆盖审计](BOOK_COVERAGE_AUDIT.md)；Cargo 的漏项进入 [D1 可运行专题](BOOK_D1_CARGO.md)，智能指针专题进入 [D2 讲义](BOOK_D2_SMART_POINTERS.md)，对象模型与模式匹配进入 [D3 讲义](BOOK_D3_OOP_PATTERNS.md)，高级特性进入 [D4 讲义](BOOK_D4_ADVANCED_FEATURES.md)，第 20 章同步线程池项目进入 [D5 讲义](BOOK_D5_WEB_SERVER.md)，附录 A–G 进入 [D6 讲义](BOOK_D6_APPENDICES.md) 与 [独立参考实验](../projects/book-d6-appendices/README.md)。D1/D2/D3/D4/D5/D6 都是独立 Workspace，不改变主工作区 17 个包及 RC 冻结范围。
+**新增**：每一节有无对应内容，请看 [D0 逐节覆盖审计](BOOK_COVERAGE_AUDIT.md)；Cargo 的漏项进入 [D1 可运行专题](BOOK_D1_CARGO.md)，智能指针专题进入 [D2 讲义](BOOK_D2_SMART_POINTERS.md)，对象模型与模式匹配进入 [D3 讲义](BOOK_D3_OOP_PATTERNS.md)，高级特性进入 [D4 讲义](BOOK_D4_ADVANCED_FEATURES.md)，第 20 章同步线程池项目进入 [D5 讲义](BOOK_D5_WEB_SERVER.md)，附录 A–G 进入 [D6-A 讲义](BOOK_D6_APPENDICES.md) 与 [独立参考实验](../projects/book-d6-appendices/README.md)；基础知识残余缺口进入 [D6-B 讲义](BOOK_D6_FOUNDATIONS.md) 与 [独立参考实验](../projects/book-d6-foundations/README.md)。D1/D2/D3/D4/D5/D6-A/D6-B 都是独立 Workspace，不改变主工作区 17 个包及 RC 冻结范围。
+
+D6-B 的 12 项基础知识缺口已完成独立讲义与参考工程；Run 204 的 17 个验收 Jobs 全部成功，包含 Linux/Windows 原生工程、Rust 1.74 MSRV、学员包与候选交付核验。
 
 先运行作品、完成当前任务，再针对遇到的问题阅读相关概念。Rust AppLab 继续以已有软件为练习载体；阅读帮助你解释设计，实际检查验证修改后的行为。
 

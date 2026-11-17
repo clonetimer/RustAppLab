@@ -1,6 +1,6 @@
 # 当前学习路线（0.19.0-rc.1）
 
-[Rust Book 对照学习](BOOK_GUIDE.md) · [Rust Book 逐节覆盖审计](BOOK_COVERAGE_AUDIT.md) · [D1 Cargo 专题](BOOK_D1_CARGO.md) · [D2 智能指针](BOOK_D2_SMART_POINTERS.md) · [D3 面向对象与模式](BOOK_D3_OOP_PATTERNS.md) · [D4 高级特性](BOOK_D4_ADVANCED_FEATURES.md) · [D5 多线程 Web Server](BOOK_D5_WEB_SERVER.md) · [D6 附录 A–G](BOOK_D6_APPENDICES.md) · [学习导航](LEARNING_NAVIGATOR.md) · [进阶 A](ADVANCED_A.md) · [进阶 B](ADVANCED_B.md)。已有学员可用 `learn reading <工程路径>` 按当前作品查找相关概念。
+[Rust Book 对照学习](BOOK_GUIDE.md) · [Rust Book 逐节覆盖审计](BOOK_COVERAGE_AUDIT.md) · [D1 Cargo 专题](BOOK_D1_CARGO.md) · [D2 智能指针](BOOK_D2_SMART_POINTERS.md) · [D3 面向对象与模式](BOOK_D3_OOP_PATTERNS.md) · [D4 高级特性](BOOK_D4_ADVANCED_FEATURES.md) · [D5 多线程 Web Server](BOOK_D5_WEB_SERVER.md) · [D6 附录 A–G](BOOK_D6_APPENDICES.md) · [D6 基础知识补齐](BOOK_D6_FOUNDATIONS.md) · [学习导航](LEARNING_NAVIGATOR.md) · [进阶 A](ADVANCED_A.md) · [进阶 B](ADVANCED_B.md)。已有学员可用 `learn reading <工程路径>` 按当前作品查找相关概念。
 
 完成 FirstCard 后先去 [作品工坊](../WORKSHOP.html)，从 [UnitLab](studio/unitlab.md) 开始。原有 00–31 讲义保留，但不再要求零基础从复杂工具源码直接入手。
 

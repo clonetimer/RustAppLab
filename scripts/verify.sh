@@ -77,4 +77,11 @@ cargo clippy --locked --offline --manifest-path "$book_d6_manifest" --workspace 
 cargo test --locked --offline --manifest-path "$book_d6_manifest" --workspace --all-targets
 cargo test --locked --offline --manifest-path "$book_d6_manifest" --workspace --all-targets --release
 cargo test --locked --offline --manifest-path "$book_d6_manifest" --workspace --doc
-printf '%s\n' '所有包与独立 Book D1/D2/D3/D4/D5/D6 Workspace 的格式、Lint、测试、release 构建命令均已执行；真实用户/跨平台验收还需单独记录。'
+echo '[extra] Rust Book D6-B foundations gap workspace (offline)'
+book_d6_foundations_manifest=projects/book-d6-foundations/Cargo.toml
+cargo fmt --manifest-path "$book_d6_foundations_manifest" --all -- --check
+cargo clippy --locked --offline --manifest-path "$book_d6_foundations_manifest" --workspace --all-targets -- -D warnings
+cargo test --locked --offline --manifest-path "$book_d6_foundations_manifest" --workspace --all-targets
+cargo test --locked --offline --manifest-path "$book_d6_foundations_manifest" --workspace --all-targets --release
+cargo test --locked --offline --manifest-path "$book_d6_foundations_manifest" --workspace --doc
+printf '%s\n' '所有包与独立 Book D1/D2/D3/D4/D5/D6-A/D6-B Workspace 的格式、Lint、测试、release 构建命令均已执行；真实用户/跨平台验收还需单独记录。'

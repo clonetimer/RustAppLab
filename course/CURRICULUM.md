@@ -32,11 +32,11 @@
 
 **D4 高级特性**：[讲义](BOOK_D4_ADVANCED_FEATURES.md) 与 [独立实验](../projects/book-d4-advanced-features/README.md) 覆盖 unsafe Rust、高级 Trait/类型/函数与三类过程宏。实验使用 Rust 1.74、零第三方依赖，并把不安全操作限制在有安全契约的局部代码中；D4-A2 已通过 17/17 CI Jobs，并随 PR #6 合并。
 
-**D5 多线程 Web Server**：[讲义](BOOK_D5_WEB_SERVER.md) 与 [独立实验](../projects/book-d5-webserver/README.md) 覆盖 TCP/HTTP 请求响应、固定大小 Worker 线程池、MPSC 消息队列和 Drop 优雅清理。独立 Workspace 使用 Rust 1.74、零第三方依赖；当前进入跨平台 CI 验证。
+**D5 多线程 Web Server**：[讲义](BOOK_D5_WEB_SERVER.md) 与 [独立实验](../projects/book-d5-webserver/README.md) 覆盖 TCP/HTTP 请求响应、固定大小 Worker 线程池、MPSC 消息队列和 Drop 优雅清理。独立 Workspace 使用 Rust 1.74、零第三方依赖；PR #8 已合并，Run 197 的 Linux/Windows、MSRV、交付矩阵通过。
 
-**D6-A 附录参考与实践**：[讲义](BOOK_D6_APPENDICES.md) 与 [独立参考 Workspace](../projects/book-d6-appendices/README.md) 覆盖关键字、运算符与符号、可派生 Trait、现代开发工具、Edition、翻译版本和 Stable/Beta/Nightly。实验使用 Edition 2021、Rust 1.74、零第三方依赖，不改变根 Workspace 的 17 个学员包。
+**D6-A 附录参考与实践**：[讲义](BOOK_D6_APPENDICES.md) 与 [独立参考 Workspace](../projects/book-d6-appendices/README.md) 覆盖关键字、运算符与符号、可派生 Trait、现代开发工具、Edition、翻译版本和 Stable/Beta/Nightly。实验使用 Edition 2021、Rust 1.74、零第三方依赖；关键字清单与运算符优先级已加入精确回归测试。
 
-**D6-B 基础知识缺口**：下一阶段逐项补齐猜数字游戏、结构体/方法、if let、HashMap、panic 与 Result 的选择、环境变量、迭代器 I/O 和循环/迭代器性能比较；保留原作品为载体，避免为每个语法点制造无意义的新项目。
+**D6-B 基础知识缺口**：[讲义](BOOK_D6_FOUNDATIONS.md) 与 [独立参考 Workspace](../projects/book-d6-foundations/README.md) 已覆盖 12 项基础知识缺口；14 项单元测试、6 项 CLI 测试、2 项 Doctest 均通过 Linux、Windows、Rust 1.74 的 Debug/Release 验证。Run 215 候选包包含 D6-A/B 全部材料，原有 17 个学员工程保持不变。
 
 ## 当前材料数量与性质
 
