@@ -166,4 +166,4 @@ cargo run --locked --offline --manifest-path projects/book-d6-foundations/Cargo.
 - 能使用迭代器处理 I/O 并传播错误。
 - 能设计公平的 loop/iterator 基准，不用单次计时声称性能优劣。
 
-本阶段覆盖审计中的 12 个基础缺口；通过 CI 只证明参考实现可编译、可测试，不证明学习者已经掌握。最终掌握仍需完成自己的输入、修改代码并解释设计理由。
+本阶段覆盖审计中的 12 个基础缺口。Run 215 验收中，14 项单元测试、6 项 CLI 集成测试和 2 项 Doctest 均在 Linux、Windows 与实际 Rust 1.74 工具链下通过，Debug/Release 结果一致。通过 CI 只证明参考实现可编译、可测试，不证明学习者已经掌握；最终掌握仍需完成自己的输入、修改代码并解释设计理由。
