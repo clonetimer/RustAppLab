@@ -51,4 +51,10 @@ cargo fmt --manifest-path "$book_d2_manifest" --all -- --check
 cargo clippy --locked --offline --manifest-path "$book_d2_manifest" --workspace --all-targets -- -D warnings
 cargo test --locked --offline --manifest-path "$book_d2_manifest" --workspace --all-targets
 cargo test --locked --offline --manifest-path "$book_d2_manifest" --workspace --doc
-printf '%s\n' '所有包与独立 Book D1/D2 Workspace 的格式、Lint、测试、release 构建命令均已执行；真实用户/跨平台验收还需单独记录。'
+echo '[extra] Rust Book D3 object model and patterns workspace (offline)'
+book_d3_manifest=projects/book-d3-oop-patterns/Cargo.toml
+cargo fmt --manifest-path "$book_d3_manifest" --all -- --check
+cargo clippy --locked --offline --manifest-path "$book_d3_manifest" --workspace --all-targets -- -D warnings
+cargo test --locked --offline --manifest-path "$book_d3_manifest" --workspace --all-targets
+cargo test --locked --offline --manifest-path "$book_d3_manifest" --workspace --doc
+printf '%s\n' '所有包与独立 Book D1/D2/D3 Workspace 的格式、Lint、测试、release 构建命令均已执行；真实用户/跨平台验收还需单独记录。'
