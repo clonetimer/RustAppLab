@@ -83,9 +83,9 @@
 | 20.1 | 单线程 Web Server | 开发中 | `projects/book-d5-webserver/webserver-lab/src/lib.rs` | 原生 TcpListener/TcpStream、HTTP 请求解析、响应 framing 与有限连接的单线程基线，待 CI |
 | 20.2 | 多线程 Web Server | 开发中 | `projects/book-d5-webserver/webserver-lab/src/lib.rs` | 固定大小 Worker、MPSC Job 队列与 Arc/Mutex 接收端，待 CI |
 | 20.3 | 优雅关闭 | 开发中 | `projects/book-d5-webserver/webserver-lab/src/lib.rs` | shutdown channel、Drop 发送全部终止消息后 join、排空已提交任务，待 CI |
-| A | 关键字 | 开发中 | `course/BOOK_D6_APPENDICES.md`、`projects/book-d6-appendices/appendix-lab/src/lib.rs` | strict/reserved/weak 分类、raw identifiers、Edition 差异与编译实验；待 CI |
-| B | 运算符与符号 | 开发中 | `course/BOOK_D6_APPENDICES.md`、`projects/book-d6-appendices/appendix-lab/src/lib.rs` | 运算符/非运算符语境、优先级、重载与可执行实验；待 CI |
-| C | 可派生 Trait | 开发中 | `course/BOOK_D6_APPENDICES.md`、`projects/book-d6-appendices/appendix-lab/src/lib.rs` | 九种标准 derive trait 的能力、约束、Debug/Display 区分与 compile-fail 实验；待 CI |
+| A | 关键字 | 开发中 | `course/BOOK_D6_APPENDICES.md` | strict/reserved/weak 分类、raw identifiers、Edition 差异与编译实验；可执行证据见 `projects/book-d6-appendices/appendix-lab/src/lib.rs`；待 CI |
+| B | 运算符与符号 | 开发中 | `course/BOOK_D6_APPENDICES.md` | 运算符/非运算符语境、优先级、重载与可执行实验；代码证据见 `projects/book-d6-appendices/appendix-lab/src/lib.rs`；待 CI |
+| C | 可派生 Trait | 开发中 | `course/BOOK_D6_APPENDICES.md` | 九种标准 derive trait 的能力、约束、Debug/Display 区分与 compile-fail 实验；代码证据见 `projects/book-d6-appendices/appendix-lab/src/lib.rs`；待 CI |
 | D | 实用开发工具 | 开发中 | `course/BOOK_D6_APPENDICES.md` | rustfmt、cargo fix/rustfix、Clippy、rust-analyzer、rustdoc 的现代用法与复现命令；待 CI |
 | E | Edition 与版本 | 开发中 | `course/BOOK_D6_APPENDICES.md` | 2015/2018/2021/2024 对照、MSRV 边界与迁移流程；待 CI |
 | F | 翻译版本 | 开发中 | `course/BOOK_D6_APPENDICES.md` | 区分旧中文译本基线与当前官方书，提供翻译/版本导航；参考型内容，待审查 |
