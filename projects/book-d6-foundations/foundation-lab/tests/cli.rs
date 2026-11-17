@@ -30,7 +30,9 @@ fn run_with_input(args: &[&str], input: &[u8]) -> std::process::Output {
         .expect("stdin should be piped")
         .write_all(input)
         .expect("input should be written");
-    child.wait_with_output().expect("foundation-lab should exit")
+    child
+        .wait_with_output()
+        .expect("foundation-lab should exit")
 }
 
 #[test]
