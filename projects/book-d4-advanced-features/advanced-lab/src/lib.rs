@@ -528,7 +528,7 @@ mod tests {
     #[test]
     fn supertrait_default_method_uses_display() {
         let point = DisplayPoint { x: 3, y: 4 };
-        assert_eq!(point.outline_print(), "********\n* (3, 4) *\n********");
+        assert_eq!(point.outline_print(), "**********\n* (3, 4) *\n**********");
     }
 
     #[test]
