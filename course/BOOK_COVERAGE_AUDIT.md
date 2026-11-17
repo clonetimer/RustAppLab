@@ -4,8 +4,8 @@
 - **源码基准**：`clonetimer/RustAppLab` main `fed4a2d37a72de88dfb353474544efde9bdd537a`（2026-11-17 审计时）。
 - **证据规则**：表格中“已有实作”只表示可以定位到相关教学或可执行实例，**不表示**该小节原书所有示例、知识点、学员练习与测试均已完整覆盖；“部分”表示只有关联知识或实现；“缺口”明确有需要补的专项内容；“开发中”只证明开发分支已有材料、仍须 CI。
 - **验收判据**：每项最终需要有教学目标、版本适配、学员实验或合理的知识索引、可重现检查及用户体验验证。官方原书代码无需照抄，允许使用现有真实作品替换；不能用出现某个关键词冒充教学覆盖。
-- **当前统计**：共 **81** 项审计条目，其中 已有实作 59、部分 15、缺口 3、开发中 3、资料索引 1。D1–D4 独立参考 Workspace 已随 PR #6 合并，D0–D4 验收矩阵 17/17 CI Jobs PASS；D5 的 20.1–20.3 已有独立实现，正在进行跨平台与 Rust 1.74 验收。这是条目盘点数，**不是**知识点覆盖率或学习达标率。
-- **推进路线**：D1 Cargo（14.1–14.5）→ D2 智能指针（15.1–15.6）→ D3 对象模型/模式（17–18）→ D4 Unsafe/高级 Trait/宏（19）→ D5 原生多线程 Web Server（20）→ D6 附录与残余基础缺口；随每阶段修订本表。
+- **当前统计**：共 **81** 项审计条目，其中 已有实作 59、部分 11、缺口 1、开发中 10、资料索引 0。D1–D4 独立参考 Workspace 已随 PR #6 合并，D0–D4 验收矩阵 17/17 CI Jobs PASS；D5 的 20.1–20.3 正在进行最终跨平台验收；D6-A 已形成附录 A–G 讲义与独立参考实验，待 CI 签核。这是条目盘点数，**不是**知识点覆盖率或学习达标率。
+- **推进路线**：D1 Cargo（14.1–14.5）→ D2 智能指针（15.1–15.6）→ D3 对象模型/模式（17–18）→ D4 Unsafe/高级 Trait/宏（19）→ D5 原生多线程 Web Server（20）→ D6-A 附录 A–G → D6-B 基础知识残余缺口；随每阶段修订本表。
 
 | 原书小节 | 主题 | 审计状态 | 现有代码/讲义证据（仓库相对路径） | 后续核查或补充 |
 |---|---|---|---|---|
@@ -83,13 +83,13 @@
 | 20.1 | 单线程 Web Server | 开发中 | `projects/book-d5-webserver/webserver-lab/src/lib.rs` | 原生 TcpListener/TcpStream、HTTP 请求解析、响应 framing 与有限连接的单线程基线，待 CI |
 | 20.2 | 多线程 Web Server | 开发中 | `projects/book-d5-webserver/webserver-lab/src/lib.rs` | 固定大小 Worker、MPSC Job 队列与 Arc/Mutex 接收端，待 CI |
 | 20.3 | 优雅关闭 | 开发中 | `projects/book-d5-webserver/webserver-lab/src/lib.rs` | shutdown channel、Drop 发送全部终止消息后 join、排空已提交任务，待 CI |
-| A | 关键字 | 缺口 | `—` | 创建按 Edition 2018/2021 区分的离线索引 |
-| B | 运算符与符号 | 部分 | `course/studio/unitlab.md` | 示例覆盖部分，缺完整参考索引 |
-| C | 可派生 Trait | 部分 | `course/ADVANCED_B.md` | Serde derive 已实作，标准库 derive 清单待补 |
-| D | 实用开发工具 | 部分 | `course/ADVANCED_B.md` | cargo fmt/clippy/test 已覆盖，rustdoc/IDE 辅助待补 |
-| E | Edition 与版本 | 部分 | `course/BOOK_GUIDE.md` | 2018、2021、2024 差异导航已有，需系统化 |
-| F | 翻译版本 | 资料索引 | `course/BOOK_GUIDE.md` | 不要求编码练习，明确旧译本与官方书对应 |
-| G | Rust 开发流程与 Nightly | 缺口 | `—` | 补 Stable/Beta/Nightly 及不稳定特性边界 |
+| A | 关键字 | 开发中 | `course/BOOK_D6_APPENDICES.md`、`projects/book-d6-appendices/appendix-lab/src/lib.rs` | strict/reserved/weak 分类、raw identifiers、Edition 差异与编译实验；待 CI |
+| B | 运算符与符号 | 开发中 | `course/BOOK_D6_APPENDICES.md`、`projects/book-d6-appendices/appendix-lab/src/lib.rs` | 运算符/非运算符语境、优先级、重载与可执行实验；待 CI |
+| C | 可派生 Trait | 开发中 | `course/BOOK_D6_APPENDICES.md`、`projects/book-d6-appendices/appendix-lab/src/lib.rs` | 九种标准 derive trait 的能力、约束、Debug/Display 区分与 compile-fail 实验；待 CI |
+| D | 实用开发工具 | 开发中 | `course/BOOK_D6_APPENDICES.md` | rustfmt、cargo fix/rustfix、Clippy、rust-analyzer、rustdoc 的现代用法与复现命令；待 CI |
+| E | Edition 与版本 | 开发中 | `course/BOOK_D6_APPENDICES.md` | 2015/2018/2021/2024 对照、MSRV 边界与迁移流程；待 CI |
+| F | 翻译版本 | 开发中 | `course/BOOK_D6_APPENDICES.md` | 区分旧中文译本基线与当前官方书，提供翻译/版本导航；参考型内容，待审查 |
+| G | Rust 开发流程与 Nightly | 开发中 | `course/BOOK_D6_APPENDICES.md` | Stable/Beta/Nightly 通道、rustup 命令与不稳定功能隔离规则；待 CI |
 
 ## 不纳入覆盖率的情况
 
@@ -107,4 +107,4 @@
 | D3 | 面向对象与模式匹配 6 节 | PR #6 已合并；D0–D4 验收矩阵 17/17 CI Jobs PASS |
 | D4 | 第 19 章 5 节安全隔离实验 | D4-A2 17/17 CI Jobs PASS，PR #6 已合并 |
 | D5 | 第 20 章 3 节线程池与关闭 | 独立 Workspace 已实现，跨平台 CI 待签核 |
-| D6 | 附录 A–G + 基础零散缺口 | 待实施 |
+| D6 | 附录 A–G + 基础零散缺口 | D6-A 附录讲义与独立参考实验已实现，跨平台 CI 待签核；D6-B 基础缺口待实施 |
