@@ -37,7 +37,7 @@ def allowed(path: Path) -> bool:
         return path.suffix in (".rs", ".toml", ".md", ".html", ".css", ".js", ".tsv", ".txt", ".svg", ".ps1")
     if parts[0] == "examples":
         return path.suffix in (".svg", ".txt", ".md", ".html", ".json", ".kv", ".tsv")
-    if len(parts) >= 3 and parts[:2] in (("projects", "advanced-b"), ("projects", "advanced-c1"), ("projects", "advanced-c2")):
+    if len(parts) >= 3 and parts[:2] in (("projects", "advanced-b"), ("projects", "advanced-c1"), ("projects", "advanced-c2"), ("projects", "book-d1-cargo")):
         return path.suffix in (".rs", ".toml", ".md", ".lock", ".html", ".css", ".js") or path.name == "Cargo.lock"
     if parts[0] == "course":
         return path.suffix == ".md"
@@ -70,6 +70,17 @@ for app in ("filequest", "loglens", "localhub", "safesync"):
 
 for relative in ("ADVANCED_B.html", "START_ADVANCED_B_WINDOWS.cmd", "course/ADVANCED_B.md", "apps/labquest/src/advanced_b.rs", "apps/labquest/tests/advanced_b_e2e.rs", "projects/advanced-b/ADVANCED_B.md", "projects/advanced-b/learner/Cargo.toml", "projects/advanced-b/learner/taskcore/src/lib.rs", "projects/advanced-b/learner/taskreport/src/main.rs", "projects/advanced-b/reference/taskcore/src/lib.rs", "projects/advanced-b/reference/taskreport/src/main.rs"):
     require((ROOT / relative).is_file(), f"进阶 B 交付缺失：{relative}")
+
+# Book D1 is additive, never a root workspace member.
+for relative in ("Cargo.toml", "Cargo.lock", "README.md",
+                 "book-card/Cargo.toml", "book-card/src/lib.rs",
+                 "cargo-applab-map/Cargo.toml", "cargo-applab-map/src/main.rs",
+                 "cargo-applab-map/tests/cli.rs"):
+    require((ROOT / "projects/book-d1-cargo" / relative).is_file(),
+            f"Book D1 缺少独立课程工程：{relative}")
+for relative in ("course/BOOK_COVERAGE_AUDIT.md", "course/BOOK_D1_CARGO.md",
+                 "scripts/book_d1_check.py", "scripts/tests/test_book_coverage.py"):
+    require((ROOT / relative).is_file(), f"Book D0/D1 审计或门禁缺失：{relative}")
 
 # B4 is a separate locked workspace; both shipped teaching variants are required.
 for variant in ('reference', 'learner'):
