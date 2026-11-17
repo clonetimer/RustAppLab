@@ -451,7 +451,7 @@ a13387dd16eb02153921c0b796ec7ebdcbcf6f88fd0086cdf31c23551592c0f7  projects/book-
 eca5ddb6b3dc48d99507db75b6ba13c10f0938eea9313dd9f7237a15b6f5c16e  projects/book-d3-oop-patterns/Cargo.toml
 dc26b2e3c44d47dd4aebefdebd8ca7ab3c217154a88ce94f639cf0d8bbca8feb  projects/book-d3-oop-patterns/README.md
 58b189b455ebf4a98dbce332459a256dc0751ca9c35ac06e3d0f9b5c45f07992  projects/book-d3-oop-patterns/oop-pattern-lab/Cargo.toml
-8b26a3bdd3ddc3e5e2285102e865b303457240ee70a505dbdc73799a7af6479c  projects/book-d3-oop-patterns/oop-pattern-lab/src/lib.rs
+4ad4dadb8ac46e75b30b2917668cd6fba02be92b5fcec45bbf3cc984c3925de4  projects/book-d3-oop-patterns/oop-pattern-lab/src/lib.rs
 217d7fb57e055dae58ee83255f6c367e4cedac1cbcd2a2b33f7864a2a2be9e31  projects/book-d3-oop-patterns/oop-pattern-lab/src/main.rs
 33a374d418d938b81cc402474e4dd1b2b21a9dcaf9d437a3b887fbedb38d0d39  projects/book-d3-oop-patterns/oop-pattern-lab/tests/cli.rs
 42cc6780414b171b3fd8109ca817a19e53b43df68d80e4fbd721ce0211eae251  scripts/advanced_windows.ps1
