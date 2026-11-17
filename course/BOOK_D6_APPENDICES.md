@@ -214,7 +214,29 @@ assert!(r#match("learn rust", "rust"));
 
 ### 运算符优先级
 
-不要靠记忆猜测复杂表达式。先使用括号表达意图，再通过最小测试验证。常见优先级从高到低包括：路径/方法调用、函数调用与索引、`?`、一元运算、`as`、乘除取余、加减、移位、位运算、比较、逻辑与、逻辑或、范围、赋值。
+以下顺序按当前 Rust Reference 从高到低排列。相同优先级的二元运算符按表中结合性分组；比较链和范围表达式在需要组合时必须显式使用括号。
+
+| 优先级（高→低） | 表达式/运算符 | 结合性或约束 |
+|---|---|---|
+| 1 | 路径（Paths） | — |
+| 2 | 方法调用（Method calls） | — |
+| 3 | 字段访问（Field expressions） | 从左到右 |
+| 4 | 函数调用、数组索引 | — |
+| 5 | `?` 错误传播 | — |
+| 6 | 一元 `-`、`!`、`*`、借用 `&` / `&mut` | — |
+| 7 | `as` 类型转换 | 从左到右 |
+| 8 | `*`、`/`、`%` | 从左到右 |
+| 9 | `+`、`-` | 从左到右 |
+| 10 | `<<`、`>>` | 从左到右 |
+| 11 | 位与 `&` | 从左到右 |
+| 12 | 位异或 `^` | 从左到右 |
+| 13 | 位或 `|` | 从左到右 |
+| 14 | `==`、`!=`、`<`、`>`、`<=`、`>=` | 比较链必须加括号 |
+| 15 | 逻辑与 `&&` | 从左到右，短路求值 |
+| 16 | 逻辑或 `||` | 从左到右，短路求值 |
+| 17 | 范围 `..`、`..=` | 组合时必须加括号 |
+| 18 | 赋值及复合赋值（`=`、`+=`、`-=` 等） | 从右到左 |
+| 19 | `return`、`break`、闭包表达式 | — |
 
 ```rust
 let value = 2 + 3 * 4;
@@ -222,11 +244,14 @@ assert_eq!(value, 14);
 
 let explicit = (2 + 3) * 4;
 assert_eq!(explicit, 20);
+
+// Comparison chains require parentheses.
+assert!((1 < 2) == true);
 ```
 
-**动手实验**：运行 D6 lab 中的 precedence、range、bitwise 和 `Point + Point` 测试。注意 `+` 对自定义类型可以通过 `std::ops::Add` 重载；但借用、路径和控制流语法不能被当作普通算术运算符处理。
+**动手实验**：运行 D6 lab 中的 precedence、range、bitwise 和 `Point + Point` 测试。注意 `+` 对自定义类型可以通过 `std::ops::Add` 重载；但借用、路径和控制流语法不能被当作普通算术运算符处理。对复杂表达式优先添加括号，而不是依赖读者记忆优先级。
 
-参考：[中文附录 B](https://rust.bootcss.com/appendix-02-operators.html) · [Rust Reference: Expressions](https://doc.rust-lang.org/reference/expressions.html) · [Operator expressions](https://doc.rust-lang.org/reference/expressions/operator-expr.html)
+参考：[中文附录 B](https://rust.bootcss.com/appendix-02-operators.html) · [Rust Reference: Expression precedence](https://doc.rust-lang.org/reference/expressions.html) · [Operator expressions](https://doc.rust-lang.org/reference/expressions/operator-expr.html)
 
 ---
 
