@@ -43,7 +43,10 @@ fn both_legacy_and_new_init_are_supported() {
         .unwrap()
         .as_nanos();
     let nonce = TEMP_COUNTER.fetch_add(1, Ordering::Relaxed);
-    let base = std::env::temp_dir().join(format!("rustapplab-cli-{}-{nanos}-{nonce}", std::process::id()));
+    let base = std::env::temp_dir().join(format!(
+        "rustapplab-cli-{}-{nanos}-{nonce}",
+        std::process::id()
+    ));
     fs::create_dir(&base).unwrap();
     let pagemint = base.join("web");
     let taskpocket = base.join("tasks");
@@ -94,7 +97,10 @@ fn pagemint_check_failure_creates_report_and_returns_nonzero() {
         .as_nanos();
     let nonce = TEMP_COUNTER.fetch_add(1, Ordering::Relaxed);
     let base: PathBuf =
-        std::env::temp_dir().join(format!("rustapplab-grade-{}-{nanos}-{nonce}", std::process::id()));
+        std::env::temp_dir().join(format!(
+            "rustapplab-grade-{}-{nanos}-{nonce}",
+            std::process::id()
+        ));
     fs::create_dir(&base).unwrap();
     let project = base.join("web");
     assert!(cli(&[
