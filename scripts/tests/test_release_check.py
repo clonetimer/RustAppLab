@@ -280,8 +280,8 @@ class B4GateTests(unittest.TestCase):
             if command[1] != 'fmt':
                 self.assertIn('--locked', command)
                 self.assertIn('--offline', command)
-        self.assertEqual(release.TEST_LIMITS['book-d6-foundations-tests'], (13, 0))
-        self.assertEqual(release.TEST_LIMITS['book-d6-foundations-release-tests'], (13, 0))
+        self.assertEqual(release.TEST_LIMITS['book-d6-foundations-tests'], (19, 0))
+        self.assertEqual(release.TEST_LIMITS['book-d6-foundations-release-tests'], (19, 0))
         self.assertEqual(release.TEST_LIMITS['book-d6-foundations-doctests'], (2, 0))
 
     def test_all_gate_entrypoints_include_book_d3(self):
