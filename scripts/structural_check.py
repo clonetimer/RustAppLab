@@ -37,7 +37,7 @@ def allowed(path: Path) -> bool:
         return path.suffix in (".rs", ".toml", ".md", ".html", ".css", ".js", ".tsv", ".txt", ".svg", ".ps1")
     if parts[0] == "examples":
         return path.suffix in (".svg", ".txt", ".md", ".html", ".json", ".kv", ".tsv")
-    if len(parts) >= 3 and parts[:2] in (("projects", "advanced-b"), ("projects", "advanced-c1"), ("projects", "advanced-c2"), ("projects", "book-d1-cargo"), ("projects", "book-d2-smart-pointers")):
+    if len(parts) >= 3 and parts[:2] in (("projects", "advanced-b"), ("projects", "advanced-c1"), ("projects", "advanced-c2"), ("projects", "book-d1-cargo"), ("projects", "book-d2-smart-pointers"), ("projects", "book-d3-oop-patterns")):
         return path.suffix in (".rs", ".toml", ".md", ".lock", ".html", ".css", ".js") or path.name == "Cargo.lock"
     if parts[0] == "course":
         return path.suffix == ".md"
@@ -90,6 +90,15 @@ for relative in ("Cargo.toml", "Cargo.lock", "README.md",
             f"Book D2 缺少独立课程工程：{relative}")
 for relative in ("course/BOOK_D2_SMART_POINTERS.md",):
     require((ROOT / relative).is_file(), f"Book D2 讲义缺失：{relative}")
+
+# Book D3 is a separate OOP and pattern-matching workspace.
+for relative in ("Cargo.toml", "Cargo.lock", "README.md",
+                 "oop-pattern-lab/Cargo.toml", "oop-pattern-lab/src/lib.rs",
+                 "oop-pattern-lab/src/main.rs", "oop-pattern-lab/tests/cli.rs"):
+    require((ROOT / "projects/book-d3-oop-patterns" / relative).is_file(),
+            f"Book D3 缺少独立课程工程：{relative}")
+require((ROOT / "course/BOOK_D3_OOP_PATTERNS.md").is_file(),
+        "Book D3 讲义缺失")
 
 # B4 is a separate locked workspace; both shipped teaching variants are required.
 for variant in ('reference', 'learner'):
