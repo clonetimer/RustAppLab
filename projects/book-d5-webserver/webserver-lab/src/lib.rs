@@ -177,12 +177,7 @@ struct Response {
 }
 
 impl Response {
-    fn new(
-        status: u16,
-        reason: &'static str,
-        content_type: &'static str,
-        body: Vec<u8>,
-    ) -> Self {
+    fn new(status: u16, reason: &'static str, content_type: &'static str, body: Vec<u8>) -> Self {
         Self {
             status,
             reason,
@@ -333,10 +328,7 @@ struct Worker {
 }
 
 impl Worker {
-    fn new(
-        id: usize,
-        receiver: Arc<Mutex<Receiver<Message>>>,
-    ) -> io::Result<Self> {
+    fn new(id: usize, receiver: Arc<Mutex<Receiver<Message>>>) -> io::Result<Self> {
         let thread = thread::Builder::new()
             .name(format!("book-d5-worker-{id}"))
             .spawn(move || loop {
@@ -434,11 +426,7 @@ impl Drop for ThreadPool {
 
 /// Accept connections concurrently until the shutdown channel receives a value
 /// or its sender is dropped. On return, the pool drains queued jobs and joins.
-pub fn serve(
-    listener: TcpListener,
-    pool: ThreadPool,
-    shutdown: Receiver<()>,
-) -> io::Result<()> {
+pub fn serve(listener: TcpListener, pool: ThreadPool, shutdown: Receiver<()>) -> io::Result<()> {
     listener.set_nonblocking(true)?;
 
     loop {
@@ -450,7 +438,9 @@ pub fn serve(
         match listener.accept() {
             Ok((stream, _address)) => {
                 pool.execute(move || handle_connection(stream))
-                    .map_err(|error| io::Error::new(io::ErrorKind::BrokenPipe, error.to_string()))?;
+                    .map_err(|error| {
+                        io::Error::new(io::ErrorKind::BrokenPipe, error.to_string())
+                    })?;
             }
             Err(error) if error.kind() == io::ErrorKind::WouldBlock => {
                 match shutdown.recv_timeout(Duration::from_millis(10)) {
@@ -493,9 +483,8 @@ mod tests {
         let listener = TcpListener::bind("127.0.0.1:0").unwrap();
         let address = listener.local_addr().unwrap();
         let (shutdown_tx, shutdown_rx) = mpsc::channel();
-        let server = thread::spawn(move || {
-            serve(listener, ThreadPool::new(2).unwrap(), shutdown_rx)
-        });
+        let server =
+            thread::spawn(move || serve(listener, ThreadPool::new(2).unwrap(), shutdown_rx));
         (address, shutdown_tx, server)
     }
 
@@ -611,8 +600,7 @@ mod tests {
 
     #[test]
     fn non_get_route_returns_method_not_allowed() {
-        let request =
-            parse_request(b"POST / HTTP/1.1\r\nContent-Length: 0\r\n\r\n").unwrap();
+        let request = parse_request(b"POST / HTTP/1.1\r\nContent-Length: 0\r\n\r\n").unwrap();
         let response = route(&request);
         assert_eq!(response.status, 405);
         assert_eq!(response.extra_headers, vec![("Allow", "GET")]);
@@ -677,8 +665,7 @@ mod tests {
         drop(started_tx);
 
         let first_started = started_rx.recv_timeout(Duration::from_secs(2)).is_ok();
-        let second_started_before_release =
-            started_rx.recv_timeout(Duration::from_secs(1)).is_ok();
+        let second_started_before_release = started_rx.recv_timeout(Duration::from_secs(1)).is_ok();
 
         let (lock, condition) = &*gate;
         *lock.lock().unwrap() = true;
@@ -696,17 +683,11 @@ mod tests {
     #[test]
     fn real_tcp_server_returns_success_and_not_found_responses() {
         let (address, shutdown, server) = start_server();
-        let success = request(
-            address,
-            b"GET / HTTP/1.1\r\nHost: localhost\r\n\r\n",
-        );
+        let success = request(address, b"GET / HTTP/1.1\r\nHost: localhost\r\n\r\n");
         assert!(success.starts_with("HTTP/1.1 200 OK\r\n"));
         assert!(success.contains("Hello from Rust"));
 
-        let missing = request(
-            address,
-            b"GET /missing HTTP/1.1\r\nHost: localhost\r\n\r\n",
-        );
+        let missing = request(address, b"GET /missing HTTP/1.1\r\nHost: localhost\r\n\r\n");
         assert!(missing.starts_with("HTTP/1.1 404 Not Found\r\n"));
 
         shutdown.send(()).unwrap();
@@ -721,9 +702,7 @@ mod tests {
         oversized.extend_from_slice(b"\r\n\r\n");
 
         let response = request(address, &oversized);
-        assert!(response.starts_with(
-            "HTTP/1.1 431 Request Header Fields Too Large\r\n"
-        ));
+        assert!(response.starts_with("HTTP/1.1 431 Request Header Fields Too Large\r\n"));
 
         shutdown.send(()).unwrap();
         server.join().unwrap().unwrap();
@@ -743,10 +722,7 @@ mod tests {
         let listener = TcpListener::bind("127.0.0.1:0").unwrap();
         let address = listener.local_addr().unwrap();
         let server = thread::spawn(move || serve_sequential(listener, 1));
-        let response = request(
-            address,
-            b"GET / HTTP/1.1\r\nHost: localhost\r\n\r\n",
-        );
+        let response = request(address, b"GET / HTTP/1.1\r\nHost: localhost\r\n\r\n");
         assert!(response.starts_with("HTTP/1.1 200 OK\r\n"));
         server.join().unwrap().unwrap();
     }
