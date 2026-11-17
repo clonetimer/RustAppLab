@@ -36,7 +36,7 @@
 
 **D6-A 附录参考与实践**：[讲义](BOOK_D6_APPENDICES.md) 与 [独立参考 Workspace](../projects/book-d6-appendices/README.md) 覆盖关键字、运算符与符号、可派生 Trait、现代开发工具、Edition、翻译版本和 Stable/Beta/Nightly。实验使用 Edition 2021、Rust 1.74、零第三方依赖，不改变根 Workspace 的 17 个学员包。
 
-**D6-B 基础知识缺口**：[讲义](BOOK_D6_FOUNDATIONS.md) 与 [独立参考 Workspace](../projects/book-d6-foundations/README.md) 已覆盖猜数字游戏、结构体/方法、注释、if let、HashMap、panic 与 Result 的选择、环境变量、迭代器 I/O 和循环/迭代器性能比较；当前进入跨平台与 MSRV 验收。
+**D6-B 基础知识缺口**：[讲义](BOOK_D6_FOUNDATIONS.md) 与 [独立参考 Workspace](../projects/book-d6-foundations/README.md) 已覆盖猜数字游戏、结构体/方法、注释、if let、HashMap、panic 与 Result 的选择、环境变量、迭代器 I/O 和循环/迭代器性能比较；Run 204 的 Linux/Windows、Rust 1.74、学员包与候选包验证全部 PASS。
 
 ## 当前材料数量与性质
 
