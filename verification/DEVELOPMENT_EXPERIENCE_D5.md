@@ -51,6 +51,12 @@ This lab is a learning implementation, not a replacement for a production HTTP s
 
 Each isolated reference workspace must be registered in both `scripts/release_check.py` and `scripts/msrv_check.py`. The native release gate alone proves behavior on the installed stable compiler; it does not prove the declared minimum Rust version. Add a regression assertion that the workspace appears in both plans whenever a new D-stage workspace is introduced.
 
+## 8. Pin formatting to the CI toolchain behavior
+
+The first full D5 native CI run passed structural validation, tooling tests, root-workspace format/Clippy/tests, and the Rust 1.74 MSRV gate. Both Linux and Windows native gates then failed specifically at `book-d5-format`. The uploaded logs showed only rustfmt diffs in the D5 library and CLI test; no compiler, Clippy, or runtime failure had occurred at that stage.
+
+**Rule:** run the exact isolated-workspace formatting command used by release CI (`cargo fmt --manifest-path projects/book-d5-webserver/Cargo.toml --all -- --check`) with the current stable toolchain before publishing a candidate. A successful root `cargo fmt --all -- --check` does not cover a workspace that is intentionally excluded from the root workspace. When stable rustfmt changes formatting decisions, accept its output in the isolated workspace and rerun the exact check on Linux and Windows.
+
 ## 8. D5 acceptance sequence
 
 1. Run the D5 isolated Workspace format, Clippy, debug tests, release tests and doctests.
