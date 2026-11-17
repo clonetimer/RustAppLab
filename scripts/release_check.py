@@ -26,6 +26,7 @@ CODE_SUFFIXES = {'.rs', '.toml', '.lock', '.py', '.ps1', '.cmd', '.sh', '.html',
 BOOK_D1_MANIFEST = 'projects/book-d1-cargo/Cargo.toml'
 BOOK_D2_MANIFEST = 'projects/book-d2-smart-pointers/Cargo.toml'
 BOOK_D3_MANIFEST = 'projects/book-d3-oop-patterns/Cargo.toml'
+BOOK_D4_MANIFEST = 'projects/book-d4-advanced-features/Cargo.toml'
 ADVANCED_B4_MANIFEST = 'projects/advanced-b/reference/json-export/Cargo.toml'
 ADVANCED_B_MANIFEST = 'projects/advanced-b/reference/Cargo.toml'
 TEST_LIMITS = {
@@ -41,6 +42,7 @@ TEST_LIMITS = {
     'book-d1-tests': (10, 0), 'book-d1-doctests': (1, 0),
     'book-d2-tests': (26, 0), 'book-d2-doctests': (1, 0),
     'book-d3-tests': (44, 0), 'book-d3-doctests': (1, 0),
+    'book-d4-tests': (36, 0), 'book-d4-doctests': (2, 0),
 }
 
 
@@ -145,6 +147,24 @@ def book_d3_steps(quality: bool = True) -> list[tuple[str, list[str]]]:
     return steps
 
 
+def book_d4_steps(quality: bool = True) -> list[tuple[str, list[str]]]:
+    """Book D4 is an isolated advanced-features workspace with a proc-macro crate."""
+    common = ['--locked', '--offline', '--manifest-path', BOOK_D4_MANIFEST, '--workspace']
+    steps = []
+    if quality:
+        steps.extend([
+            ('book-d4-format', ['cargo', 'fmt', '--manifest-path', BOOK_D4_MANIFEST,
+                                '--all', '--', '--check']),
+            ('book-d4-clippy', ['cargo', 'clippy'] + common +
+             ['--all-targets', '--', '-D', 'warnings']),
+        ])
+    steps.extend([
+        ('book-d4-tests', ['cargo', 'test'] + common + ['--all-targets']),
+        ('book-d4-doctests', ['cargo', 'test'] + common + ['--doc']),
+    ])
+    return steps
+
+
 def source_id(root: Path = ROOT) -> str:
     """Code, build and lesson inputs; excludes generated evidence and build caches."""
     h = hashlib.sha256()
@@ -243,6 +263,7 @@ def main() -> int:
         *book_d1_steps(),
         *book_d2_steps(),
         *book_d3_steps(),
+        *book_d4_steps(),
         ('studio-smoke',[sys.executable,'scripts/smoke_studio_release.py','--output',str(out/'studio-smoke.json')]),
         ('database-smoke',[sys.executable,'scripts/smoke_state_database.py','--output',str(out/'database-products')]),
         ('minikv-smoke',[sys.executable,'scripts/smoke_minikv.py','--output',str(out/'minikv-products')]),

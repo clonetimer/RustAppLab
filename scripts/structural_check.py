@@ -37,7 +37,7 @@ def allowed(path: Path) -> bool:
         return path.suffix in (".rs", ".toml", ".md", ".html", ".css", ".js", ".tsv", ".txt", ".svg", ".ps1")
     if parts[0] == "examples":
         return path.suffix in (".svg", ".txt", ".md", ".html", ".json", ".kv", ".tsv")
-    if len(parts) >= 3 and parts[:2] in (("projects", "advanced-b"), ("projects", "advanced-c1"), ("projects", "advanced-c2"), ("projects", "book-d1-cargo"), ("projects", "book-d2-smart-pointers"), ("projects", "book-d3-oop-patterns")):
+    if len(parts) >= 3 and parts[:2] in (("projects", "advanced-b"), ("projects", "advanced-c1"), ("projects", "advanced-c2"), ("projects", "book-d1-cargo"), ("projects", "book-d2-smart-pointers"), ("projects", "book-d3-oop-patterns"), ("projects", "book-d4-advanced-features")):
         return path.suffix in (".rs", ".toml", ".md", ".lock", ".html", ".css", ".js") or path.name == "Cargo.lock"
     if parts[0] == "course":
         return path.suffix == ".md"
@@ -99,6 +99,16 @@ for relative in ("Cargo.toml", "Cargo.lock", "README.md",
             f"Book D3 缺少独立课程工程：{relative}")
 require((ROOT / "course/BOOK_D3_OOP_PATTERNS.md").is_file(),
         "Book D3 讲义缺失")
+
+# Book D4 is a separate advanced-features workspace with a local proc-macro crate.
+for relative in ("Cargo.toml", "Cargo.lock", "README.md",
+                 "advanced-lab/Cargo.toml", "advanced-lab/src/lib.rs",
+                 "advanced-lab/src/main.rs", "advanced-lab/tests/cli.rs",
+                 "d4-proc-macros/Cargo.toml", "d4-proc-macros/src/lib.rs"):
+    require((ROOT / "projects/book-d4-advanced-features" / relative).is_file(),
+            f"Book D4 缺少独立课程工程：{relative}")
+require((ROOT / "course/BOOK_D4_ADVANCED_FEATURES.md").is_file(),
+        "Book D4 讲义缺失")
 
 # B4 is a separate locked workspace; both shipped teaching variants are required.
 for variant in ('reference', 'learner'):

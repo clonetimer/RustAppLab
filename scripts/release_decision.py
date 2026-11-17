@@ -5,7 +5,7 @@ import argparse
 import hashlib
 import json
 from pathlib import Path
-from release_check import ROOT, source_id, test_summary, advanced_b_steps, advanced_b4_steps, book_d1_steps, book_d2_steps, book_d3_steps, TEST_LIMITS
+from release_check import ROOT, source_id, test_summary, advanced_b_steps, advanced_b4_steps, book_d1_steps, book_d2_steps, book_d3_steps, book_d4_steps, TEST_LIMITS
 
 REQUIRED = {'format','debug-clippy','release-clippy','debug-tests','release-tests','doctests','release-build'}
 REQUIRED.update(name for name, _ in advanced_b_steps())
@@ -13,6 +13,7 @@ REQUIRED.update(name for name, _ in advanced_b4_steps())
 REQUIRED.update(name for name, _ in book_d1_steps())
 REQUIRED.update(name for name, _ in book_d2_steps())
 REQUIRED.update(name for name, _ in book_d3_steps())
+REQUIRED.update(name for name, _ in book_d4_steps())
 
 
 def engineering(path: Path | None, expected_id: str, expected_version: str) -> bool:
