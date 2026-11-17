@@ -41,7 +41,7 @@ For shutdown, enqueue all worker termination messages before joining any worker.
 
 ## 5. Respect TCP stream boundaries
 
-TCP does not preserve application write or packet boundaries. A CRLF terminator may arrive in separate reads, so a buffer fragment must never be treated as a complete HTTP line. The request reader now accumulates one bounded line through LF with `read_until`, applies both per-line and total-header limits, and has a one-byte-at-a-time reader regression test. Keep this test when changing the socket reader; it protects a real stream-framing edge case without depending on packet timing.
+TCP does not preserve application write or packet boundaries. A CRLF terminator may arrive in separate reads, so a buffer fragment must never be treated as a complete HTTP line. The request reader now accumulates one bounded line through LF with `read_until`, applies both per-line and total-header limits, and has a one-byte-at-a-time reader regression test. Oversized request headers return HTTP 431 (Request Header Fields Too Large), not 413 (Content Too Large), and a real TCP regression test covers that response. Keep these tests when changing the socket reader; they protect stream framing and protocol semantics without depending on packet timing.
 
 ## 6. State the HTTP teaching subset explicitly
 
