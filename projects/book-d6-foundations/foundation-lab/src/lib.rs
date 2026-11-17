@@ -11,15 +11,13 @@
 //! assert_eq!(room.area(), 20);
 //! ```
 //!
-//! A type that violates a programmer invariant can panic, but untrusted input
-//! should normally be handled with `Result`:
+//! A fallible parser returns `Result`; callers must handle the error instead
+//! of pretending the result is already a string:
 //!
 //! ```compile_fail
-//! use book_d6_foundation_lab::require_non_empty;
+//! use book_d6_foundation_lab::parse_non_empty;
 //!
-//! // The function returns a borrowed string, so this example is valid;
-//! // this compile-fail block is intentionally replaced by a type error.
-//! let _value: u32 = require_non_empty("not a number");
+//! let name: &str = parse_non_empty("Ada");
 //! ```
 
 use std::collections::HashMap;
