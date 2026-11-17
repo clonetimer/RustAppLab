@@ -96,11 +96,10 @@ fn pagemint_check_failure_creates_report_and_returns_nonzero() {
         .unwrap()
         .as_nanos();
     let nonce = TEMP_COUNTER.fetch_add(1, Ordering::Relaxed);
-    let base: PathBuf =
-        std::env::temp_dir().join(format!(
-            "rustapplab-grade-{}-{nanos}-{nonce}",
-            std::process::id()
-        ));
+    let base: PathBuf = std::env::temp_dir().join(format!(
+        "rustapplab-grade-{}-{nanos}-{nonce}",
+        std::process::id()
+    ));
     fs::create_dir(&base).unwrap();
     let project = base.join("web");
     assert!(cli(&[
