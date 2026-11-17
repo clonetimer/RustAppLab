@@ -63,4 +63,11 @@ cargo fmt --manifest-path "$book_d4_manifest" --all -- --check
 cargo clippy --locked --offline --manifest-path "$book_d4_manifest" --workspace --all-targets -- -D warnings
 cargo test --locked --offline --manifest-path "$book_d4_manifest" --workspace --all-targets
 cargo test --locked --offline --manifest-path "$book_d4_manifest" --workspace --doc
-printf '%s\n' '所有包与独立 Book D1/D2/D3/D4 Workspace 的格式、Lint、测试、release 构建命令均已执行；真实用户/跨平台验收还需单独记录。'
+echo '[extra] Rust Book D5 multithreaded web server workspace (offline)'
+book_d5_manifest=projects/book-d5-webserver/Cargo.toml
+cargo fmt --manifest-path "$book_d5_manifest" --all -- --check
+cargo clippy --locked --offline --manifest-path "$book_d5_manifest" --workspace --all-targets -- -D warnings
+cargo test --locked --offline --manifest-path "$book_d5_manifest" --workspace --all-targets -- --test-threads=2
+cargo test --locked --offline --manifest-path "$book_d5_manifest" --workspace --all-targets --release -- --test-threads=2
+cargo test --locked --offline --manifest-path "$book_d5_manifest" --workspace --doc
+printf '%s\n' '所有包与独立 Book D1/D2/D3/D4/D5 Workspace 的格式、Lint、测试、release 构建命令均已执行；真实用户/跨平台验收还需单独记录。'
