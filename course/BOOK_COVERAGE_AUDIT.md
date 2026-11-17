@@ -10,23 +10,23 @@
 | 原书小节 | 主题 | 审计状态 | 现有代码/讲义证据（仓库相对路径） | 后续核查或补充 |
 |---|---|---|---|---|
 | 1.1 | 安装 Rust 与工具链 | 已有实作 | `README_START_HERE.md` | 系统工具安装由用户完成；无需重复开发 |
-| 1.2 | Hello World | 已有实作 | `course/BOOK_D6_FOUNDATIONS.md` | 最小 crate、main、println 与 Cargo 运行实验；代码见 `projects/book-d6-foundations/foundation-lab/src/main.rs`，待 CI；Run 204 Linux/Windows、Rust 1.74 MSRV、Debug/Release/Doctest PASS |
+| 1.2 | Hello World | 已有实作 | `course/BOOK_D6_FOUNDATIONS.md` | 最小 crate、main、println 与 Cargo 运行实验；代码见 `projects/book-d6-foundations/foundation-lab/src/main.rs`；Run 204 Linux/Windows、Rust 1.74 MSRV、Debug/Release/Doctest PASS |
 | 1.3 | Hello Cargo | 已有实作 | `course/BEGINNER_WINDOWS_GUIDE.md` | 补充 Cargo 术语复习即可 |
-| 2 | 猜数字游戏教程 | 已有实作 | `course/BOOK_D6_FOUNDATIONS.md` | 输入、解析、比较、循环、无效输入与退出；可运行 guess 子命令，待 CI；Run 204 Linux/Windows、Rust 1.74 MSRV、Debug/Release/Doctest PASS |
+| 2 | 猜数字游戏教程 | 已有实作 | `course/BOOK_D6_FOUNDATIONS.md` | 输入、解析、比较、循环、无效输入与退出；可运行 guess 子命令；Run 204 Linux/Windows、Rust 1.74 MSRV、Debug/Release/Doctest PASS |
 | 3.1 | 变量与可变性 | 已有实作 | `course/FOUNDATION_PATH.md` | 已有任务卡 |
 | 3.2 | 数据类型 | 已有实作 | `course/studio/unitlab.md` | 需补数组/元组专题验证 |
 | 3.3 | 函数 | 已有实作 | `course/studio/unitlab.md` | 现有公开合同测试 |
-| 3.4 | 注释 | 已有实作 | `course/BOOK_D6_FOUNDATIONS.md` | 行/块注释、项文档、crate 文档与 doctest，待 CI；Run 204 Linux/Windows、Rust 1.74 MSRV、Debug/Release/Doctest PASS |
+| 3.4 | 注释 | 已有实作 | `course/BOOK_D6_FOUNDATIONS.md` | 行/块注释、项文档、crate 文档与 doctest；Run 204 Linux/Windows、Rust 1.74 MSRV、Debug/Release/Doctest PASS |
 | 3.5 | 控制流 | 已有实作 | `course/studio/quizdeck.md` | 继续复用分支与循环 |
 | 4.1 | 所有权 | 已有实作 | `course/studio/textscope.md` | 含移动错误实验 |
 | 4.2 | 引用与借用 | 已有实作 | `course/RUST_ERROR_LABS.md` | 含借用编译错误实验 |
 | 4.3 | 切片 | 已有实作 | `course/studio/textscope.md` | UTF-8 与字符串切片 |
 | 5.1 | 定义结构体 | 已有实作 | `course/studio/quizdeck.md` | 业务数据结构 |
-| 5.2 | 结构体示例程序 | 已有实作 | `course/BOOK_D6_FOUNDATIONS.md` | Rectangle 结构体、字段、构造与面积，待 CI；Run 204 Linux/Windows、Rust 1.74 MSRV、Debug/Release/Doctest PASS |
-| 5.3 | 方法语法 | 已有实作 | `course/BOOK_D6_FOUNDATIONS.md` | impl、self、关联函数与方法调用，待 CI；Run 204 Linux/Windows、Rust 1.74 MSRV、Debug/Release/Doctest PASS |
+| 5.2 | 结构体示例程序 | 已有实作 | `course/BOOK_D6_FOUNDATIONS.md` | Rectangle 结构体、字段、构造与面积；Run 204 Linux/Windows、Rust 1.74 MSRV、Debug/Release/Doctest PASS |
+| 5.3 | 方法语法 | 已有实作 | `course/BOOK_D6_FOUNDATIONS.md` | impl、self、关联函数与方法调用；Run 204 Linux/Windows、Rust 1.74 MSRV、Debug/Release/Doctest PASS |
 | 6.1 | 枚举 | 已有实作 | `course/studio/unitlab.md` | Unit enum |
 | 6.2 | match | 已有实作 | `course/studio/unitlab.md` | 分支转换 |
-| 6.3 | if let | 已有实作 | `course/BOOK_D6_FOUNDATIONS.md` | Option 分支的 if let 与 match 对照，待 CI；Run 204 Linux/Windows、Rust 1.74 MSRV、Debug/Release/Doctest PASS |
+| 6.3 | if let | 已有实作 | `course/BOOK_D6_FOUNDATIONS.md` | Option 分支的 if let 与 match 对照；Run 204 Linux/Windows、Rust 1.74 MSRV、Debug/Release/Doctest PASS |
 | 7.1 | 包和 crate | 已有实作 | `course/ADVANCED_B.md` | B1–B3 多 crate 工程 |
 | 7.2 | 模块作用域与私有性 | 已有实作 | `course/ADVANCED_B.md` | 业务库与应用入口 |
 | 7.3 | 路径 | 已有实作 | `course/ADVANCED_B.md` | 路径依赖 |
@@ -34,10 +34,10 @@
 | 7.5 | 拆分模块文件 | 已有实作 | `course/ADVANCED_B.md` | 多模块/多 crate |
 | 8.1 | Vector | 已有实作 | `course/studio/quizdeck.md` | 题库列表 |
 | 8.2 | String | 已有实作 | `course/studio/textscope.md` | UTF-8 与所有权 |
-| 8.3 | HashMap | 已有实作 | `course/BOOK_D6_FOUNDATIONS.md` | HashMap、Entry API、词频统计与确定性输出，待 CI；Run 204 Linux/Windows、Rust 1.74 MSRV、Debug/Release/Doctest PASS |
-| 9.1 | panic! | 已有实作 | `course/BOOK_D6_FOUNDATIONS.md` | panic 与程序不变量边界，catch_unwind 仅作行为实验，待 CI；Run 204 Linux/Windows、Rust 1.74 MSRV、Debug/Release/Doctest PASS |
+| 8.3 | HashMap | 已有实作 | `course/BOOK_D6_FOUNDATIONS.md` | HashMap、Entry API、词频统计与确定性输出；Run 204 Linux/Windows、Rust 1.74 MSRV、Debug/Release/Doctest PASS |
+| 9.1 | panic! | 已有实作 | `course/BOOK_D6_FOUNDATIONS.md` | panic 与程序不变量边界，catch_unwind 仅作行为实验；Run 204 Linux/Windows、Rust 1.74 MSRV、Debug/Release/Doctest PASS |
 | 9.2 | Result | 已有实作 | `course/studio/ledgerlite.md` | 错误传播及文件失败 |
-| 9.3 | panic 还是返回错误 | 已有实作 | `course/BOOK_D6_FOUNDATIONS.md` | 外部输入 Result 与内部不变量 panic 的决策练习，待 CI；Run 204 Linux/Windows、Rust 1.74 MSRV、Debug/Release/Doctest PASS |
+| 9.3 | panic 还是返回错误 | 已有实作 | `course/BOOK_D6_FOUNDATIONS.md` | 外部输入 Result 与内部不变量 panic 的决策练习；Run 204 Linux/Windows、Rust 1.74 MSRV、Debug/Release/Doctest PASS |
 | 10.1 | 泛型 | 已有实作 | `course/studio/badgeforge.md` | 泛型渲染 |
 | 10.2 | Trait | 已有实作 | `course/ADVANCED_A.md` | Renderer 与 trait object |
 | 10.3 | 生命周期 | 已有实作 | `course/ADVANCED_A.md` | 签名、借用作用域、compile_fail |
@@ -48,12 +48,12 @@
 | 12.2 | 读取文件 | 已有实作 | `course/02_filesystem.md` | 文件扫描与读取 |
 | 12.3 | 模块化与错误处理 | 已有实作 | `course/ADVANCED_B.md` | 业务库抽离 |
 | 12.4 | 测试驱动开发 | 已有实作 | `course/INDEPENDENT_PATH.md` | 先写公开行为合同 |
-| 12.5 | 环境变量 | 已有实作 | `course/BOOK_D6_FOUNDATIONS.md` | 环境变量优先级、OsString 与可注入配置路径测试，待 CI；Run 204 Linux/Windows、Rust 1.74 MSRV、Debug/Release/Doctest PASS |
+| 12.5 | 环境变量 | 已有实作 | `course/BOOK_D6_FOUNDATIONS.md` | 环境变量优先级、OsString 与可注入配置路径测试；Run 204 Linux/Windows、Rust 1.74 MSRV、Debug/Release/Doctest PASS |
 | 12.6 | 标准错误输出 | 已有实作 | `course/03_error_handling.md` | 非零退出码、stderr |
 | 13.1 | 闭包 | 已有实作 | `course/ADVANCED_A.md` | Fn / FnMut / FnOnce |
 | 13.2 | 迭代器 | 已有实作 | `course/studio/textscope.md` | 过滤、聚合与排序 |
-| 13.3 | 用迭代器改进 I/O 项目 | 已有实作 | `course/BOOK_D6_FOUNDATIONS.md` | BufRead、lines、try_fold 与 I/O 错误传播，待 CI；Run 204 Linux/Windows、Rust 1.74 MSRV、Debug/Release/Doctest PASS |
-| 13.4 | 循环与迭代器性能比较 | 已有实作 | `course/BOOK_D6_FOUNDATIONS.md` | 同输入等价实现、black_box、release 模式计时与测量纪律，待 CI；Run 204 Linux/Windows、Rust 1.74 MSRV、Debug/Release/Doctest PASS |
+| 13.3 | 用迭代器改进 I/O 项目 | 已有实作 | `course/BOOK_D6_FOUNDATIONS.md` | BufRead、lines、try_fold 与 I/O 错误传播；Run 204 Linux/Windows、Rust 1.74 MSRV、Debug/Release/Doctest PASS |
+| 13.4 | 循环与迭代器性能比较 | 已有实作 | `course/BOOK_D6_FOUNDATIONS.md` | 同输入等价实现、black_box、release 模式计时与测量纪律；Run 204 Linux/Windows、Rust 1.74 MSRV、Debug/Release/Doctest PASS |
 | 14.1 | Profile 构建配置 | 已有实作 | `course/BOOK_D1_CARGO.md` | D1 已添加 profile 实验；独立 Workspace 已随 PR #6 合并，D0–D4 验收矩阵 17/17 CI Jobs PASS |
 | 14.2 | crate 打包与发布 | 已有实作 | `course/BOOK_D1_CARGO.md` | 仅安全打包检查，不做实际 registry 上传；独立 Workspace 已随 PR #6 合并，D0–D4 验收矩阵 17/17 CI Jobs PASS |
 | 14.3 | Cargo Workspace | 已有实作 | `projects/book-d1-cargo/Cargo.toml` | 复用原 B 课程，再加 D1 独立工作区；独立 Workspace 已随 PR #6 合并，D0–D4 验收矩阵 17/17 CI Jobs PASS |
