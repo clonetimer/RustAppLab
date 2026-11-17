@@ -1,6 +1,7 @@
 use std::{env, process::ExitCode};
 
-fn run(mut args: impl Iterator<Item = String>) -> Result<String, String> {
+fn run(args: impl IntoIterator<Item = String>) -> Result<String, String> {
+    let mut args = args.into_iter();
     let topic = args
         .next()
         .ok_or_else(|| "用法：book-d2 <box|deref|drop|rc|refcell|weak>".to_string())?;
