@@ -43,12 +43,15 @@ $manifest = Join-Path $lab "appendix-lab/Cargo.toml"
 cargo +1.85.0 fix --edition --manifest-path $manifest --allow-no-vcs
 $content = [IO.File]::ReadAllText($manifest)
 $content = $content.Replace('edition = "2021"', 'edition = "2024"')
+$content = $content.Replace('rust-version = "1.74"', 'rust-version = "1.85"')
 [IO.File]::WriteAllText($manifest, $content, [Text.UTF8Encoding]::new($false))
 cargo +1.85.0 fmt --manifest-path $manifest --all -- --check
 cargo +1.85.0 clippy --locked --offline --manifest-path $manifest --workspace --all-targets -- -D warnings
 cargo +1.85.0 test --locked --offline --manifest-path $manifest --workspace --all-targets
 cargo +1.85.0 test --locked --offline --manifest-path $manifest --workspace --doc
 cargo +1.85.0 test --locked --offline --manifest-path $manifest --workspace --all-targets --release
+# 保存迁移证据后清理临时副本
+Remove-Item $lab -Recurse -Force
 ~~~
 
 POSIX shell 可使用：
@@ -61,6 +64,7 @@ rustup toolchain install 1.85.0 --profile minimal
 manifest="$lab/appendix-lab/Cargo.toml"
 cargo +1.85.0 fix --edition --manifest-path "$manifest" --allow-no-vcs
 sed -i.bak 's/edition = "2021"/edition = "2024"/' "$manifest"
+sed -i.bak2 's/rust-version = "1.74"/rust-version = "1.85"/' "$manifest"
 cargo +1.85.0 test --locked --offline --manifest-path "$manifest" --workspace --all-targets
 cargo +1.85.0 test --locked --offline --manifest-path "$manifest" --workspace --doc
 ~~~
@@ -81,7 +85,7 @@ name = "nightly-isolation-lab"
 version = "0.1.0"
 edition = "2021"
 publish = false
-'@ | Set-Content -Encoding utf8 (Join-Path $nightly "Cargo.toml")
+'@ | Set-Content -Encoding Ascii (Join-Path $nightly "Cargo.toml")
 @'
 #![feature(generic_const_exprs)]
 #![allow(incomplete_features)]
@@ -98,7 +102,7 @@ mod tests {
         assert_eq!(Square::<3>::zeroed().cells().len(), 9);
     }
 }
-'@ | Set-Content -Encoding utf8 (Join-Path $nightly "src/lib.rs")
+'@ | Set-Content -Encoding Ascii (Join-Path $nightly "src/lib.rs")
 rustup toolchain install nightly-2026-11-17 --profile minimal
 cargo +nightly-2026-11-17 test --manifest-path (Join-Path $nightly "Cargo.toml")
 ~~~
