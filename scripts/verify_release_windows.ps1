@@ -19,7 +19,7 @@ function Source-Id {
     $Names = [string[]]@(Get-ChildItem -LiteralPath $Root -Recurse -File -Force | ForEach-Object {
         $Rel = $_.FullName.Substring($Root.Length + 1).Replace('\','/')
         if ($Rel -cnotmatch '(^|/)(target|\.git|__pycache__)/' -and
-            (($Rel -notmatch '/') -or ($Rel -cmatch '^(apps|scripts|\.github|course|examples)/') -or ($Rel -cmatch '^projects/(advanced-b|advanced-c1|advanced-c2|book-d1-cargo|book-d2-smart-pointers|book-d3-oop-patterns|book-d4-advanced-features|book-d5-webserver|book-d6-appendices)/')) -and
+            (($Rel -notmatch '/') -or ($Rel -cmatch '^(apps|scripts|\.github|course|examples)/') -or ($Rel -cmatch '^projects/(advanced-b|advanced-c1|advanced-c2|book-d1-cargo|book-d2-smart-pointers|book-d3-oop-patterns|book-d4-advanced-features|book-d5-webserver|book-d6-appendices|book-d6-foundations)/')) -and
             (($Rel -ceq 'VERSION') -or ($_.Extension -cin @('.rs','.toml','.lock','.py','.ps1','.cmd','.sh','.html','.css','.js','.yml','.yaml','.md','.tsv','.txt','.json','.kv','.svg')))) { $Rel }
     })
     [Array]::Sort($Names, [StringComparer]::Ordinal)
@@ -186,6 +186,14 @@ try {
     Step 'book-d6-tests' 'cargo' (@('test')+$AppendixCommon+@('--all-targets')) $true 11 0
     Step 'book-d6-release-tests' 'cargo' (@('test')+$AppendixCommon+@('--all-targets','--release')) $true 11 0
     Step 'book-d6-doctests' 'cargo' (@('test')+$AppendixCommon+@('--doc')) $true 3 0
+    # Book D6-B: practical gaps from Rust Book chapters 1-13.
+    $FoundationsManifest = 'projects/book-d6-foundations/Cargo.toml'
+    $FoundationsCommon = @('--locked','--offline','--manifest-path',$FoundationsManifest,'--workspace')
+    Step 'book-d6-foundations-format' 'cargo' @('fmt','--manifest-path',$FoundationsManifest,'--all','--','--check')
+    Step 'book-d6-foundations-clippy' 'cargo' (@('clippy')+$FoundationsCommon+@('--all-targets','--','-D','warnings'))
+    Step 'book-d6-foundations-tests' 'cargo' (@('test')+$FoundationsCommon+@('--all-targets')) $true 13 0
+    Step 'book-d6-foundations-release-tests' 'cargo' (@('test')+$FoundationsCommon+@('--all-targets','--release')) $true 13 0
+    Step 'book-d6-foundations-doctests' 'cargo' (@('test')+$FoundationsCommon+@('--doc')) $true 2 0
     $EndId = Source-Id
     $Report.source_id_after = $EndId
     if ($EndId -ne $StartId) { throw 'Source changed during validation; results do not qualify this tree.' }
