@@ -181,7 +181,9 @@ class BookCoverageTests(unittest.TestCase):
                          "pub fn word_frequencies", "pub fn parse_non_empty",
                          "pub fn config_dir_from", "pub fn count_non_empty_lines",
                          "pub fn sum_with_loop", "pub fn sum_with_iterator",
-                         "pub fn benchmark_sums", "buffered_line_count_propagates_io_failures"):
+                         "pub fn benchmark_sums", "buffered_line_count_propagates_io_failures",
+                         "// This assertion protects a programmer invariant",
+                         "/* Use parse_non_empty for user-provided values instead. */"):
             with self.subTest(contract=contract):
                 self.assertIn(contract, implementation)
         self.assertEqual(len(re.findall(r"#\[test\]", implementation)), 14)
