@@ -59,12 +59,12 @@
 | 14.3 | Cargo Workspace | 开发中 | `projects/book-d1-cargo/Cargo.toml` | 复用原 B 课程，再加 D1 独立工作区 |
 | 14.4 | cargo install | 开发中 | `course/BOOK_D1_CARGO.md` | 仅本地路径和隔离 root |
 | 14.5 | Cargo 自定义子命令 | 开发中 | `projects/book-d1-cargo/cargo-applab-map/src/main.rs` | 添加真实 cargo-* 命令，待 CI |
-| 15.1 | Box | 部分 | `course/studio/termgarden.md` | 使用 trait object，缺 Box 所有权专题 |
-| 15.2 | Deref | 缺口 | `—` | 补 Deref coercion 与自定义智能指针实验 |
-| 15.3 | Drop | 部分 | `apps/netfetch/src/lib.rs` | 已有 RAII 清理代码，缺 Drop 专题 |
-| 15.4 | Rc | 已有实作 | `course/ADVANCED_A.md` | 共享所有权 |
-| 15.5 | RefCell | 已有实作 | `course/ADVANCED_A.md` | 运行时借用检查 |
-| 15.6 | 引用循环 | 部分 | `course/ADVANCED_A.md` | Weak 使用存在，缺循环内存泄漏实验 |
+| 15.1 | Box | 开发中 | `projects/book-d2-smart-pointers/smart-pointer-lab/src/lib.rs` | 递归类型、堆间接层与 Box trait object 已有可运行示例，待 CI |
+| 15.2 | Deref | 开发中 | `projects/book-d2-smart-pointers/smart-pointer-lab/src/lib.rs` | 自定义 MyBox、Deref/DerefMut 与 String 到 str 强制转换，待 CI |
+| 15.3 | Drop | 开发中 | `projects/book-d2-smart-pointers/smart-pointer-lab/src/lib.rs` | 自动析构与 std::mem::drop 时机实验，待 CI |
+| 15.4 | Rc | 开发中 | `projects/book-d2-smart-pointers/smart-pointer-lab/src/lib.rs` | Rc clone、strong_count 与单线程共享所有权实验，待 CI |
+| 15.5 | RefCell | 开发中 | `projects/book-d2-smart-pointers/smart-pointer-lab/src/lib.rs` | RefCell 运行时借用冲突、try_borrow_mut 与 Rc<RefCell<T>> 实验，待 CI |
+| 15.6 | 引用循环 | 开发中 | `projects/book-d2-smart-pointers/smart-pointer-lab/src/lib.rs` | parent-child 强拥有/Weak 回边与父节点释放实验，待 CI |
 | 16.1 | 线程 | 已有实作 | `course/SYSTEMS_PATH.md` | BatchMeter 并发 |
 | 16.2 | 消息传递 | 已有实作 | `course/SYSTEMS_PATH.md` | mpsc |
 | 16.3 | 共享状态 | 已有实作 | `course/ADVANCED_A.md` | Arc 与状态边界 |
