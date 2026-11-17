@@ -84,7 +84,7 @@ pub fn classify_optional(value: Option<i32>, threshold: i32) -> &'static str {
 /// A for loop uses an irrefutable binding for each item.
 pub fn first_even(values: &[i32]) -> Option<i32> {
     for &value in values {
-        if value % 2 == 0 {
+        if value.rem_euclid(2) == 0 {
             return Some(value);
         }
     }
@@ -92,6 +92,8 @@ pub fn first_even(values: &[i32]) -> Option<i32> {
 }
 
 /// while let repeatedly handles the Some variant and stops at None.
+// Keep while let visible here: this lesson teaches its Option-pattern semantics.
+#[allow(clippy::while_let_on_iterator)]
 pub fn take_until_negative(values: &[i32]) -> Vec<i32> {
     let mut iter = values.iter();
     let mut taken = Vec::new();
@@ -117,6 +119,8 @@ pub fn require_username(name: Option<&str>) -> Result<String, &'static str> {
 }
 
 /// if let accepts a refutable pattern and keeps the success path concise.
+// This explicit branch is intentional: it is the chapter's if-let example.
+#[allow(clippy::manual_map)]
 pub fn extract_optional(value: Option<i32>) -> Option<i32> {
     if let Some(number) = value {
         Some(number)
