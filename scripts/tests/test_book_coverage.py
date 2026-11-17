@@ -1,4 +1,4 @@
-"""D0-D5 checks audit and reference contracts, not actual learner mastery."""
+"""D0-D6 checks audit and reference contracts, not actual learner mastery."""
 from pathlib import Path
 import re
 import unittest
@@ -85,6 +85,51 @@ class BookCoverageTests(unittest.TestCase):
         msrv = (ROOT / "scripts/msrv_check.py").read_text(encoding="utf-8")
         self.assertIn("*book_d5_steps()", release)
         self.assertIn("plan.extend(book_d5_steps(quality=False))", msrv)
+
+
+
+    def test_d6_appendix_reference_workspace_is_isolated_and_executable(self):
+        base = ROOT / "projects/book-d6-appendices"
+        for relative in ("Cargo.toml", "Cargo.lock", "README.md",
+                         "appendix-lab/Cargo.toml", "appendix-lab/src/lib.rs"):
+            with self.subTest(path=relative):
+                self.assertTrue((base / relative).is_file())
+        manifest = (base / "appendix-lab/Cargo.toml").read_text(encoding="utf-8")
+        self.assertIn('edition = "2021"', manifest)
+        self.assertIn('rust-version = "1.74"', manifest)
+        self.assertIn("publish = false", manifest)
+        self.assertNotIn("[dependencies]", manifest)
+        root_workspace = (ROOT / "Cargo.toml").read_text(encoding="utf-8")
+        self.assertNotIn('"projects/book-d6-appendices"', root_workspace)
+
+        lesson = (ROOT / "course/BOOK_D6_APPENDICES.md").read_text(encoding="utf-8")
+        implementation = (base / "appendix-lab/src/lib.rs").read_text(encoding="utf-8")
+        for topic in ("附录 A", "附录 B", "附录 C", "附录 D", "附录 E", "附录 F", "附录 G",
+                      "Strict keywords", "Reserved keywords", "Weak keywords",
+                      "Edition 2024", "rust-analyzer", "Stable", "Beta", "Nightly"):
+            with self.subTest(topic=topic):
+                self.assertIn(topic, lesson)
+        for contract in ("pub fn r#match", "impl Add for Point",
+                         "derive(Debug, Clone, PartialEq, Eq, Hash, Default)",
+                         "impl fmt::Display for Task", "f64::NAN", "compile_fail"):
+            with self.subTest(contract=contract):
+                self.assertIn(contract, implementation)
+        self.assertEqual(len(re.findall(r"#\[test\]", implementation)), 11)
+        self.assertEqual(len(re.findall(r"compile_fail", implementation)), 2)
+
+    def test_d6_is_registered_in_release_msrv_and_learner_package(self):
+        release = (ROOT / "scripts/release_check.py").read_text(encoding="utf-8")
+        msrv = (ROOT / "scripts/msrv_check.py").read_text(encoding="utf-8")
+        structural = (ROOT / "scripts/structural_check.py").read_text(encoding="utf-8")
+        package = (ROOT / "scripts/package.py").read_text(encoding="utf-8")
+        learner = (ROOT / "scripts/package_learner_kit.py").read_text(encoding="utf-8")
+        self.assertIn("*book_d6_steps()", release)
+        self.assertIn("plan.extend(book_d6_steps(quality=False))", msrv)
+        self.assertIn("projects/book-d6-appendices", structural)
+        self.assertIn("book-d6-appendices", package)
+        self.assertIn("BOOK_D6_APPENDICES.md", learner)
+        self.assertIn('projects" / "book-d6-appendices', learner)
+
 
 
 
