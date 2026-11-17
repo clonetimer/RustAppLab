@@ -47,6 +47,8 @@ class SummaryTests(unittest.TestCase):
             'projects/advanced-b/ADVANCED_B.md',
             'projects/book-d2-smart-pointers/smart-pointer-lab/src/lib.rs',
             'projects/book-d3-oop-patterns/oop-pattern-lab/src/lib.rs',
+            'projects/book-d4-advanced-features/advanced-lab/src/lib.rs',
+            'projects/book-d4-advanced-features/d4-proc-macros/src/lib.rs',
             'course/RUST_ERROR_LABS.md',
             'apps/labquest/studio/README.md',
             'examples/foundation/tasks.tsv',
@@ -213,15 +215,31 @@ class B4GateTests(unittest.TestCase):
                 self.assertIn('--locked', command)
                 self.assertIn('--offline', command)
 
+    def test_book_d4_workspace_has_explicit_release_and_msrv_matrix(self):
+        full = release.book_d4_steps()
+        basic = release.book_d4_steps(quality=False)
+        self.assertEqual([name for name, _ in full],
+                         ['book-d4-format', 'book-d4-clippy', 'book-d4-tests', 'book-d4-doctests'])
+        self.assertEqual([name for name, _ in basic],
+                         ['book-d4-tests', 'book-d4-doctests'])
+        self.assertEqual(release.TEST_LIMITS['book-d4-tests'], (36, 0))
+        self.assertEqual(release.TEST_LIMITS['book-d4-doctests'], (2, 0))
+        for name, command in full:
+            self.assertTrue(name.startswith('book-d4-'))
+            self.assertIn('projects/book-d4-advanced-features/Cargo.toml', command)
+            if command[1] != 'fmt':
+                self.assertIn('--locked', command)
+                self.assertIn('--offline', command)
+
     def test_all_gate_entrypoints_include_book_d3(self):
         for relative in ('scripts/release_check.py', 'scripts/msrv_check.py'):
             text = (release.ROOT/relative).read_text()
             if relative.endswith('/release_check.py'):
-                for name in ('book_d1_steps()', 'book_d2_steps()', 'book_d3_steps()'):
+                for name in ('book_d1_steps()', 'book_d2_steps()', 'book_d3_steps()', 'book_d4_steps()'):
                     self.assertIn('*' + name, text)
             else:
                 for name in ('book_d1_steps(quality=False)', 'book_d2_steps(quality=False)',
-                             'book_d3_steps(quality=False)'):
+                             'book_d3_steps(quality=False)', 'book_d4_steps(quality=False)'):
                     self.assertIn(name, text)
         for relative in ('scripts/verify.sh', 'scripts/verify.ps1', 'scripts/verify_release_windows.ps1'):
             text = (release.ROOT/relative).read_text(encoding='utf-8-sig')
@@ -229,6 +247,7 @@ class B4GateTests(unittest.TestCase):
             self.assertIn('projects/book-d1-cargo/Cargo.toml', text)
             self.assertIn('projects/book-d2-smart-pointers/Cargo.toml', text)
             self.assertIn('projects/book-d3-oop-patterns/Cargo.toml', text)
+            self.assertIn('projects/book-d4-advanced-features/Cargo.toml', text)
             self.assertIn('advanced_b_json_e2e', text)
             self.assertNotIn('cargo fetch', text)
         for relative in ('scripts/verify.ps1', 'scripts/verify_release_windows.ps1'):

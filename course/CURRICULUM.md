@@ -30,7 +30,9 @@
 
 **D3 面向对象与模式匹配**：[讲义](BOOK_D3_OOP_PATTERNS.md) 与 [独立实验](../projects/book-d3-oop-patterns/README.md) 覆盖封装、trait object、状态模式，以及 18.1–18.3 的模式语法与可反驳性。D1/D2/D3 均为 RC 之外的补充，须经跨平台 CI 验证。
 
-后续顺序：D4（Unsafe/高级 Trait/宏）、D5（原生线程池 Web Server）、D6（附录与基础散点）。
+**D4 高级特性**：[讲义](BOOK_D4_ADVANCED_FEATURES.md) 与 [独立实验](../projects/book-d4-advanced-features/README.md) 覆盖 unsafe Rust、高级 Trait/类型/函数与三类过程宏。实验使用 Rust 1.74、零第三方依赖，并把不安全操作限制在有安全契约的局部代码中；待跨平台 CI 签核。
+
+后续顺序：D5（原生线程池 Web Server）、D6（附录与基础散点）。
 
 ## 当前材料数量与性质
 

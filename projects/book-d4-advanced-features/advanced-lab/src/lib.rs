@@ -61,10 +61,12 @@ make_record!(GeneratedReading {
 pub fn sum_via_raw_pointer(values: &[i32]) -> i32 {
     let pointer = values.as_ptr();
     let mut total = 0;
-    for offset in 0..values.len() {
-        // SAFETY: pointer comes from values; every offset is strictly less
-        // than the slice length, so it is in-bounds and initialized.
+    let mut offset = 0;
+    while offset < values.len() {
+        // SAFETY: pointer comes from values; offset is strictly less than
+        // the slice length, so it is in-bounds and initialized.
         total += unsafe { *pointer.add(offset) };
+        offset += 1;
     }
     total
 }
@@ -104,6 +106,11 @@ pub unsafe fn read_union_integer(value: NumberUnion) -> u32 {
 }
 
 /// A UTF-8 view contract that implementors must uphold.
+///
+/// # Safety
+///
+/// Implementors must guarantee that every returned string slice is valid UTF-8
+/// and remains backed by the same valid bytes for the lifetime of the borrow.
 pub unsafe trait ValidUtf8 {
     /// Returns the valid UTF-8 contents for the borrow's lifetime.
     fn as_str(&self) -> &str;
@@ -432,7 +439,7 @@ mod tests {
     fn unsafe_raw_pointer_api_updates_a_valid_exclusive_pointer() {
         let mut value = 5;
         // SAFETY: value is aligned, initialized, live, and exclusively borrowed.
-        unsafe { add_to_raw_pointer(&mut value, 4) };
+        unsafe { add_to_raw_pointer(std::ptr::addr_of_mut!(value), 4) };
         assert_eq!(value, 9);
     }
 
