@@ -150,6 +150,25 @@ unsafe impl ValidUtf8 for AsciiLabel {
     }
 }
 
+mod foreign {
+    extern "C" {
+        pub fn d4_ffi_identity(value: i32) -> i32;
+    }
+}
+
+/// A Rust function exported with the C ABI for the FFI example.
+#[no_mangle]
+pub extern "C" fn d4_ffi_identity(value: i32) -> i32 {
+    value
+}
+
+/// Calls the matching C-ABI symbol declared in the foreign module.
+pub fn call_ffi_identity(value: i32) -> i32 {
+    // SAFETY: the symbol is defined in this crate with the same C ABI and
+    // signature; no pointers, ownership, or unwinding cross the ABI boundary.
+    unsafe { foreign::d4_ffi_identity(value) }
+}
+
 static mut SINGLE_THREAD_COUNTER: u32 = 0;
 
 /// Adds to a deliberately single-threaded mutable static counter.
@@ -382,6 +401,7 @@ pub fn demo(topic: &str) -> Result<Vec<String>, &'static str> {
                 format!("raw-sum={}", sum_via_raw_pointer(&values)),
                 format!("ascii={}", label.as_str()),
                 format!("union-integer={integer}"),
+                format!("ffi-identity={}", call_ffi_identity(17)),
             ])
         }
         "traits" => {
@@ -470,6 +490,11 @@ mod tests {
         let value = NumberUnion { integer: 73 };
         // SAFETY: the integer field is the field initialized above.
         assert_eq!(unsafe { read_union_integer(value) }, 73);
+    }
+
+    #[test]
+    fn extern_c_function_can_be_called_through_a_foreign_declaration() {
+        assert_eq!(call_ffi_identity(17), 17);
     }
 
     #[test]

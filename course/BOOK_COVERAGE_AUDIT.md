@@ -75,7 +75,7 @@
 | 18.1 | 使用模式的位置 | 开发中 | `projects/book-d3-oop-patterns/oop-pattern-lab/src/lib.rs` | match、if let、while let、for、let-else 与函数参数模式，待 CI |
 | 18.2 | 模式可反驳性 | 开发中 | `projects/book-d3-oop-patterns/oop-pattern-lab/src/lib.rs` | let-else/if let 对照与 compile_fail doctest，待 CI |
 | 18.3 | 模式语法 | 开发中 | `projects/book-d3-oop-patterns/oop-pattern-lab/src/lib.rs` | 字面量、多模式、范围、结构体/枚举/切片/元组解构、ref、@、守卫，待 CI |
-| 19.1 | Unsafe Rust | 开发中 | `projects/book-d4-advanced-features/advanced-lab/src/lib.rs` | 裸指针安全抽象、unsafe fn/trait、union、受限 static mut，待 CI |
+| 19.1 | Unsafe Rust | 开发中 | `projects/book-d4-advanced-features/advanced-lab/src/lib.rs` | 裸指针安全抽象、unsafe fn、extern C、unsafe trait、union、受限 static mut，待 CI |
 | 19.2 | 高级 Trait | 开发中 | `projects/book-d4-advanced-features/advanced-lab/src/lib.rs` | 关联类型、默认泛型参数、完全限定语法、超 Trait、Newtype，待 CI |
 | 19.3 | 高级类型 | 开发中 | `projects/book-d4-advanced-features/advanced-lab/src/lib.rs` | Newtype、类型别名、Never、DST、?Sized，待 CI |
 | 19.4 | 高级函数/闭包 | 开发中 | `projects/book-d4-advanced-features/advanced-lab/src/lib.rs` | 函数指针、枚举构造函数、返回闭包与 Box<dyn Fn>，待 CI |

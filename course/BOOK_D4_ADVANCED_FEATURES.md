@@ -45,7 +45,7 @@ unsafe 并不等于“这里可以随意写内存”。Rust 仍然检查普通�
 4. 实现 unsafe trait。
 5. 访问 union 字段。
 
-本实验分别展示裸指针、union、unsafe fn、unsafe trait 与可变静态数据。每处 unsafe 都有局部 SAFETY 注释，说明不变量由谁保证。
+本实验分别展示裸指针、unsafe fn、extern C 函数与外部 ABI 声明、unsafe trait、union 与可变静态数据。每处 unsafe 都有局部 SAFETY 注释，说明不变量由谁保证。
 
 ## 先从安全抽象开始
 
@@ -62,6 +62,8 @@ add_to_raw_pointer 要求调用者提供非空、对齐、有效、已初始化�
 ## unsafe trait、union 与 static mut
 
 ValidUtf8 是一个 unsafe trait：实现者承诺返回的字节在借用期内始终是合法 UTF-8。AsciiLabel 通过私有数组、ASCII 构造检查和长度边界维护该承诺；实现中才使用 from_utf8_unchecked。
+
+extern C 声明让 Rust 调用遵循外部 C ABI；示例在同一 crate 中提供了签名完全匹配的导出符号，验证调用边界而不依赖系统库或额外 C 编译器。真实 FFI 还必须核对 ABI、指针有效期、布局、所有权和错误/异常边界。
 
 NumberUnion 只能在调用者知道当前活动字段时读取。示例只读取刚刚写入的 integer 字段。
 

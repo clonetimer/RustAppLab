@@ -168,7 +168,7 @@ try {
     $AdvancedCommon = @('--locked','--offline','--manifest-path',$AdvancedManifest,'--workspace')
     Step 'book-d4-format' 'cargo' @('fmt','--manifest-path',$AdvancedManifest,'--all','--','--check')
     Step 'book-d4-clippy' 'cargo' (@('clippy')+$AdvancedCommon+@('--all-targets','--','-D','warnings'))
-    Step 'book-d4-tests' 'cargo' (@('test')+$AdvancedCommon+@('--all-targets')) $true 36 0
+    Step 'book-d4-tests' 'cargo' (@('test')+$AdvancedCommon+@('--all-targets')) $true 37 0
     Step 'book-d4-doctests' 'cargo' (@('test')+$AdvancedCommon+@('--doc')) $true 2 0
     $EndId = Source-Id
     $Report.source_id_after = $EndId

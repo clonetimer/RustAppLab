@@ -15,6 +15,7 @@ fn unsafe_demo_exposes_bounded_raw_pointer_and_union_examples() {
     assert!(stdout.contains("raw-sum=10"));
     assert!(stdout.contains("ascii=SAT"));
     assert!(stdout.contains("union-integer=42"));
+    assert!(stdout.contains("ffi-identity=17"));
 }
 
 #[test]
