@@ -122,7 +122,7 @@ pub fn require_username(name: Option<&str>) -> Result<String, &'static str> {
 
 /// if let accepts a refutable pattern and keeps the success path concise.
 // This explicit branch is intentional: it is the chapter's if-let example.
-#[allow(clippy::needless_match)]
+#[allow(clippy::manual_map, clippy::needless_match)]
 pub fn extract_optional(value: Option<i32>) -> Option<i32> {
     if let Some(number) = value {
         Some(number)
