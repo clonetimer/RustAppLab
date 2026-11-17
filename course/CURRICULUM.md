@@ -20,6 +20,14 @@
 
 基础阶段同时保留FileQuest、LogLens、LocalHub、SafeSync与32章原有应用教程，章节入口见 [课程首页](README.md)。对照阅读见 [Rust Book指南](BOOK_GUIDE.md)。
 
+## Rust Book 内容完整性补课（独立于 0.19.0-rc.1 课程范围）
+
+[逐节审计矩阵](BOOK_COVERAGE_AUDIT.md) 以中文版 Rust Book 第 1–20 章及附录 A–G 为基准，区分已有教学、关联实作、待补缺口与新课待 CI；不以关键词出现作为教学完成证明。
+
+**D1 Cargo 进阶**：[完整讲义](BOOK_D1_CARGO.md) 与 [独立可执行 Workspace](../projects/book-d1-cargo/README.md) 已进入 feature 分支，包含构建 profile、打包检查、Workspace、专用安装根与自定义 Cargo 子命令。此补充不改变 C2 RC 冻结版本，仍需 CI 验证。
+
+后续顺序：D2（智能指针）、D3（面向对象与模式）、D4（Unsafe/高级 Trait/宏）、D5（原生线程池 Web Server）、D6（附录与基础散点）。
+
 ## 当前材料数量与性质
 
 根Cargo工作区17个包：FileQuest、LogLens、LocalHub、SafeSync、LabQuest、UnitLab、QuizDeck、TextScope、LedgerLite、BadgeForge、BatchMeter、TermGarden、StoreDesk、MiniKV、NetFetch、ServiceDesk、AsyncBoard。LabQuest是学习平台，不冒充学生作品。
