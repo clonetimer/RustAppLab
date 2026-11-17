@@ -70,6 +70,17 @@ cargo run --release --locked --offline --manifest-path projects/book-d6-foundati
 - `///`：紧邻项目的文档注释，会进入 rustdoc。
 - `//!`：模块或 crate 级文档注释。
 
+普通注释示例：
+
+~~~rust
+// A line comment explains the next statement.
+/*
+ * A block comment can span multiple lines.
+ * Use it for a short explanation, not to hide large code sections.
+ */
+let answer = 42;
+~~~
+
 D6-B 的 crate 顶部使用 `//! `，公开类型与函数使用 `///`，并包含可运行 doctest。文档示例是代码合同，修改 API 时也要运行 `cargo test --doc`。
 
 **练习**：为 `word_frequencies` 添加一个 doctest，证明输入大小写不同但词频键统一为小写。
