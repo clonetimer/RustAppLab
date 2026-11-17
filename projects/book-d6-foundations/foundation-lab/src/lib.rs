@@ -123,7 +123,10 @@ pub fn parse_non_empty(input: &str) -> Result<&str, ValidationError> {
 
 /// Assert a programmer invariant; do not use this for ordinary user input.
 pub fn require_non_empty(input: &str) -> &str {
-    assert!(!input.trim().is_empty(), "programmer invariant: empty value");
+    assert!(
+        !input.trim().is_empty(),
+        "programmer invariant: empty value"
+    );
     input
 }
 
@@ -274,13 +277,19 @@ mod tests {
 
     impl std::io::Read for FailingReader {
         fn read(&mut self, _buffer: &mut [u8]) -> io::Result<usize> {
-            Err(io::Error::new(io::ErrorKind::InvalidData, "synthetic read failure"))
+            Err(io::Error::new(
+                io::ErrorKind::InvalidData,
+                "synthetic read failure",
+            ))
         }
     }
 
     impl BufRead for FailingReader {
         fn fill_buf(&mut self) -> io::Result<&[u8]> {
-            Err(io::Error::new(io::ErrorKind::InvalidData, "synthetic read failure"))
+            Err(io::Error::new(
+                io::ErrorKind::InvalidData,
+                "synthetic read failure",
+            ))
         }
 
         fn consume(&mut self, _amount: usize) {}
