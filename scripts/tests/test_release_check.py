@@ -217,13 +217,12 @@ class B4GateTests(unittest.TestCase):
         for relative in ('scripts/release_check.py', 'scripts/msrv_check.py'):
             text = (release.ROOT/relative).read_text()
             if relative.endswith('/release_check.py'):
-                self.assertIn('*book_d2_steps()', text)
-                self.assertIn('*book_d1_steps()', text)
+                for name in ('book_d1_steps()', 'book_d2_steps()', 'book_d3_steps()'):
+                    self.assertIn('*' + name, text)
             else:
-                self.assertIn('book_d2_steps(quality=False)', text)
-            self.assertIn('book_d3_steps()', text)
-            self.assertIn('book_d3_steps(quality=False)', text)
-                self.assertIn('book_d1_steps(quality=False)', text)
+                for name in ('book_d1_steps(quality=False)', 'book_d2_steps(quality=False)',
+                             'book_d3_steps(quality=False)'):
+                    self.assertIn(name, text)
         for relative in ('scripts/verify.sh', 'scripts/verify.ps1', 'scripts/verify_release_windows.ps1'):
             text = (release.ROOT/relative).read_text(encoding='utf-8-sig')
             self.assertIn('projects/advanced-b/reference/json-export/Cargo.toml', text)
@@ -233,7 +232,7 @@ class B4GateTests(unittest.TestCase):
             self.assertIn('advanced_b_json_e2e', text)
             self.assertNotIn('cargo fetch', text)
         for relative in ('scripts/verify.ps1', 'scripts/verify_release_windows.ps1'):
-            self.assertTrue((release.ROOT/relative).read_bytes().startswith(b'\xef\xbb\xbf'))
+            self.assertTrue((release.ROOT/relative).read_bytes().startswith(b'\\xef\\xbb\\xbf'))
 
 
 if __name__ == '__main__':
