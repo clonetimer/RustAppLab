@@ -459,7 +459,7 @@ dc26b2e3c44d47dd4aebefdebd8ca7ab3c217154a88ce94f639cf0d8bbca8feb  projects/book-
 3e99c5e2cb12c40a7fe338f05f11bf1d013341036de699ebae04a1fe156e5f24  projects/book-d4-advanced-features/Cargo.toml
 decce37c994af0a870f6992f973335185a31e4eaeb7d6266852f6e39fc4e0705  projects/book-d4-advanced-features/README.md
 ae2e98963b40402f38e4643245bae424b5b4f898155a616b2215720941661b7a  projects/book-d4-advanced-features/advanced-lab/Cargo.toml
-fb51f0f3a3637baf8b392385ecc46a95e3d13f910bc09de8f0f11f0597495677  projects/book-d4-advanced-features/advanced-lab/src/lib.rs
+33b47ac501a047a18eb51ae6ec86fa18491bbe4e5d85dfd325c46fb15fd2d35c  projects/book-d4-advanced-features/advanced-lab/src/lib.rs
 5eb78773ce321baa2c9ebb4c6b2afe9cc3d378e37014bab3b1858f20c8a8aab0  projects/book-d4-advanced-features/advanced-lab/src/main.rs
 b43c41763b0f122dd72af18fe2c7ea7bebadc9ce6f13ee5278d5fff50975fd7b  projects/book-d4-advanced-features/advanced-lab/tests/cli.rs
 c40ba15b70fedb1958f0dec1c6c36cf9a960f8b2849b10ccc020b887f6d512c3  projects/book-d4-advanced-features/d4-proc-macros/Cargo.toml
