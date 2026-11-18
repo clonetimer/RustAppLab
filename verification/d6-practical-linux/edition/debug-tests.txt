@@ -1,0 +1,20 @@
+   Compiling book-d6-appendix-lab v0.1.0 (/tmp/RustAppLab-D6-3cghtko8/lab/appendix-lab)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.41s
+     Running unittests src/lib.rs (/tmp/RustAppLab-D6-3cghtko8/target/debug/deps/book_d6_appendix_lab-d868c2faa51d8e38)
+
+running 12 tests
+test tests::add_trait_overloads_the_plus_operator ... ok
+test tests::arithmetic_precedence_is_multiplication_before_addition ... ok
+test tests::bitwise_and_is_not_logical_and ... ok
+test d6_edition_probe::preserves_reserved_identifier ... ok
+test tests::derived_default_and_clone_preserve_owned_values ... ok
+test tests::debug_and_display_are_distinct_contracts ... ok
+test tests::derived_hash_and_equality_allow_owned_task_keys ... ok
+test tests::derived_order_uses_the_newtype_value ... ok
+test tests::floating_point_partial_order_can_be_absent ... ok
+test tests::question_mark_propagates_parse_errors ... ok
+test tests::raw_identifier_allows_a_keyword_as_a_function_name ... ok
+test tests::ranges_exclude_the_upper_bound ... ok
+
+test result: ok. 12 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+

@@ -1,20 +1,21 @@
 # D0 · Rust Book 中文版逐节覆盖审计（基线）
 
 - **参考目录**：[rust.bootcss.com](https://rust.bootcss.com/)，Rust 1.37 / Edition 2018 书系，第 1–20 章、附录 A–G；不是当前 Edition 2024 Rust Book 的同一章节编号。
-- **源码基准**：`clonetimer/RustAppLab` main `fed4a2d37a72de88dfb353474544efde9bdd537a`（2026-11-17 审计时）。
+- **历史源码基准**：`clonetimer/RustAppLab` main `fed4a2d37a72de88dfb353474544efde9bdd537a`（2026-11-17 审计时）。
+- **最近复核**：2026-11-18；从 PR #10 基线 `6a5827f4e3ce6d009836a7d2beaa9c9285ada24a` 复核原书目录与实际材料，补充 1.3、3.1、3.2、7.2–7.5 的具体练习。新增材料的远端验收以 PR 当前提交为准，不继承 Run 215/222。
 - **证据规则**：表格中“已有实作”只表示可以定位到相关教学或可执行实例，**不表示**该小节原书所有示例、知识点、学员练习与测试均已完整覆盖；“部分”表示只有关联知识或实现；“缺口”明确有需要补的专项内容；“开发中”只证明开发分支已有材料、仍须 CI。
 - **验收判据**：每项最终需要有教学目标、版本适配、学员实验或合理的知识索引、可重现检查及用户体验验证。官方原书代码无需照抄，允许使用现有真实作品替换；不能用出现某个关键词冒充教学覆盖。
-- **当前统计**：共 **81** 项审计条目，其中 已有实作 77、部分 3、缺口 0、开发中 0、资料索引 1。D1–D4 随 PR #6 合并；D5 与 D6-A 随 PR #8 合并，Run 197 的 17 个 Jobs 全部成功（含 Linux/Windows 原生、Rust 1.74 MSRV、源码/学员包与交付验证）。D6-B 的 12 个基础知识缺口已由独立参考实验补齐；PR #9 的 Run 215 共 17 个验收/候选组 Jobs 成功，2 个仅在 main push 执行的发布 Jobs 按 PR 事件规则跳过。这是条目盘点数，**不是**知识点覆盖率或学习达标率。
+- **当前统计**：共 **81** 项审计条目，其中 已有实作 **79**、部分 **1**（D 的 IDE 人工操作仍待记录）、缺口 0、开发中 0、资料索引 **1**（F）。这是主题映射和指定参考实验的状态盘点，**不是**知识点完整率或学习达标率。D1–D4、D5/D6-A、D6-B 的历史验收分别见 PR #6、PR #8 / Run 197、PR #9 / Run 215；它们不替代本次新增代码的验证。2026-11-18 新增基础实验在 Linux 的 Rust 1.85.0/1.74.0 上 Debug/Release 各 29 项、Doctest 15 项通过；E/G 已有真实迁移和固定日期 Nightly 对照证据。D/E 的最终 Linux/Windows 与交付状态见 PR #10 当前提交的完整验收。
 - **推进路线**：D1 Cargo（14.1–14.5）→ D2 智能指针（15.1–15.6）→ D3 对象模型/模式（17–18）→ D4 Unsafe/高级 Trait/宏（19）→ D5 原生多线程 Web Server（20）→ D6-A 附录 A–G → D6-B 基础知识残余缺口；随每阶段修订本表。
 
 | 原书小节 | 主题 | 审计状态 | 现有代码/讲义证据（仓库相对路径） | 后续核查或补充 |
 |---|---|---|---|---|
 | 1.1 | 安装 Rust 与工具链 | 已有实作 | `README_START_HERE.md` | 系统工具安装由用户完成；无需重复开发 |
 | 1.2 | Hello World | 已有实作 | `course/BOOK_D6_FOUNDATIONS.md` | 最小 crate、main、println 与 Cargo 运行实验；代码见 `projects/book-d6-foundations/foundation-lab/src/main.rs`；Run 215 Linux/Windows、Rust 1.74 MSRV、Debug/Release/Doctest PASS |
-| 1.3 | Hello Cargo | 已有实作 | `course/BEGINNER_WINDOWS_GUIDE.md` | 补充 Cargo 术语复习即可 |
+| 1.3 | Hello Cargo | 已有实作 | `course/BOOK_D6_FOUNDATIONS.md` | Cargo package/crate、manifest/lock、check/build/run 与构建模式复习；三步操作与解释题；不能只以能运行预置工程代替理解 |
 | 2 | 猜数字游戏教程 | 已有实作 | `course/BOOK_D6_FOUNDATIONS.md` | 输入、解析、比较、循环、无效输入与退出；可运行 guess 子命令；Run 215 Linux/Windows、Rust 1.74 MSRV、Debug/Release/Doctest PASS |
-| 3.1 | 变量与可变性 | 已有实作 | `course/FOUNDATION_PATH.md` | 已有任务卡 |
-| 3.2 | 数据类型 | 已有实作 | `course/studio/unitlab.md` | 需补数组/元组专题验证 |
+| 3.1 | 变量与可变性 | 已有实作 | `course/BOOK_D6_LANGUAGE_BASICS.md` | const、let、mut、遮蔽；不可变重赋值、重赋值改变类型、常量赋值的真实编译失败；语言实验含实际解析/累计行为测试 |
+| 3.2 | 数据类型 | 已有实作 | `course/BOOK_D6_FOUNDATIONS.md` | 三次数组分数汇总、混合元组、解构/.0、单元、重复数组、get/索引越界；数组长度与元素类型 E0308 反例及修复对照 |
 | 3.3 | 函数 | 已有实作 | `course/studio/unitlab.md` | 现有公开合同测试 |
 | 3.4 | 注释 | 已有实作 | `course/BOOK_D6_FOUNDATIONS.md` | 行/块注释、项文档、crate 文档与 doctest；Run 215 Linux/Windows、Rust 1.74 MSRV、Debug/Release/Doctest PASS |
 | 3.5 | 控制流 | 已有实作 | `course/studio/quizdeck.md` | 继续复用分支与循环 |
@@ -28,10 +29,10 @@
 | 6.2 | match | 已有实作 | `course/studio/unitlab.md` | 分支转换 |
 | 6.3 | if let | 已有实作 | `course/BOOK_D6_FOUNDATIONS.md` | Option 分支的 if let 与 match 对照；Run 215 Linux/Windows、Rust 1.74 MSRV、Debug/Release/Doctest PASS |
 | 7.1 | 包和 crate | 已有实作 | `course/ADVANCED_B.md` | B1–B3 多 crate 工程 |
-| 7.2 | 模块作用域与私有性 | 已有实作 | `course/ADVANCED_B.md` | 业务库与应用入口 |
-| 7.3 | 路径 | 已有实作 | `course/ADVANCED_B.md` | 路径依赖 |
-| 7.4 | use 关键字 | 已有实作 | `course/studio/badgeforge.md` | 练习中导入接口 |
-| 7.5 | 拆分模块文件 | 已有实作 | `course/ADVANCED_B.md` | 多模块/多 crate |
+| 7.2 | 模块作用域与私有性 | 已有实作 | `course/BOOK_D6_LANGUAGE_BASICS.md` | 私有 catalog 模块、StudyCard 私有字段、公有 Activity 枚举；外部集成测试和 E0603/E0616 编译失败实验 |
+| 7.3 | 路径 | 已有实作 | `course/BOOK_D6_LANGUAGE_BASICS.md` | 同一 crate 内实际 crate::、self::、super:: 路径；明确与 Cargo path 依赖区别，替换原错位映射 |
+| 7.4 | use 关键字 | 已有实作 | `course/BOOK_D6_LANGUAGE_BASICS.md` | use、as 别名、pub use 重导出；外部集成测试通过公开入口访问模型 |
+| 7.5 | 拆分模块文件 | 已有实作 | `course/BOOK_D6_LANGUAGE_BASICS.md` | lib.rs → language_basics.rs → language_basics/catalog.rs 实际分文件 mod；同一 crate 的模块与多个 crate 分开讲解 |
 | 8.1 | Vector | 已有实作 | `course/studio/quizdeck.md` | 题库列表 |
 | 8.2 | String | 已有实作 | `course/studio/textscope.md` | UTF-8 与所有权 |
 | 8.3 | HashMap | 已有实作 | `course/BOOK_D6_FOUNDATIONS.md` | HashMap、Entry API、词频统计与确定性输出；Run 215 Linux/Windows、Rust 1.74 MSRV、Debug/Release/Doctest PASS |
@@ -86,10 +87,10 @@
 | A | 关键字 | 已有实作 | `course/BOOK_D6_APPENDICES.md` | 当前 Strict/Reserved/Weak 完整清单、raw identifiers 与 Edition 差异；精确表格回归与 2 项 compile-fail 文档测试，Run 215 PASS |
 | B | 运算符与符号 | 已有实作 | `course/BOOK_D6_APPENDICES.md` | 常见运算符、符号语境、完整优先级与 Add 重载实验；位运算层级及比较/范围约束回归，Run 215 PASS |
 | C | 可派生 Trait | 已有实作 | `course/BOOK_D6_APPENDICES.md` | 九种标准 derive trait 的能力、约束、Debug/Display 区分与 compile-fail 实验；Run 197 Linux/Windows/MSRV PASS |
-| D | 实用开发工具 | 部分 | `course/BOOK_D6_APPENDICES.md` | rustfmt、cargo fix/rustfix、Clippy、rust-analyzer、rustdoc 的现代用法与复现命令；工具链使用需结合实际工程进一步练习 |
-| E | Edition 与版本 | 部分 | `course/BOOK_D6_APPENDICES.md` | 2015/2018/2021/2024 对照、MSRV 边界与迁移流程；独立迁移实操仍需学员完成 |
+| D | 实用开发工具 | 部分 | `course/BOOK_D6_PRACTICAL.md` | 工具链 CLI、unused_mut 诊断/修复、格式/Clippy/测试/文档生成已有真实运行证据；rust-analyzer 实际 IDE 跳转、诊断和修复仍需人工记录 |
+| E | Edition 与版本 | 已有实作 | `course/BOOK_D6_PRACTICAL.md` | Rust 1.85.0 临时副本中先 fix 后改 Edition/MSRV；gen→r#gen 实际差异；12 Debug、3 Doc、12 Release 测试，正式源码快照不变 |
 | F | 翻译版本 | 资料索引 | `course/BOOK_D6_APPENDICES.md` | 区分旧中文译本基线与当前官方书，提供翻译/版本导航；不要求单独编码练习 |
-| G | Rust 开发流程与 Nightly | 部分 | `course/BOOK_D6_APPENDICES.md` | Stable/Beta/Nightly 通道、rustup 命令与不稳定功能隔离规则；Nightly 隔离练习仍需学员完成 |
+| G | Rust 开发流程与 Nightly | 已有实作 | `course/BOOK_D6_PRACTICAL.md` | Linux 的 nightly-2026-11-17 实验通过；Rust 1.85 带 gate 的 E0554 与去 gate 后泛型常量错误双对照；日期/退出码/源码快照均保存，属选修证据 |
 
 ## 不纳入覆盖率的情况
 
@@ -101,11 +102,24 @@
 
 | 里程碑 | 交付定义 | 当前情况 |
 |---|---|---|
-| D0 | 原书全目录逐节证据和风险映射 | 本表已创建，待人工复核 |
+| D0 | 原书全目录逐节证据和风险映射 | 81 个原书 ID 已逐项核对；映射与关键缺口于 2026-11-18 独立复核；尚未逐句量化整本书知识点完整率 |
 | D1 | 5 节 Cargo 讲义 + 隔离 Workspace + Cargo 外部子命令 + 真 CI | PR #6 已合并；D0–D4 验收矩阵 17/17 CI Jobs PASS |
 | D2 | 智能指针 6 节 + RAII/Deref/Weak 实验 | PR #6 已合并；D0–D4 验收矩阵 17/17 CI Jobs PASS |
 | D3 | 面向对象与模式匹配 6 节 | PR #6 已合并；D0–D4 验收矩阵 17/17 CI Jobs PASS |
 | D4 | 第 19 章 5 节安全隔离实验 | D4-A2 17/17 CI Jobs PASS，PR #6 已合并 |
 | D5 | 第 20 章 3 节线程池与关闭 | PR #8 已合并；Run 197 的 Linux/Windows/MSRV、交付与浏览器矩阵 17 Jobs 全部成功 |
-| D6-A | 附录 A–G | A–C 已有可执行实验并通过 Run 197；D/E/G 为参考讲义，F 为资料索引 |
-| D6-B | 12 项基础知识残余缺口 | PR #9；Run 215 的 Linux/Windows、Rust 1.74、学员包与候选包验证全部 PASS |
+| D6-A | 附录 A–G | A–C 历史参考实验通过 Run 197；D/E/G 增加真实命令运行器与证据，D 的 IDE 操作单独记录，F 为资料索引 |
+| D6-B | 12 项基础知识残余缺口及后续基础复核 | 原 12 项见 PR #9 / Run 215；本轮再补 1.3、3.1、3.2、7.2–7.5，使用当前提交重新验收 |
+| D6-C | 工具、Edition 与隔离 Nightly | 唯一副本、失败保留、原始日志/差异/校验；E/G 参考行为已实跑，D 的 IDE 操作与个人学习另记 |
+
+## 2026-11-18 复核补充：三种证据分开记录
+
+| 层次 | 本次如何检查 | 不能推导什么 |
+|---|---|---|
+| 目录映射 | 原书 74 个正文条目与 7 个附录；测试核对完整 81 个 ID 集合 | 不能将条目比例当知识点完整率 |
+| 参考行为 | 基础实验的成功/编译失败对照；工具、迁移与隔离脚本实际执行；源码和交付物校验 | 不能代替 IDE 手动体验或个人理解 |
+| 个人学习 | 学习者自己的输入、修改、测试、解释题与试用记录 | 没有记录时保持未评估 |
+
+本轮补的是先前粗映射下遗漏的基础讲解与可复现验证。14.2 不实际上传 crates.io、14.4 使用本地安装与隔离 root，属于保留的课程边界；不要求为了补齐统计而进行真实发布或额外下载第三方工具。
+
+尚未逐句拆解原书全部概念，因此剩余细粒度知识点数量仍未量化。已定位的专项有明确代码与讲义证据；后续审查以发现的具体目标和学习阻断为单位，不能只追求一个百分比。

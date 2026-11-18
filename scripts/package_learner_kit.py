@@ -56,48 +56,63 @@ def add(z: zipfile.ZipFile, relative: str, data: bytes):
 def course_inputs() -> list[tuple[str, bytes]]:
     """Shared course bytes for the real kit and archive-link regression tests."""
     files = [
-        "CURRICULUM.md", "BOOK_COVERAGE_AUDIT.md", "BOOK_D1_CARGO.md", "BOOK_D2_SMART_POINTERS.md", "BOOK_D3_OOP_PATTERNS.md", "BOOK_D4_ADVANCED_FEATURES.md", "BOOK_D5_WEB_SERVER.md", "BOOK_D6_APPENDICES.md", "BOOK_D6_FOUNDATIONS.md", "BOOK_D6_PRACTICAL.md", "STUDIO_GUIDE.md", "ADVANCED_B.md", "ADVANCED_B_WINDOWS.md", "BOOK_GUIDE.md", "ADVANCED_C1.md", "ADVANCED_C2.md", "USER_TRIAL.md", "SQLITE_SETUP.md", "ADVANCED_A.md",
+        "CURRICULUM.md", "BOOK_COVERAGE_AUDIT.md", "BOOK_D1_CARGO.md", "BOOK_D2_SMART_POINTERS.md", "BOOK_D3_OOP_PATTERNS.md", "BOOK_D4_ADVANCED_FEATURES.md", "BOOK_D5_WEB_SERVER.md", "BOOK_D6_APPENDICES.md", "BOOK_D6_FOUNDATIONS.md", "BOOK_D6_PRACTICAL.md", "BOOK_D6_LANGUAGE_BASICS.md", "STUDIO_GUIDE.md", "ADVANCED_B.md", "ADVANCED_B_WINDOWS.md", "BOOK_GUIDE.md", "ADVANCED_C1.md", "ADVANCED_C2.md", "USER_TRIAL.md", "SQLITE_SETUP.md", "ADVANCED_A.md",
         "28_independent_product.md", "29_product_release.md",
         "30_second_independent_product.md", "31_transfer_release.md",
         "BEGINNER_WINDOWS_GUIDE.md", "00_first_five_minutes.md", "NETWORK_PREPARATION.md", "LEARNING_NAVIGATOR.md", "RUST_ERROR_LABS.md", "FOUNDATION_PATH.md", "FOUNDATION_NEXT_STEPS.md", "PROGRESS_OVERVIEW.md", "SYSTEMS_PATH.md", "RELIABILITY_PATH.md", "INDEPENDENT_PATH.md",
     ]
     result = [(f"course/{name}", (ROOT / "course" / name).read_bytes()) for name in files]
+    result.append(("scripts/book_d6_check.py", (ROOT / "scripts/book_d6_check.py").read_bytes()))
     # D1 is a runnable reference lab, not an 18th learner exercise. Its code
     # must accompany the docs so offline links do not dangle in learner-kit.
     lab = ROOT / "projects" / "book-d1-cargo"
     for path in sorted(lab.rglob("*")):
-        if path.is_file() and path.suffix in {".toml", ".lock", ".md", ".rs"}:
+        if (path.is_file() and not any(part in {"target", ".git", "__pycache__"}
+                                       for part in path.relative_to(lab).parts)
+                and path.suffix in {".toml", ".lock", ".md", ".rs"}):
             result.append((path.relative_to(ROOT).as_posix(), path.read_bytes()))
     # D2 is a runnable reference lab, not an additional learner project.
     lab = ROOT / "projects" / "book-d2-smart-pointers"
     for path in sorted(lab.rglob("*")):
-        if path.is_file() and path.suffix in {".toml", ".lock", ".md", ".rs"}:
+        if (path.is_file() and not any(part in {"target", ".git", "__pycache__"}
+                                       for part in path.relative_to(lab).parts)
+                and path.suffix in {".toml", ".lock", ".md", ".rs"}):
             result.append((path.relative_to(ROOT).as_posix(), path.read_bytes()))
     # D3 is a reference workspace, not an additional learner project.
     lab = ROOT / "projects" / "book-d3-oop-patterns"
     for path in sorted(lab.rglob("*")):
-        if path.is_file() and path.suffix in {".toml", ".lock", ".md", ".rs"}:
+        if (path.is_file() and not any(part in {"target", ".git", "__pycache__"}
+                                       for part in path.relative_to(lab).parts)
+                and path.suffix in {".toml", ".lock", ".md", ".rs"}):
             result.append((path.relative_to(ROOT).as_posix(), path.read_bytes()))
     # D4 is a reference workspace with a local procedural-macro crate.
     lab = ROOT / "projects" / "book-d4-advanced-features"
     for path in sorted(lab.rglob("*")):
-        if path.is_file() and path.suffix in {".toml", ".lock", ".md", ".rs"}:
+        if (path.is_file() and not any(part in {"target", ".git", "__pycache__"}
+                                       for part in path.relative_to(lab).parts)
+                and path.suffix in {".toml", ".lock", ".md", ".rs"}):
             result.append((path.relative_to(ROOT).as_posix(), path.read_bytes()))
     # D5 is a runnable reference lab, not an additional learner project.
     # Include the HTML page served by the real TCP server.
     lab = ROOT / "projects" / "book-d5-webserver"
     for path in sorted(lab.rglob("*")):
-        if path.is_file() and path.suffix in {".toml", ".lock", ".md", ".rs", ".html"}:
+        if (path.is_file() and not any(part in {"target", ".git", "__pycache__"}
+                                       for part in path.relative_to(lab).parts)
+                and path.suffix in {".toml", ".lock", ".md", ".rs", ".html"}):
             result.append((path.relative_to(ROOT).as_posix(), path.read_bytes()))
     # D6 is a dependency-free reference lab for appendices A-C.
     lab = ROOT / "projects" / "book-d6-appendices"
     for path in sorted(lab.rglob("*")):
-        if path.is_file() and path.suffix in {".toml", ".lock", ".md", ".rs"}:
+        if (path.is_file() and not any(part in {"target", ".git", "__pycache__"}
+                                       for part in path.relative_to(lab).parts)
+                and path.suffix in {".toml", ".lock", ".md", ".rs"}):
             result.append((path.relative_to(ROOT).as_posix(), path.read_bytes()))
     # D6-B is a dependency-free reference lab for the remaining basic chapter gaps.
     lab = ROOT / "projects" / "book-d6-foundations"
     for path in sorted(lab.rglob("*")):
-        if path.is_file() and path.suffix in {".toml", ".lock", ".md", ".rs"}:
+        if (path.is_file() and not any(part in {"target", ".git", "__pycache__"}
+                                       for part in path.relative_to(lab).parts)
+                and path.suffix in {".toml", ".lock", ".md", ".rs"}):
             result.append((path.relative_to(ROOT).as_posix(), path.read_bytes()))
     return result
 

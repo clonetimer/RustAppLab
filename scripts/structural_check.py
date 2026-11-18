@@ -129,6 +129,12 @@ require((ROOT / "course/BOOK_D6_APPENDICES.md").is_file(),
         "Book D6 附录讲义缺失")
 require((ROOT / "course/BOOK_D6_PRACTICAL.md").is_file(),
         "Book D6 D/E/G 实操指南缺失")
+for relative in ("course/BOOK_D6_LANGUAGE_BASICS.md", "scripts/book_d6_check.py",
+                 "projects/book-d6-foundations/foundation-lab/src/language_basics.rs",
+                 "projects/book-d6-foundations/foundation-lab/src/language_basics/catalog.rs",
+                 "projects/book-d6-foundations/foundation-lab/tests/compound_types.rs",
+                 "projects/book-d6-foundations/foundation-lab/tests/language_basics.rs"):
+    require((ROOT / relative).is_file(), f"Book D6 实操补齐缺失：{relative}")
 
 # Book D6-B is an isolated, dependency-free foundations-gap workspace.
 for relative in ("Cargo.toml", "Cargo.lock", "README.md",

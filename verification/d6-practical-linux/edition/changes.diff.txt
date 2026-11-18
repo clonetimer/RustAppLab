@@ -1,0 +1,34 @@
+--- before/Cargo.toml
++++ after/Cargo.toml
+@@ -1,8 +1,8 @@
+ [package]
+ name = "book-d6-appendix-lab"
+ version = "0.1.0"
+-edition = "2021"
+-rust-version = "1.74"
++edition = "2024"
++rust-version = "1.85"
+ publish = false
+ 
+ [lib]
+--- before/lib.rs
++++ after/lib.rs
+@@ -196,12 +196,14 @@
+     }
+ }
+ 
+-pub fn gen() -> u32 { 2024 }
++pub fn r#gen() -> u32 {
++    2024
++}
+ 
+ #[cfg(test)]
+ mod d6_edition_probe {
+     #[test]
+     fn preserves_reserved_identifier() {
+-        assert_eq!(super::gen(), 2024);
+-    }
+-}
++        assert_eq!(super::r#gen(), 2024);
++    }
++}

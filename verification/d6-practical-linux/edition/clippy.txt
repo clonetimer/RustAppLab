@@ -1,0 +1,2 @@
+    Checking book-d6-appendix-lab v0.1.0 (/tmp/RustAppLab-D6-3cghtko8/lab/appendix-lab)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.12s

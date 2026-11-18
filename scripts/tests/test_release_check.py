@@ -90,6 +90,19 @@ class SummaryTests(unittest.TestCase):
                 result = release.run_step(label, [sys.executable, '-c', f'print({output!r})'], Path(temp))
                 self.assertEqual(result['passed'], expected)
 
+    def test_d6_foundation_gate_rejects_old_counts_and_requires_new_exercises(self):
+        for label, old_count, current_count in (
+                ('book-d6-foundations-tests', 20, 29),
+                ('book-d6-foundations-release-tests', 20, 29),
+                ('book-d6-foundations-doctests', 2, 15)):
+            for count, expected in ((old_count, False), (current_count, True)):
+                with self.subTest(step=label, count=count), tempfile.TemporaryDirectory() as temp:
+                    output = f'test result: ok. {count} passed; 0 failed; 0 ignored;'
+                    result = release.run_step(label, [sys.executable, '-c', f'print({output!r})'], Path(temp))
+                    self.assertEqual(result['tests']['passed'], count,
+                                     'the echoed command must not count as a second test suite')
+                    self.assertEqual(result['passed'], expected)
+
 
 # The release label alone must never promote an incomplete candidate.
 import sys
@@ -280,9 +293,9 @@ class B4GateTests(unittest.TestCase):
             if command[1] != 'fmt':
                 self.assertIn('--locked', command)
                 self.assertIn('--offline', command)
-        self.assertEqual(release.TEST_LIMITS['book-d6-foundations-tests'], (20, 0))
-        self.assertEqual(release.TEST_LIMITS['book-d6-foundations-release-tests'], (20, 0))
-        self.assertEqual(release.TEST_LIMITS['book-d6-foundations-doctests'], (2, 0))
+        self.assertEqual(release.TEST_LIMITS['book-d6-foundations-tests'], (29, 0))
+        self.assertEqual(release.TEST_LIMITS['book-d6-foundations-release-tests'], (29, 0))
+        self.assertEqual(release.TEST_LIMITS['book-d6-foundations-doctests'], (15, 0))
 
     def test_all_gate_entrypoints_include_book_d3(self):
         for relative in ('scripts/release_check.py', 'scripts/msrv_check.py'):

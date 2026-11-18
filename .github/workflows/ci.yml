@@ -94,6 +94,31 @@ jobs:
         with:
           name: declared-msrv
           path: msrv-evidence/
+  book-practice:
+    name: Book D/E practice / ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: dtolnay/rust-toolchain@1.85.0
+        with:
+          components: rustfmt, clippy, rust-docs, rust-analyzer
+      - name: Execute tools on an isolated copy and retain command evidence
+        run: python scripts/book_d6_check.py --mode tools --toolchain 1.85.0 --output d6-practical-evidence/tools
+      - name: Execute Edition 2021 to 2024 migration and compare source snapshots
+        run: python scripts/book_d6_check.py --mode edition --toolchain 1.85.0 --output d6-practical-evidence/edition
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: book-practice-${{ matrix.os }}
+          path: d6-practical-evidence/
   c1:
     uses: ./.github/workflows/c1.yml
   c2:
@@ -102,7 +127,7 @@ jobs:
     uses: ./.github/workflows/delivery.yml
   candidate:
     name: Assemble verified candidate
-    needs: [native, browser, msrv, c1, c2, delivery]
+    needs: [native, browser, msrv, c1, c2, delivery, book-practice]
     runs-on: ubuntu-latest
     timeout-minutes: 10
     steps:
@@ -122,7 +147,7 @@ jobs:
   checkpoint:
     name: Tag successful main checkpoint
     if: github.event_name == 'push' && github.ref == 'refs/heads/main'
-    needs: [native, browser, msrv, c1, c2, delivery, candidate]
+    needs: [native, browser, msrv, c1, c2, delivery, book-practice, candidate]
     runs-on: ubuntu-latest
     timeout-minutes: 5
     permissions:
@@ -171,11 +196,12 @@ jobs:
           fi
           (cd candidate-release && sha256sum -c SHA256SUMS.txt)
           cat > candidate-notes.md <<'EOF'
-          C2范围收尾候选版。完整源码、17工程学员包、C1/C2离线源码包及Windows/Linux参考运行包已验证。
+          Rust Book补齐候选版。完整源码、17工程学员包、C1/C2离线源码包及Windows/Linux参考运行包已验证。
+          新增Cargo入门、数组/元组、变量与模块实验，以及D/E工具和Edition迁移的Linux/Windows真实执行证据。Nightly实验为独立选修，不替代Stable/MSRV验收。
           先阅读QUICK_START.md；直接体验下载对应平台runtime.zip，完整学习下载source.zip。
           此发布为RC，不是Stable。真实学习观察仍待填写USER_TRIAL.md，不能以自动测试代替。
           参考运行包无需Cargo；编译/检查学员工程仍需Rust与系统工具链。Linux系统库要求见包内BUILD_INFO.json，Windows CI不等于用户本机Win10验收。
           版本、提交、来源指纹与所有文件校验见RELEASE_MANIFEST.json和SHA256SUMS.txt，原始证据见VERIFICATION_EVIDENCE.zip。
           EOF
-          gh release create "$tag" candidate-release/* --verify-tag --draft --prerelease --latest=false --title "Rust AppLab $version — C2范围候选版" --notes-file candidate-notes.md
+          gh release create "$tag" candidate-release/* --verify-tag --draft --prerelease --latest=false --title "Rust AppLab $version — Rust Book补齐候选版" --notes-file candidate-notes.md
           gh release edit "$tag" --draft=false --prerelease --latest=false

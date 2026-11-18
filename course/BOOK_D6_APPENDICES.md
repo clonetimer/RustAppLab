@@ -228,12 +228,12 @@ Edition 是语言语法与惯用法的版本边界，不等于 Rust 编译器版
 
 迁移不是“把 Cargo.toml 的数字改掉”这么简单。推荐流程：
 
-1. 在独立分支记录当前测试基线。
-2. 更新 `Cargo.toml` 的 `edition` 字段。
-3. 使用当前工具链运行 `cargo fix --edition`，先检查建议再接受修改。
-4. 阅读迁移警告，特别关注新关键字、unsafe 约束和生命周期捕获。
-5. 运行 format、Clippy、单元/集成测试和 doctest。
-6. 对依赖 crate 的 Edition、MSRV 和 API 行为分别核查。
+1. 在独立临时副本中记录当前测试基线和工具链版本。
+2. 保持旧 `edition`，先运行 `cargo +1.85.0 fix --edition`，保存编译器修复和警告。
+3. 再修改副本 `Cargo.toml` 的 `edition = "2024"` 与所需 `rust-version = "1.85"`。
+4. 阅读迁移差异，特别关注新关键字、unsafe 约束和生命周期捕获。
+5. 测试迁移结果，在副本执行 `cargo fmt` 后复查格式、Clippy、Debug/Release 和 doctest。
+6. 对依赖 crate 的 Edition、MSRV 和 API 行为分别核查。可执行步骤及日志保存在 [D/E/G 实操指南](BOOK_D6_PRACTICAL.md)。
 
 **本仓库边界**：D1–D6 参考实验以 Edition 2021 / Rust 1.74 为基础；不要因为附录介绍 Edition 2024，就把整个根 Workspace 的 Edition 或 MSRV 一并升级。
 

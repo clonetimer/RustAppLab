@@ -1,4 +1,4 @@
-# Rust AppLab 0.19.0-rc.1 · 支持平台与环境
+# Rust AppLab 0.19.0-rc.2 · 支持平台与环境
 
 | 内容 | Windows x64 MSVC | Linux x86_64 |
 |---|---|---|

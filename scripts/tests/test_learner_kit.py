@@ -54,6 +54,37 @@ class LearnerKitTests(unittest.TestCase):
             self.assertIn(path, assets)
         self.assertIn("publish = false", assets["projects/book-d1-cargo/book-card/Cargo.toml"].decode())
 
+    def test_d6_practice_guide_has_runner_and_local_links_in_archive(self):
+        assets = self.assets()
+        with tempfile.TemporaryDirectory() as temp:
+            archive = Path(temp) / "practice.zip"
+            with zipfile.ZipFile(archive, "w") as output:
+                for name, data in assets.course_inputs():
+                    assets.add(output, name, data)
+            with zipfile.ZipFile(archive) as output:
+                names = set(output.namelist())
+                self.assertIn("scripts/book_d6_check.py", names)
+                for source in ("course/BOOK_D6_PRACTICAL.md", "course/BOOK_D6_FOUNDATIONS.md",
+                               "course/BOOK_D6_LANGUAGE_BASICS.md"):
+                    self.assertIn(source, names)
+                    for target in re.findall(r'(?<!!)\[[^\]]+\]\(([^)]+)\)',
+                                             output.read(source).decode("utf-8")):
+                        if target.startswith(("https://", "http://", "#")):
+                            continue
+                        resolved = posixpath.normpath(posixpath.join(
+                            posixpath.dirname(source), target.split("#", 1)[0]))
+                        self.assertIn(resolved, names, f"{source}: missing {target}")
+
+    def test_reference_lab_build_output_never_enters_learner_kit(self):
+        target = ROOT / "projects/book-d6-foundations/target"
+        target.mkdir(exist_ok=True)
+        with tempfile.TemporaryDirectory(prefix="package-probe-", dir=target) as temp:
+            (Path(temp) / "generated.rs").write_text("// build artifact\n", encoding="utf-8")
+            (Path(temp) / "incremental.lock").write_text("build lock\n", encoding="utf-8")
+            names = [name for name, _ in self.assets().course_inputs()]
+            leaked = [name for name in names if "/target/" in name]
+            self.assertEqual(leaked, [], "compiled output must not be shipped as course source")
+
     def test_d2_is_shipped_as_a_reference_not_an_extra_student_project(self):
         assets = dict(self.assets().course_inputs())
         for path in ("course/BOOK_D2_SMART_POINTERS.md",

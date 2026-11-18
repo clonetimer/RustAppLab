@@ -10,6 +10,7 @@ import shutil
 import zipfile
 from release_check import ROOT, source_id
 import release_decision
+import book_d6_check
 
 
 def sha256(path: Path) -> str:
@@ -40,6 +41,43 @@ def read_report(path: Path, identity: str, *, engineering=False) -> dict:
     return data
 
 
+def read_book_practice_report(path: Path, mode: str, system: str, commit: str | None) -> dict:
+    """D/E inputs have their own scope, separate from the full release source ID."""
+    expected_snapshot = book_d6_check.source_snapshot(ROOT)
+    data = read_report(path, book_d6_check.snapshot_id(expected_snapshot))
+    if (data.get('mode') != mode or data.get('system') != system
+            or data.get('toolchain') != '1.85.0'
+            or (commit is not None and data.get('git_commit') != commit)
+            or data.get('runner_sha256') != sha256(ROOT/'scripts/book_d6_check.py')):
+        raise ValueError('wrong practice revision/platform/runner: '+str(path))
+    if (data.get('source_snapshot_before') != expected_snapshot
+            or data.get('source_snapshot_after') != expected_snapshot
+            or data.get('source_unchanged') is not True
+            or data.get('changed_source_paths') != []):
+        raise ValueError('practice source snapshot changed: '+str(path))
+    required = {'rustc-version', 'cargo-version', 'rustfmt-version', 'clippy-version',
+                'rustdoc-version', 'format', 'format-check', 'clippy',
+                'debug-tests', 'doctests', 'release-tests'}
+    required |= ({'rust-analyzer-version', 'unused-mut-diagnostic', 'repair-unused-mut', 'documentation'}
+                 if mode == 'tools' else {'original-tests', 'edition-2021-probe', 'edition-fix'})
+    names = [step['step'] for step in data.get('steps', [])]
+    if len(names) != len(set(names)) or not required.issubset(names):
+        raise ValueError('practice command evidence incomplete: '+str(path))
+    for step in data['steps']:
+        expected = 101 if step['step'] == 'unused-mut-diagnostic' else 0
+        if step.get('returncode') != expected or step.get('expected_returncode') != expected:
+            raise ValueError('unexpected practice exit code: '+str(path))
+    evidence = data.get('evidence', [])
+    expected_files = {'manifest-before.txt', 'manifest-after.txt', 'source-before.txt',
+                      'source-after.txt', 'changes.diff.txt'}
+    if not expected_files.issubset({item['file'] for item in evidence}):
+        raise ValueError('practice before/after evidence incomplete: '+str(path))
+    for item in evidence:
+        if sha256(safe_child(path.parent, item['file'])) != item.get('sha256'):
+            raise ValueError('practice evidence digest mismatch: '+str(path))
+    return data
+
+
 def collect_assets(inputs: Path, output: Path) -> dict:
     identity=source_id();version=(ROOT/'VERSION').read_text().strip()
     if '-rc.' not in version: raise ValueError('only candidate versions may use this publisher')
@@ -55,6 +93,11 @@ def collect_assets(inputs: Path, output: Path) -> dict:
         if not release_decision.engineering(path,identity,version):raise ValueError('native qualification missing: '+str(path))
     checked_report(inputs/'native-windows-latest/windows-launcher-evidence/engineering.json',engineering=True)
     checked_report(msrv);checked_report(browser)
+    for runner, system in (('ubuntu-latest', 'Linux'), ('windows-latest', 'Windows')):
+        for mode in ('tools', 'edition'):
+            path = inputs/f'book-practice-{runner}'/mode/'report.json'
+            read_book_practice_report(path, mode, system, os.environ.get('GITHUB_SHA'))
+            checked.append(str(path.relative_to(inputs)))
     for kind,path in (('msrv',msrv),('browser',browser)):
         if not release_decision.evidence(path,identity,kind):raise ValueError('invalid '+kind+' report')
     c2browser=json.loads((inputs/'real-browser/c2-browser.json').read_text(encoding='utf-8'))
@@ -114,7 +157,7 @@ def collect_assets(inputs: Path, output: Path) -> dict:
     qualification=release_decision.decide(gates)
     if qualification!='RC_READY':raise ValueError('unexpected qualification')
     files=[{'name':p.name,'bytes':p.stat().st_size,'sha256':sha256(p)} for p in sorted(output.iterdir()) if p.is_file()]
-    result={'schema':1,'version':version,'commit':os.environ.get('GITHUB_SHA'),'source_id':identity,'qualification':qualification,'prerelease':True,'human_observation':'PENDING — no fabricated learner acceptance','gates':gates,'additional_gates':{'c1':True,'c2':True,'native_runtime_and_first_use':True},'checked_reports':checked,'files':files}
+    result={'schema':1,'version':version,'commit':os.environ.get('GITHUB_SHA'),'source_id':identity,'qualification':qualification,'prerelease':True,'human_observation':'PENDING — no fabricated learner acceptance','gates':gates,'additional_gates':{'c1':True,'c2':True,'native_runtime_and_first_use':True,'book_tools_and_edition':True},'checked_reports':checked,'files':files}
     (output/'RELEASE_MANIFEST.json').write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
     hashes=''.join(f'{sha256(p)}  {p.name}\n' for p in sorted(output.iterdir()) if p.is_file())
     (output/'SHA256SUMS.txt').write_bytes(hashes.encode())

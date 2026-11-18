@@ -1,0 +1,26 @@
+#![allow(incomplete_features)]
+
+pub struct Square<const N: usize>
+where
+    [(); N * N]:,
+{
+    cells: [u8; N * N],
+}
+
+impl<const N: usize> Square<N>
+where
+    [(); N * N]:,
+{
+    pub fn zeroed() -> Self { Self { cells: [0; N * N] } }
+    pub fn cells(&self) -> &[u8] { &self.cells }
+}
+
+#[cfg(test)]
+mod tests {
+    use super::Square;
+
+    #[test]
+    fn const_expression_sizes_storage() {
+        assert_eq!(Square::<3>::zeroed().cells().len(), 9);
+    }
+}

@@ -27,6 +27,91 @@ use std::io::{self, BufRead};
 use std::path::PathBuf;
 use std::time::{Duration, Instant};
 
+pub mod language_basics;
+
+/// Summarize exactly three scores as `(total, highest)`.
+///
+/// The array has one element type and a length that is part of its type.
+/// The returned tuple has two positions with different types: `(u64, u32)`.
+/// Widening each score before addition preserves the total for every `u32`
+/// input, including three maximum values, in both debug and release builds.
+/// This example accepts all `u32` scores; it does not impose a 0–100 scale.
+///
+/// A mixed-type tuple can group a name, a score array, and a submission flag.
+/// Use destructuring to name all fields, or `.0` / `.1` to read a position:
+///
+/// ```
+/// use book_d6_foundation_lab::summarize_scores;
+///
+/// let entry: (&str, [u32; 3], bool) = ("Ada", [72, 95, 81], true);
+/// let (name, scores, submitted) = entry;
+/// assert_eq!(name, "Ada");
+/// assert!(submitted);
+/// let summary = summarize_scores(scores);
+/// assert_eq!(summary.0, 248);
+/// assert_eq!(summary.1, 95);
+/// let (total, highest) = summary;
+/// assert_eq!((total, highest), (248, 95));
+/// ```
+///
+/// `[value; length]` repeats a value. The empty tuple `()` is also called
+/// unit: here the assignment block has no final value and evaluates to `()`.
+///
+/// ```
+/// use book_d6_foundation_lab::summarize_scores;
+///
+/// let mut scores = [0_u32; 3];
+/// let finished: () = {
+///     scores[0] = 90;
+/// };
+/// assert_eq!(finished, ());
+/// assert_eq!(summarize_scores(scores), (90, 90));
+/// ```
+///
+/// Indexing starts at zero. Use `get` when an index may be out of bounds;
+/// it returns `None` instead of panicking:
+///
+/// ```
+/// let scores = [72_u32, 95, 81];
+/// assert_eq!(scores[0], 72);
+/// assert_eq!(scores.get(2), Some(&81));
+/// assert_eq!(scores.get(3), None);
+/// ```
+///
+/// Direct indexing checks bounds too, but an invalid runtime index panics.
+/// The function parameter keeps this example about a runtime bounds check:
+///
+/// ```should_panic
+/// fn score_at(scores: [u32; 3], index: usize) -> u32 {
+///     scores[index]
+/// }
+///
+/// let _ = score_at([72, 95, 81], 3);
+/// ```
+///
+/// Two scores cannot be passed where the type requires three:
+///
+/// ```compile_fail
+/// use book_d6_foundation_lab::summarize_scores;
+///
+/// let _ = summarize_scores([72_u32, 95]);
+/// ```
+///
+/// Array elements must all have the declared type; a floating-point value
+/// cannot occupy one position of a `[u32; 3]` array:
+///
+/// ```compile_fail
+/// use book_d6_foundation_lab::summarize_scores;
+///
+/// let scores: [u32; 3] = [72, 95.5, 81];
+/// let _ = summarize_scores(scores);
+/// ```
+pub fn summarize_scores(scores: [u32; 3]) -> (u64, u32) {
+    let total = u64::from(scores[0]) + u64::from(scores[1]) + u64::from(scores[2]);
+    let highest = scores[0].max(scores[1]).max(scores[2]);
+    (total, highest)
+}
+
 /// A rectangle used to practice struct fields, ownership, and method syntax.
 #[derive(Debug, Clone, Copy, PartialEq, Eq)]
 pub struct Rectangle {
