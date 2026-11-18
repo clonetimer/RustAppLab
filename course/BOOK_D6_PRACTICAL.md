@@ -39,7 +39,16 @@ python3 scripts/book_d6_check.py --mode tools --toolchain 1.85.0 --output "$d6_e
 printf '证据目录：%s\n' "$d6_evidence"
 ~~~
 
-后续实验继续使用当前终端中的证据目录变量。重新开终端时，先创建新的目录变量。脚本会输出实际实验路径与 report.json；`--keep-workspace` 用于保留成功副本供手动练习，默认仅在成功且证据保存后清理本次临时副本。不会删除固定名称的旧实验目录。
+后续实验继续使用当前终端中的证据目录变量。重新开终端时，先创建新的目录变量。`--keep-workspace` 会保留成功副本供手动练习。默认在命令成功并保存证据后清理本次副本。D/E 保留副本时，终端的 `Open in VS Code` 行给出可直接打开的工作区文件。也可在 `report.json` 中读取以下路径：
+
+| 字段 | 对应位置 |
+|---|---|
+| `project_directory` | 含工作区 Cargo.toml 的练习副本目录 |
+| `ide_workspace_file` | 可用 VS Code 打开的 `D6-IDE.code-workspace` |
+| `practice_source` | 可编辑的 `appendix-lab/src/lib.rs` |
+| `documentation_index` | 已生成的 crate 文档首页 |
+
+清理后的字段值为 `null`，缺失的产物也显示 `null`。旧字段 `workspace` 记录本次临时目录位置，需结合 `workspace_retained` 判断目录是否保留。D/E 的证据目录保存初始工作区配置 `ide-workspace.json` 及其 SHA-256，便于清理副本后复查。VS Code 的打开入口仍是保留副本中的 `D6-IDE.code-workspace`。
 
 ## 2. 附录 D：工具必须实际运行
 
@@ -49,9 +58,23 @@ printf '证据目录：%s\n' "$d6_evidence"
 
 **再观察**：比较工具诊断与修复后的日志。`cargo fmt` 调整布局，`cargo clippy` 检查常见问题，`cargo fix` 根据编译器可自动应用的建议修改源码，`cargo doc` 生成 API 文档。它们解决不同问题。
 
-**亲手练习**：读取 report.json 的 `workspace` 路径，在 IDE 打开其下的 `lab` 子目录；这个目录内才有 Cargo.toml。确认 rust-analyzer 识别 crate；从使用处跳转到 `Task` 定义；临时加入一个类型不匹配赋值，观察诊断，再修复。打开 `<workspace>/target/doc/book_d6_appendix_lab/index.html`，找到 `Task` 的字段名称和类型。
+### 在 VS Code 中亲手练习
 
-保存 IDE 的跳转、诊断和修复记录。脚本验证 rust-analyzer 可启动及命令行工具的行为；**它不会声称已经替你完成 IDE 操作，也不会生成学习成绩**。
+1. 手动准备 VS Code 和 `rust-lang.rust-analyzer` 扩展，显式安装实验工具链的标准库源码。默认工具链的命令为 `rustup component add rust-src --toolchain 1.85.0`。通过 WSL 运行实验时，在 VS Code 的 WSL 窗口打开副本，并确认 Rust 工具链、标准库源码和扩展都在对应环境可用。
+2. 使用 **File → Open Workspace from File…** 打开 `ide_workspace_file`。该文件使用相对路径 `lab`，搬移时应移动整个保留目录。搬移后从新位置打开工作区文件，旧报告仍记录运行当时的路径。工作区为 rust-analyzer 的 Cargo 命令指定本次工具链及 `--locked --offline`，并关闭 build script 和 proc macro 支持。
+3. 在 **D6 练习副本**打开 `appendix-lab/src/lib.rs`，找到 `task_priorities` 里的 `Task::new(7, "document")`。把光标放在 `new` 上，按 **F12** 或使用 **Go to Definition**，记录 `impl Task` 中构造函数的文件位置和参数类型。
+4. 返回 `task_priorities`，在函数体内加入 `let _d6_id: u32 = "7";` 并保存。在 **Problems** 面板观察类型不匹配诊断（rustc 代码为 `E0308`）。如果 IDE 尚未显示诊断，在 `project_directory` 中运行下面的命令确认编译器报错，再检查扩展是否加载了项目。
+5. 把 `"7"` 改成整数 `7` 并保存，确认诊断消失。在同一目录复跑命令确认退出码为 0。Quick Fix 显示的操作取决于具体诊断，这里可直接手动修复。若指定过其他工具链，把命令中的 `1.85.0` 换成本次报告的 `toolchain` 值。
+
+~~~sh
+cargo +1.85.0 check --locked --offline --workspace --all-targets
+~~~
+
+从报告的 `documentation_index` 打开生成的 API 文档，找到 `Task` 的字段名称和类型。把版本、跳转位置、诊断与修复结果写入工作区文件旁的 `IDE_RECORD.md`。它初始为 `NOT_RUN`，由你按实际操作填写，位于 CLI 证据目录之外。
+
+`rust-analyzer-version.txt` 记录 Rustup 组件的版本。VS Code 扩展页面显示扩展版本，扩展还可以使用随附的 rust-analyzer server。查看 VS Code 的 Rust Analyzer 输出或状态信息，记录实际 server 版本。若加载失败，先核对工作区入口、扩展的运行环境、Rustup 工具链和 `rust-src`。当前扩展与旧版工具链的标准库源码可能不兼容，可在确认兼容的扩展和 server 后复试。[rust-analyzer 安装](https://rust-analyzer.github.io/book/installation.html) · [rust-analyzer 配置](https://rust-analyzer.github.io/book/configuration.html) · [VS Code Rust 指南](https://code.visualstudio.com/docs/languages/rust) · [VS Code 工作区](https://code.visualstudio.com/docs/editing/workspaces/multi-root-workspaces)
+
+CLI `PASS` 只涵盖报告中的实际命令。D 的跳转、诊断和修复由学员在 IDE 中完成并记录。
 
 ## 3. 附录 E：2021 → 2024 的迁移顺序
 
@@ -87,7 +110,7 @@ PowerShell 可直接从报告读取正确的 manifest 路径后重跑：
 
 ~~~powershell
 $report = Get-Content -Raw (Join-Path $evidence "edition/report.json") | ConvertFrom-Json
-$manifest = Join-Path $report.workspace "lab/appendix-lab/Cargo.toml"
+$manifest = Join-Path $report.project_directory "Cargo.toml"
 cargo +1.85.0 test --locked --offline --manifest-path $manifest --workspace --all-targets
 if ($LASTEXITCODE -ne 0) { throw "个人修改后的测试失败，请阅读诊断" }
 ~~~
@@ -95,7 +118,7 @@ if ($LASTEXITCODE -ne 0) { throw "个人修改后的测试失败，请阅读诊�
 Linux / WSL：
 
 ~~~sh
-d6_manifest=$(python3 -c 'import json,pathlib,sys; print(pathlib.Path(json.load(open(sys.argv[1]))["workspace"])/"lab/appendix-lab/Cargo.toml")' "$d6_evidence/edition/report.json")
+d6_manifest=$(python3 -c 'import json,pathlib,sys; print(pathlib.Path(json.load(open(sys.argv[1]))["project_directory"])/"Cargo.toml")' "$d6_evidence/edition/report.json")
 cargo +1.85.0 test --locked --offline --manifest-path "$d6_manifest" --workspace --all-targets
 ~~~
 

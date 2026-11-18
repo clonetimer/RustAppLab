@@ -8,6 +8,8 @@
 
 本课不重新讲授整本 Rust Book，而是把仍缺少明确练习的知识点放到一个小型 CLI 与库中。每项实验都可以独立测试，再组合成一个可运行程序。
 
+完成本页后，可继续 [所有权与切片](BOOK_OWNERSHIP_PRACTICE.md)、[集合与错误传播](BOOK_COLLECTIONS_ERRORS.md)、[泛型与生命周期](BOOK_GENERICS_LIFETIMES.md)。它们仍在同一个参考工作区，以独立模块和测试补充第 4–6、8–10 章的具体目标；审计范围与剩余项见 [核心概念审计](BOOK_CONCEPT_AUDIT.md)。
+
 ## 1. 缺口与证据映射
 
 | 原书小节 | 补齐目标 | D6-B 实验 |

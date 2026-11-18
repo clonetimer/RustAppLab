@@ -83,5 +83,10 @@ B4 在独立 `json-export/` 中复用 `taskcore`，练习 [Serde derive](https:/
 - 刚完成 FirstCard：先做 [Cargo 复习与数组/元组](BOOK_D6_FOUNDATIONS.md) 的三步任务。
 - 不清楚 mut、const、遮蔽或模块路径：进入 [变量与模块专项](BOOK_D6_LANGUAGE_BASICS.md)，比较成功和编译失败示例。
 - 准备使用开发工具或迁移 Edition：进入 [D/E/G 实操指南](BOOK_D6_PRACTICAL.md)，在副本执行并保留证据。
+- 还分不清移动、借用、方法接收者或切片边界：进入 [所有权专项](BOOK_OWNERSHIP_PRACTICE.md)。
+- 能使用集合和 `?`，但解释不清更新策略或错误转换：进入 [集合与错误传播](BOOK_COLLECTIONS_ERRORS.md)。
+- 泛型约束或生命周期报错难理解：进入 [泛型与生命周期](BOOK_GENERICS_LIFETIMES.md)，对照成功与失败的具体签名。
+
+逐节映射之外，第 4–6、8–10 章已按教学目标进一步核查，见 [核心概念审计](BOOK_CONCEPT_AUDIT.md)。该清单保留本次审查范围和未完成目标，不代表整本书所有概念已量化。
 
 旧 Run 的结果只证明当时源码；新增内容以当前提交的验收为准。81 项是目录映射，不是个人掌握进度。

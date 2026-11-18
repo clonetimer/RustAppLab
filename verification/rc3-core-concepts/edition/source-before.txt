@@ -1,0 +1,207 @@
+//! # D6 Appendix Reference Lab
+//!
+//! This crate provides executable examples for Rust Book appendices A–C.
+//! The toolchain, editions, translations, and release-channel workflows are
+//! documented in `course/BOOK_D6_APPENDICES.md`.
+//!
+//! A raw identifier lets a keyword be used as an identifier:
+//!
+//! ```
+//! assert!(book_d6_appendix_lab::r#match("rust", "learn rust"));
+//! ```
+//!
+//! Some special path keywords cannot be written as raw identifiers:
+//!
+//! ```compile_fail
+//! fn r#self() {}
+//! ```
+//!
+//! `Copy` is not appropriate for a type that owns heap data:
+//!
+//! ```compile_fail
+//! #[derive(Clone, Copy)]
+//! struct OwnsText(String);
+//! ```
+
+use std::collections::HashMap;
+use std::fmt;
+use std::num::ParseIntError;
+use std::ops::Add;
+
+/// A function whose name is a Rust keyword, made legal with a raw identifier.
+pub fn r#match(needle: &str, haystack: &str) -> bool {
+    haystack.contains(needle)
+}
+
+/// Demonstrates arithmetic operator precedence: multiplication before addition.
+pub fn precedence_example() -> i32 {
+    2 + 3 * 4
+}
+
+/// Demonstrates that a range's upper bound is excluded.
+pub fn range_total(start: u32, end: u32) -> u32 {
+    (start..end).sum()
+}
+
+/// Demonstrates bitwise AND; this is not the same operation as logical AND.
+pub fn apply_mask(value: u8, mask: u8) -> u8 {
+    value & mask
+}
+
+/// Parse a priority while propagating the standard-library parse error with `?`.
+pub fn parse_priority(input: &str) -> Result<Priority, ParseIntError> {
+    Ok(Priority(input.parse()?))
+}
+
+/// A small owned value suitable for demonstrating several derived traits.
+#[derive(Debug, Clone, PartialEq, Eq, Hash, Default)]
+pub struct Task {
+    pub id: u32,
+    pub title: String,
+}
+
+impl Task {
+    pub fn new(id: u32, title: impl Into<String>) -> Self {
+        Self {
+            id,
+            title: title.into(),
+        }
+    }
+}
+
+/// `Display` is intentionally implemented by hand: its user-facing format is a design choice.
+impl fmt::Display for Task {
+    fn fmt(&self, formatter: &mut fmt::Formatter<'_>) -> fmt::Result {
+        write!(formatter, "{}: {}", self.id, self.title)
+    }
+}
+
+/// A totally ordered scalar newtype, suitable for a priority key.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, PartialOrd, Ord, Hash, Default)]
+pub struct Priority(u8);
+
+impl Priority {
+    pub const fn new(value: u8) -> Self {
+        Self(value)
+    }
+
+    pub const fn value(self) -> u8 {
+        self.0
+    }
+}
+
+/// A point whose `+` operator is overloaded through `std::ops::Add`.
+#[derive(Debug, Clone, Copy, PartialEq, Eq, Default)]
+pub struct Point {
+    pub x: i32,
+    pub y: i32,
+}
+
+impl Add for Point {
+    type Output = Self;
+
+    fn add(self, rhs: Self) -> Self::Output {
+        Self {
+            x: self.x + rhs.x,
+            y: self.y + rhs.y,
+        }
+    }
+}
+
+/// Builds a map to demonstrate that `Hash` and `Eq` are both required for hash keys.
+pub fn task_priorities() -> HashMap<Task, Priority> {
+    let mut values = HashMap::new();
+    values.insert(Task::new(7, "document"), Priority::new(2));
+    values
+}
+
+#[cfg(test)]
+mod tests {
+    use super::*;
+
+    #[test]
+    fn raw_identifier_allows_a_keyword_as_a_function_name() {
+        assert!(r#match("rust", "learn rust"));
+        assert!(!r#match("Rust", "learn rust"));
+    }
+
+    #[test]
+    fn arithmetic_precedence_is_multiplication_before_addition() {
+        assert_eq!(precedence_example(), 14);
+    }
+
+    #[test]
+    fn ranges_exclude_the_upper_bound() {
+        assert_eq!(range_total(1, 5), 10);
+    }
+
+    #[test]
+    fn bitwise_and_is_not_logical_and() {
+        assert_eq!(apply_mask(0b1010, 0b1100), 0b1000);
+        let enabled = true;
+        let allowed = false;
+        assert!(enabled && !allowed);
+    }
+
+    #[test]
+    fn add_trait_overloads_the_plus_operator() {
+        let left = Point { x: 2, y: 3 };
+        let right = Point { x: 5, y: 7 };
+        assert_eq!(left + right, Point { x: 7, y: 10 });
+    }
+
+    #[test]
+    fn derived_hash_and_equality_allow_owned_task_keys() {
+        let values = task_priorities();
+        assert_eq!(
+            values.get(&Task::new(7, "document")),
+            Some(&Priority::new(2))
+        );
+    }
+
+    #[test]
+    fn derived_order_uses_the_newtype_value() {
+        assert!(Priority::new(1) < Priority::new(2));
+        assert_eq!(Priority::new(2).value(), 2);
+    }
+
+    #[test]
+    fn derived_default_and_clone_preserve_owned_values() {
+        let empty = Task::default();
+        assert_eq!(empty.id, 0);
+        assert!(empty.title.is_empty());
+
+        let original = Task::new(3, "review");
+        let cloned = original.clone();
+        assert_eq!(original, cloned);
+    }
+
+    #[test]
+    fn debug_and_display_are_distinct_contracts() {
+        let task = Task::new(7, "document");
+        assert_eq!(task.to_string(), "7: document");
+        assert!(format!("{task:?}").contains("Task"));
+    }
+
+    #[test]
+    fn floating_point_partial_order_can_be_absent() {
+        assert_eq!(1.0_f64.partial_cmp(&2.0), Some(std::cmp::Ordering::Less));
+        assert_eq!(f64::NAN.partial_cmp(&2.0), None);
+    }
+
+    #[test]
+    fn question_mark_propagates_parse_errors() {
+        assert_eq!(parse_priority("8").unwrap(), Priority::new(8));
+        assert!(parse_priority("high").is_err());
+    }
+}
+
+pub fn gen() -> u32 { 2024 }
+
+#[cfg(test)]
+mod d6_edition_probe {
+    #[test]
+    fn preserves_reserved_identifier() {
+        assert_eq!(super::gen(), 2024);
+    }
+}

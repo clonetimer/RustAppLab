@@ -1,4 +1,4 @@
-# Rust AppLab 0.19.0-rc.2 · 当前课程地图
+# Rust AppLab 0.19.0-rc.3 · 当前课程地图
 
 本轮功能范围冻结在C2；先完成当前作品，再进入下一阶段。自动检查验证程序行为，不代替真人理解。参考程序、学员骨架和独立开发合同分别标注，不按目录数量计算学习成效。
 
@@ -20,7 +20,7 @@
 
 基础阶段同时保留FileQuest、LogLens、LocalHub、SafeSync与32章原有应用教程，章节入口见 [课程首页](README.md)。对照阅读见 [Rust Book指南](BOOK_GUIDE.md)。
 
-## Rust Book 内容完整性补课（独立于 0.19.0-rc.2 课程范围）
+## Rust Book 内容完整性补课（独立于 0.19.0-rc.3 课程范围）
 
 [逐节审计矩阵](BOOK_COVERAGE_AUDIT.md) 以中文版 Rust Book 第 1–20 章及附录 A–G 为基准，区分已有教学、关联实作、待补缺口与新课待 CI；不以关键词出现作为教学完成证明。
 
@@ -37,6 +37,8 @@
 **D6-A 附录参考与实践**：[讲义](BOOK_D6_APPENDICES.md) 与 [独立参考 Workspace](../projects/book-d6-appendices/README.md) 覆盖关键字、运算符与符号、可派生 Trait、现代开发工具、Edition、翻译版本和 Stable/Beta/Nightly。实验使用 Edition 2021、Rust 1.74、零第三方依赖；关键字清单与运算符优先级已加入精确回归测试。
 
 **D6-B 基础知识缺口**：[讲义](BOOK_D6_FOUNDATIONS.md) 与 [独立参考 Workspace](../projects/book-d6-foundations/README.md) 已覆盖 12 项基础知识缺口；14 项单元测试、6 项 CLI 测试、2 项 Doctest 均通过 Linux、Windows、Rust 1.74 的 Debug/Release 验证。Run 215 候选包包含 D6-A/B 全部材料，原有 17 个学员工程保持不变。
+
+**D6-B 后续概念实操**：[所有权与切片](BOOK_OWNERSHIP_PRACTICE.md)、[集合与错误传播](BOOK_COLLECTIONS_ERRORS.md)、[泛型与生命周期](BOOK_GENERICS_LIFETIMES.md) 扩展同一个参考工作区。当前本地 Rust 1.74 / 1.85 各通过 48 项 Debug、48 项 Release 和 76 项 Doctest；跨平台验收以当前提交 CI 为准。[概念审计](BOOK_CONCEPT_AUDIT.md) 仅量化本次第 4–6、8–10 章的 118 个目标，不代表全书或个人学习达标。
 
 ## 当前材料数量与性质
 

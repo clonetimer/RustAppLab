@@ -16,6 +16,7 @@ from unittest import mock
 
 ROOT = Path(__file__).resolve().parents[2]
 SCRIPT = ROOT / "scripts/book_d6_check.py"
+LIVE_PATHS = ("project_directory", "ide_workspace_file", "practice_source", "documentation_index")
 practice = None
 if SCRIPT.is_file():
     spec = importlib.util.spec_from_file_location("book_d6_check", SCRIPT)
@@ -54,7 +55,8 @@ class PracticalChecks(unittest.TestCase):
         os.environ.pop("RUSTC_BOOTSTRAP", None)
 
     def invoke(self, *extra):
-        with redirect_stdout(io.StringIO()), redirect_stderr(io.StringIO()):
+        self.stdout = io.StringIO()
+        with redirect_stdout(self.stdout), redirect_stderr(io.StringIO()):
             return practice.main(["--mode", "tools", "--output", str(self.output), *extra])
 
     def report(self):
@@ -118,6 +120,10 @@ class PracticalChecks(unittest.TestCase):
         report = self.report()
         self.assertEqual(report["status"], "FAIL")
         self.assertTrue(Path(report["workspace"]).is_dir())
+        self.assertTrue(report["workspace_retained"])
+        self.assertTrue(Path(report["ide_workspace_file"]).is_file())
+        self.assertTrue(Path(report["practice_source"]).is_file())
+        self.assertIsNone(report["documentation_index"])
         self.assertEqual(report["steps"][0]["returncode"], 9)
         self.assertIn("native failure", (self.output / report["steps"][0]["log"]).read_text())
         self.assertEqual(self.source.read_bytes(), self.source_bytes)
@@ -133,20 +139,71 @@ class PracticalChecks(unittest.TestCase):
         self.assertEqual(report["status"], "PASS")
         self.assertFalse(Path(report["workspace"]).exists())
         self.assertFalse(report["workspace_retained"])
+        self.assertTrue(all(report[key] is None for key in LIVE_PATHS))
+        self.assertNotIn(".code-workspace", self.stdout.getvalue())
+        config = json.loads((self.output / "ide-workspace.json").read_text(encoding="utf-8"))
+        self.assertEqual(config["folders"][0]["path"], "lab")
         self.assertEqual((unrelated / "keep.txt").read_text(), "previous work")
         self.assertTrue((self.output / "report.json").is_file())
 
     def test_keep_workspace_exposes_only_a_copy_for_ide(self):
         def edit_copy(runner):
-            (runner.lab / "appendix-lab/src/lib.rs").write_text("IDE exercise", encoding="utf-8")
+            runner.source.write_text("IDE exercise", encoding="utf-8")
+            index = runner.workspace / "target/doc/book_d6_appendix_lab/index.html"
+            index.parent.mkdir(parents=True)
+            index.write_text("<title>Documentation</title>", encoding="utf-8")
 
         with mock.patch.object(practice, "check_tools", side_effect=edit_copy):
-            self.assertEqual(self.invoke("--keep-workspace"), 0)
+            self.assertEqual(self.invoke("--keep-workspace", "--toolchain", "stable"), 0)
         report = self.report()
         self.assertTrue(report["workspace_retained"])
-        self.assertEqual((Path(report["workspace"]) / "lab/appendix-lab/src/lib.rs").read_text(),
-                         "IDE exercise")
+        workspace = Path(report["workspace"])
+        project = Path(report["project_directory"])
+        source = Path(report["practice_source"])
+        entry = Path(report["ide_workspace_file"])
+        record = workspace / "IDE_RECORD.md"
+        self.assertEqual(project, workspace / "lab")
+        self.assertEqual(source, project / "appendix-lab/src/lib.rs")
+        self.assertEqual(source.read_text(encoding="utf-8"), "IDE exercise")
+        self.assertTrue(Path(report["documentation_index"]).is_file())
+        self.assertEqual(entry, workspace / "D6-IDE.code-workspace")
+        self.assertIn(str(entry), self.stdout.getvalue())
+        snapshot = self.output / "ide-workspace.json"
+        snapshot_bytes = snapshot.read_bytes()
+        self.assertEqual(snapshot_bytes, entry.read_bytes())
+        self.assertIn(snapshot.name, {row["file"] for row in report["evidence"]})
+        self.assertIn("NOT_RUN", record.read_text(encoding="utf-8"))
+        record.write_text("Personal observations", encoding="utf-8")
+        self.assertFalse((self.output / record.name).exists())
+        for evidence in report["evidence"]:
+            self.assertNotEqual(evidence["file"], record.name)
+            self.assertEqual(evidence["sha256"],
+                             hashlib.sha256((self.output / evidence["file"]).read_bytes()).hexdigest())
+
+        moved = workspace.rename(self.base / "moved workspace with spaces")
+        config = json.loads((moved / entry.name).read_text(encoding="utf-8"))
+        self.assertEqual(config["folders"], [{"name": "D6 练习副本", "path": "lab"}])
+        self.assertTrue((moved / config["folders"][0]["path"] / "Cargo.toml").is_file())
+        self.assertIn("rust-lang.rust-analyzer", config["extensions"]["recommendations"])
+        settings = config["settings"]
+        self.assertEqual(settings["rust-analyzer.cargo.extraEnv"]["RUSTUP_TOOLCHAIN"], "stable")
+        self.assertEqual(settings["rust-analyzer.cargo.extraArgs"], ["--locked", "--offline"])
+        self.assertFalse(settings["rust-analyzer.cargo.buildScripts.enable"])
+        self.assertFalse(settings["rust-analyzer.procMacro.enable"])
+        self.assertEqual((moved / record.name).read_text(encoding="utf-8"), "Personal observations")
+        (moved / entry.name).write_text("{}", encoding="utf-8")
+        self.assertEqual(snapshot.read_bytes(), snapshot_bytes)
         self.assertEqual(self.source.read_bytes(), self.source_bytes)
+        self.assertEqual(report["source_snapshot_before"], report["source_snapshot_after"])
+
+    def test_retained_nightly_has_no_ide_entry(self):
+        with mock.patch.object(practice, "check_nightly"):
+            self.assertEqual(self.invoke("--mode", "nightly", "--keep-workspace"), 0)
+        report = self.report()
+        self.assertTrue(report["workspace_retained"])
+        self.assertTrue(all(report[key] is None for key in LIVE_PATHS))
+        self.assertFalse((Path(report["workspace"]) / "D6-IDE.code-workspace").exists())
+        self.assertFalse((self.output / "ide-workspace.json").exists())
 
     def test_new_optional_toolchain_file_fails_isolation_check(self):
         def change_original(_runner):

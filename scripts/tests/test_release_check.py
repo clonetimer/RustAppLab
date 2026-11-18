@@ -92,9 +92,9 @@ class SummaryTests(unittest.TestCase):
 
     def test_d6_foundation_gate_rejects_old_counts_and_requires_new_exercises(self):
         for label, old_count, current_count in (
-                ('book-d6-foundations-tests', 20, 29),
-                ('book-d6-foundations-release-tests', 20, 29),
-                ('book-d6-foundations-doctests', 2, 15)):
+                ('book-d6-foundations-tests', 29, 48),
+                ('book-d6-foundations-release-tests', 29, 48),
+                ('book-d6-foundations-doctests', 15, 76)):
             for count, expected in ((old_count, False), (current_count, True)):
                 with self.subTest(step=label, count=count), tempfile.TemporaryDirectory() as temp:
                     output = f'test result: ok. {count} passed; 0 failed; 0 ignored;'
@@ -293,9 +293,9 @@ class B4GateTests(unittest.TestCase):
             if command[1] != 'fmt':
                 self.assertIn('--locked', command)
                 self.assertIn('--offline', command)
-        self.assertEqual(release.TEST_LIMITS['book-d6-foundations-tests'], (29, 0))
-        self.assertEqual(release.TEST_LIMITS['book-d6-foundations-release-tests'], (29, 0))
-        self.assertEqual(release.TEST_LIMITS['book-d6-foundations-doctests'], (15, 0))
+        self.assertEqual(release.TEST_LIMITS['book-d6-foundations-tests'], (48, 0))
+        self.assertEqual(release.TEST_LIMITS['book-d6-foundations-release-tests'], (48, 0))
+        self.assertEqual(release.TEST_LIMITS['book-d6-foundations-doctests'], (76, 0))
 
     def test_all_gate_entrypoints_include_book_d3(self):
         for relative in ('scripts/release_check.py', 'scripts/msrv_check.py'):

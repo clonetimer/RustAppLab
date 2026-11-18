@@ -1,0 +1,3 @@
+    Checking book-d6-appendix-lab v0.1.0 (/tmp/RustAppLab-D6-uezpgfgx/lab/appendix-lab)
+       Fixed appendix-lab/src/lib.rs (1 fix)
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.23s

@@ -1,4 +1,4 @@
-# Rust AppLab 0.19.0-rc.2 · 候选发布与Stable准入
+# Rust AppLab 0.19.0-rc.3 · 候选发布与Stable准入
 
 ## 固定本轮范围
 
@@ -8,7 +8,7 @@
 
 **开发检查点**：同一提交的现有CI通过后创建 `checkpoint/v<VERSION>-<SHA>`。它既不是正式产品版本，也不说明真人学习效果。
 
-**RC候选版**：`0.19.0-rc.2`作为GitHub prerelease发布，不标记Latest或Stable。除了现有Linux/Windows、Rust1.74、真实浏览器、C1/C2全部准入，还要求源码归档新目录重放、首次学习路径检查、对应平台运行包与文件校验。缺少这些结果时只能保留候选源码，不能宣称已完成RC准入。`scripts/release_decision.py`的历史格式保持兼容；新的候选汇总同时核验C1/C2与交付证据，避免只凭旧判定器忽略新增课程。
+**RC候选版**：`0.19.0-rc.3`作为GitHub prerelease发布，不标记Latest或Stable。除了现有Linux/Windows、Rust1.74、真实浏览器、C1/C2全部准入，还要求源码归档新目录重放、首次学习路径检查、对应平台运行包与文件校验。缺少这些结果时只能保留候选源码，不能宣称已完成RC准入。`scripts/release_decision.py`的历史格式保持兼容；新的候选汇总同时核验C1/C2与交付证据，避免只凭旧判定器忽略新增课程。
 
 **Stable**：保留上述工程证据，还需要当前版本实际学员在FirstCard、UnitLab和独立作品路线的真人观察、提示使用与未解决阻断处理记录。自动化修复TODO用于验证教学工具，不是一个真实学员。未完成的观察使用 [试用模板](course/USER_TRIAL.md) 留空，不编造通过结果。
 

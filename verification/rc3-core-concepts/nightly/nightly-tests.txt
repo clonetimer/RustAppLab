@@ -1,0 +1,21 @@
+   Compiling nightly-isolation-lab v0.1.0 (/tmp/RustAppLab-D6-f_nzdphd/lab)
+warning: `feature(generic_const_exprs)` is not supported with the next-generation trait solver
+ --> src/lib.rs:1:12
+  |
+1 | #![feature(generic_const_exprs)]
+  |            ^^^^^^^^^^^^^^^^^^^
+  |
+  = note: `-Znext-solver=globally` is currently enabled by default for testing
+  = note: reverted the setting to `-Znext-solver=coherence` for this crate
+  = note: the currently stable trait solver will be used for this crate
+  = note: see issues #160895 <https://github.com/rust-lang/rust/issues/160895> for more information
+
+warning: `nightly-isolation-lab` (lib test) generated 1 warning
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.33s
+     Running unittests src/lib.rs (/tmp/RustAppLab-D6-f_nzdphd/target/debug/build/nightly-isolation-lab/eef35c3336370e38/out/nightly_isolation_lab-eef35c3336370e38)
+
+running 1 test
+test tests::const_expression_sizes_storage ... ok
+
+test result: ok. 1 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+

@@ -1,0 +1,24 @@
+{
+  "folders": [
+    {
+      "name": "D6 练习副本",
+      "path": "lab"
+    }
+  ],
+  "extensions": {
+    "recommendations": [
+      "rust-lang.rust-analyzer"
+    ]
+  },
+  "settings": {
+    "rust-analyzer.cargo.extraEnv": {
+      "RUSTUP_TOOLCHAIN": "1.85.0"
+    },
+    "rust-analyzer.cargo.extraArgs": [
+      "--locked",
+      "--offline"
+    ],
+    "rust-analyzer.cargo.buildScripts.enable": false,
+    "rust-analyzer.procMacro.enable": false
+  }
+}

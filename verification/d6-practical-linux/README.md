@@ -1,5 +1,7 @@
 # D6 practical reference evidence · Linux · 2026-11-18
 
+Historical rc.2 evidence; the original reports and logs below are preserved. Current rc.3 command evidence and retained IDE entry snapshots are in [rc3-core-concepts](../rc3-core-concepts/README.md).
+
 These are actual local command runs for the D6 tools, Edition migration and optional Nightly experiments. They bind the runner's SHA-256 and the explicitly listed input snapshot. They are not a full-release source fingerprint, Windows validation, IDE interaction record or learner completion record. The local reports have no GitHub workflow commit; final cross-platform acceptance comes from the exact PR/main run.
 
 - Tools: Rust 1.85.0 with rustfmt, Clippy, rust-docs and rust-analyzer; 15 steps, Debug 11 / doc 3 / Release 11.

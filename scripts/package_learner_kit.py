@@ -33,7 +33,7 @@ B4 先阅读 course/ADVANCED_B.md 和 course/ADVANCED_B_WINDOWS.md。在完整�
 
 TaskPocket / PageMint 新增 START.html、DEVELOPMENT_PLAN.md、TEST_PLAN.md、RELEASE_CHECKLIST.md 和 tests/self_check.rs。初始 cargo test 只有一项入口烟测通过、一项个人测试按设计忽略，不能当成业务完成。完整平台 learn lesson/hint/check 现在也支持它们的三个累计检查点；检查点3仍是原完整合同。
 
-D0 Rust Book 逐节审计、D1 Cargo、D2 智能指针、D3 面向对象/模式匹配、D4 高级特性、D5 多线程 Web Server、D6-A 附录参考实验、D6-B 基础缺口补齐实验及 D/E/G 实操指南一并在本包 course/ 与 projects/ 中提供。D1/D2/D3/D4/D5/D6-A/D6-B 都是独立参考实验，不是新增的学员作品，也不计作个人学习成绩。\n\nC1/C2请另取对应learner-offline.zip；本包不内置这两门课程或其vendor依赖。
+D0 Rust Book 逐节审计、D1 Cargo、D2 智能指针、D3 面向对象/模式匹配、D4 高级特性、D5 多线程 Web Server、D6-A 附录参考实验、D6-B 基础缺口补齐实验及 D/E/G 实操指南一并在本包 course/ 与 projects/ 中提供。所有权与切片、集合与错误传播、泛型与生命周期的三份新讲义从 course/BOOK_CONCEPT_AUDIT.md 导航；该文件说明六章概念目标的证据和残余，不能当作全书完成率。D1/D2/D3/D4/D5/D6-A/D6-B 都是独立参考实验，不是新增的学员作品，也不计作个人学习成绩。\n\nC1/C2请另取对应learner-offline.zip；本包不内置这两门课程或其vendor依赖。
 
 本包不包含已经完成的核心业务参考实现。MiniKV 的 journal.rs、TermGarden 的 storage.rs、StoreDesk 的 sqlite.rs 和 AsyncBoard 的 runtime.rs 是提供给学员的基础设施，不是要求学员先实现的底层作业。CLI 外壳和基础类型已经提供，它不是“从零空文件开发”考核；后续TaskPocket和PageMint才要求更独立地实现。
 
@@ -62,6 +62,11 @@ def course_inputs() -> list[tuple[str, bytes]]:
         "BEGINNER_WINDOWS_GUIDE.md", "00_first_five_minutes.md", "NETWORK_PREPARATION.md", "LEARNING_NAVIGATOR.md", "RUST_ERROR_LABS.md", "FOUNDATION_PATH.md", "FOUNDATION_NEXT_STEPS.md", "PROGRESS_OVERVIEW.md", "SYSTEMS_PATH.md", "RELIABILITY_PATH.md", "INDEPENDENT_PATH.md",
     ]
     result = [(f"course/{name}", (ROOT / "course" / name).read_bytes()) for name in files]
+    for name in ("BOOK_OWNERSHIP_PRACTICE.md", "BOOK_COLLECTIONS_ERRORS.md",
+                 "BOOK_GENERICS_LIFETIMES.md", "BOOK_CONCEPT_AUDIT.md"):
+        result.append((f"course/{name}", (ROOT / "course" / name).read_bytes()))
+    result.append(("verification/concept-audit-rc3.json",
+                   (ROOT / "verification/concept-audit-rc3.json").read_bytes()))
     result.append(("scripts/book_d6_check.py", (ROOT / "scripts/book_d6_check.py").read_bytes()))
     # D1 is a runnable reference lab, not an 18th learner exercise. Its code
     # must accompany the docs so offline links do not dangle in learner-kit.

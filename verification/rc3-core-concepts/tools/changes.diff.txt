@@ -1,0 +1,11 @@
+--- before/lib.rs
++++ after/lib.rs
+@@ -116,7 +116,7 @@
+ }
+ 
+ pub fn d6_unused_mut_probe() -> u8 {
+-    let mut value = 7_u8;
++    let value = 7_u8;
+     value.saturating_add(1)
+ }
+ 

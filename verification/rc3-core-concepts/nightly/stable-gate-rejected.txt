@@ -1,0 +1,11 @@
+    Checking nightly-isolation-lab v0.1.0 (/tmp/RustAppLab-D6-f_nzdphd/lab)
+error[E0554]: `#![feature]` may not be used on the stable release channel
+ --> src/lib.rs:1:1
+  |
+1 | #![feature(generic_const_exprs)]
+  | ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+For more information about this error, try `rustc --explain E0554`.
+error: could not compile `nightly-isolation-lab` (lib) due to 1 previous error
+warning: build failed, waiting for other jobs to finish...
+error: could not compile `nightly-isolation-lab` (lib test) due to 1 previous error

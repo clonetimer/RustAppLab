@@ -111,9 +111,9 @@ jobs:
         with:
           components: rustfmt, clippy, rust-docs, rust-analyzer
       - name: Execute tools on an isolated copy and retain command evidence
-        run: python scripts/book_d6_check.py --mode tools --toolchain 1.85.0 --output d6-practical-evidence/tools
+        run: python scripts/book_d6_check.py --mode tools --toolchain 1.85.0 --output d6-practical-evidence/tools --keep-workspace
       - name: Execute Edition 2021 to 2024 migration and compare source snapshots
-        run: python scripts/book_d6_check.py --mode edition --toolchain 1.85.0 --output d6-practical-evidence/edition
+        run: python scripts/book_d6_check.py --mode edition --toolchain 1.85.0 --output d6-practical-evidence/edition --keep-workspace
       - uses: actions/upload-artifact@v4
         if: always()
         with:
@@ -197,7 +197,8 @@ jobs:
           (cd candidate-release && sha256sum -c SHA256SUMS.txt)
           cat > candidate-notes.md <<'EOF'
           Rust Book补齐候选版。完整源码、17工程学员包、C1/C2离线源码包及Windows/Linux参考运行包已验证。
-          新增Cargo入门、数组/元组、变量与模块实验，以及D/E工具和Edition迁移的Linux/Windows真实执行证据。Nightly实验为独立选修，不替代Stable/MSRV验收。
+          新增所有权/切片、集合/错误传播、泛型/生命周期实操和六章118项目标审计；87项具备完整教学链，31项仍有残余，不代表全书完成率。D/E包含可打开的IDE工作区入口及配置校验，实际IDE操作仍待个人记录。
+          D/E工具和Edition迁移保留Linux/Windows真实执行证据；Nightly实验为独立选修，不替代Stable/MSRV验收。
           先阅读QUICK_START.md；直接体验下载对应平台runtime.zip，完整学习下载source.zip。
           此发布为RC，不是Stable。真实学习观察仍待填写USER_TRIAL.md，不能以自动测试代替。
           参考运行包无需Cargo；编译/检查学员工程仍需Rust与系统工具链。Linux系统库要求见包内BUILD_INFO.json，Windows CI不等于用户本机Win10验收。

@@ -1,0 +1,16 @@
+ Documenting book-d6-appendix-lab v0.1.0 (/tmp/RustAppLab-D6-uezpgfgx/lab/appendix-lab)
+warning: could not parse code block as Rust code
+  --> appendix-lab/src/lib.rs:15:5
+   |
+15 |   //! ```compile_fail
+   |  _____^
+16 | | //! fn r#self() {}
+17 | | //! ```
+   | |_______^
+   |
+   = note: error from rustc: `self` cannot be a raw identifier
+   = note: `#[warn(rustdoc::invalid_rust_codeblocks)]` on by default
+
+warning: `book-d6-appendix-lab` (lib doc) generated 1 warning
+    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.35s
+   Generated /tmp/RustAppLab-D6-uezpgfgx/target/doc/book_d6_appendix_lab/index.html
