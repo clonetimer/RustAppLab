@@ -27,7 +27,12 @@ def archive_bytes(entries):
         warnings.simplefilter('ignore', UserWarning)
         with zipfile.ZipFile(result, 'w', compression=zipfile.ZIP_STORED) as archive:
             for name, contents in entries:
-                archive.writestr(name, contents)
+                member = name
+                if isinstance(name, str):
+                    member = zipfile.ZipInfo(name)
+                    # Preserve adversarial names after ZipInfo's host-specific normalization.
+                    member.filename = member.orig_filename = name
+                archive.writestr(member, contents)
     return result.getvalue()
 
 
@@ -172,11 +177,16 @@ class DownloadTests(unittest.TestCase):
                      r'nested\escaped.txt', r'\server\escaped.txt', 'C:/escaped.txt',
                      'C:escaped.txt', '//server/share/escaped.txt', './escaped.txt',
                      'nested/./escaped.txt', 'nested//escaped.txt'):
-            payload = archive_bytes([(name, b'unsafe')])
-            self.selection['artifacts'][0] = metadata(14404059996, 'delivery-windows-latest', payload)
-            with self.subTest(name=name):
-                self.assert_rejected(downloads={14404059996: payload})
-                self.assertFalse((self.root / 'escaped.txt').exists())
+            for separator in ('/', '\\'):
+                with self.subTest(name=name, separator=separator):
+                    # Isolate the ZIP writer's platform normalization from filesystem use.
+                    with patch.object(zipfile.os, 'sep', separator):
+                        payload = archive_bytes([(name, b'unsafe')])
+                    with zipfile.ZipFile(io.BytesIO(payload)) as archive:
+                        self.assertEqual([item.orig_filename for item in archive.infolist()], [name])
+                    self.selection['artifacts'][0] = metadata(14404059996, 'delivery-windows-latest', payload)
+                    self.assert_rejected(downloads={14404059996: payload})
+                    self.assertFalse((self.root / 'escaped.txt').exists())
 
     def test_symlinks_and_special_files_are_rejected(self):
         for mode in (stat.S_IFLNK | 0o777, stat.S_IFIFO | 0o644):

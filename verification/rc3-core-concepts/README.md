@@ -19,6 +19,8 @@ Python 门禁回归由 `python -m unittest discover -s scripts/tests -v` 实际�
 
 本地集成检查还读取了该 Windows 成功产物的实际 ZIP，确认 API 摘要匹配、32 个文件可安全提取，两个交付报告均为 PASS，选择清单按原始字节保留。下载边界以已留存字节替代网络调用；真实 GitHub 权限、下载及所有候选报告组合仍由新提交的完整 CI 验收。Run 226 不作为修复后的通过记录。详细经过与证据边界见 [开发经验第 31–32 节](../DEVELOPMENT_EXPERIENCE_D6.md)。
 
+随后 [Run 227 的 Windows native](https://github.com/clonetimer/RustAppLab/actions/runs/44255916223/job/134637443358) 发现 ZIP 写入器将反例中的反斜杠转换为 `/`，导致 169 项中单项测试失败。修复仅改变夹具，显式保存原始成员名；同一反例在两种写入器分隔符设置下均先核对序列化字节，再执行真实拒绝检查。完整 Python 套件再次 **169 / 169 通过**，原始结果见 [Windows 夹具修复后的完整日志](python-tests-windows-fixture-fix.txt)。这仍是本地验证，下一次完整 CI 才能确认真实 Windows 执行；经验与原始失败证据见 [第 33 节](../DEVELOPMENT_EXPERIENCE_D6.md)。
+
 ## 工具、迁移与 Nightly
 
 | 模式 | 命令步骤 | 实际结果 | 证据 |
