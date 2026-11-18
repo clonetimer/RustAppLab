@@ -1,4 +1,4 @@
-    Checking nightly-isolation-lab v0.1.0 (/tmp/RustAppLab-D6-km_lyxzx/lab)
+    Checking nightly-isolation-lab v0.1.0 (/tmp/RustAppLab-D6-3bdp8fx9/lab)
 error: generic parameters may not be used in const operations
  --> src/lib.rs:5:10
   |
@@ -63,6 +63,6 @@ error: generic parameters may not be used in const operations
    |
    = help: const parameters may only be used as standalone arguments, i.e. `N`
 
-error: could not compile `nightly-isolation-lab` (lib test) due to 8 previous errors
-warning: build failed, waiting for other jobs to finish...
 error: could not compile `nightly-isolation-lab` (lib) due to 8 previous errors
+warning: build failed, waiting for other jobs to finish...
+error: could not compile `nightly-isolation-lab` (lib test) due to 8 previous errors

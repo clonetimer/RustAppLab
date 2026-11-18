@@ -25,6 +25,7 @@ import time
 ROOT = Path(__file__).resolve().parents[1]
 LAB = Path("projects/book-d6-appendices")
 COMMON = ("--locked", "--offline", "--workspace")
+PROTECTED_ROOT_FILES = ("VERSION", "Cargo.toml", "Cargo.lock", "rust-toolchain", "rust-toolchain.toml")
 
 NIGHTLY_SOURCE = """#![feature(generic_const_exprs)]
 #![allow(incomplete_features)]
@@ -62,8 +63,7 @@ class PracticeFailure(RuntimeError):
 
 def source_snapshot(root: Path) -> dict:
     """Include absent toolchain files and additions/removals in the source lab."""
-    paths = {root / name for name in
-             ("VERSION", "Cargo.toml", "Cargo.lock", "rust-toolchain", "rust-toolchain.toml")}
+    paths = {root / name for name in PROTECTED_ROOT_FILES}
     paths.update(path for path in (root / LAB).rglob("*")
                  if path.is_file() and not any(part in {"target", ".git", "__pycache__"}
                                                for part in path.relative_to(root / LAB).parts))
@@ -282,6 +282,11 @@ def main(argv: list[str] | None = None) -> int:
     try:
         if output == source_lab or source_lab in output.parents:
             raise PracticeFailure("evidence output must be outside the original reference lab")
+        for name in PROTECTED_ROOT_FILES:
+            protected = (ROOT / name).resolve()
+            if output == protected or protected in output.parents:
+                raise PracticeFailure(f"evidence output must not replace protected root path: {name}")
+        before = source_snapshot(ROOT)
         output.mkdir(parents=True, exist_ok=False)
     except (OSError, PracticeFailure) as error:
         print(f"D6 refused: {error}", file=sys.stderr)
@@ -295,7 +300,6 @@ def main(argv: list[str] | None = None) -> int:
               "scope": "D6 command practice; IDE use and learner mastery are not automated",
               "snapshot_scope": "VERSION, root manifests/toolchain files and projects/book-d6-appendices",
               "workspace": None, "workspace_retained": False, "steps": [], "error": None}
-    before = source_snapshot(ROOT)
     report.update(source_snapshot_before=before, source_id=snapshot_id(before))
     runner = None
     try:

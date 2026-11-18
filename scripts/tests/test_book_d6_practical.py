@@ -80,6 +80,16 @@ class PracticalChecks(unittest.TestCase):
         self.assertFalse(self.output.exists())
         self.assertEqual(self.source.read_bytes(), self.source_bytes)
 
+    def test_output_cannot_create_an_absent_protected_root_file_as_a_directory(self):
+        for name in ("VERSION", "rust-toolchain", "rust-toolchain.toml"):
+            with self.subTest(name=name):
+                protected = self.root / name
+                self.assertFalse(protected.exists())
+                self.output = protected / "logs"
+                with mock.patch.object(practice, "check_tools", return_value=None):
+                    self.assertNotEqual(self.invoke(), 0)
+                self.assertFalse(protected.exists(), "rejection must happen before mkdir")
+
     def test_command_preserves_spaces_stderr_exit_code_and_isolated_target(self):
         runner = self.runner()
         command = [sys.executable, "-c",

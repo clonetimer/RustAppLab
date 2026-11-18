@@ -1,13 +1,13 @@
-   Compiling book-d6-appendix-lab v0.1.0 (/tmp/RustAppLab-D6-3cghtko8/lab/appendix-lab)
-    Finished `release` profile [optimized] target(s) in 0.30s
-     Running unittests src/lib.rs (/tmp/RustAppLab-D6-3cghtko8/target/release/deps/book_d6_appendix_lab-f7f5120c86de5075)
+   Compiling book-d6-appendix-lab v0.1.0 (/tmp/RustAppLab-D6-oultdmjf/lab/appendix-lab)
+    Finished `release` profile [optimized] target(s) in 0.33s
+     Running unittests src/lib.rs (/tmp/RustAppLab-D6-oultdmjf/target/release/deps/book_d6_appendix_lab-f7f5120c86de5075)
 
 running 12 tests
-test d6_edition_probe::preserves_reserved_identifier ... ok
-test tests::add_trait_overloads_the_plus_operator ... ok
-test tests::arithmetic_precedence_is_multiplication_before_addition ... ok
 test tests::bitwise_and_is_not_logical_and ... ok
+test tests::arithmetic_precedence_is_multiplication_before_addition ... ok
+test d6_edition_probe::preserves_reserved_identifier ... ok
 test tests::debug_and_display_are_distinct_contracts ... ok
+test tests::add_trait_overloads_the_plus_operator ... ok
 test tests::derived_default_and_clone_preserve_owned_values ... ok
 test tests::derived_hash_and_equality_allow_owned_task_keys ... ok
 test tests::derived_order_uses_the_newtype_value ... ok

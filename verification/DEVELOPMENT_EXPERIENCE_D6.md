@@ -138,3 +138,11 @@ Independent review found that the native/MSRV gates still accepted the old found
 A new run_step regression then revealed a second issue: the log includes its command line, and an unanchored test-summary regex counted a printed summary inside that command as another suite. A report of 20 tests was counted as 40. The regression failed with the old parser, then passed after matching only summary lines at line start in multiline mode. Floors are now 29 Debug, 29 Release and 15 doctests, with zero ignored tests.
 
 **Rule:** keep acceptance thresholds aligned with the actual exercise set, and verify the evidence parser against command echoes and missing suites. A gate's own regression must prove it rejects the old incomplete batch, not merely compare constants. Exact final CI and artifact checks still decide publication.
+
+## 22. Reject protected output paths before creating directories
+
+A final review reproduced an absent-path edge case: using rust-toolchain.toml/logs as the evidence output created a directory named rust-toolchain.toml before the first snapshot. The run could then describe that newly created directory as unchanged. The same boundary applied to absent VERSION and rust-toolchain paths in a learner tree.
+
+The behavior regression first reproduced all three false successes. The runner now rejects output at, or below, each protected root file path before mkdir and takes its baseline snapshot before writing. The regression then passed; ordinary CI and temporary evidence directories remain usable. All three real experiments were rerun with the final runner hash and their archived evidence refreshed.
+
+**Rule:** capture the initial state before any write, and treat a protected file location as protected even when the file does not yet exist. A post-write baseline cannot prove that the source was never changed.

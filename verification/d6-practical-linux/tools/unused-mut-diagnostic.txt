@@ -1,4 +1,4 @@
-    Checking book-d6-appendix-lab v0.1.0 (/tmp/RustAppLab-D6-wjebzf3u/lab/appendix-lab)
+    Checking book-d6-appendix-lab v0.1.0 (/tmp/RustAppLab-D6-36jgqy2j/lab/appendix-lab)
 error: variable does not need to be mutable
    --> appendix-lab/src/lib.rs:119:9
     |

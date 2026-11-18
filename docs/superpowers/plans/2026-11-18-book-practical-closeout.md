@@ -41,8 +41,10 @@
 - Ruling: include the independently found variable/module teaching gaps in the existing D6 batch; they share the same lab and add no learner products.
 - Ruling: use rc.2 because Run 220's publication error proves rc.1 is immutable and already assigned. Do not weaken the tag protection.
 
-- Tasks 1–3 local verification: 125 Python tests PASS; foundation Debug/Release 29 and doctests 15 on Rust 1.85/1.74; current stable format and foundation Debug PASS; practical tools/edition/nightly 15/14/6 steps PASS with unchanged scoped inputs.
+- Tasks 1–3 local verification: 126 Python tests PASS; foundation Debug/Release 29 and doctests 15 on Rust 1.85/1.74; current stable format and foundation Debug PASS; practical tools/edition/nightly 15/14/6 steps PASS with unchanged scoped inputs.
 - Archive check: source 716 entries (715 exact manifest hashes), learner 348 entries and 17 expected learner projects; no target/cache members.
 - Review fix: update foundation floors to 29/29/15 and prevent command echoes from duplicating test-summary counts; regression RED→GREEN and release-check suite 26/26.
 - Review clarification: D1 current-version wording and exact IDE/lab/doc paths corrected.
 - Remote integration remains gated by exact-head PR CI, immutable main checkpoint and rc.2 publication; the final run URLs and merge SHA will be recorded on PR #10.
+
+- Final review boundary fix: reject evidence paths at/below protected root-file locations before mkdir; initial-state regression RED→GREEN; rerun tools/Edition/Nightly and refresh their source/runner-bound evidence.

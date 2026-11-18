@@ -1,4 +1,4 @@
-   Compiling nightly-isolation-lab v0.1.0 (/tmp/RustAppLab-D6-km_lyxzx/lab)
+   Compiling nightly-isolation-lab v0.1.0 (/tmp/RustAppLab-D6-3bdp8fx9/lab)
 warning: `feature(generic_const_exprs)` is not supported with the next-generation trait solver
  --> src/lib.rs:1:12
   |
@@ -11,8 +11,8 @@ warning: `feature(generic_const_exprs)` is not supported with the next-generatio
   = note: see issues #160895 <https://github.com/rust-lang/rust/issues/160895> for more information
 
 warning: `nightly-isolation-lab` (lib test) generated 1 warning
-    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.18s
-     Running unittests src/lib.rs (/tmp/RustAppLab-D6-km_lyxzx/target/debug/build/nightly-isolation-lab/eef35c3336370e38/out/nightly_isolation_lab-eef35c3336370e38)
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.23s
+     Running unittests src/lib.rs (/tmp/RustAppLab-D6-3bdp8fx9/target/debug/build/nightly-isolation-lab/eef35c3336370e38/out/nightly_isolation_lab-eef35c3336370e38)
 
 running 1 test
 test tests::const_expression_sizes_storage ... ok

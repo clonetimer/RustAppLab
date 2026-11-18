@@ -5,12 +5,12 @@
   "stable_toolchain": "1.85.0",
   "system": "Linux",
   "git_commit": null,
-  "runner_sha256": "ff9cc517075b9778ede241be7543d3b5eec9a74ec0faed21a15e7cc2d6226d23",
-  "started_at": "2026-11-18T04:50:52.182963+00:00",
+  "runner_sha256": "6853755a130c6f2bb3407f70c79ccb8a5ddc20496bc8f3de950ef023b7549c3c",
+  "started_at": "2026-11-18T05:04:17.743779+00:00",
   "status": "PASS",
   "scope": "D6 command practice; IDE use and learner mastery are not automated",
   "snapshot_scope": "VERSION, root manifests/toolchain files and projects/book-d6-appendices",
-  "workspace": "/tmp/RustAppLab-D6-km_lyxzx",
+  "workspace": "/tmp/RustAppLab-D6-3bdp8fx9",
   "workspace_retained": false,
   "steps": [
     {
@@ -20,12 +20,12 @@
         "+nightly-2026-11-17",
         "-Vv"
       ],
-      "cwd": "/tmp/RustAppLab-D6-km_lyxzx/lab",
+      "cwd": "/tmp/RustAppLab-D6-3bdp8fx9/lab",
       "returncode": 0,
       "expected_returncode": 0,
       "passed": true,
       "timed_out": false,
-      "seconds": 0.037,
+      "seconds": 0.048,
       "log": "rustc-version.txt",
       "sha256": "b4a45c37d99db8c82354a5c2a1eef3857b2177dae3461368d994ec416ec6e64d"
     },
@@ -36,12 +36,12 @@
         "+1.85.0",
         "-Vv"
       ],
-      "cwd": "/tmp/RustAppLab-D6-km_lyxzx/lab",
+      "cwd": "/tmp/RustAppLab-D6-3bdp8fx9/lab",
       "returncode": 0,
       "expected_returncode": 0,
       "passed": true,
       "timed_out": false,
-      "seconds": 0.043,
+      "seconds": 0.039,
       "log": "stable-rustc-version.txt",
       "sha256": "be9e105cd61ce407c0e06d80a25240f93cc48de72942117e1886f09aa08f9a2a"
     },
@@ -52,15 +52,15 @@
         "+nightly-2026-11-17",
         "generate-lockfile",
         "--manifest-path",
-        "/tmp/RustAppLab-D6-km_lyxzx/lab/Cargo.toml",
+        "/tmp/RustAppLab-D6-3bdp8fx9/lab/Cargo.toml",
         "--offline"
       ],
-      "cwd": "/tmp/RustAppLab-D6-km_lyxzx/lab",
+      "cwd": "/tmp/RustAppLab-D6-3bdp8fx9/lab",
       "returncode": 0,
       "expected_returncode": 0,
       "passed": true,
       "timed_out": false,
-      "seconds": 0.013,
+      "seconds": 0.026,
       "log": "nightly-lockfile.txt",
       "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
     },
@@ -71,20 +71,20 @@
         "+nightly-2026-11-17",
         "test",
         "--manifest-path",
-        "/tmp/RustAppLab-D6-km_lyxzx/lab/Cargo.toml",
+        "/tmp/RustAppLab-D6-3bdp8fx9/lab/Cargo.toml",
         "--locked",
         "--offline",
         "--workspace",
         "--all-targets"
       ],
-      "cwd": "/tmp/RustAppLab-D6-km_lyxzx/lab",
+      "cwd": "/tmp/RustAppLab-D6-3bdp8fx9/lab",
       "returncode": 0,
       "expected_returncode": 0,
       "passed": true,
       "timed_out": false,
-      "seconds": 0.193,
+      "seconds": 0.251,
       "log": "nightly-tests.txt",
-      "sha256": "ae515e94fcd9ba5f0d79e4b1243002049203bdc86dab682e9d0a3023e29ea3b6",
+      "sha256": "d60dbb495cd5b4f1486f196aeeb58d4a574b4ec057d2cc4136fb5e02547e2372",
       "tests": {
         "passed": 1,
         "failed": 0,
@@ -98,20 +98,20 @@
         "+1.85.0",
         "check",
         "--manifest-path",
-        "/tmp/RustAppLab-D6-km_lyxzx/lab/Cargo.toml",
+        "/tmp/RustAppLab-D6-3bdp8fx9/lab/Cargo.toml",
         "--locked",
         "--offline",
         "--workspace",
         "--all-targets"
       ],
-      "cwd": "/tmp/RustAppLab-D6-km_lyxzx/lab",
+      "cwd": "/tmp/RustAppLab-D6-3bdp8fx9/lab",
       "returncode": 101,
       "expected_returncode": 101,
       "passed": true,
       "timed_out": false,
-      "seconds": 0.097,
+      "seconds": 0.084,
       "log": "stable-gate-rejected.txt",
-      "sha256": "e62a892321eaab0a4a640ec8da763476172f5c2746baf437702f5b5be8fc9591",
+      "sha256": "57d2c065ca50cdfaa39d3232adb5329544192bbf1a61e396a325139f2c533232",
       "required_diagnostic": "E0554"
     },
     {
@@ -121,20 +121,20 @@
         "+1.85.0",
         "check",
         "--manifest-path",
-        "/tmp/RustAppLab-D6-km_lyxzx/lab/Cargo.toml",
+        "/tmp/RustAppLab-D6-3bdp8fx9/lab/Cargo.toml",
         "--locked",
         "--offline",
         "--workspace",
         "--all-targets"
       ],
-      "cwd": "/tmp/RustAppLab-D6-km_lyxzx/lab",
+      "cwd": "/tmp/RustAppLab-D6-3bdp8fx9/lab",
       "returncode": 101,
       "expected_returncode": 101,
       "passed": true,
       "timed_out": false,
-      "seconds": 0.055,
+      "seconds": 0.051,
       "log": "stable-expression-rejected.txt",
-      "sha256": "a8e2c5cfdf23d6b9b27f4b19df000abdc05a016a355a6c84cb11aa5216c458f0",
+      "sha256": "d8ae42a8484ef38fd830ae6d23f51ed8f3fe70fc6a2774bb20e07fef709088a7",
       "required_diagnostic": "generic parameters may not be used in const operations"
     }
   ],
@@ -186,7 +186,7 @@
     },
     {
       "file": "nightly-tests.txt",
-      "sha256": "ae515e94fcd9ba5f0d79e4b1243002049203bdc86dab682e9d0a3023e29ea3b6"
+      "sha256": "d60dbb495cd5b4f1486f196aeeb58d4a574b4ec057d2cc4136fb5e02547e2372"
     },
     {
       "file": "rustc-version.txt",
@@ -206,11 +206,11 @@
     },
     {
       "file": "stable-expression-rejected.txt",
-      "sha256": "a8e2c5cfdf23d6b9b27f4b19df000abdc05a016a355a6c84cb11aa5216c458f0"
+      "sha256": "d8ae42a8484ef38fd830ae6d23f51ed8f3fe70fc6a2774bb20e07fef709088a7"
     },
     {
       "file": "stable-gate-rejected.txt",
-      "sha256": "e62a892321eaab0a4a640ec8da763476172f5c2746baf437702f5b5be8fc9591"
+      "sha256": "57d2c065ca50cdfaa39d3232adb5329544192bbf1a61e396a325139f2c533232"
     },
     {
       "file": "stable-rustc-version.txt",
