@@ -107,3 +107,11 @@ The original Run 226 cannot qualify the corrected source. All 18 producer jobs e
 - [ ] Commit, run full CI on the new head, then finish the original PR/main/release gates. Run 227 cannot qualify the changed fixture.
 
 - Verified: actual Windows failure retained; Windows-separator boundary reproduced RED against the original fixture, GREEN after the fixture-only fix. Full Python suite 169/169 PASS; narrow independent review found no blocker and reran the 18 downloader tests. Production downloader unchanged. Source ZIP refreshed to 799 members / 798 manifest entries, SHA256 `be3360b6fb984eb93858495a79c695b8efc9647fb090c6bdc6467a24f3f1f7af`; all members match current source bytes. Learner inputs and its 359-member / 17-project archive are unchanged from the preceding verified package.
+
+## Task 7: Keep transient selection outside the source identity boundary
+
+- [x] Before candidate assembly, reproduce source_id contamination from selected-artifacts.json at the checkout root. Retain the differential probe; a file outside checkout preserves identity.
+- [x] Move the selection path to RUNNER_TEMP, keeping strict source comparison and the copied evidence trace unchanged.
+- [ ] Narrow review, refresh source archive and commit, then use the new full CI head. Run 228 cannot qualify this changed workflow.
+
+- Verified after placement change: complete Python suite 169/169 PASS. An independent reviewer reproduced both the root-file contamination and the unchanged identity for runner-temp / nested collected evidence. Source ZIP refreshed to 800 members / 799 manifest entries, SHA256 `5fc60cbf4ba24537615772014791fc8c90efe339a4c9bb81c30db864f79cabf2`; every packaged byte matches the current tree. Source identity is `f8d51cfc5b60212470ce95548a93070b807a92e46f6a9bc4abcdb3f417bfb0e7`. Final commit/run acceptance remains recorded separately in the PR to avoid treating these local checks as remote success.

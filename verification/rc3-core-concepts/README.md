@@ -21,6 +21,8 @@ Python 门禁回归由 `python -m unittest discover -s scripts/tests -v` 实际�
 
 随后 [Run 227 的 Windows native](https://github.com/clonetimer/RustAppLab/actions/runs/44255916223/job/134637443358) 发现 ZIP 写入器将反例中的反斜杠转换为 `/`，导致 169 项中单项测试失败。修复仅改变夹具，显式保存原始成员名；同一反例在两种写入器分隔符设置下均先核对序列化字节，再执行真实拒绝检查。完整 Python 套件再次 **169 / 169 通过**，原始结果见 [Windows 夹具修复后的完整日志](python-tests-windows-fixture-fix.txt)。这仍是本地验证，下一次完整 CI 才能确认真实 Windows 执行；经验与原始失败证据见 [第 33 节](../DEVELOPMENT_EXPERIENCE_D6.md)。
 
+Run 228 进行期间的 [本地差分探针](selection-location-probe.json) 又确认，checkout 根目录的临时选择清单会改变既有 `source_id()`。已将清单移到 `$RUNNER_TEMP`，独立审查与最终新提交 CI 继续验证；源码身份函数及其严格比较不变。本记录没有把该预先发现的问题写成已发生的远端失败，详细经验见 [第 34 节](../DEVELOPMENT_EXPERIENCE_D6.md)。
+
 ## 工具、迁移与 Nightly
 
 | 模式 | 命令步骤 | 实际结果 | 证据 |

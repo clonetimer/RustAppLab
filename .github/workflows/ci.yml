@@ -142,8 +142,9 @@ jobs:
         env:
           GH_TOKEN: ${{ github.token }}
         run: |
-          python scripts/select_ci_artifacts.py --repository "$GITHUB_REPOSITORY" --run-id "$GITHUB_RUN_ID" > selected-artifacts.json
-          python scripts/download_ci_artifacts.py --selection selected-artifacts.json --output collected-evidence
+          selection_path="$RUNNER_TEMP/selected-artifacts.json"
+          python scripts/select_ci_artifacts.py --repository "$GITHUB_REPOSITORY" --run-id "$GITHUB_RUN_ID" > "$selection_path"
+          python scripts/download_ci_artifacts.py --selection "$selection_path" --output collected-evidence
       - name: Verify reports, source identity and artifact hashes
         run: python scripts/assemble_candidate.py --input collected-evidence --output candidate-release
       - uses: actions/upload-artifact@v4
