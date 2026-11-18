@@ -77,3 +77,11 @@ python scripts/release_check.py --output ../qualification-current
 fetch 是维护者显式联网准备；后续完整门禁不自行联网。Rust 1.74 必须用实际 1.74 工具链单独准备与运行，缓存不从较新工具链结果推断。输出目录须为新目录。完整工程检查包括主工作区、进阶 B 独立参考工作区、feature 组合及文档测试。`verify.sh` 和 `verify.ps1` 提供不依赖 Python 的 Cargo 检查；Windows 完整工程记录继续使用 `VERIFY_RELEASE_WINDOWS.cmd`。普通学员只需使用 Cargo 和学习入口。
 
 B4 在独立 `json-export/` 中复用 `taskcore`，练习 [Serde derive](https://serde.rs/derive.html) 与 [Cargo resolver](https://doc.rust-lang.org/cargo/reference/resolver.html)。旧 Book 可帮助理解 trait、模块和测试；第三方 API 以这些官方资料和固定 Cargo.lock 为准。在平台根目录显式 `advanced-b prepare-json <工程>` 后，再 `advanced-b check <工程> 4`；旧工程先 `advanced-b add-json <工程>`。`3` 保持原合同，`all`/`learn check` 包括 B4；准备不会执行学员源码，只读导航不会准备依赖。完整步骤和个人数据实验见 [B4 讲义](ADVANCED_B.md)。已交付的真实异步网络课程见 [C1](ADVANCED_C1.md) 与 [C2](ADVANCED_C2.md)，按 [课程路线](CURRICULUM.md) 学习。
+
+## 本轮复核后的直接入口
+
+- 刚完成 FirstCard：先做 [Cargo 复习与数组/元组](BOOK_D6_FOUNDATIONS.md) 的三步任务。
+- 不清楚 mut、const、遮蔽或模块路径：进入 [变量与模块专项](BOOK_D6_LANGUAGE_BASICS.md)，比较成功和编译失败示例。
+- 准备使用开发工具或迁移 Edition：进入 [D/E/G 实操指南](BOOK_D6_PRACTICAL.md)，在副本执行并保留证据。
+
+旧 Run 的结果只证明当时源码；新增内容以当前提交的验收为准。81 项是目录映射，不是个人掌握进度。

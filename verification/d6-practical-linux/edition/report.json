@@ -1,0 +1,430 @@
+{
+  "schema": 1,
+  "mode": "edition",
+  "toolchain": "1.85.0",
+  "stable_toolchain": "1.85.0",
+  "system": "Linux",
+  "git_commit": null,
+  "runner_sha256": "6853755a130c6f2bb3407f70c79ccb8a5ddc20496bc8f3de950ef023b7549c3c",
+  "started_at": "2026-11-18T05:04:17.766742+00:00",
+  "status": "PASS",
+  "scope": "D6 command practice; IDE use and learner mastery are not automated",
+  "snapshot_scope": "VERSION, root manifests/toolchain files and projects/book-d6-appendices",
+  "workspace": "/tmp/RustAppLab-D6-oultdmjf",
+  "workspace_retained": false,
+  "steps": [
+    {
+      "step": "rustc-version",
+      "argv": [
+        "rustc",
+        "+1.85.0",
+        "-Vv"
+      ],
+      "cwd": "/tmp/RustAppLab-D6-oultdmjf/lab",
+      "returncode": 0,
+      "expected_returncode": 0,
+      "passed": true,
+      "timed_out": false,
+      "seconds": 0.03,
+      "log": "rustc-version.txt",
+      "sha256": "be9e105cd61ce407c0e06d80a25240f93cc48de72942117e1886f09aa08f9a2a"
+    },
+    {
+      "step": "cargo-version",
+      "argv": [
+        "cargo",
+        "+1.85.0",
+        "--version"
+      ],
+      "cwd": "/tmp/RustAppLab-D6-oultdmjf/lab",
+      "returncode": 0,
+      "expected_returncode": 0,
+      "passed": true,
+      "timed_out": false,
+      "seconds": 0.016,
+      "log": "cargo-version.txt",
+      "sha256": "2d3bc7bb1b2e9f3bfeadb1b2a370e8462c3c3a0bc7481c2d8d5fa4e6953465bf"
+    },
+    {
+      "step": "rustfmt-version",
+      "argv": [
+        "rustfmt",
+        "+1.85.0",
+        "--version"
+      ],
+      "cwd": "/tmp/RustAppLab-D6-oultdmjf/lab",
+      "returncode": 0,
+      "expected_returncode": 0,
+      "passed": true,
+      "timed_out": false,
+      "seconds": 0.031,
+      "log": "rustfmt-version.txt",
+      "sha256": "55a714a365e5ffb1375d2093013c33ab64b9437372357db49b647389e943b1a0"
+    },
+    {
+      "step": "clippy-version",
+      "argv": [
+        "cargo",
+        "+1.85.0",
+        "clippy",
+        "--version"
+      ],
+      "cwd": "/tmp/RustAppLab-D6-oultdmjf/lab",
+      "returncode": 0,
+      "expected_returncode": 0,
+      "passed": true,
+      "timed_out": false,
+      "seconds": 0.024,
+      "log": "clippy-version.txt",
+      "sha256": "c2a44da4923702348a822a24ca7327329950b60145185d7ac70c644efa605353"
+    },
+    {
+      "step": "rustdoc-version",
+      "argv": [
+        "rustdoc",
+        "+1.85.0",
+        "--version"
+      ],
+      "cwd": "/tmp/RustAppLab-D6-oultdmjf/lab",
+      "returncode": 0,
+      "expected_returncode": 0,
+      "passed": true,
+      "timed_out": false,
+      "seconds": 0.013,
+      "log": "rustdoc-version.txt",
+      "sha256": "762a21d13f324876cfd3da46dabe52da33f7735ac0a1d55d7ed4eb0f51094100"
+    },
+    {
+      "step": "original-tests",
+      "argv": [
+        "cargo",
+        "+1.85.0",
+        "test",
+        "--manifest-path",
+        "/tmp/RustAppLab-D6-oultdmjf/lab/appendix-lab/Cargo.toml",
+        "--locked",
+        "--offline",
+        "--workspace",
+        "--all-targets"
+      ],
+      "cwd": "/tmp/RustAppLab-D6-oultdmjf/lab",
+      "returncode": 0,
+      "expected_returncode": 0,
+      "passed": true,
+      "timed_out": false,
+      "seconds": 0.615,
+      "log": "original-tests.txt",
+      "sha256": "22c38b6191c9caf07de6b66f143db42b415b2742fb26cbcace4e33d6b1f449e3",
+      "tests": {
+        "passed": 11,
+        "failed": 0,
+        "ignored": 0
+      }
+    },
+    {
+      "step": "edition-2021-probe",
+      "argv": [
+        "cargo",
+        "+1.85.0",
+        "test",
+        "--manifest-path",
+        "/tmp/RustAppLab-D6-oultdmjf/lab/appendix-lab/Cargo.toml",
+        "--locked",
+        "--offline",
+        "--workspace",
+        "--all-targets"
+      ],
+      "cwd": "/tmp/RustAppLab-D6-oultdmjf/lab",
+      "returncode": 0,
+      "expected_returncode": 0,
+      "passed": true,
+      "timed_out": false,
+      "seconds": 0.264,
+      "log": "edition-2021-probe.txt",
+      "sha256": "4f098a267831b8d7ec1f2b1fc6ae944ec5ba6d0dfe9a7cb7de2503d9cafca455",
+      "tests": {
+        "passed": 12,
+        "failed": 0,
+        "ignored": 0
+      }
+    },
+    {
+      "step": "edition-fix",
+      "argv": [
+        "cargo",
+        "+1.85.0",
+        "fix",
+        "--manifest-path",
+        "/tmp/RustAppLab-D6-oultdmjf/lab/appendix-lab/Cargo.toml",
+        "--locked",
+        "--offline",
+        "--workspace",
+        "--all-targets",
+        "--edition",
+        "--allow-no-vcs"
+      ],
+      "cwd": "/tmp/RustAppLab-D6-oultdmjf/lab",
+      "returncode": 0,
+      "expected_returncode": 0,
+      "passed": true,
+      "timed_out": false,
+      "seconds": 0.226,
+      "log": "edition-fix.txt",
+      "sha256": "f50c4b4a057b2d1b9a3bd608760ba4b0f60e731f5240074279f75f402832a39d"
+    },
+    {
+      "step": "format",
+      "argv": [
+        "cargo",
+        "+1.85.0",
+        "fmt",
+        "--manifest-path",
+        "/tmp/RustAppLab-D6-oultdmjf/lab/appendix-lab/Cargo.toml",
+        "--all"
+      ],
+      "cwd": "/tmp/RustAppLab-D6-oultdmjf/lab",
+      "returncode": 0,
+      "expected_returncode": 0,
+      "passed": true,
+      "timed_out": false,
+      "seconds": 0.04,
+      "log": "format.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "step": "format-check",
+      "argv": [
+        "cargo",
+        "+1.85.0",
+        "fmt",
+        "--manifest-path",
+        "/tmp/RustAppLab-D6-oultdmjf/lab/appendix-lab/Cargo.toml",
+        "--all",
+        "--",
+        "--check"
+      ],
+      "cwd": "/tmp/RustAppLab-D6-oultdmjf/lab",
+      "returncode": 0,
+      "expected_returncode": 0,
+      "passed": true,
+      "timed_out": false,
+      "seconds": 0.043,
+      "log": "format-check.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "step": "clippy",
+      "argv": [
+        "cargo",
+        "+1.85.0",
+        "clippy",
+        "--manifest-path",
+        "/tmp/RustAppLab-D6-oultdmjf/lab/appendix-lab/Cargo.toml",
+        "--locked",
+        "--offline",
+        "--workspace",
+        "--all-targets",
+        "--",
+        "-D",
+        "warnings"
+      ],
+      "cwd": "/tmp/RustAppLab-D6-oultdmjf/lab",
+      "returncode": 0,
+      "expected_returncode": 0,
+      "passed": true,
+      "timed_out": false,
+      "seconds": 0.2,
+      "log": "clippy.txt",
+      "sha256": "02b953e028ebb57f3780d2cbd0bcfa0cbbf1f9f2d92dd7fb81000408378eaf5f"
+    },
+    {
+      "step": "debug-tests",
+      "argv": [
+        "cargo",
+        "+1.85.0",
+        "test",
+        "--manifest-path",
+        "/tmp/RustAppLab-D6-oultdmjf/lab/appendix-lab/Cargo.toml",
+        "--locked",
+        "--offline",
+        "--workspace",
+        "--all-targets"
+      ],
+      "cwd": "/tmp/RustAppLab-D6-oultdmjf/lab",
+      "returncode": 0,
+      "expected_returncode": 0,
+      "passed": true,
+      "timed_out": false,
+      "seconds": 0.478,
+      "log": "debug-tests.txt",
+      "sha256": "3592c053e9eff2794a3e94e282d44af287613581119b9cea4443cfa645c4acc9",
+      "tests": {
+        "passed": 12,
+        "failed": 0,
+        "ignored": 0
+      }
+    },
+    {
+      "step": "doctests",
+      "argv": [
+        "cargo",
+        "+1.85.0",
+        "test",
+        "--manifest-path",
+        "/tmp/RustAppLab-D6-oultdmjf/lab/appendix-lab/Cargo.toml",
+        "--locked",
+        "--offline",
+        "--workspace",
+        "--doc"
+      ],
+      "cwd": "/tmp/RustAppLab-D6-oultdmjf/lab",
+      "returncode": 0,
+      "expected_returncode": 0,
+      "passed": true,
+      "timed_out": false,
+      "seconds": 0.479,
+      "log": "doctests.txt",
+      "sha256": "cc5c3a7569deda6e58ef9f3208c81e5c1b60e2d15fde36671f368f1be836f0ce",
+      "tests": {
+        "passed": 3,
+        "failed": 0,
+        "ignored": 0
+      }
+    },
+    {
+      "step": "release-tests",
+      "argv": [
+        "cargo",
+        "+1.85.0",
+        "test",
+        "--manifest-path",
+        "/tmp/RustAppLab-D6-oultdmjf/lab/appendix-lab/Cargo.toml",
+        "--locked",
+        "--offline",
+        "--workspace",
+        "--all-targets",
+        "--release"
+      ],
+      "cwd": "/tmp/RustAppLab-D6-oultdmjf/lab",
+      "returncode": 0,
+      "expected_returncode": 0,
+      "passed": true,
+      "timed_out": false,
+      "seconds": 0.343,
+      "log": "release-tests.txt",
+      "sha256": "6fbe3f18114905e1b7f6e211d1b136ff71b91112eb68d79b180218c0089faa96",
+      "tests": {
+        "passed": 12,
+        "failed": 0,
+        "ignored": 0
+      }
+    }
+  ],
+  "error": null,
+  "source_snapshot_before": {
+    "Cargo.lock": "3597537ca0fde464090fe776cfb025f1db7c0e4ef66be1ebfb09fd095855127f",
+    "Cargo.toml": "f5a706c5a0d7e5914f9f98dbd02aaebbda5f0ab67eae659b1f92908ce2b5920f",
+    "VERSION": "4b3b31c52db4a795162e844305665c9b7ceaecba20a2aa00cf507321e83a382f",
+    "projects/book-d6-appendices/Cargo.lock": "286a32848a025d636f7ae1d01b004fdc5652d944c3b23308876f1767e69de33e",
+    "projects/book-d6-appendices/Cargo.toml": "a31e01e2df58917cc3ce1440fff9b5f7caac4f77901f9ea535c9aa127cd04dc6",
+    "projects/book-d6-appendices/README.md": "4f7f0affd2b5fcf8f1bf84b4925cf8dd8b8e458d3f228711a2d8cc2be21c9607",
+    "projects/book-d6-appendices/appendix-lab/Cargo.toml": "2294d04f5df6d86f1e9931c2f5deb47e24065d10eab8608820d64c60fce55deb",
+    "projects/book-d6-appendices/appendix-lab/src/lib.rs": "8099e295f3caf843a59180d7cfc9ca7effdb7969b12646de694e34e4ad07be12",
+    "rust-toolchain": null,
+    "rust-toolchain.toml": null
+  },
+  "source_id": "245023226d006a13128a63b896825d23d33b4d2486c47416db1d2aa4cf3be7d6",
+  "source_snapshot_after": {
+    "Cargo.lock": "3597537ca0fde464090fe776cfb025f1db7c0e4ef66be1ebfb09fd095855127f",
+    "Cargo.toml": "f5a706c5a0d7e5914f9f98dbd02aaebbda5f0ab67eae659b1f92908ce2b5920f",
+    "VERSION": "4b3b31c52db4a795162e844305665c9b7ceaecba20a2aa00cf507321e83a382f",
+    "projects/book-d6-appendices/Cargo.lock": "286a32848a025d636f7ae1d01b004fdc5652d944c3b23308876f1767e69de33e",
+    "projects/book-d6-appendices/Cargo.toml": "a31e01e2df58917cc3ce1440fff9b5f7caac4f77901f9ea535c9aa127cd04dc6",
+    "projects/book-d6-appendices/README.md": "4f7f0affd2b5fcf8f1bf84b4925cf8dd8b8e458d3f228711a2d8cc2be21c9607",
+    "projects/book-d6-appendices/appendix-lab/Cargo.toml": "2294d04f5df6d86f1e9931c2f5deb47e24065d10eab8608820d64c60fce55deb",
+    "projects/book-d6-appendices/appendix-lab/src/lib.rs": "8099e295f3caf843a59180d7cfc9ca7effdb7969b12646de694e34e4ad07be12",
+    "rust-toolchain": null,
+    "rust-toolchain.toml": null
+  },
+  "source_id_after": "245023226d006a13128a63b896825d23d33b4d2486c47416db1d2aa4cf3be7d6",
+  "changed_source_paths": [],
+  "source_unchanged": true,
+  "evidence": [
+    {
+      "file": "cargo-version.txt",
+      "sha256": "2d3bc7bb1b2e9f3bfeadb1b2a370e8462c3c3a0bc7481c2d8d5fa4e6953465bf"
+    },
+    {
+      "file": "changes.diff.txt",
+      "sha256": "64e6672e7e19943f6e7e85c1e41d6145a644000701ec448c689f88d682e359ac"
+    },
+    {
+      "file": "clippy-version.txt",
+      "sha256": "c2a44da4923702348a822a24ca7327329950b60145185d7ac70c644efa605353"
+    },
+    {
+      "file": "clippy.txt",
+      "sha256": "02b953e028ebb57f3780d2cbd0bcfa0cbbf1f9f2d92dd7fb81000408378eaf5f"
+    },
+    {
+      "file": "debug-tests.txt",
+      "sha256": "3592c053e9eff2794a3e94e282d44af287613581119b9cea4443cfa645c4acc9"
+    },
+    {
+      "file": "doctests.txt",
+      "sha256": "cc5c3a7569deda6e58ef9f3208c81e5c1b60e2d15fde36671f368f1be836f0ce"
+    },
+    {
+      "file": "edition-2021-probe.txt",
+      "sha256": "4f098a267831b8d7ec1f2b1fc6ae944ec5ba6d0dfe9a7cb7de2503d9cafca455"
+    },
+    {
+      "file": "edition-fix.txt",
+      "sha256": "f50c4b4a057b2d1b9a3bd608760ba4b0f60e731f5240074279f75f402832a39d"
+    },
+    {
+      "file": "format-check.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "file": "format.txt",
+      "sha256": "e3b0c44298fc1c149afbf4c8996fb92427ae41e4649b934ca495991b7852b855"
+    },
+    {
+      "file": "manifest-after.txt",
+      "sha256": "415f201291dbd930b44980ceb035ee05e70761eb655daca87798e6c48df128da"
+    },
+    {
+      "file": "manifest-before.txt",
+      "sha256": "2294d04f5df6d86f1e9931c2f5deb47e24065d10eab8608820d64c60fce55deb"
+    },
+    {
+      "file": "original-tests.txt",
+      "sha256": "22c38b6191c9caf07de6b66f143db42b415b2742fb26cbcace4e33d6b1f449e3"
+    },
+    {
+      "file": "release-tests.txt",
+      "sha256": "6fbe3f18114905e1b7f6e211d1b136ff71b91112eb68d79b180218c0089faa96"
+    },
+    {
+      "file": "rustc-version.txt",
+      "sha256": "be9e105cd61ce407c0e06d80a25240f93cc48de72942117e1886f09aa08f9a2a"
+    },
+    {
+      "file": "rustdoc-version.txt",
+      "sha256": "762a21d13f324876cfd3da46dabe52da33f7735ac0a1d55d7ed4eb0f51094100"
+    },
+    {
+      "file": "rustfmt-version.txt",
+      "sha256": "55a714a365e5ffb1375d2093013c33ab64b9437372357db49b647389e943b1a0"
+    },
+    {
+      "file": "source-after.txt",
+      "sha256": "40159e71206d9152720570c24cb9aeab0c6dd966412c0825625c7a8ca4cd082e"
+    },
+    {
+      "file": "source-before.txt",
+      "sha256": "63d34d81cd051fcc210cdf2c9907b14a63dd0ae42be176fc379d5fc262259e8d"
+    }
+  ]
+}

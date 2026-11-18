@@ -2,7 +2,7 @@
 
 教材：[Rust Book 第 14 章](https://rust.bootcss.com/ch14-00-more-about-cargo.html)。对应本仓库讲义：[course/BOOK_D1_CARGO.md](../../course/BOOK_D1_CARGO.md)。
 
-此目录与主工作区相互独立；不修改 RustAppLab 既有 17 个包、不升级 0.19.0-rc.1。所有包都设置 `publish=false`，不会发布到 crates.io。零外部 Rust 依赖，Edition 2021 / Rust 1.74 可运行。
+此目录与主工作区相互独立，作为参考实验随当前 0.19.0-rc.2 交付；根学员工程仍为 17 个。所有包都设置 `publish=false`，不会发布到 crates.io。零外部 Rust 依赖，Edition 2021 / Rust 1.74 可运行；历史 rc.1 标签与资产保持不变。
 
 在仓库根目录执行：
 

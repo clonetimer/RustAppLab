@@ -20,7 +20,7 @@ import time
 
 ROOT = Path(__file__).resolve().parents[1]
 IGNORED_CHALLENGES = 15
-TEST_RESULT = re.compile(r"test result: (ok|FAILED)\. (\d+) passed; (\d+) failed; (\d+) ignored;")
+TEST_RESULT = re.compile(r"^test result: (ok|FAILED)\. (\d+) passed; (\d+) failed; (\d+) ignored;", re.MULTILINE)
 CODE_SUFFIXES = {'.rs', '.toml', '.lock', '.py', '.ps1', '.cmd', '.sh', '.html', '.css', '.js', '.yml', '.yaml',
                  '.md', '.tsv', '.txt', '.json', '.kv', '.svg'}
 BOOK_D1_MANIFEST = 'projects/book-d1-cargo/Cargo.toml'
@@ -48,8 +48,8 @@ TEST_LIMITS = {
     'book-d4-tests': (39, 0), 'book-d4-doctests': (2, 0),
     'book-d5-tests': (20, 0), 'book-d5-release-tests': (20, 0), 'book-d5-doctests': (1, 0),
     'book-d6-tests': (11, 0), 'book-d6-release-tests': (11, 0), 'book-d6-doctests': (3, 0),
-    'book-d6-foundations-tests': (20, 0), 'book-d6-foundations-release-tests': (20, 0),
-    'book-d6-foundations-doctests': (2, 0),
+    'book-d6-foundations-tests': (29, 0), 'book-d6-foundations-release-tests': (29, 0),
+    'book-d6-foundations-doctests': (15, 0),
 }
 
 

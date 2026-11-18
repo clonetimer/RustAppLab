@@ -10,7 +10,7 @@ sys.path.insert(0, str(ROOT/'scripts'))
 class CloseoutTests(unittest.TestCase):
     def test_current_version_is_one_candidate_not_three_development_versions(self):
         version=(ROOT/'VERSION').read_text().strip()
-        self.assertEqual(version, '0.19.0-rc.1')
+        self.assertEqual(version, '0.19.0-rc.2')
         for name in ('apps/labquest/Cargo.toml', 'Cargo.lock'):
             self.assertIn('version = "'+version+'"', (ROOT/name).read_text())
         for name in ('README.md','README_START_HERE.md','KNOWN_ISSUES.md','RELEASE_POLICY.md','ROADMAP.md'):
@@ -50,7 +50,7 @@ class CloseoutTests(unittest.TestCase):
         for name in ('scripts/candidate_check.py','scripts/assemble_candidate.py','.github/workflows/delivery.yml'):
             self.assertTrue((ROOT/name).is_file(),name)
         ci=(ROOT/'.github/workflows/ci.yml').read_text(encoding='utf-8')
-        self.assertIn('needs: [native, browser, msrv, c1, c2, delivery]',ci)
+        self.assertIn('needs: [native, browser, msrv, c1, c2, delivery, book-practice]',ci)
         self.assertIn('--prerelease',ci)
         self.assertIn('--latest=false',ci)
         self.assertIn("github.ref == 'refs/heads/main'",ci)

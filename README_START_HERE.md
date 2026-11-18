@@ -1,8 +1,8 @@
-# Rust AppLab 0.19.0-rc.1 · 从下载到第一次使用
+# Rust AppLab 0.19.0-rc.2 · 从下载到第一次使用
 
 ## 1. 先选对包
 
-**完整学习推荐 `RustAppLab-0.19.0-rc.1-source.zip`。** 解压后包含 `apps/`、`course/`、`START_HERE.html` 和 Windows 向导。GitHub 自动生成的 Source code 归档是仓库快照；正式交付用带版本号的 source.zip 及其校验值。
+**完整学习推荐 `RustAppLab-0.19.0-rc.2-source.zip`。** 解压后包含 `apps/`、`course/`、`START_HERE.html` 和 Windows 向导。GitHub 自动生成的 Source code 归档是仓库快照；正式交付用带版本号的 source.zip 及其校验值。
 
 只体验成品，选择本机对应的 `windows-x64-msvc-runtime.zip` 或 `linux-x86_64-runtime.zip`。解压后程序在 `bin/`，先读其中 `START_RUNTIME.md`；它不包含完整源码目录，也不把参考程序的成功视为学员成绩。
 
@@ -90,3 +90,9 @@ cargo +1.85.0 run --frozen -- serve "tickets.db" --port 3000
 ## 试用与反馈
 
 使用 [试用记录](course/USER_TRIAL.md) 保存包名、版本、系统、实际命令、原始错误和自己的结果。它是空白记录模板，未代表真人验收通过。当前候选版先保持范围稳定，后续只根据真实问题修复。
+
+## FirstCard 之后的基础复习
+
+已经能运行自己的第一个程序后，打开 [Cargo 三步复习与数组/元组](course/BOOK_D6_FOUNDATIONS.md)，练习看清目录、区分 check/build/run，并解释测试结果。随后可做 [变量与模块路径](course/BOOK_D6_LANGUAGE_BASICS.md)。
+
+工具、Edition 迁移和选修 Nightly 使用 [D6 实操指南](course/BOOK_D6_PRACTICAL.md)。需要 Python 3.10+ 和明确列出的 Rust 组件；所有改写只在独立副本进行。参考脚本成功不会自动记为个人课程通过。

@@ -21,9 +21,15 @@ class BookCoverageTests(unittest.TestCase):
         identifiers = [row[0] for row in rows]
         self.assertEqual(len(rows), 81)
         self.assertEqual(len(set(identifiers)), len(identifiers))
-        for item in ("1.1", "2", "14.1", "14.2", "14.3", "14.4", "14.5",
-                     "15.2", "18.2", "19.1", "19.5", "20.3", "A", "G"):
-            self.assertIn(item, identifiers)
+        # Count alone permits an incorrect ID to replace a real subsection.
+        chapter_lengths = {1: 3, 3: 5, 4: 3, 5: 3, 6: 3, 7: 5, 8: 3,
+                           9: 3, 10: 3, 11: 3, 12: 6, 13: 4, 14: 5,
+                           15: 6, 16: 4, 17: 3, 18: 3, 19: 5, 20: 3}
+        expected = {"2", *"ABCDEFG"}
+        expected.update(f"{chapter}.{section}"
+                        for chapter, length in chapter_lengths.items()
+                        for section in range(1, length + 1))
+        self.assertEqual(set(identifiers), expected)
         for ident, title, status, source, reason in rows:
             self.assertIn(status, ("已有实作", "部分", "缺口", "开发中", "资料索引"))
             self.assertTrue(title and reason, ident)
@@ -39,6 +45,12 @@ class BookCoverageTests(unittest.TestCase):
                      "cargo applab-map", "cargo package --list"):
             with self.subTest(item=item):
                 self.assertIn(item, text)
+
+    def test_development_experience_has_one_title_and_unique_sections(self):
+        text = (ROOT / "verification/DEVELOPMENT_EXPERIENCE_D6.md").read_text(encoding="utf-8")
+        self.assertEqual(text.count("# RustAppLab · D6 开发经验记录"), 1)
+        sections = re.findall(r"^## (\d+)\.", text, re.M)
+        self.assertEqual(len(sections), len(set(sections)))
 
     def test_isolated_cargo_workspace_and_local_publish_guard(self):
         base = ROOT / "projects/book-d1-cargo"
@@ -189,7 +201,20 @@ class BookCoverageTests(unittest.TestCase):
         self.assertEqual(len(re.findall(r"#\[test\]", implementation)), 14)
         cli = (base / "foundation-lab/tests/cli.rs").read_text(encoding="utf-8")
         self.assertEqual(len(re.findall(r"#\[test\]", cli)), 6)
-        self.assertEqual(len(re.findall(r"compile_fail", implementation)), 1)
+        self.assertEqual(len(re.findall(r"compile_fail", implementation)), 3)
+
+
+    def test_d6_toolchain_practice_is_shipped_and_keeps_risky_work_isolated(self):
+        guide = (ROOT / "course/BOOK_D6_PRACTICAL.md").read_text(encoding="utf-8")
+        learner = (ROOT / "scripts/package_learner_kit.py").read_text(encoding="utf-8")
+        structural = (ROOT / "scripts/structural_check.py").read_text(encoding="utf-8")
+        for term in ("cargo fmt", "cargo clippy", "rust-analyzer", "cargo +1.85.0 fix --edition",
+                     'edition = "2024"', "nightly-2026-11-17", "generic_const_exprs",
+                     "临时副本", "MSRV", "不计入 Stable"):
+            with self.subTest(term=term):
+                self.assertIn(term, guide)
+        self.assertIn("BOOK_D6_PRACTICAL.md", learner)
+        self.assertIn("BOOK_D6_PRACTICAL.md", structural)
 
     def test_d6_is_registered_in_release_msrv_and_learner_package(self):
         release = (ROOT / "scripts/release_check.py").read_text(encoding="utf-8")

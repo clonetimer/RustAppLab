@@ -6,7 +6,7 @@
 
 附录是参考资料，不应把它们变成需要死记硬背的词表。本课的目标是：遇到一个语法符号、派生 trait、开发工具或 Edition 差异时，能够判断它的语义、找到权威资料，并用最小实验验证。
 
-配套 [D6 Appendix Reference Lab](../projects/book-d6-appendices/README.md) 是独立 Workspace，不加入根 Workspace，也不增加第 18 个学员作品。
+配套 [D6 Appendix Reference Lab](../projects/book-d6-appendices/README.md) 是独立 Workspace，不加入根 Workspace，也不增加第 18 个学员作品。附录 D/E/G 的可执行操作见 [D6 实操指南](BOOK_D6_PRACTICAL.md)。
 
 ---
 
@@ -228,12 +228,12 @@ Edition 是语言语法与惯用法的版本边界，不等于 Rust 编译器版
 
 迁移不是“把 Cargo.toml 的数字改掉”这么简单。推荐流程：
 
-1. 在独立分支记录当前测试基线。
-2. 更新 `Cargo.toml` 的 `edition` 字段。
-3. 使用当前工具链运行 `cargo fix --edition`，先检查建议再接受修改。
-4. 阅读迁移警告，特别关注新关键字、unsafe 约束和生命周期捕获。
-5. 运行 format、Clippy、单元/集成测试和 doctest。
-6. 对依赖 crate 的 Edition、MSRV 和 API 行为分别核查。
+1. 在独立临时副本中记录当前测试基线和工具链版本。
+2. 保持旧 `edition`，先运行 `cargo +1.85.0 fix --edition`，保存编译器修复和警告。
+3. 再修改副本 `Cargo.toml` 的 `edition = "2024"` 与所需 `rust-version = "1.85"`。
+4. 阅读迁移差异，特别关注新关键字、unsafe 约束和生命周期捕获。
+5. 测试迁移结果，在副本执行 `cargo fmt` 后复查格式、Clippy、Debug/Release 和 doctest。
+6. 对依赖 crate 的 Edition、MSRV 和 API 行为分别核查。可执行步骤及日志保存在 [D/E/G 实操指南](BOOK_D6_PRACTICAL.md)。
 
 **本仓库边界**：D1–D6 参考实验以 Edition 2021 / Rust 1.74 为基础；不要因为附录介绍 Edition 2024，就把整个根 Workspace 的 Edition 或 MSRV 一并升级。
 
@@ -327,3 +327,8 @@ cargo test --locked --offline --manifest-path projects/book-d6-appendices/Cargo.
 - D6 Workspace 在 Rust 1.74、Linux 和 Windows 上通过格式、Clippy、debug、release 与 doctest 检查。
 
 D6-A 与 D6-B 构成当前 D6 交付批次：本课完成附录 A–G 的参考说明与 A–C 可执行实验；[D6-B](BOOK_D6_FOUNDATIONS.md) 补齐 12 项基础章节专项练习。两套独立 Workspace 均在 Linux、Windows 与 Rust 1.74 上通过格式、Clippy、Debug、Release 和 Doctest 验收。覆盖审计仍将 D/E/G 标记为“部分”，因为工具链操作、Edition 迁移与 Nightly 隔离仍需要学习者亲自完成；自动化通过不等于学习者已经掌握。
+
+
+## D/E/G 实操闭环
+
+学习者应按 [D6 实操指南](BOOK_D6_PRACTICAL.md) 在独立副本中完成开发工具检查、Edition 迁移和日期化 Nightly 隔离实验，并保留实际命令、diff 与解释。自动化 CI 不代替个人操作记录。
