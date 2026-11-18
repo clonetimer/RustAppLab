@@ -13,6 +13,12 @@ A dependency-free reference workspace for the remaining practical gaps in Rust B
 Follow the [Chinese lesson and three-step Cargo exercise](../../course/BOOK_D6_FOUNDATIONS.md).
 The [variables and modules lesson](../../course/BOOK_D6_LANGUAGE_BASICS.md) covers the separate 3.1 and 7.2–7.5 exercises.
 
+Continue with [ownership, receivers and slices](../../course/BOOK_OWNERSHIP_PRACTICE.md),
+[collections and error propagation](../../course/BOOK_COLLECTIONS_ERRORS.md), and
+[generics and lifetimes](../../course/BOOK_GENERICS_LIFETIMES.md).
+Each module has focused integration tests and paired runnable/compiler-error examples.
+The [scoped concept audit](../../course/BOOK_CONCEPT_AUDIT.md) records remaining teaching targets separately from reference-code test results.
+
 ## Cargo vocabulary in this workspace
 
 | Term | Concrete location or behavior |

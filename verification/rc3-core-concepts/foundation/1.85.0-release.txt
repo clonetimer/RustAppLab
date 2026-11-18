@@ -1,0 +1,98 @@
+   Compiling book-d6-foundation-lab v0.1.0 (/workspace/scratch/e7b5b7306cab/RustAppLab-concepts/projects/book-d6-foundations/foundation-lab)
+    Finished `release` profile [optimized] target(s) in 1.42s
+     Running unittests src/lib.rs (/workspace/scratch/e7b5b7306cab/concepts-final-target-1.85.0/release/deps/book_d6_foundation_lab-cc2cf4dc38a1fb27)
+
+running 14 tests
+test tests::benchmark_compares_equal_work_without_assuming_a_winner ... ok
+test tests::buffered_line_count_propagates_io_and_ignores_blank_lines ... ok
+test tests::buffered_line_count_propagates_io_failures ... ok
+test tests::config_path_is_testable_without_mutating_process_environment ... ok
+test tests::guess_comparison_covers_all_three_outcomes ... ok
+test tests::guess_parser_handles_valid_and_invalid_input ... ok
+test tests::hashmap_entry_counts_case_insensitive_words ... ok
+test tests::if_let_example_distinguishes_option_cases ... ok
+test tests::loop_and_iterator_sums_produce_identical_results ... ok
+test tests::seeded_guess_is_repeatable_and_in_range ... ok
+test tests::zero_seed_still_produces_a_valid_secret ... ok
+test tests::result_validation_returns_errors_for_external_input ... ok
+test tests::rectangle_methods_calculate_area_and_containment ... ok
+test tests::panic_is_reserved_for_broken_programmer_invariants ... ok
+
+test result: ok. 14 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running unittests src/main.rs (/workspace/scratch/e7b5b7306cab/concepts-final-target-1.85.0/release/deps/foundation_lab-4cceb4c5d4f3c145)
+
+running 0 tests
+
+test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/cli.rs (/workspace/scratch/e7b5b7306cab/concepts-final-target-1.85.0/release/deps/cli-dfb531b406e98cb7)
+
+running 6 tests
+test config_command_uses_explicit_environment_override ... ok
+test hello_command_prints_the_first_rust_program ... ok
+test invalid_command_returns_a_nonzero_exit_code_and_usage ... ok
+test words_command_prints_sorted_hashmap_results ... ok
+test benchmark_command_compares_equal_totals ... ok
+test guessing_game_accepts_the_quit_command ... ok
+
+test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/collections.rs (/workspace/scratch/e7b5b7306cab/concepts-final-target-1.85.0/release/deps/collections-b8a5f3ddd020d954)
+
+running 7 tests
+test end_of_input_returns_an_empty_parse_error ... ok
+test invalid_utf8_preserves_the_read_error ... ok
+test annotation_appends_a_unicode_suffix_in_place ... ok
+test label_lookup_reports_missing_indices ... ok
+test score_readers_trim_and_consume_only_the_first_line ... ok
+test malformed_first_lines_return_parse_errors ... ok
+test repeated_names_keep_the_last_score ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/compound_types.rs (/workspace/scratch/e7b5b7306cab/concepts-final-target-1.85.0/release/deps/compound_types-b140745663093d62)
+
+running 4 tests
+test highest_score_can_appear_in_any_attempt ... ok
+test repeated_arrays_include_all_three_attempts ... ok
+test total_preserves_large_scores_without_overflow ... ok
+test summary_returns_total_then_highest_score ... ok
+
+test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/generic_lifetimes.rs (/workspace/scratch/e7b5b7306cab/concepts-final-target-1.85.0/release/deps/generic_lifetimes-342dc0094b89831f)
+
+running 7 tests
+test conditional_display_and_integer_specific_behavior_are_observable ... ok
+test excerpt_output_borrows_itself_and_not_a_temporary_prefix ... ok
+test first_label_does_not_borrow_the_second_argument_for_its_result ... ok
+test longer_uses_utf8_bytes_and_preserves_the_left_input_on_a_tie ... ok
+test largest_borrows_non_clone_values_and_returns_none_for_empty_input ... ok
+test mapping_consumes_the_value_and_preserves_the_owned_label ... ok
+test generic_consumer_respects_default_and_overridden_summaries ... ok
+
+test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/language_basics.rs (/workspace/scratch/e7b5b7306cab/concepts-final-target-1.85.0/release/deps/language_basics-dfcb9b086c7d0fb9)
+
+running 5 tests
+test card_constructor_rejects_blank_title_and_invalid_minutes ... ok
+test minutes_parser_accepts_trimmed_numbers_and_rejects_out_of_range_input ... ok
+test plan_total_includes_every_card_and_handles_an_empty_plan ... ok
+test reading_card_keeps_unicode_title_and_normalizes_outer_space ... ok
+test practice_variant_is_available_through_the_public_reexport ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+
+     Running tests/ownership.rs (/workspace/scratch/e7b5b7306cab/concepts-final-target-1.85.0/release/deps/ownership-c91fa74ef1021875)
+
+running 5 tests
+test cloning_a_note_copies_its_owned_title_independently ... ok
+test first_word_skips_leading_unicode_whitespace ... ok
+test moving_one_field_leaves_the_other_fields_accessible ... ok
+test struct_update_moves_the_title_and_copies_scalar_fields ... ok
+test preview_uses_checked_utf8_byte_ranges ... ok
+
+test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s
+

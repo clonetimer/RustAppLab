@@ -1,4 +1,4 @@
-# Rust AppLab 0.19.0-rc.2 · 已知边界与待验收项
+# Rust AppLab 0.19.0-rc.3 · 已知边界与待验收项
 
 本轮范围冻结于C2。B4 Serde JSON导出、C1 Tokio/Reqwest异步下载、C2 Axum工单服务均已实现；它们不是待开发事项。
 

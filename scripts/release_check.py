@@ -48,8 +48,8 @@ TEST_LIMITS = {
     'book-d4-tests': (39, 0), 'book-d4-doctests': (2, 0),
     'book-d5-tests': (20, 0), 'book-d5-release-tests': (20, 0), 'book-d5-doctests': (1, 0),
     'book-d6-tests': (11, 0), 'book-d6-release-tests': (11, 0), 'book-d6-doctests': (3, 0),
-    'book-d6-foundations-tests': (29, 0), 'book-d6-foundations-release-tests': (29, 0),
-    'book-d6-foundations-doctests': (15, 0),
+    'book-d6-foundations-tests': (48, 0), 'book-d6-foundations-release-tests': (48, 0),
+    'book-d6-foundations-doctests': (76, 0),
 }
 
 

@@ -1,0 +1,9 @@
+[package]
+name = "book-d6-appendix-lab"
+version = "0.1.0"
+edition = "2021"
+rust-version = "1.74"
+publish = false
+
+[lib]
+path = "src/lib.rs"

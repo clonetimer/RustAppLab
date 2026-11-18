@@ -5,7 +5,7 @@ import argparse
 import hashlib
 import json
 import os
-from pathlib import Path, PurePosixPath
+from pathlib import Path, PurePosixPath, PureWindowsPath
 import shutil
 import zipfile
 from release_check import ROOT, source_id
@@ -69,12 +69,46 @@ def read_book_practice_report(path: Path, mode: str, system: str, commit: str | 
             raise ValueError('unexpected practice exit code: '+str(path))
     evidence = data.get('evidence', [])
     expected_files = {'manifest-before.txt', 'manifest-after.txt', 'source-before.txt',
-                      'source-after.txt', 'changes.diff.txt'}
+                      'source-after.txt', 'changes.diff.txt', 'ide-workspace.json'}
     if not expected_files.issubset({item['file'] for item in evidence}):
         raise ValueError('practice before/after evidence incomplete: '+str(path))
     for item in evidence:
         if sha256(safe_child(path.parent, item['file'])) != item.get('sha256'):
             raise ValueError('practice evidence digest mismatch: '+str(path))
+    ide = json.loads((path.parent/'ide-workspace.json').read_text(encoding='utf-8'))
+    settings = {
+        'rust-analyzer.cargo.extraEnv': {'RUSTUP_TOOLCHAIN': '1.85.0'},
+        'rust-analyzer.cargo.extraArgs': ['--locked', '--offline'],
+        'rust-analyzer.cargo.buildScripts.enable': False,
+        'rust-analyzer.procMacro.enable': False,
+    }
+    folders = ide.get('folders') if isinstance(ide, dict) else None
+    if (not isinstance(ide, dict) or set(ide) != {'folders', 'extensions', 'settings'}
+            or not isinstance(folders, list) or len(folders) != 1
+            or not isinstance(folders[0], dict) or folders[0].get('path') != 'lab'
+            or not set(folders[0]).issubset({'name', 'path'})
+            or ide.get('extensions') != {'recommendations': ['rust-lang.rust-analyzer']}
+            or ide.get('settings') != settings):
+        raise ValueError('wrong or incomplete IDE workspace evidence: '+str(path))
+    # CI retains D/E copies and records their actual paths. Interpret paths using
+    # the producing platform, not the host reading the downloaded report.
+    path_type = PureWindowsPath if system == 'Windows' else PurePosixPath
+    workspace = data.get('workspace')
+    if (data.get('workspace_retained') is not True or not isinstance(workspace, str)
+            or not path_type(workspace).is_absolute() or '..' in path_type(workspace).parts):
+        raise ValueError('IDE practice copy was not retained: '+str(path))
+    base = path_type(workspace)
+    live_paths = {'project_directory': base/'lab',
+                  'ide_workspace_file': base/'D6-IDE.code-workspace',
+                  'practice_source': base/'lab'/'appendix-lab'/'src'/'lib.rs'}
+    if mode == 'tools':
+        live_paths['documentation_index'] = base/'target'/'doc'/'book_d6_appendix_lab'/'index.html'
+    elif data.get('documentation_index') is not None:
+        raise ValueError('Edition report advertises documentation it did not build')
+    for name, expected_path in live_paths.items():
+        actual = data.get(name)
+        if not isinstance(actual, str) or path_type(actual) != expected_path:
+            raise ValueError('wrong retained IDE path '+name+': '+str(path))
     return data
 
 
@@ -157,7 +191,7 @@ def collect_assets(inputs: Path, output: Path) -> dict:
     qualification=release_decision.decide(gates)
     if qualification!='RC_READY':raise ValueError('unexpected qualification')
     files=[{'name':p.name,'bytes':p.stat().st_size,'sha256':sha256(p)} for p in sorted(output.iterdir()) if p.is_file()]
-    result={'schema':1,'version':version,'commit':os.environ.get('GITHUB_SHA'),'source_id':identity,'qualification':qualification,'prerelease':True,'human_observation':'PENDING — no fabricated learner acceptance','gates':gates,'additional_gates':{'c1':True,'c2':True,'native_runtime_and_first_use':True,'book_tools_and_edition':True},'checked_reports':checked,'files':files}
+    result={'schema':1,'version':version,'commit':os.environ.get('GITHUB_SHA'),'source_id':identity,'qualification':qualification,'prerelease':True,'human_observation':'PENDING — no fabricated learner acceptance','gates':gates,'additional_gates':{'c1':True,'c2':True,'native_runtime_and_first_use':True,'book_tools_and_edition':True,'book_ide_entry_structure':True},'checked_reports':checked,'files':files}
     (output/'RELEASE_MANIFEST.json').write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
     hashes=''.join(f'{sha256(p)}  {p.name}\n' for p in sorted(output.iterdir()) if p.is_file())
     (output/'SHA256SUMS.txt').write_bytes(hashes.encode())

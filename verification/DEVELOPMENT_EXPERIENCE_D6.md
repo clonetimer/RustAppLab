@@ -146,3 +146,129 @@ A final review reproduced an absent-path edge case: using rust-toolchain.toml/lo
 The behavior regression first reproduced all three false successes. The runner now rejects output at, or below, each protected root file path before mkdir and takes its baseline snapshot before writing. The regression then passed; ordinary CI and temporary evidence directories remain usable. All three real experiments were rerun with the final runner hash and their archived evidence refreshed.
 
 **Rule:** capture the initial state before any write, and treat a protected file location as protected even when the file does not yet exist. A post-write baseline cannot prove that the source was never changed.
+
+## 23. 记录 rc.2 已完成验收，并保留历史发布身份
+
+2026-11-18 的 rc.2 验收已完成：[PR #10](https://github.com/clonetimer/RustAppLab/pull/10) 合并到 main，合并提交为 [ed255fe31ec1be2faba04ffb720660d13938e6a6](https://github.com/clonetimer/RustAppLab/commit/ed255fe31ec1be2faba04ffb720660d13938e6a6)。该提交的 [main Run 225 / 44243560861](https://github.com/clonetimer/RustAppLab/actions/runs/44243560861) 为 **21/21 成功**。
+
+[v0.19.0-rc.2](https://github.com/clonetimer/RustAppLab/releases/tag/v0.19.0-rc.2) 的 **13 个发布资产**已逐项核对 SHA-256 与字节大小。[v0.19.0-rc.1](https://github.com/clonetimer/RustAppLab/releases/tag/v0.19.0-rc.1) 的标签和资产保持不变。本节补记最终验收结果；前文 Run 220 的发布失败及其修复经过仍作为历史保留。
+
+**经验：**将合并提交、实际运行和发布资产绑定在同一条验收记录中。rc.2 的通过记录只证明该提交和该批资产，不能沿用为后续 rc.3 修改的验收结果。
+
+## 24. 概念抽查须固定分母，不能从目录映射推导全书覆盖
+
+现有 **79/81** 是目录条目的实作映射：79 项已有实作、1 项部分、1 项资料索引。一个目录条目可以关联到真实软件，却仍缺少其内部某个概念的讲解、失败对照或学习者任务。
+
+本批固定抽查 **118 个概念目标**，当前记录如下：
+
+| 状态 | 数量 | 含义 |
+|---|---:|---|
+| teaching | 87 | 已定位完整教学链 |
+| partial | 25 | 已有部分教学，仍有明确子点未完成 |
+| related | 2 | 仅定位到关联代码，不能当作完整教学 |
+| gap | 4 | 尚未定位到该目标的教学证据 |
+| 合计 | 118 | 仅为本轮抽查范围 |
+
+**经验：**保持概念 ID、范围和状态定义稳定，再记录新增证据与剩余子点。不能把 87/118 外推为全书知识点完整率，也不能把目录映射的“缺口 0”解释为所有概念均已教全。工程证据与个人学习仍分开：学员是否完成预测、修改和解释，必须由其自己的记录证明。
+
+## 25. 所有权目标需要失败对照，跨章材料需要先查再补
+
+`Copy` 类型按值调用 `self` 后仍可使用原绑定，容易让正确的业务测试掩盖方法接收者的所有权区别。讲解 `&self`、`&mut self`、`self` 时，应选用含 `String` 的非 `Copy` 模型；读取、修改、消费各有成功行为，**消费方法调用后再次使用原对象**还必须有预期编译失败的对照。仅出现 `self` 签名，或成功调用一次 `into_title`，不足以证明这一教学目标完整。
+
+当前 `into_title()` 消费后再使用原对象，是讲义中要求学习者重排调用的个人修改任务。本批已经自动核对的 E0382 控制是字段移动和结构体更新；不能把它们记为 `into_title()` 消费后再使用这一独立反例已自动执行。
+
+补实验之前先跨章节核查已有材料。本轮 D3 的载荷枚举与模式解构、D4 的元组 newtype、D2 的析构实验都有直接证据，不能因为基础章节没有单独链接就误报为全仓缺失。可以增加基础路线导航和小练习；新增计数应来自实际补足的目标，而不是把旧代码再包装一次。
+
+**经验：**检查“目标中的关键区别是否被教出”，不要只检查 API、关键词或测试总数。编译失败还要核对失败原因，避免缺少导入、错误路径等无关故障冒充所有权反例。
+
+## 26. 旧译本的 API 描述要与实际类型合同核对
+
+旧中文版用于原书章节和概念定位；涉及标准库接口时，仍须核读对应源码或当前官方签名，并在支持的工具链上验证。HashMap 练习应明确：`get` 返回 `Option<&V>`，`Entry::or_insert` 返回 `&mut V`。缺键、有键、已有值不被覆盖，以及通过可变引用修改值，是不同的可验证行为。
+
+**经验：**在示例中写出关键返回类型并实际使用它们。仅统计查找或更新结果正确，可能遗漏“得到的是引用还是拥有值”的教学错误；旧译文中的措辞不能替代源码与编译器的类型合同。
+
+## 27. CLI 组件、IDE 扩展与实际服务器是三个版本证据
+
+`rust-analyzer` 的 Rust 工具链组件版本、编辑器扩展版本、编辑器实际启动的语言服务器版本可能不同。CLI 的 `rust-analyzer --version` 只能证明所调用的可执行程序；扩展可能使用自带服务器，也可能按配置启动另一份程序。记录 IDE 环境时应分别注明组件、扩展，以及实际服务器的版本或可追踪启动信息。
+
+运行器提供 JSON 入口或生成操作记录模板，只证明命令、数据格式和工作区准备完成。GUI 中的跳转、诊断显示和修复结果仍需实际操作与记录；不能把 JSON 校验通过写成 IDE 验证通过。
+
+**经验：**把“工具已安装”“CLI 可运行”“编辑器实际使用哪一份语言服务器”“GUI 操作已验证”拆成不同结论，避免版本号和证据层级互相替代。
+
+## 28. 可编辑 IDE 记录与不可变证据分开，路径按来源平台解析
+
+学习者需要继续填写的 `IDE_RECORD` 应放在带哈希的证据集合之外。另存不可变的 `ide-workspace.json`，固定本次保留工作区的定位信息和证据关联。否则，正常填写记录也会改变证据摘要，或迫使工具通过重算摘要掩盖原始证据被改写。
+
+跨平台校验时，Windows 路径与 POSIX 路径应按各自语法解析，例如分别使用 `PureWindowsPath` 与 `PurePosixPath`。不能在 Linux 上直接用本机 `Path.is_absolute()` 判断 Windows 绝对路径，也不能把来源平台的合法路径误认成本机相对路径。语法解析和在实际运行平台上检查目录存在，是两项不同工作。
+
+**经验：**不可变记录证明当时保存了什么，可编辑表单记录之后做了什么；路径字符串的解释由它所属的平台决定，而非由当前校验器碰巧运行在哪个平台决定。
+
+## 29. 新手命令要包含目录准备，变体练习要同步所有相关断言
+
+指导创建 `foundation-lab/examples/ownership_probe.rs` 前，应先说明创建 `examples` 目录；目录已存在时直接使用。初学者不应依靠猜测补齐命令所依赖的目录层级。反例一次只放一个，再换成对应修复重跑，便于定位诊断。
+
+改变输入后，需要同步所有依赖该输入的断言。例如把陈旧偏移实验的新文本改成 `Rustacean Book` 后，旧偏移仍为 4，预览预期应为 `Some("Rust")`，重新提取首词的预期应为 `"Rustacean"`。只改其中一处，会把正确的概念变体变成无关的测试失败。
+
+**经验：**写修改任务时同时指出输入、预期结果及需要一起更新的位置，让失败反映要学习的行为，而不是漏改测试数据。
+
+## 30. rc.3 提交前检查的证据边界
+
+本批新增概念实验在两套工具链上已实际执行完整 foundation 检查：
+
+| 工具链 | Debug 运行测试 | Release 运行测试 | Doctest |
+|---|---:|---:|---:|
+| Rust 1.74.0 | 48 通过 | 48 通过 | 76 通过 |
+| Rust 1.85.0 | 48 通过 | 48 通过 | 76 通过 |
+
+本节写于 rc.3 首次提交之前，表中记录的是本地参考行为验证。**记录时尚无本批远端 CI 和发布结果。** 后续跨平台 CI、当前提交的交付检查和发布资产核对，应另记实际提交与运行结果；不能引用上一节 rc.2 的 Run 225 或 13 个资产，替代 rc.3 的验收。
+
+**经验：**本地测试通过、远端 CI 通过、交付物可复现和发布完成分别记录。新增实验改变测试集合时，同步维护相应验收门槛，再由当前修订的真实运行决定下一阶段状态。
+
+## 31. Windows 超时需要同条件复验与原始证据
+
+[Run 226 首次 Windows 交付回放](https://github.com/clonetimer/RustAppLab/actions/runs/44250858396/job/134620909067) 中，`storedesk_red_to_green` 的参考实现通过第 1/2 步后，第 3 步超过既有 8 秒运行预算。初始学员骨架的失败是预期红测，真正失败的是外层参考实现检查：24 项通过、1 项失败。第 3 步包含 4 个串行测试、6 次 CLI 启动和实际 SQLite 文件操作；编译另有 120 秒预算。
+
+相关 Studio/process/StoreDesk 源码与 rc.2 相同。同一次日志较早的 `storedesk_guidance_rejects_partial_commits` 已执行同一固定合同并通过第 3 步；后续保持提交和超时不变的 [Windows 复验](https://github.com/clonetimer/RustAppLab/actions/runs/44250858396/job/134627202653) 通过完整交付，实际新包回放为 Debug 374 / Release 364 / Doctest 9。这个结果只能记录为“该次超时未复现”，具体延迟来自调度、进程启动还是文件 I/O 尚未证明。
+
+当前超时路径会清理尚未读取的子进程部分输出，因而首轮日志无法定位第 3 步卡在哪个子测试。再次出现时，应先补充部分输出和细分耗时证据，再决定修改位置；本轮没有放宽超时或减少测试。首次失败 [artifact 14404276696](https://github.com/clonetimer/RustAppLab/actions/runs/44250858396/artifacts/14404276696) 与复验成功 [artifact 14404059996](https://github.com/clonetimer/RustAppLab/actions/runs/44250858396/artifacts/14404059996) 均保留。
+
+## 32. 重跑产生同名产物时，下载选择也是发布合同
+
+Windows 复验成功后，候选组装仍拒绝了 `delivery-windows-latest/candidate.json`。原因是同一次 workflow run 留下两份同名产物，下载步骤取到了首次失败记录。以下是实际 API 元数据，完整快照见 [ci-retry-artifacts.json](rc3-core-concepts/ci-retry-artifacts.json)。
+
+| Artifact ID | created_at（UTC） | Windows 交付结果 |
+|---|---|---|
+| `14404276696` | `2026-11-18T06:26:47Z` | 首次失败 |
+| `14404059996` | `2026-11-18T06:43:41Z` | 同提交复验通过 |
+
+不能从本次 ID 的大小或 API 返回位置判断时间先后。[download-artifact v4 的实现](https://github.com/actions/download-artifact/blob/v4/src/download-artifact.ts) 即使接收 `artifact-ids` 也会先做 `listArtifacts({latest: true})`，再过滤 ID，因此仅添加 ID 参数仍可能丢掉希望下载的记录。
+
+修复把选择与下载明确分开：分页读取当前 run 元数据，按精确名称和带时区的 `created_at` 选择最新记录；排除消费者自身的 `candidate-release`，保留所有历史产物。选择不读取 PASS/FAIL；最新产物失败时，由原有严格报告校验拒绝，不能退回旧成功报告。同一名称存在并列最新时间或最新记录已过期时停止。
+
+随后通过 `gh api` 按已选 ID 直接下载，先核对 API 给出的 SHA-256，再检查 ZIP 路径、重复成员和符号链接，解压到新的证据目录。选择清单随验证证据保存。candidate job 只增加读取 Actions 的权限，token 仅传给元数据/下载步骤；原有源码身份、平台、命令、日志哈希和 23 份报告门禁继续执行。GitHub 的 [artifact API](https://docs.github.com/en/rest/actions/artifacts) 提供创建时间、digest 与按 ID 下载入口。
+
+**经验：**重跑作业成功与消费者读取到该次证据，是两个需要分别验证的事实。保留失败记录、显式选择最新记录、验证下载字节，再检查报告语义，才能完整说明发布依据。
+
+本地修复验证为选择器 20 项、下载器 18 项新增回归，完整 Python 套件 **169/169 通过**。真实 19 条元数据回放选出 18 份生产者产物，并用留存的成功 ZIP 验证摘要与安全解包。测试只替换网络下载边界，未替换实际 ZIP 校验；远端权限与最终组合必须由修复提交的新完整 CI 证明。
+
+## 33. 跨平台反例必须检查最终序列化的输入
+
+修复提交的 [Run 227 / Windows native](https://github.com/clonetimer/RustAppLab/actions/runs/44255916223/job/134637443358) 在 Python 回归中报告 168 项通过、1 项失败：反斜杠路径 `nested\escaped.txt` 被预期拒绝，实际却成功。原始 [artifact 14405363988](https://github.com/clonetimer/RustAppLab/actions/runs/44255916223/artifacts/14405363988) 的 SHA-256 为 `979b78071ee7734a97f96fb221e632cd9df9fd7508d7b116b708a4fac9d5b9ca`，保留了完整失败日志。
+
+定位发现，测试通过 `ZipFile.writestr(name, contents)` 创建反例；Windows 上的 `ZipInfo` 构造会把系统分隔符反斜杠替换成 `/`，因此实际 ZIP 已变成合法的 `nested/escaped.txt`。下载器检查的是读取到的 `orig_filename`，此次日志不能证明危险路径绕过了校验。用 Windows 分隔符设置单独回放序列化步骤，可直接观察到样本被改变。
+
+修复仅调整测试夹具：明确写入原始成员名，并在送给下载器之前读回 ZIP，断言序列化后的名称仍是要测试的反例。实际路径拒绝规则保持原样，也不跳过 Windows 测试。
+
+同一反例同时覆盖 `/` 与反斜杠两种写入器分隔符设置。旧夹具在该检查下出现两个可复现失败，新夹具通过全部 18 项下载器回归；完整 Python 套件再次 169/169 通过。写入器设置只在构造 ZIP 的范围内临时改变，实际下载器、ZIP 读取和文件系统操作使用原环境；真实 Windows 结果仍由下一次完整 CI 确认。
+
+**经验：**用于验证边界的反例可能被测试工具提前规范化。需要先证明最终字节仍包含目标条件，再解释被测程序的通过或失败；跨平台测试尤其要核对路径、换行和编码转换发生在哪一层。
+
+## 34. 新增中间文件要核对源码身份的输入边界
+
+Run 228 进行期间，候选组装前的路径检查发现：新增步骤把 `selected-artifacts.json` 写在 checkout 根目录，而现有 `source_id()` 会纳入根目录的 JSON 文件。生产者报告生成时没有此文件，消费者组装时却会把它算进源码身份，因而将产生身份不一致。这是组装前本地复现发现的问题，不记作已发生的远端候选失败。
+
+[差分探针](rc3-core-concepts/selection-location-probe.json) 在修复前提交上验证：写入根目录临时 JSON 后，源码身份从 `002aca38e6681e67103ff862f4f3cbb947aefcc3a2f16d95e4eea61ab05d3677` 变为 `bff7493dbacd013013f259a49d6f02b734040769170118208d93082ff96a2529`；删除该文件并改放 checkout 外的临时目录后，身份恢复且保持不变。
+
+修复把选择清单写到 `$RUNNER_TEMP/selected-artifacts.json`，下载器再将原始字节复制到已独立收集的证据目录中。源码身份函数、报告身份比较和发布门禁均保持原样。
+
+**经验：**工具本身的行为正确，还需要检查它写出的新文件会不会进入后续哈希、扫描或打包的输入。中间文件应使用明确的临时位置，不能为了消除冲突而放宽源码身份合同。

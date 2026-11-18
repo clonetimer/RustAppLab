@@ -28,6 +28,15 @@ ROOT_ALLOWED = {
 }
 APPS = ('filequest', 'loglens', 'localhub', 'safesync', 'labquest', 'unitlab', 'quizdeck', 'textscope', 'ledgerlite', 'badgeforge', 'batchmeter', 'termgarden', 'storedesk', 'minikv', 'netfetch', 'servicedesk', 'asyncboard')
 
+for relative in ('course/BOOK_OWNERSHIP_PRACTICE.md', 'course/BOOK_COLLECTIONS_ERRORS.md',
+                 'course/BOOK_GENERICS_LIFETIMES.md', 'course/BOOK_CONCEPT_AUDIT.md',
+                 'verification/concept-audit-rc3.json'):
+    require((ROOT / relative).is_file(), f'核心概念教学材料缺失：{relative}')
+for module in ('ownership', 'collections', 'generic_lifetimes'):
+    for area in ('src', 'tests'):
+        relative = f'projects/book-d6-foundations/foundation-lab/{area}/{module}.rs'
+        require((ROOT / relative).is_file(), f'核心概念实验缺失：{relative}')
+
 
 def allowed(path: Path) -> bool:
     parts = path.relative_to(ROOT).parts

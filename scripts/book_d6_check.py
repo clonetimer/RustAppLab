@@ -25,6 +25,8 @@ import time
 ROOT = Path(__file__).resolve().parents[1]
 LAB = Path("projects/book-d6-appendices")
 COMMON = ("--locked", "--offline", "--workspace")
+IDE_WORKSPACE = "D6-IDE.code-workspace"
+DOCUMENTATION_INDEX = Path("target/doc/book_d6_appendix_lab/index.html")
 PROTECTED_ROOT_FILES = ("VERSION", "Cargo.toml", "Cargo.lock", "rust-toolchain", "rust-toolchain.toml")
 
 NIGHTLY_SOURCE = """#![feature(generic_const_exprs)]
@@ -143,6 +145,31 @@ class Runner:
         return self.run(label, ["cargo", "+" + (toolchain or self.toolchain), command,
                                "--manifest-path", str(self.manifest), *arguments], **checks)
 
+    def prepare_ide_entry(self):
+        config = {
+            "folders": [{"name": "D6 练习副本", "path": "lab"}],
+            "extensions": {"recommendations": ["rust-lang.rust-analyzer"]},
+            "settings": {
+                "rust-analyzer.cargo.extraEnv": {"RUSTUP_TOOLCHAIN": self.toolchain},
+                "rust-analyzer.cargo.extraArgs": ["--locked", "--offline"],
+                "rust-analyzer.cargo.buildScripts.enable": False,
+                "rust-analyzer.procMacro.enable": False,
+            },
+        }
+        (self.workspace / "IDE_RECORD.md").write_text(
+            "# D6 IDE 练习记录\n\n"
+            "状态：NOT_RUN\n\n"
+            "- 编辑器及扩展版本：\n"
+            "- 实际 Rust Analyzer server 版本：\n"
+            "- 跳转入口与定义位置：\n"
+            "- 修改及诊断：\n"
+            "- 修复、诊断变化与 Cargo 复核结果：\n",
+            encoding="utf-8",
+        )
+        config_bytes = (json.dumps(config, ensure_ascii=False, indent=2) + "\n").encode("utf-8")
+        (self.workspace / IDE_WORKSPACE).write_bytes(config_bytes)
+        (self.output / "ide-workspace.json").write_bytes(config_bytes)
+
     def capture_before(self):
         self.before = {"manifest": self.manifest.read_text(encoding="utf-8"),
                        "source": self.source.read_text(encoding="utf-8")}
@@ -180,7 +207,7 @@ def quality(runner: Runner, *, minimum_tests: int = 11, docs: bool = False):
                  minimum_tests=minimum_tests)
     if docs:
         runner.cargo("documentation", "doc", *COMMON, "--no-deps")
-        if not (runner.workspace / "target/doc/book_d6_appendix_lab/index.html").is_file():
+        if not (runner.workspace / DOCUMENTATION_INDEX).is_file():
             raise PracticeFailure("cargo doc did not produce the expected crate documentation")
 
 
@@ -299,7 +326,9 @@ def main(argv: list[str] | None = None) -> int:
               "started_at": datetime.now(timezone.utc).isoformat(), "status": "FAIL",
               "scope": "D6 command practice; IDE use and learner mastery are not automated",
               "snapshot_scope": "VERSION, root manifests/toolchain files and projects/book-d6-appendices",
-              "workspace": None, "workspace_retained": False, "steps": [], "error": None}
+              "workspace": None, "workspace_retained": False,
+              "project_directory": None, "ide_workspace_file": None, "practice_source": None,
+              "documentation_index": None, "steps": [], "error": None}
     report.update(source_snapshot_before=before, source_id=snapshot_id(before))
     runner = None
     try:
@@ -319,6 +348,7 @@ def main(argv: list[str] | None = None) -> int:
         else:
             shutil.copytree(source_lab, runner.lab,
                             ignore=shutil.ignore_patterns("target", ".git", "__pycache__"))
+            runner.prepare_ide_entry()
             runner.capture_before()
             {"tools": check_tools, "edition": check_edition}[args.mode](runner)
         report["status"] = "PASS"
@@ -337,19 +367,28 @@ def main(argv: list[str] | None = None) -> int:
                 report["error"] = "Original source changed during practice: " + ", ".join(changed)
             report["evidence"] = [{"file": path.name, "sha256": hashlib.sha256(path.read_bytes()).hexdigest()}
                                   for path in sorted(output.iterdir()) if path.is_file()]
-            report["workspace_retained"] = bool(runner and runner.workspace.exists())
-            report_path = output / "report.json"
-            report_path.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
             if report["status"] == "PASS" and runner and not args.keep_workspace:
                 shutil.rmtree(runner.workspace)
-                report["workspace_retained"] = False
-                report_path.write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
         except Exception as error:
             report["status"], report["error"] = "FAIL", str(error)
-            (output / "report.json").write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
+        if runner and runner.workspace.is_dir():
+            report["workspace_retained"] = True
+            entry = runner.workspace / IDE_WORKSPACE
+            if entry.is_file() and (runner.lab / "Cargo.toml").is_file():
+                report["project_directory"] = str(runner.lab)
+                report["ide_workspace_file"] = str(entry)
+                if runner.source.is_file():
+                    report["practice_source"] = str(runner.source)
+                index = runner.workspace / DOCUMENTATION_INDEX
+                if index.is_file():
+                    report["documentation_index"] = str(index)
+        (output / "report.json").write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n",
+                                            encoding="utf-8")
     print(f"{report['status']}: {args.mode}; report: {output / 'report.json'}")
     if report["workspace_retained"]:
         print(f"Retained workspace: {report['workspace']}")
+    if report["ide_workspace_file"]:
+        print(f"Open in VS Code: {report['ide_workspace_file']}")
     if report["error"]:
         print(report["error"], file=sys.stderr)
     return 0 if report["status"] == "PASS" else 2

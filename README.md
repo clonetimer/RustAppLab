@@ -1,4 +1,4 @@
-# Rust AppLab · 0.19.0-rc.2 候选发布版
+# Rust AppLab · 0.19.0-rc.3 候选发布版
 
 通过真实软件学习 Rust：先运行参考程序理解用途，再完成自己的函数，最后交付独立作品。此轮功能冻结在 **B4、C1、C2**；后续优先修复实际使用问题，不再增加课程数量。
 
@@ -6,13 +6,13 @@
 
 ## 选择下载内容
 
-在本仓库 Releases 的 `v0.19.0-rc.2` 候选版本中选择文件。发布状态以实际 Release 与同提交 CI 为准，文件名不是验收结论。
+在本仓库 Releases 的 `v0.19.0-rc.3` 候选版本中选择文件。发布状态以实际 Release 与同提交 CI 为准，文件名不是验收结论。
 
 | 目的 | 下载包 | 需要什么 |
 |---|---|---|
-| 先体验成品 | `RustAppLab-0.19.0-rc.2-<平台>-runtime.zip` | 对应系统；参考程序无需 Cargo，运行学习检查仍需 Rust |
-| 跟随全部课程学习 | `RustAppLab-0.19.0-rc.2-source.zip` | Rust/Cargo 与系统构建工具；这是推荐的完整学习入口 |
-| 只取学员骨架 | `RustAppLab-0.19.0-rc.2-learner-kit.zip` | 17 个基础/进阶 A/B 工程；核心 TODO 待完成，不含 C1/C2 vendor |
+| 先体验成品 | `RustAppLab-0.19.0-rc.3-<平台>-runtime.zip` | 对应系统；参考程序无需 Cargo，运行学习检查仍需 Rust |
+| 跟随全部课程学习 | `RustAppLab-0.19.0-rc.3-source.zip` | Rust/Cargo 与系统构建工具；这是推荐的完整学习入口 |
+| 只取学员骨架 | `RustAppLab-0.19.0-rc.3-learner-kit.zip` | 17 个基础/进阶 A/B 工程；核心 TODO 待完成，不含 C1/C2 vendor |
 | 离线完成异步课程 | `C1-learner-offline.zip`、`C2-learner-offline.zip` | Rust 1.85.0 已安装；包内提供锁定依赖源码 |
 | 对照异步参考实现 | `C1-reference-offline.zip`、`C2-reference-offline.zip` | Rust 1.85.0；不是预编译 EXE |
 
@@ -30,6 +30,8 @@ FirstCard → UnitLab → QuizDeck → TextScope → LedgerLite / BadgeForge / T
 | C2 | Axum JSON 路由、单写者日志、并发客户端与优雅关闭 | [C2 讲义](course/ADVANCED_C2.md) |
 
 中文 Rust Book 用于基础概念与项目组织对照；异步 API 按锁定版本的官方文档学习。使用 `learn reading <工程>` 查阅相关章节，见 [Book 对照指南](course/BOOK_GUIDE.md)。
+
+核心概念补课依次使用 [所有权与切片](course/BOOK_OWNERSHIP_PRACTICE.md)、[集合与错误传播](course/BOOK_COLLECTIONS_ERRORS.md)、[泛型与生命周期](course/BOOK_GENERICS_LIFETIMES.md)。[概念审计](course/BOOK_CONCEPT_AUDIT.md) 记录第 4–6、8–10 章本次 118 个目标的证据和剩余 31 项；这个范围不能作为整本书的完成率。
 
 ## 已有工程继续用
 

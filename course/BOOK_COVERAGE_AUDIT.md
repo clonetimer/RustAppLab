@@ -2,10 +2,10 @@
 
 - **参考目录**：[rust.bootcss.com](https://rust.bootcss.com/)，Rust 1.37 / Edition 2018 书系，第 1–20 章、附录 A–G；不是当前 Edition 2024 Rust Book 的同一章节编号。
 - **历史源码基准**：`clonetimer/RustAppLab` main `fed4a2d37a72de88dfb353474544efde9bdd537a`（2026-11-17 审计时）。
-- **最近复核**：2026-11-18；从 PR #10 基线 `6a5827f4e3ce6d009836a7d2beaa9c9285ada24a` 复核原书目录与实际材料，补充 1.3、3.1、3.2、7.2–7.5 的具体练习。新增材料的远端验收以 PR 当前提交为准，不继承 Run 215/222。
+- **最近复核**：2026-11-18；rc.2 已随 [PR #10](https://github.com/clonetimer/RustAppLab/pull/10) 合并至 `ed255fe31ec1be2faba04ffb720660d13938e6a6`，[main Run 225](https://github.com/clonetimer/RustAppLab/actions/runs/44243560861) 的 21 个 Jobs 全部成功。本轮 rc.3 在此基线上补核心概念与 IDE 入口，其跨平台验收以当前提交 CI 为准。
 - **证据规则**：表格中“已有实作”只表示可以定位到相关教学或可执行实例，**不表示**该小节原书所有示例、知识点、学员练习与测试均已完整覆盖；“部分”表示只有关联知识或实现；“缺口”明确有需要补的专项内容；“开发中”只证明开发分支已有材料、仍须 CI。
 - **验收判据**：每项最终需要有教学目标、版本适配、学员实验或合理的知识索引、可重现检查及用户体验验证。官方原书代码无需照抄，允许使用现有真实作品替换；不能用出现某个关键词冒充教学覆盖。
-- **当前统计**：共 **81** 项审计条目，其中 已有实作 **79**、部分 **1**（D 的 IDE 人工操作仍待记录）、缺口 0、开发中 0、资料索引 **1**（F）。这是主题映射和指定参考实验的状态盘点，**不是**知识点完整率或学习达标率。D1–D4、D5/D6-A、D6-B 的历史验收分别见 PR #6、PR #8 / Run 197、PR #9 / Run 215；它们不替代本次新增代码的验证。2026-11-18 新增基础实验在 Linux 的 Rust 1.85.0/1.74.0 上 Debug/Release 各 29 项、Doctest 15 项通过；E/G 已有真实迁移和固定日期 Nightly 对照证据。D/E 的最终 Linux/Windows 与交付状态见 PR #10 当前提交的完整验收。
+- **当前统计**：共 **81** 项审计条目，其中 已有实作 **79**、部分 **1**（D 的 IDE 人工操作仍待记录）、缺口 0、开发中 0、资料索引 **1**（F）。这是主题映射和指定参考实验的状态盘点，**不是**知识点完整率或学习达标率。D1–D4、D5/D6-A、D6-B 的历史验收分别见 PR #6、PR #8 / Run 197、PR #9 / Run 215；rc.2 后续实验见 PR #10 / Run 225。当前基础参考工作区在本地 Rust 1.74.0 / 1.85.0 上各通过 Debug 48 项、Release 48 项、Doctest 76 项；当前提交远端验收独立进行。
 - **推进路线**：D1 Cargo（14.1–14.5）→ D2 智能指针（15.1–15.6）→ D3 对象模型/模式（17–18）→ D4 Unsafe/高级 Trait/宏（19）→ D5 原生多线程 Web Server（20）→ D6-A 附录 A–G → D6-B 基础知识残余缺口；随每阶段修订本表。
 
 | 原书小节 | 主题 | 审计状态 | 现有代码/讲义证据（仓库相对路径） | 后续核查或补充 |
@@ -19,29 +19,29 @@
 | 3.3 | 函数 | 已有实作 | `course/studio/unitlab.md` | 现有公开合同测试 |
 | 3.4 | 注释 | 已有实作 | `course/BOOK_D6_FOUNDATIONS.md` | 行/块注释、项文档、crate 文档与 doctest；Run 215 Linux/Windows、Rust 1.74 MSRV、Debug/Release/Doctest PASS |
 | 3.5 | 控制流 | 已有实作 | `course/studio/quizdeck.md` | 继续复用分支与循环 |
-| 4.1 | 所有权 | 已有实作 | `course/studio/textscope.md` | 含移动错误实验 |
-| 4.2 | 引用与借用 | 已有实作 | `course/RUST_ERROR_LABS.md` | 含借用编译错误实验 |
-| 4.3 | 切片 | 已有实作 | `course/studio/textscope.md` | UTF-8 与字符串切片 |
-| 5.1 | 定义结构体 | 已有实作 | `course/studio/quizdeck.md` | 业务数据结构 |
+| 4.1 | 所有权 | 已有实作 | `course/BOOK_OWNERSHIP_PRACTICE.md` | String 移动与 clone、缓冲区观察、函数消费/归还所有权；仍有细粒度子点，见概念审计 |
+| 4.2 | 引用与借用 | 已有实作 | `course/BOOK_OWNERSHIP_PRACTICE.md` | 真实活跃借用冲突、共享/独占借用、NLL、悬垂引用失败与修复 |
+| 4.3 | 切片 | 已有实作 | `course/BOOK_OWNERSHIP_PRACTICE.md` | Unicode first_word、四种切片写法、UTF-8 字节边界与失效借用 |
+| 5.1 | 定义结构体 | 已有实作 | `course/BOOK_OWNERSHIP_PRACTICE.md` | 非 Copy 的 ReadingNote、字段初始化、结构体更新与部分移动；未讲全的字段规则保留在概念审计 |
 | 5.2 | 结构体示例程序 | 已有实作 | `course/BOOK_D6_FOUNDATIONS.md` | Rectangle 结构体、字段、构造与面积；Run 215 Linux/Windows、Rust 1.74 MSRV、Debug/Release/Doctest PASS |
-| 5.3 | 方法语法 | 已有实作 | `course/BOOK_D6_FOUNDATIONS.md` | impl、self、关联函数与方法调用；Run 215 Linux/Windows、Rust 1.74 MSRV、Debug/Release/Doctest PASS |
-| 6.1 | 枚举 | 已有实作 | `course/studio/unitlab.md` | Unit enum |
-| 6.2 | match | 已有实作 | `course/studio/unitlab.md` | 分支转换 |
+| 5.3 | 方法语法 | 已有实作 | `course/BOOK_OWNERSHIP_PRACTICE.md` | 同一非 Copy 实例的 &self、&mut self、self 接收者；消费后使用失败、自动借用与解引用 |
+| 6.1 | 枚举 | 已有实作 | `course/BOOK_OWNERSHIP_PRACTICE.md` | 复用 D3 多形态枚举；Option<T> 与 T 的失败/修复、None 类型推断 |
+| 6.2 | match | 已有实作 | `course/BOOK_OWNERSHIP_PRACTICE.md` | Some/None 穷尽分支、缺分支失败与嵌套/守卫索引 |
 | 6.3 | if let | 已有实作 | `course/BOOK_D6_FOUNDATIONS.md` | Option 分支的 if let 与 match 对照；Run 215 Linux/Windows、Rust 1.74 MSRV、Debug/Release/Doctest PASS |
 | 7.1 | 包和 crate | 已有实作 | `course/ADVANCED_B.md` | B1–B3 多 crate 工程 |
 | 7.2 | 模块作用域与私有性 | 已有实作 | `course/BOOK_D6_LANGUAGE_BASICS.md` | 私有 catalog 模块、StudyCard 私有字段、公有 Activity 枚举；外部集成测试和 E0603/E0616 编译失败实验 |
 | 7.3 | 路径 | 已有实作 | `course/BOOK_D6_LANGUAGE_BASICS.md` | 同一 crate 内实际 crate::、self::、super:: 路径；明确与 Cargo path 依赖区别，替换原错位映射 |
 | 7.4 | use 关键字 | 已有实作 | `course/BOOK_D6_LANGUAGE_BASICS.md` | use、as 别名、pub use 重导出；外部集成测试通过公开入口访问模型 |
 | 7.5 | 拆分模块文件 | 已有实作 | `course/BOOK_D6_LANGUAGE_BASICS.md` | lib.rs → language_basics.rs → language_basics/catalog.rs 实际分文件 mod；同一 crate 的模块与多个 crate 分开讲解 |
-| 8.1 | Vector | 已有实作 | `course/studio/quizdeck.md` | 题库列表 |
-| 8.2 | String | 已有实作 | `course/studio/textscope.md` | UTF-8 与所有权 |
-| 8.3 | HashMap | 已有实作 | `course/BOOK_D6_FOUNDATIONS.md` | HashMap、Entry API、词频统计与确定性输出；Run 215 Linux/Windows、Rust 1.74 MSRV、Debug/Release/Doctest PASS |
+| 8.1 | Vector | 已有实作 | `course/BOOK_COLLECTIONS_ERRORS.md` | Vec 创建/推断、索引/get、可变遍历、枚举存多形态值 |
+| 8.2 | String | 已有实作 | `course/BOOK_COLLECTIONS_ERRORS.md` | push/push_str、+ 移动与 format! 保留值、UTF-8 索引/切片和 chars/bytes |
+| 8.3 | HashMap | 已有实作 | `course/BOOK_COLLECTIONS_ERRORS.md` | 拥有键移入、借用键查找、get 的 Option<&V>、Entry::or_insert 的 &mut V 与重复键更新 |
 | 9.1 | panic! | 已有实作 | `course/BOOK_D6_FOUNDATIONS.md` | panic 与程序不变量边界，catch_unwind 仅作行为实验；Run 215 Linux/Windows、Rust 1.74 MSRV、Debug/Release/Doctest PASS |
-| 9.2 | Result | 已有实作 | `course/studio/ledgerlite.md` | 错误传播及文件失败 |
+| 9.2 | Result | 已有实作 | `course/BOOK_COLLECTIONS_ERRORS.md` | 相同输入的 match 与 ? 两版读取、From 转换、I/O/解析错误保留及 main -> Result |
 | 9.3 | panic 还是返回错误 | 已有实作 | `course/BOOK_D6_FOUNDATIONS.md` | 外部输入 Result 与内部不变量 panic 的决策练习；Run 215 Linux/Windows、Rust 1.74 MSRV、Debug/Release/Doctest PASS |
-| 10.1 | 泛型 | 已有实作 | `course/studio/badgeforge.md` | 泛型渲染 |
-| 10.2 | Trait | 已有实作 | `course/ADVANCED_A.md` | Renderer 与 trait object |
-| 10.3 | 生命周期 | 已有实作 | `course/ADVANCED_A.md` | 签名、借用作用域、compile_fail |
+| 10.1 | 泛型 | 已有实作 | `course/BOOK_GENERICS_LIFETIMES.md` | Card<T>、真实 Pair<T>/Pair<T,U> 混型对照、泛型枚举、方法与特化 impl |
+| 10.2 | Trait | 已有实作 | `course/BOOK_GENERICS_LIFETIMES.md` | Summary 必需/默认方法、inline/where 约束、条件 impl 与 Copy/Clone/借用返回对照 |
+| 10.3 | 生命周期 | 已有实作 | `course/BOOK_GENERICS_LIFETIMES.md` | 双输入生命周期、返回来源约束、借用结构、三条省略规则及 static 反例/对照 |
 | 11.1 | 编写测试 | 已有实作 | `course/BOOK_GUIDE.md` | 单元/集成/DocTest |
 | 11.2 | 运行测试 | 已有实作 | `course/ADVANCED_B.md` | Cargo test 门禁 |
 | 11.3 | 测试的组织结构 | 已有实作 | `course/BOOK_GUIDE.md` | 固定公开合同 |
@@ -87,7 +87,7 @@
 | A | 关键字 | 已有实作 | `course/BOOK_D6_APPENDICES.md` | 当前 Strict/Reserved/Weak 完整清单、raw identifiers 与 Edition 差异；精确表格回归与 2 项 compile-fail 文档测试，Run 215 PASS |
 | B | 运算符与符号 | 已有实作 | `course/BOOK_D6_APPENDICES.md` | 常见运算符、符号语境、完整优先级与 Add 重载实验；位运算层级及比较/范围约束回归，Run 215 PASS |
 | C | 可派生 Trait | 已有实作 | `course/BOOK_D6_APPENDICES.md` | 九种标准 derive trait 的能力、约束、Debug/Display 区分与 compile-fail 实验；Run 197 Linux/Windows/MSRV PASS |
-| D | 实用开发工具 | 部分 | `course/BOOK_D6_PRACTICAL.md` | 工具链 CLI、unused_mut 诊断/修复、格式/Clippy/测试/文档生成已有真实运行证据；rust-analyzer 实际 IDE 跳转、诊断和修复仍需人工记录 |
+| D | 实用开发工具 | 部分 | `course/BOOK_D6_PRACTICAL.md` | CLI 诊断/修复、格式/Clippy/测试/文档已有真实运行；保留副本生成相对路径 IDE 工作区与空白记录，实际 IDE 跳转、诊断和修复仍待人工记录 |
 | E | Edition 与版本 | 已有实作 | `course/BOOK_D6_PRACTICAL.md` | Rust 1.85.0 临时副本中先 fix 后改 Edition/MSRV；gen→r#gen 实际差异；12 Debug、3 Doc、12 Release 测试，正式源码快照不变 |
 | F | 翻译版本 | 资料索引 | `course/BOOK_D6_APPENDICES.md` | 区分旧中文译本基线与当前官方书，提供翻译/版本导航；不要求单独编码练习 |
 | G | Rust 开发流程与 Nightly | 已有实作 | `course/BOOK_D6_PRACTICAL.md` | Linux 的 nightly-2026-11-17 实验通过；Rust 1.85 带 gate 的 E0554 与去 gate 后泛型常量错误双对照；日期/退出码/源码快照均保存，属选修证据 |
@@ -109,7 +109,7 @@
 | D4 | 第 19 章 5 节安全隔离实验 | D4-A2 17/17 CI Jobs PASS，PR #6 已合并 |
 | D5 | 第 20 章 3 节线程池与关闭 | PR #8 已合并；Run 197 的 Linux/Windows/MSRV、交付与浏览器矩阵 17 Jobs 全部成功 |
 | D6-A | 附录 A–G | A–C 历史参考实验通过 Run 197；D/E/G 增加真实命令运行器与证据，D 的 IDE 操作单独记录，F 为资料索引 |
-| D6-B | 12 项基础知识残余缺口及后续基础复核 | 原 12 项见 PR #9 / Run 215；本轮再补 1.3、3.1、3.2、7.2–7.5，使用当前提交重新验收 |
+| D6-B | 12 项基础知识残余缺口及后续基础复核 | 原 12 项见 PR #9 / Run 215；1.3、3.1、3.2、7.2–7.5 见 PR #10 / Run 225；当前追加核心概念实操，按本次提交验收 |
 | D6-C | 工具、Edition 与隔离 Nightly | 唯一副本、失败保留、原始日志/差异/校验；E/G 参考行为已实跑，D 的 IDE 操作与个人学习另记 |
 
 ## 2026-11-18 复核补充：三种证据分开记录
@@ -122,4 +122,4 @@
 
 本轮补的是先前粗映射下遗漏的基础讲解与可复现验证。14.2 不实际上传 crates.io、14.4 使用本地安装与隔离 root，属于保留的课程边界；不要求为了补齐统计而进行真实发布或额外下载第三方工具。
 
-尚未逐句拆解原书全部概念，因此剩余细粒度知识点数量仍未量化。已定位的专项有明确代码与讲义证据；后续审查以发现的具体目标和学习阻断为单位，不能只追求一个百分比。
+本轮另行建立 [六章概念审计](BOOK_CONCEPT_AUDIT.md)：第 4–6、8–10 章 18 节的 118 个固定目标，当前 87 项具备完整教学链、25 项部分教学、2 项仅代码关联、4 项未定位教学。其 31 项残余只属于这次审计范围；全书其它部分尚未完成同粒度拆解，不能回答为“全书只差 31 项”。原始目标、基线、来源和证据保存在 [审计 JSON](../verification/concept-audit-rc3.json)。

@@ -1,0 +1,83 @@
+    Finished `test` profile [unoptimized + debuginfo] target(s) in 0.00s
+   Doc-tests book_d6_foundation_lab
+
+running 76 tests
+test foundation-lab/src/collections.rs - collections (line 156) - compile fail ... ok
+test foundation-lab/src/collections.rs - collections (line 68) - compile fail ... ok
+test foundation-lab/src/collections.rs - collections (line 132) - compile fail ... ok
+test foundation-lab/src/collections.rs - collections (line 77) - compile fail ... ok
+test foundation-lab/src/collections.rs - collections (line 164) ... ok
+test foundation-lab/src/collections.rs - collections (line 30) ... ok
+test foundation-lab/src/collections.rs - collections (line 145) ... ok
+test foundation-lab/src/collections.rs - collections (line 7) ... ok
+test foundation-lab/src/collections.rs - collections (line 52) ... ok
+test foundation-lab/src/collections.rs - collections (line 94) ... ok
+test foundation-lab/src/collections.rs - collections (line 110) ... ok
+test foundation-lab/src/generic_lifetimes.rs - generic_lifetimes::Card (line 33) - compile fail ... ok
+test foundation-lab/src/generic_lifetimes.rs - generic_lifetimes::Card<T>::describe (line 87) - compile fail ... ok
+test foundation-lab/src/generic_lifetimes.rs - generic_lifetimes::Card (line 9) - compile fail ... ok
+test foundation-lab/src/collections.rs - collections (line 82) ... ok
+test foundation-lab/src/generic_lifetimes.rs - generic_lifetimes::Card (line 18) ... ok
+test foundation-lab/src/generic_lifetimes.rs - generic_lifetimes::Excerpt (line 354) - compile fail ... ok
+test foundation-lab/src/generic_lifetimes.rs - generic_lifetimes::Excerpt (line 375) - compile fail ... ok
+test foundation-lab/src/generic_lifetimes.rs - generic_lifetimes::Card (line 42) ... ok
+test foundation-lab/src/generic_lifetimes.rs - generic_lifetimes::Card<i32>::is_positive (line 108) - compile fail ... ok
+test foundation-lab/src/generic_lifetimes.rs - generic_lifetimes::choose_longer (line 294) - compile fail ... ok
+test foundation-lab/src/generic_lifetimes.rs - generic_lifetimes::Card (line 54) ... ok
+test foundation-lab/src/generic_lifetimes.rs - generic_lifetimes::choose_longer (line 316) - compile fail ... ok
+test foundation-lab/src/generic_lifetimes.rs - generic_lifetimes::Card<T>::describe (line 94) ... ok
+test foundation-lab/src/generic_lifetimes.rs - generic_lifetimes::largest (line 227) - compile fail ... ok
+test foundation-lab/src/generic_lifetimes.rs - generic_lifetimes::Excerpt (line 396) ... ok
+test foundation-lab/src/generic_lifetimes.rs - generic_lifetimes::Card<i32>::is_positive (line 115) ... ok
+test foundation-lab/src/generic_lifetimes.rs - generic_lifetimes::Excerpt (line 382) ... ok
+test foundation-lab/src/generic_lifetimes.rs - generic_lifetimes::Excerpt (line 365) ... ok
+test foundation-lab/src/generic_lifetimes.rs - generic_lifetimes::Excerpt<'_>::without_prefix (line 425) ... ok
+test foundation-lab/src/generic_lifetimes.rs - generic_lifetimes::summaries (line 142) - compile fail ... ok
+test foundation-lab/src/generic_lifetimes.rs - generic_lifetimes::choose_longer (line 306) ... ok
+test foundation-lab/src/generic_lifetimes.rs - generic_lifetimes::choose_longer (line 322) ... ok
+test foundation-lab/src/language_basics.rs - language_basics (line 18) - compile fail ... ok
+test foundation-lab/src/language_basics.rs - language_basics (line 26) - compile fail ... ok
+test foundation-lab/src/generic_lifetimes.rs - generic_lifetimes::summaries (line 194) - compile fail ... ok
+test foundation-lab/src/generic_lifetimes.rs - generic_lifetimes::first_label (line 337) ... ok
+test foundation-lab/src/language_basics.rs - language_basics (line 33) - compile fail ... ok
+test foundation-lab/src/generic_lifetimes.rs - generic_lifetimes::largest (line 233) ... ok
+test foundation-lab/src/language_basics.rs - language_basics (line 55) - compile fail ... ok
+test foundation-lab/src/language_basics.rs - language_basics (line 61) - compile fail ... ok
+test foundation-lab/src/lib.rs - (line 17) - compile fail ... ok
+test foundation-lab/src/generic_lifetimes.rs - generic_lifetimes::summaries (line 206) ... ok
+test foundation-lab/src/lib.rs - summarize_scores (line 106) - compile fail ... ok
+test foundation-lab/src/generic_lifetimes.rs - generic_lifetimes::summaries (line 169) ... ok
+test foundation-lab/src/generic_lifetimes.rs - generic_lifetimes::largest (line 245) ... ok
+test foundation-lab/src/generic_lifetimes.rs - generic_lifetimes::summaries (line 154) ... ok
+test foundation-lab/src/lib.rs - summarize_scores (line 97) - compile fail ... ok
+test foundation-lab/src/ownership.rs - ownership (line 110) - compile fail ... ok
+test foundation-lab/src/language_basics.rs - language_basics (line 42) ... ok
+test foundation-lab/src/language_basics.rs - language_basics (line 6) ... ok
+test foundation-lab/src/lib.rs - (line 7) ... ok
+test foundation-lab/src/lib.rs - summarize_scores (line 46) ... ok
+test foundation-lab/src/ownership.rs - ownership (line 132) - compile fail ... ok
+test foundation-lab/src/lib.rs - summarize_scores (line 77) ... ok
+test foundation-lab/src/lib.rs - summarize_scores (line 87) ... ok
+test foundation-lab/src/ownership.rs - ownership (line 100) ... ok
+test foundation-lab/src/ownership.rs - ownership (line 152) - compile fail ... ok
+test foundation-lab/src/ownership.rs - ownership (line 188) - compile fail ... ok
+test foundation-lab/src/lib.rs - summarize_scores (line 63) ... ok
+test foundation-lab/src/ownership.rs - ownership (line 202) - compile fail ... ok
+test foundation-lab/src/ownership.rs - ownership (line 220) - compile fail ... ok
+test foundation-lab/src/ownership.rs - ownership (line 160) ... ok
+test foundation-lab/src/ownership.rs - ownership (line 14) ... ok
+test foundation-lab/src/ownership.rs - ownership (line 121) ... ok
+test foundation-lab/src/ownership.rs - ownership (line 25) - compile fail ... ok
+test foundation-lab/src/ownership.rs - ownership (line 140) ... ok
+test foundation-lab/src/ownership.rs - ownership (line 193) ... ok
+test foundation-lab/src/ownership.rs - ownership (line 93) - compile fail ... ok
+test foundation-lab/src/ownership.rs - ownership (line 208) ... ok
+test foundation-lab/src/ownership.rs - ownership (line 7) - compile fail ... ok
+test foundation-lab/src/ownership.rs - ownership (line 172) ... ok
+test foundation-lab/src/ownership.rs - ownership (line 60) ... ok
+test foundation-lab/src/ownership.rs - ownership (line 36) ... ok
+test foundation-lab/src/ownership.rs - ownership (line 228) ... ok
+test foundation-lab/src/ownership.rs - ownership (line 76) ... ok
+
+test result: ok. 76 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 2.08s
+
