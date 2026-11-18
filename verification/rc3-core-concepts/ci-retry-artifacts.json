@@ -1,0 +1,371 @@
+{
+  "schema": 1,
+  "repository": "clonetimer/RustAppLab",
+  "run_id": 44250858396,
+  "head_sha": "26a90f0cbe91b9b9df01d61e1fdc57fddd450c86",
+  "ci_merge_commit": "34427dc279699c84d2edbcb6fb89b8e826f90070",
+  "note": "Incident snapshot: first Windows delivery attempt failed; retry passed, but download-artifact v4 selected the earlier same-name artifact. All original metadata retained.",
+  "artifacts": [
+    {
+      "id": 14404276696,
+      "name": "delivery-windows-latest",
+      "size_in_bytes": 4441470,
+      "url": "https://api.github.com/repos/clonetimer/RustAppLab/actions/artifacts/14404276696",
+      "archive_download_url": "https://api.github.com/repos/clonetimer/RustAppLab/actions/artifacts/14404276696/zip",
+      "expired": false,
+      "created_at": "2026-11-18T06:26:47Z",
+      "expires_at": "2027-02-16T06:22:31Z",
+      "updated_at": "2026-11-18T06:26:47Z",
+      "digest": "sha256:1db8f7af1e1fd5e633303b20a11d8bdf8e9a572106fc8e5b26160be44f54cc09",
+      "workflow_run": {
+        "id": 44250858396,
+        "repository_id": 1442009646,
+        "head_repository_id": 1442009646,
+        "head_branch": "feat/book-concepts-20261118",
+        "head_sha": "26a90f0cbe91b9b9df01d61e1fdc57fddd450c86"
+      }
+    },
+    {
+      "id": 14404261408,
+      "name": "c1-ubuntu-latest-stable",
+      "size_in_bytes": 7076,
+      "url": "https://api.github.com/repos/clonetimer/RustAppLab/actions/artifacts/14404261408",
+      "archive_download_url": "https://api.github.com/repos/clonetimer/RustAppLab/actions/artifacts/14404261408/zip",
+      "expired": false,
+      "created_at": "2026-11-18T06:25:10Z",
+      "expires_at": "2027-02-16T06:22:31Z",
+      "updated_at": "2026-11-18T06:25:10Z",
+      "digest": "sha256:95c89040f13af97d0293d081bd4139751281508ddb8714a4caed98e6ed452df6",
+      "workflow_run": {
+        "id": 44250858396,
+        "repository_id": 1442009646,
+        "head_repository_id": 1442009646,
+        "head_branch": "feat/book-concepts-20261118",
+        "head_sha": "26a90f0cbe91b9b9df01d61e1fdc57fddd450c86"
+      }
+    },
+    {
+      "id": 14404256608,
+      "name": "declared-msrv",
+      "size_in_bytes": 50616,
+      "url": "https://api.github.com/repos/clonetimer/RustAppLab/actions/artifacts/14404256608",
+      "archive_download_url": "https://api.github.com/repos/clonetimer/RustAppLab/actions/artifacts/14404256608/zip",
+      "expired": false,
+      "created_at": "2026-11-18T06:29:36Z",
+      "expires_at": "2027-02-16T06:22:31Z",
+      "updated_at": "2026-11-18T06:29:36Z",
+      "digest": "sha256:6026480b6a0e659d6641c1a98261972506d6ec5443bd07770f98f8b18147443d",
+      "workflow_run": {
+        "id": 44250858396,
+        "repository_id": 1442009646,
+        "head_repository_id": 1442009646,
+        "head_branch": "feat/book-concepts-20261118",
+        "head_sha": "26a90f0cbe91b9b9df01d61e1fdc57fddd450c86"
+      }
+    },
+    {
+      "id": 14404240733,
+      "name": "c1-portable-ubuntu-latest",
+      "size_in_bytes": 30189531,
+      "url": "https://api.github.com/repos/clonetimer/RustAppLab/actions/artifacts/14404240733",
+      "archive_download_url": "https://api.github.com/repos/clonetimer/RustAppLab/actions/artifacts/14404240733/zip",
+      "expired": false,
+      "created_at": "2026-11-18T06:24:13Z",
+      "expires_at": "2027-02-16T06:22:31Z",
+      "updated_at": "2026-11-18T06:24:13Z",
+      "digest": "sha256:d24cd02853cf3f7312ebbbeabaad63a382574f858ce21c21eac8a2f14b3993e7",
+      "workflow_run": {
+        "id": 44250858396,
+        "repository_id": 1442009646,
+        "head_repository_id": 1442009646,
+        "head_branch": "feat/book-concepts-20261118",
+        "head_sha": "26a90f0cbe91b9b9df01d61e1fdc57fddd450c86"
+      }
+    },
+    {
+      "id": 14404186309,
+      "name": "c1-windows-latest-stable",
+      "size_in_bytes": 7069,
+      "url": "https://api.github.com/repos/clonetimer/RustAppLab/actions/artifacts/14404186309",
+      "archive_download_url": "https://api.github.com/repos/clonetimer/RustAppLab/actions/artifacts/14404186309/zip",
+      "expired": false,
+      "created_at": "2026-11-18T06:27:35Z",
+      "expires_at": "2027-02-16T06:22:31Z",
+      "updated_at": "2026-11-18T06:27:35Z",
+      "digest": "sha256:45b6c137f8b77be48deb7752744a7cf3d0c1812d8c58ab86b6747189dd7a31fd",
+      "workflow_run": {
+        "id": 44250858396,
+        "repository_id": 1442009646,
+        "head_repository_id": 1442009646,
+        "head_branch": "feat/book-concepts-20261118",
+        "head_sha": "26a90f0cbe91b9b9df01d61e1fdc57fddd450c86"
+      }
+    },
+    {
+      "id": 14404158713,
+      "name": "native-windows-latest",
+      "size_in_bytes": 233559,
+      "url": "https://api.github.com/repos/clonetimer/RustAppLab/actions/artifacts/14404158713",
+      "archive_download_url": "https://api.github.com/repos/clonetimer/RustAppLab/actions/artifacts/14404158713/zip",
+      "expired": false,
+      "created_at": "2026-11-18T06:37:08Z",
+      "expires_at": "2027-02-16T06:22:31Z",
+      "updated_at": "2026-11-18T06:37:08Z",
+      "digest": "sha256:502f350684be61308ea08871a1115a1d3853d7f7768187312724d52cad252724",
+      "workflow_run": {
+        "id": 44250858396,
+        "repository_id": 1442009646,
+        "head_repository_id": 1442009646,
+        "head_branch": "feat/book-concepts-20261118",
+        "head_sha": "26a90f0cbe91b9b9df01d61e1fdc57fddd450c86"
+      }
+    },
+    {
+      "id": 14404059996,
+      "name": "delivery-windows-latest",
+      "size_in_bytes": 10005431,
+      "url": "https://api.github.com/repos/clonetimer/RustAppLab/actions/artifacts/14404059996",
+      "archive_download_url": "https://api.github.com/repos/clonetimer/RustAppLab/actions/artifacts/14404059996/zip",
+      "expired": false,
+      "created_at": "2026-11-18T06:43:41Z",
+      "expires_at": "2027-02-16T06:38:03Z",
+      "updated_at": "2026-11-18T06:43:41Z",
+      "digest": "sha256:ba0e853ab947e097d95ac0dc263a28eb59a5c27326736cd18e0e7d173aabe5c7",
+      "workflow_run": {
+        "id": 44250858396,
+        "repository_id": 1442009646,
+        "head_repository_id": 1442009646,
+        "head_branch": "feat/book-concepts-20261118",
+        "head_sha": "26a90f0cbe91b9b9df01d61e1fdc57fddd450c86"
+      }
+    },
+    {
+      "id": 14404046657,
+      "name": "c1-portable-windows-latest",
+      "size_in_bytes": 30189788,
+      "url": "https://api.github.com/repos/clonetimer/RustAppLab/actions/artifacts/14404046657",
+      "archive_download_url": "https://api.github.com/repos/clonetimer/RustAppLab/actions/artifacts/14404046657/zip",
+      "expired": false,
+      "created_at": "2026-11-18T06:25:11Z",
+      "expires_at": "2027-02-16T06:22:31Z",
+      "updated_at": "2026-11-18T06:25:11Z",
+      "digest": "sha256:681707188ae5b49529752f5befd125b929b3077e00de1a3692c16677ddf4d3e2",
+      "workflow_run": {
+        "id": 44250858396,
+        "repository_id": 1442009646,
+        "head_repository_id": 1442009646,
+        "head_branch": "feat/book-concepts-20261118",
+        "head_sha": "26a90f0cbe91b9b9df01d61e1fdc57fddd450c86"
+      }
+    },
+    {
+      "id": 14403992050,
+      "name": "delivery-ubuntu-latest",
+      "size_in_bytes": 12886564,
+      "url": "https://api.github.com/repos/clonetimer/RustAppLab/actions/artifacts/14403992050",
+      "archive_download_url": "https://api.github.com/repos/clonetimer/RustAppLab/actions/artifacts/14403992050/zip",
+      "expired": false,
+      "created_at": "2026-11-18T06:25:49Z",
+      "expires_at": "2027-02-16T06:22:31Z",
+      "updated_at": "2026-11-18T06:25:49Z",
+      "digest": "sha256:b4449c75270f2c986ec49e56d861e8a15ee741a1066c8132a873e4dbf8b83095",
+      "workflow_run": {
+        "id": 44250858396,
+        "repository_id": 1442009646,
+        "head_repository_id": 1442009646,
+        "head_branch": "feat/book-concepts-20261118",
+        "head_sha": "26a90f0cbe91b9b9df01d61e1fdc57fddd450c86"
+      }
+    },
+    {
+      "id": 14403981720,
+      "name": "book-practice-windows-latest",
+      "size_in_bytes": 27199,
+      "url": "https://api.github.com/repos/clonetimer/RustAppLab/actions/artifacts/14403981720",
+      "archive_download_url": "https://api.github.com/repos/clonetimer/RustAppLab/actions/artifacts/14403981720/zip",
+      "expired": false,
+      "created_at": "2026-11-18T06:23:40Z",
+      "expires_at": "2027-02-16T06:22:31Z",
+      "updated_at": "2026-11-18T06:23:40Z",
+      "digest": "sha256:13e0376a4bed4b6608e6b0a3bb71bc18f83270db0c0ce865deda25d42ea7e4e0",
+      "workflow_run": {
+        "id": 44250858396,
+        "repository_id": 1442009646,
+        "head_repository_id": 1442009646,
+        "head_branch": "feat/book-concepts-20261118",
+        "head_sha": "26a90f0cbe91b9b9df01d61e1fdc57fddd450c86"
+      }
+    },
+    {
+      "id": 14403916746,
+      "name": "book-practice-ubuntu-latest",
+      "size_in_bytes": 26607,
+      "url": "https://api.github.com/repos/clonetimer/RustAppLab/actions/artifacts/14403916746",
+      "archive_download_url": "https://api.github.com/repos/clonetimer/RustAppLab/actions/artifacts/14403916746/zip",
+      "expired": false,
+      "created_at": "2026-11-18T06:22:55Z",
+      "expires_at": "2027-02-16T06:22:31Z",
+      "updated_at": "2026-11-18T06:22:55Z",
+      "digest": "sha256:d9795ed9a5f9bcaae440adb606a8ee59ae4b79d5565004599549db6148a6a647",
+      "workflow_run": {
+        "id": 44250858396,
+        "repository_id": 1442009646,
+        "head_repository_id": 1442009646,
+        "head_branch": "feat/book-concepts-20261118",
+        "head_sha": "26a90f0cbe91b9b9df01d61e1fdc57fddd450c86"
+      }
+    },
+    {
+      "id": 14403806999,
+      "name": "c2-ubuntu-latest-1.85.0",
+      "size_in_bytes": 7119,
+      "url": "https://api.github.com/repos/clonetimer/RustAppLab/actions/artifacts/14403806999",
+      "archive_download_url": "https://api.github.com/repos/clonetimer/RustAppLab/actions/artifacts/14403806999/zip",
+      "expired": false,
+      "created_at": "2026-11-18T06:25:01Z",
+      "expires_at": "2027-02-16T06:22:31Z",
+      "updated_at": "2026-11-18T06:25:01Z",
+      "digest": "sha256:20f16f8bde0763c6b995125f328411473faf17d4f1540249671bfd026533f316",
+      "workflow_run": {
+        "id": 44250858396,
+        "repository_id": 1442009646,
+        "head_repository_id": 1442009646,
+        "head_branch": "feat/book-concepts-20261118",
+        "head_sha": "26a90f0cbe91b9b9df01d61e1fdc57fddd450c86"
+      }
+    },
+    {
+      "id": 14403762669,
+      "name": "c2-windows-latest-stable",
+      "size_in_bytes": 7122,
+      "url": "https://api.github.com/repos/clonetimer/RustAppLab/actions/artifacts/14403762669",
+      "archive_download_url": "https://api.github.com/repos/clonetimer/RustAppLab/actions/artifacts/14403762669/zip",
+      "expired": false,
+      "created_at": "2026-11-18T06:28:36Z",
+      "expires_at": "2027-02-16T06:22:31Z",
+      "updated_at": "2026-11-18T06:28:36Z",
+      "digest": "sha256:29ef19f79b5687d5e178b478fa11e12ce2a41121797db024b8f70ba011aa5f3e",
+      "workflow_run": {
+        "id": 44250858396,
+        "repository_id": 1442009646,
+        "head_repository_id": 1442009646,
+        "head_branch": "feat/book-concepts-20261118",
+        "head_sha": "26a90f0cbe91b9b9df01d61e1fdc57fddd450c86"
+      }
+    },
+    {
+      "id": 14403742369,
+      "name": "c2-portable-windows-latest",
+      "size_in_bytes": 30816663,
+      "url": "https://api.github.com/repos/clonetimer/RustAppLab/actions/artifacts/14403742369",
+      "archive_download_url": "https://api.github.com/repos/clonetimer/RustAppLab/actions/artifacts/14403742369/zip",
+      "expired": false,
+      "created_at": "2026-11-18T06:27:26Z",
+      "expires_at": "2027-02-16T06:22:31Z",
+      "updated_at": "2026-11-18T06:27:26Z",
+      "digest": "sha256:b44d3f39cb7f9dc221443410807b332dafd9548bb7015e66bf46d1ede95132c5",
+      "workflow_run": {
+        "id": 44250858396,
+        "repository_id": 1442009646,
+        "head_repository_id": 1442009646,
+        "head_branch": "feat/book-concepts-20261118",
+        "head_sha": "26a90f0cbe91b9b9df01d61e1fdc57fddd450c86"
+      }
+    },
+    {
+      "id": 14403567743,
+      "name": "c2-ubuntu-latest-stable",
+      "size_in_bytes": 7167,
+      "url": "https://api.github.com/repos/clonetimer/RustAppLab/actions/artifacts/14403567743",
+      "archive_download_url": "https://api.github.com/repos/clonetimer/RustAppLab/actions/artifacts/14403567743/zip",
+      "expired": false,
+      "created_at": "2026-11-18T06:25:28Z",
+      "expires_at": "2027-02-16T06:22:31Z",
+      "updated_at": "2026-11-18T06:25:28Z",
+      "digest": "sha256:6070d8251f633e3610c8569e51057864baa6db3943e3f7d3452bf586d6cf59fe",
+      "workflow_run": {
+        "id": 44250858396,
+        "repository_id": 1442009646,
+        "head_repository_id": 1442009646,
+        "head_branch": "feat/book-concepts-20261118",
+        "head_sha": "26a90f0cbe91b9b9df01d61e1fdc57fddd450c86"
+      }
+    },
+    {
+      "id": 14403563423,
+      "name": "c1-ubuntu-latest-1.85.0",
+      "size_in_bytes": 7040,
+      "url": "https://api.github.com/repos/clonetimer/RustAppLab/actions/artifacts/14403563423",
+      "archive_download_url": "https://api.github.com/repos/clonetimer/RustAppLab/actions/artifacts/14403563423/zip",
+      "expired": false,
+      "created_at": "2026-11-18T06:24:36Z",
+      "expires_at": "2027-02-16T06:22:31Z",
+      "updated_at": "2026-11-18T06:24:36Z",
+      "digest": "sha256:1f89706ca16daa7870a660e0e4880909fc9dbba39f8abcb65ed8b9450eab3692",
+      "workflow_run": {
+        "id": 44250858396,
+        "repository_id": 1442009646,
+        "head_repository_id": 1442009646,
+        "head_branch": "feat/book-concepts-20261118",
+        "head_sha": "26a90f0cbe91b9b9df01d61e1fdc57fddd450c86"
+      }
+    },
+    {
+      "id": 14403523810,
+      "name": "native-ubuntu-latest",
+      "size_in_bytes": 86668,
+      "url": "https://api.github.com/repos/clonetimer/RustAppLab/actions/artifacts/14403523810",
+      "archive_download_url": "https://api.github.com/repos/clonetimer/RustAppLab/actions/artifacts/14403523810/zip",
+      "expired": false,
+      "created_at": "2026-11-18T06:26:33Z",
+      "expires_at": "2027-02-16T06:22:31Z",
+      "updated_at": "2026-11-18T06:26:33Z",
+      "digest": "sha256:9506b6a1e04671c6d25fd245a391b236f462f2ebafb876cd6bd8978b12720224",
+      "workflow_run": {
+        "id": 44250858396,
+        "repository_id": 1442009646,
+        "head_repository_id": 1442009646,
+        "head_branch": "feat/book-concepts-20261118",
+        "head_sha": "26a90f0cbe91b9b9df01d61e1fdc57fddd450c86"
+      }
+    },
+    {
+      "id": 14403438546,
+      "name": "real-browser",
+      "size_in_bytes": 633245,
+      "url": "https://api.github.com/repos/clonetimer/RustAppLab/actions/artifacts/14403438546",
+      "archive_download_url": "https://api.github.com/repos/clonetimer/RustAppLab/actions/artifacts/14403438546/zip",
+      "expired": false,
+      "created_at": "2026-11-18T06:23:57Z",
+      "expires_at": "2027-02-16T06:22:31Z",
+      "updated_at": "2026-11-18T06:23:57Z",
+      "digest": "sha256:7a61e5a9887e0572b0d0dcc1b4274ee59ee83c18606e568b5f99c8b00a4d8da7",
+      "workflow_run": {
+        "id": 44250858396,
+        "repository_id": 1442009646,
+        "head_repository_id": 1442009646,
+        "head_branch": "feat/book-concepts-20261118",
+        "head_sha": "26a90f0cbe91b9b9df01d61e1fdc57fddd450c86"
+      }
+    },
+    {
+      "id": 14403128446,
+      "name": "c2-portable-ubuntu-latest",
+      "size_in_bytes": 30816468,
+      "url": "https://api.github.com/repos/clonetimer/RustAppLab/actions/artifacts/14403128446",
+      "archive_download_url": "https://api.github.com/repos/clonetimer/RustAppLab/actions/artifacts/14403128446/zip",
+      "expired": false,
+      "created_at": "2026-11-18T06:24:46Z",
+      "expires_at": "2027-02-16T06:22:31Z",
+      "updated_at": "2026-11-18T06:24:46Z",
+      "digest": "sha256:24554c89b95b165b48b043680f5f1f4a6d0ebdfbfb71ea14f4199a324875bc4f",
+      "workflow_run": {
+        "id": 44250858396,
+        "repository_id": 1442009646,
+        "head_repository_id": 1442009646,
+        "head_branch": "feat/book-concepts-20261118",
+        "head_sha": "26a90f0cbe91b9b9df01d61e1fdc57fddd450c86"
+      }
+    }
+  ]
+}

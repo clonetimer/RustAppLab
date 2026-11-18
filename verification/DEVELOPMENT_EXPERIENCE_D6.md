@@ -223,3 +223,30 @@ The behavior regression first reproduced all three false successes. The runner n
 本节写于 rc.3 首次提交之前，表中记录的是本地参考行为验证。**记录时尚无本批远端 CI 和发布结果。** 后续跨平台 CI、当前提交的交付检查和发布资产核对，应另记实际提交与运行结果；不能引用上一节 rc.2 的 Run 225 或 13 个资产，替代 rc.3 的验收。
 
 **经验：**本地测试通过、远端 CI 通过、交付物可复现和发布完成分别记录。新增实验改变测试集合时，同步维护相应验收门槛，再由当前修订的真实运行决定下一阶段状态。
+
+## 31. Windows 超时需要同条件复验与原始证据
+
+[Run 226 首次 Windows 交付回放](https://github.com/clonetimer/RustAppLab/actions/runs/44250858396/job/134620909067) 中，`storedesk_red_to_green` 的参考实现通过第 1/2 步后，第 3 步超过既有 8 秒运行预算。初始学员骨架的失败是预期红测，真正失败的是外层参考实现检查：24 项通过、1 项失败。第 3 步包含 4 个串行测试、6 次 CLI 启动和实际 SQLite 文件操作；编译另有 120 秒预算。
+
+相关 Studio/process/StoreDesk 源码与 rc.2 相同。同一次日志较早的 `storedesk_guidance_rejects_partial_commits` 已执行同一固定合同并通过第 3 步；后续保持提交和超时不变的 [Windows 复验](https://github.com/clonetimer/RustAppLab/actions/runs/44250858396/job/134627202653) 通过完整交付，实际新包回放为 Debug 374 / Release 364 / Doctest 9。这个结果只能记录为“该次超时未复现”，具体延迟来自调度、进程启动还是文件 I/O 尚未证明。
+
+当前超时路径会清理尚未读取的子进程部分输出，因而首轮日志无法定位第 3 步卡在哪个子测试。再次出现时，应先补充部分输出和细分耗时证据，再决定修改位置；本轮没有放宽超时或减少测试。首次失败 [artifact 14404276696](https://github.com/clonetimer/RustAppLab/actions/runs/44250858396/artifacts/14404276696) 与复验成功 [artifact 14404059996](https://github.com/clonetimer/RustAppLab/actions/runs/44250858396/artifacts/14404059996) 均保留。
+
+## 32. 重跑产生同名产物时，下载选择也是发布合同
+
+Windows 复验成功后，候选组装仍拒绝了 `delivery-windows-latest/candidate.json`。原因是同一次 workflow run 留下两份同名产物，下载步骤取到了首次失败记录。以下是实际 API 元数据，完整快照见 [ci-retry-artifacts.json](rc3-core-concepts/ci-retry-artifacts.json)。
+
+| Artifact ID | created_at（UTC） | Windows 交付结果 |
+|---|---|---|
+| `14404276696` | `2026-11-18T06:26:47Z` | 首次失败 |
+| `14404059996` | `2026-11-18T06:43:41Z` | 同提交复验通过 |
+
+不能从本次 ID 的大小或 API 返回位置判断时间先后。[download-artifact v4 的实现](https://github.com/actions/download-artifact/blob/v4/src/download-artifact.ts) 即使接收 `artifact-ids` 也会先做 `listArtifacts({latest: true})`，再过滤 ID，因此仅添加 ID 参数仍可能丢掉希望下载的记录。
+
+修复把选择与下载明确分开：分页读取当前 run 元数据，按精确名称和带时区的 `created_at` 选择最新记录；排除消费者自身的 `candidate-release`，保留所有历史产物。选择不读取 PASS/FAIL；最新产物失败时，由原有严格报告校验拒绝，不能退回旧成功报告。同一名称存在并列最新时间或最新记录已过期时停止。
+
+随后通过 `gh api` 按已选 ID 直接下载，先核对 API 给出的 SHA-256，再检查 ZIP 路径、重复成员和符号链接，解压到新的证据目录。选择清单随验证证据保存。candidate job 只增加读取 Actions 的权限，token 仅传给元数据/下载步骤；原有源码身份、平台、命令、日志哈希和 23 份报告门禁继续执行。GitHub 的 [artifact API](https://docs.github.com/en/rest/actions/artifacts) 提供创建时间、digest 与按 ID 下载入口。
+
+**经验：**重跑作业成功与消费者读取到该次证据，是两个需要分别验证的事实。保留失败记录、显式选择最新记录、验证下载字节，再检查报告语义，才能完整说明发布依据。
+
+本地修复验证为选择器 20 项、下载器 18 项新增回归，完整 Python 套件 **169/169 通过**。真实 19 条元数据回放选出 18 份生产者产物，并用留存的成功 ZIP 验证摘要与安全解包。测试只替换网络下载边界，未替换实际 ZIP 校验；远端权限与最终组合必须由修复提交的新完整 CI 证明。

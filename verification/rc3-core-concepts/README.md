@@ -11,7 +11,13 @@
 
 [基础实验原始记录](foundation/report.json) 保存完整命令、日志哈希及所测 Rust 源码/manifest/lock 的哈希。成功例与预期编译失败例均计入 doctest；后者用于验证规则边界。该隔离工作区的 stable `cargo fmt --all -- --check` 与 `cargo clippy --workspace --all-targets --locked --offline -- -D warnings` 也已通过。
 
-Python 门禁回归由 `python -m unittest discover -s scripts/tests -v` 实际执行，**131 / 131 通过**；原始结果见 [Python 日志](python-tests.txt)。
+Python 门禁回归由 `python -m unittest discover -s scripts/tests -v` 实际执行。首次概念批次为 **131 / 131 通过**，原始结果保留在 [首次 Python 日志](python-tests.txt)。后续 CI 同名产物修复增加选择器 20 项、下载器 18 项回归，完整套件再次执行为 **169 / 169 通过**，见 [产物修复后的完整 Python 日志](python-tests-artifact-fix.txt)。
+
+## CI 重跑证据与产物选择
+
+[Run 226](https://github.com/clonetimer/RustAppLab/actions/runs/44250858396) 的 Windows 交付首次超时，同提交、同预算复验通过；候选组装随后读到了旧的同名失败产物。两个原始产物均保留，[元数据快照](ci-retry-artifacts.json) 包含当时 API 返回的 19 条记录。新选择器按带时区的创建时间选择每个名称的最新记录，真实快照回放得到 18 个生产者产物，Windows 对应 `14404059996`；下载器按明确 ID 下载，核对 SHA-256 后解包，并保存完整选择清单。
+
+本地集成检查还读取了该 Windows 成功产物的实际 ZIP，确认 API 摘要匹配、32 个文件可安全提取，两个交付报告均为 PASS，选择清单按原始字节保留。下载边界以已留存字节替代网络调用；真实 GitHub 权限、下载及所有候选报告组合仍由新提交的完整 CI 验收。Run 226 不作为修复后的通过记录。详细经过与证据边界见 [开发经验第 31–32 节](../DEVELOPMENT_EXPERIENCE_D6.md)。
 
 ## 工具、迁移与 Nightly
 

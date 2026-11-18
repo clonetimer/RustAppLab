@@ -82,5 +82,19 @@ Files: new `src/generic_lifetimes.rs` / `tests/generic_lifetimes.rs` in Foundati
 - Verified: final local D/E/G reruns passed with unchanged source snapshots; D/E retained entry bytes match hashed `ide-workspace.json`, blank record remains NOT_RUN, and the candidate validator accepted both actual Linux reports. Evidence is in `verification/rc3-core-concepts/`.
 - Verified: fresh independent review reproduced all 24 intended compile-fail diagnostic controls on both Rust versions (48/48); no unrelated error codes.
 - Verified: all Python regression suites passed, 131/131; actual learner archive contains 359 members, with 17 top-level learner projects unchanged. Final source archive and full remote CI remain separate gates.
-- Verified: final source ZIP has 792 members / 791 manifest entries with every hash matching; final learner ZIP has 359 members / 17 learner projects and every packaged course input byte matches the frozen tree. An earlier learner ZIP predated the final audit wording and was rebuilt before acceptance.
+- Verified before the later CI artifact fix: initial source ZIP has 792 members / 791 manifest entries with every hash matching; learner ZIP has 359 members / 17 learner projects and every packaged course input byte matches the frozen tree. An earlier learner ZIP predated the final audit wording and was rebuilt before acceptance. The artifact fix requires a refreshed source inventory and archive.
 - Whole-batch independent review complete: no Critical/Important/Minor changes required. Reviewer rechecked diagnostic controls, report validation, all 118 audit IDs and current source/learner archives; ready for exact-head remote CI. Raw command logs remain byte-for-byte intact, including their original trailing blank lines and diff context.
+
+## Task 5: Correct artifact selection after CI retry
+
+- [x] Preserve Run 226 first-attempt failure and same-head Windows retry evidence; verify source and logs.
+- [x] Reproduce selection of the older, higher-ID duplicate; inspect upstream v4 download code.
+- [x] Implement/test deterministic newest-by-created_at current-run selection with no outcome fallback.
+- [x] Implement/test exact-ID downloads, SHA256-before-extraction, safe fresh directories and selection trace.
+- [x] Wire narrow read permissions, record experience, independently review, refresh actual packages and source inventory.
+- [ ] Commit the fix and use a new complete CI run on that exact head before merging; finish main/release gates.
+
+The original Run 226 cannot qualify the corrected source. All 18 producer jobs eventually passed on the original head, but candidate assembly failed because it consumed the first Windows artifact. Final acceptance must name the new head/run rather than reuse the original head's status.
+
+- Verified locally after the artifact fix: full Python suite 169/169 PASS, including 20 selector and 18 downloader regressions. The real 19-record incident snapshot selected 18 producer artifacts; the actual retained Windows success ZIP passed API digest, safe extraction, both report statuses and byte-identical trace checks. Network transfer was substituted with the retained bytes, so remote permissions and downloads remain part of the new CI gate.
+- Delta review complete: no Critical/Important/contract-required Minor findings. Final refreshed source ZIP contains 798 members / 797 manifest entries, all matching current bytes, SHA256 `cd8e57a09cfb140eaf2ae7d297358a3635e0748fc849e99db1c7bb6fe0598ce4`. Learner ZIP remains 359 files / 17 projects, SHA256 `9ee47ca346cb1435c7c6cc9d4b63a6e72e4b325fc64392cd1f94e36548ea21cf`; all current course inputs match. No source or test edits followed the passing suite and review.

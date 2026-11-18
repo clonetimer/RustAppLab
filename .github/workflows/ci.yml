@@ -130,14 +130,20 @@ jobs:
     needs: [native, browser, msrv, c1, c2, delivery, book-practice]
     runs-on: ubuntu-latest
     timeout-minutes: 10
+    permissions:
+      contents: read
+      actions: read
     steps:
       - uses: actions/checkout@v4
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - uses: actions/download-artifact@v4
-        with:
-          path: collected-evidence
+      - name: Select current-run artifacts and verify exact downloads
+        env:
+          GH_TOKEN: ${{ github.token }}
+        run: |
+          python scripts/select_ci_artifacts.py --repository "$GITHUB_REPOSITORY" --run-id "$GITHUB_RUN_ID" > selected-artifacts.json
+          python scripts/download_ci_artifacts.py --selection selected-artifacts.json --output collected-evidence
       - name: Verify reports, source identity and artifact hashes
         run: python scripts/assemble_candidate.py --input collected-evidence --output candidate-release
       - uses: actions/upload-artifact@v4

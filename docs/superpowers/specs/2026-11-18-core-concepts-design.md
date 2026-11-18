@@ -41,3 +41,11 @@ Considered: (1) only expand the coverage table (cheap but leaves learning gaps);
 ## Acceptance
 
 Meaningful RED→GREEN for new functions/path behavior; foundation Debug/Release/doc tests on actual 1.74 and 1.85; current stable fmt/Clippy; compiler diagnostic controls; Python suite; real D/E runs with retained/generated paths; source and learner ZIP inspection. Review once as a whole batch, fix concrete issues, then use final-head PR CI and main publication gates. No fabricated IDE or learner PASS.
+
+## CI retry evidence selection correction
+
+Run 226 found an integration defect after a successful same-head Windows delivery retry: two artifacts shared the same name, and the older failure was downloaded. The actual newer artifact ID is smaller, so neither API order nor numeric ID is a chronological contract. The assembler correctly rejected the failed report. Preserve both records and correct selection rather than delete evidence or weaken validation.
+
+Use a read-only, paginated current-run metadata request, select one newest timezone-aware created_at per exact name, and reject ties or an expired latest record. Do not inspect PASS/FAIL during selection or fall back to older success. Exclude the candidate consumer's own previous output. Download exact IDs with gh, verify each API digest before safe ZIP extraction into a new directory, and retain the exact selection manifest. The candidate job gains only actions:read alongside contents:read; credentials are scoped to the metadata/download step. Existing source identity, command, platform and report gates remain unchanged.
+
+Acceptance: incident-based RED/GREEN selection test, API pagination controls, real ZIP digest/path/duplicate/symlink checks, actual successful Windows artifact replay, independent delta review, then all CI on the final changed commit. The StoreDesk 8-second budget stays unchanged; its one-time timeout remains an incident with unresolved precise environmental cause and a passing same-condition retry.
