@@ -12,8 +12,9 @@ header{background:#152b4a;color:white;padding:46px 18px 42px}header .inner,main,
 </head>
 <body><aside style="padding:16px;margin:16px;border:1px solid #9aadb8;background:#f4f8fa;font:16px/1.7 system-ui"><strong>0.19.0-rc.3 候选版 · 已有练习不用重建</strong><br>双击 LEARN_NEXT_WINDOWS.cmd，输入旧工程路径：L 看任务卡，E 编辑自己的源码，C 检查，1/2/3 看提示。基础新路线：FirstCard → UnitLab → QuizDeck → TextScope；详见 README_START_HERE.md。</aside>
 <header><div class="inner"><div class="eyebrow">RUST APPLAB · 新手入口</div><h1>不用先懂 Rust。<br>先完成一件小作品。</h1><p>如果你刚开始学习编程，先从这一页开始。今天只做一张「今日任务卡」，亲手改一行 Rust，让电脑为你的不同任务生成文字。</p></div></header>
-<main><aside style="padding:18px;border:1px solid #b8cddd;border-radius:12px;margin:16px 0"><strong>十二款 Studio 的微任务引导已齐：</strong>完成前面作品后，打开 <a href="RELIABILITY_PATH.html">第四段：事务与等待</a>，再进入 TaskPocket 独立开发。基础薄弱学员仍从 FirstCard 与 UnitLab 开始。</aside><aside><strong>完成基础作品后：</strong>打开 <a href="SYSTEMS_PATH.html">第三段：个人工单档案</a>。并发、存储、HTTP 四款软件各有三步任务和可折叠提示。新手仍从任务卡和 UnitLab 开始。</aside>
+<main><div class="completion"><h2>FirstCard 已经做完了？</h2><p><strong>下一课固定从 UnitLab 开始。</strong>先解释自己怎样让输出随输入变化，再实现一个会计算的函数。</p><a class="more" href="#after-firstcard">查看我学到了什么，并开始下一课 →</a></div>
 <div class="lead"><strong>下载与环境：</strong>完整学习使用 source.zip；直接体验使用对应平台 runtime.zip。参考运行包无需Cargo，学员检查仍需Rust。<br><strong>你需要：</strong>Windows 10/11 电脑、解压后的 Rust AppLab 文件夹。还没安装 Rust 也可以先读下面的步骤。<strong>今天不需要</strong>学习生命周期、线程、trait 或阅读几十份课程。</div>
+<p><strong>本页为 PR #12 修订指引：</strong>已发布的 v0.19.0-rc.3 包不含本轮新增入口。可下载<a href="https://github.com/clonetimer/RustAppLab/archive/refs/heads/docs/beginner-learning-path-20261119.zip">修订分支源码 ZIP</a>到新的平台目录；保留已有 my-... 工程，用新平台继续。</p>
 <p><a href="README_START_HERE.md">下载包选择、Linux命令与常见问题</a> · <a href="course/USER_TRIAL.md">记录实际试用</a></p><div class="track"><span>安装与打开</span>→<span>只修改一行</span>→<span>运行检查</span>→<span>保存作品</span></div>
 <div class="grid">
 <div class="tile"><span class="symbol" aria-hidden="true">🪄</span><h3>第 1 个成功</h3><p>不要求先写一整个软件，首先理解一行代码如何改变程序输出。</p></div>
@@ -27,6 +28,25 @@ header{background:#152b4a;color:white;padding:46px 18px 42px}header .inner,main,
 <article class="step"><div class="step-title"><span class="number">4</span><div><h3>回到向导，按 Enter 进行检查</h3><p>程序会真正编译你的 Rust，并用不同名字和任务运行。失败时看“期待 / 实际”的区别，再改、保存、重试。通过后会生成 <code>my-first-card/FIRST_WIN.md</code>。</p><div class="expected">预期：四项检查都通过，而不只是屏幕上出现“编译成功”。</div></div></div></article>
 <article class="step"><div class="step-title"><span class="number">5</span><div><h3>保存自己的第一份作品</h3><p>打开新生成工程中的 <code>跟着做.md</code>，按最后一节把运行结果保存到 <code>我的任务卡.txt</code>。这个文本才是你亲手开发的小工具生成的。</p><div class="expected">完成后：把任务从“写 Rust”换成“整理笔记”，再运行一次，确认内容随输入变化。</div></div></article>
 </div></section>
+<section aria-labelledby="after-firstcard"><h2 id="after-firstcard">FirstCard 之后：先复盘，再做 UnitLab</h2>
+<div class="grid">
+<div class="tile"><h3>我刚练到了什么？</h3><p>打开并保存 <code>src/main.rs</code>；使用 <code>name</code> 和 <code>task</code> 两个变量；用 <code>println!</code> 格式化输出；通过命令行传入不同参数。</p><p>参数读取代码已经提供。这一课练的是使用变量输出文字，函数、分支和错误处理在后续作品里学。</p></div>
+<div class="tile"><h3>怎么知道自己理解了？</h3><p>不改源码，换两组姓名和任务。先预测输出，再运行；说清楚你改了哪一行、参数给谁使用，以及为什么写死一个姓名不能通过。</p><p>四项检查验证程序行为；你自己的预测、解释和新输入实验帮助判断理解程度。</p></div>
+<div class="tile"><h3>下一课为什么学 UnitLab？</h3><p>从显示文字走到计算数值：第一步写温度转换函数，第二步选择单位并处理错误，第三步把输入和结果接到命令行。</p><p>完成后可以用自己的气温或距离换算，并解释一次正确的报错。</p></div>
+</div>
+<article class="step"><h3>现在操作：创建自己的换算器</h3><p>Windows 回到 RustAppLab 文件夹，双击 <strong>CONTINUE_WINDOWS.cmd</strong>，按 <strong>Enter</strong> 选择 UnitLab。已有工程也可以用 <strong>LEARN_NEXT_WINDOWS.cmd</strong> 继续。</p>
+<p>手动操作时，在<strong>平台根目录</strong>（同时有 apps、course 和 Cargo.toml 的文件夹）执行：</p>
+<pre>cargo run --locked --offline -p labquest -- studio start unitlab "my-unitlab"
+cargo run --locked --offline -p labquest -- learn lesson "my-unitlab" 1</pre>
+<p>用编辑器打开 <strong>my-unitlab/src/lib.rs</strong>，只完成 <code>celsius_to_fahrenheit</code> 的 <code>TODO(1)</code>。按 Ctrl+S 保存，再运行：</p>
+<pre>cargo run --locked --offline -p labquest -- learn check "my-unitlab" 1</pre>
+<div class="expected">第 1 步通过后继续第 2、3 步；全部完成后再运行完整换算器。未完成 TODO 的初次失败是正常起点。</div>
+<p>已有 my-unitlab 时跳过 start，用自己的实际路径继续，不删除工程。</p>
+<a class="more" href="course/AFTER_FIRSTCARD.md">继续看：三步目标、完整命令、自测与 QuizDeck 接续</a>
+<a class="more" href="apps/labquest/studio/unitlab_lesson.html">打开 UnitLab 离线图文讲义</a>
+</article>
+<p><strong>近三课顺序：</strong>UnitLab（计算与错误）→ QuizDeck（题库与集合）→ TextScope（文本统计与借用）。每一课都留下自己的输入、真实结果和两三句概念解释；概念专题按需要补读。</p>
+</section>
 <section aria-labelledby="manual"><h2 id="manual">不用双击脚本也可以：手动命令</h2><p>在 <strong>RustAppLab 根目录</strong>（就是有 <code>Cargo.toml</code> 的目录）打开 PowerShell，依次运行：</p><pre>cargo run --offline -p labquest -- beginner start my-first-card
 cargo run --offline --manifest-path my-first-card/Cargo.toml -- "小林" "写 Rust"
 # 用记事本打开 my-first-card\src\main.rs，修改并保存一行
@@ -41,6 +61,6 @@ cargo run --offline -p labquest -- beginner hint 1</pre><div class="warn">如果
 <details><summary>编译成功了，但自动检查还是失败</summary><p>编译通过只说明代码语法正确。检查器还会用其它名字运行，不能只写死“小林”的结果。要把 <code>name</code> 和 <code>task</code> 变量写进格式化字符串。</p></details>
 <details><summary>Windows 双击后闪退、打不开记事本</summary><p>直接打开 PowerShell，通过上方“手动命令”运行，把出现的报错完整保留。无需删除项目或重新解压。用自己喜欢的编辑器打开 <code>my-first-card/src/main.rs</code>。</p></details>
 </div></section>
-<div class="completion"><h3>你完成学习第 0 阶段了吗？</h3><label><input type="checkbox">我能区分 Rust 源码 <code>.rs</code> 和运行程序。</label><label><input type="checkbox">我修改了 <code>println!</code> 并按 Ctrl+S 保存。</label><label><input type="checkbox">我用两个不同名字运行过任务卡。</label><label><input type="checkbox">我得到了自己的任务卡 TXT 文件。</label><p>上面的勾选只是自我检查，<strong>真正的自动验收</strong>必须运行 <code>beginner check</code>。完成后双击 <strong>CONTINUE_WINDOWS.cmd</strong>，或打开 <a href="WORKSHOP.html">作品工坊，从 UnitLab 开始</a>；先做小作品，不要立即跳到大型工程。</p></div>
+<div class="completion"><h3>你完成学习第 0 阶段了吗？</h3><label><input type="checkbox">我能区分 Rust 源码 <code>.rs</code> 和运行程序。</label><label><input type="checkbox">我修改了 <code>println!</code> 并按 Ctrl+S 保存。</label><label><input type="checkbox">我用两个不同名字运行过任务卡。</label><label><input type="checkbox">我得到了自己的任务卡 TXT 文件。</label><p>上面的勾选只是自我检查，<strong>真正的自动验收</strong>必须运行 <code>beginner check</code>。完成后按本页 <a href="#after-firstcard">FirstCard 之后</a> 的具体步骤开始 UnitLab；想预览其它作品时再打开 <a href="WORKSHOP.html">作品工坊</a>。</p></div>
 </main><footer>Rust AppLab 0.19.0-rc.3 · 候选版离线阅读入口。支持范围为 Windows x64 MSVC 与 Linux x86_64，不声明 macOS。当前版本按同一源码重新验证；Windows本机体验和真人学习仍需实际记录。页面示例不是学员完成记录。</footer>
-<section style="max-width:980px;margin:24px auto;padding:20px"><h2>完成分步练习后：独立开发</h2><p>TaskPocket 与 PageMint：自己拆解需求、设计数据、编写测试，再交付真实产物。</p><a href="INDEPENDENT_PATH.html">进入独立开发第五段</a></section></body></html>
+<section style="max-width:940px;margin:24px auto;padding:20px"><details><summary>以后会学到哪里？完成基础作品后再查看</summary><p>按课程顺序学习 <a href="SYSTEMS_PATH.html">线程、存储与网络</a>，再做 <a href="RELIABILITY_PATH.html">事务与等待</a>。最终进入 <a href="INDEPENDENT_PATH.html">TaskPocket / PageMint 独立开发</a>，自己拆解需求、设计数据和测试。</p></details></section></body></html>

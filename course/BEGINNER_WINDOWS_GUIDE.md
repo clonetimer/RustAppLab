@@ -1,6 +1,6 @@
 # 第 0 阶段：Windows 学员从哪里开始（约 30–45 分钟）
 
-**0.11.1 更新**：已修复 0.11.0 Windows 向导创建 `my-first-card` 时误报父目录不存在的问题。保留已有学习文件，更新源码或应用热修复包即可。
+**已经完成这节课？打开 [FirstCard 做完之后](AFTER_FIRSTCARD.md)，从 UnitLab 继续。** 已有任务卡无需重建。下面是第一次学习时的逐步说明。
 
 **适用对象**：不知道终端、项目目录和 `cargo` 是什么的初学者。今天只做一款非常小的应用，不要求完成 32 关。
 
@@ -64,9 +64,28 @@ println!("今日任务卡 | {name} | {task}");
 - `println!`：让终端显示信息，`{name}` 会插入变量的实际值。
 - `cargo run -- ...`：将源码编译、启动程序，并把 `--` 后的文字作为程序参数。
 
-## 下一步怎样衔接现有应用
+## 完成后我学会了什么？
 
-通过后先回到 [第 00 关：FileQuest 文件雷达](00_first_five_minutes.md)，生成 `report.html`。此时学员已经知道什么是源文件、命令、输入、输出，所以不会突然面对多份看不懂的工程代码。随后按顺序走 01–07。CASE 01、TaskPocket 和 PageMint 都是进阶目标，**不是入门前置条件**。
+你已经练习了保存源码、使用变量生成文本、传入不同参数、观察期待与实际输出。命令行参数的读取代码是课程提供的，本节没有要求你独立编写它，也还没有要求掌握所有权、集合或复杂程序结构。
+
+先不看提示，用两组自己的姓名和任务运行程序；解释 `name`、`task` 和 `println!` 各做什么。能指出自己改的文件、预测输出并重新运行，就有了可以进入下一课的基础。四项自动检查只验证程序行为，你自己的解释和新输入实验补充理解证据。
+
+## 下一步：UnitLab，从显示文字到计算数值
+
+回到 **RustAppLab 根目录**，双击 `CONTINUE_WINDOWS.cmd`，按 Enter 选择默认的 UnitLab。手动操作则在平台根目录执行：
+
+```powershell
+cargo run --locked --offline -p labquest -- studio start unitlab "my-unitlab"
+cargo run --locked --offline -p labquest -- learn lesson "my-unitlab" 1
+```
+
+打开 `my-unitlab/src/lib.rs`，只做 `celsius_to_fahrenheit` 的 TODO(1)，保存后运行：
+
+```powershell
+cargo run --locked --offline -p labquest -- learn check "my-unitlab" 1
+```
+
+已有 UnitLab 工程就跳过 start，使用已有路径。详细的三步目标、自测和 QuizDeck 接续见 [FirstCard 完成后的衔接页](AFTER_FIRSTCARD.md)。[FileQuest 第 00 关](00_first_five_minutes.md) 保留为工具体验拓展；不是 FirstCard 后必须改走的路线。
 
 ## 授课效果的验收方式（尚未有真实学员统计）
 

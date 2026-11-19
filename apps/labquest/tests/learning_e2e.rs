@@ -46,6 +46,43 @@ fn text(out: &Output) -> String {
         String::from_utf8_lossy(&out.stderr)
     )
 }
+// Follow a complete platform command printed for the next new project. The
+// executable is the same LabQuest binary Cargo would launch; no shell is used.
+fn follow_handoff(cwd: &Path, guidance: &str, command: &str) -> Output {
+    let prefix = "cargo run --locked --offline -p labquest -- ";
+    let arguments = guidance
+        .lines()
+        .filter_map(|line| line.trim().strip_prefix(prefix))
+        .find(|line| line.starts_with(command))
+        .unwrap_or_else(|| panic!("missing executable handoff for {command}: {guidance}"));
+    // Keep ordinary quoted paths (including Chinese and spaces) together.
+    // No shell interprets the printed command.
+    let mut argv = Vec::new();
+    for (index, part) in arguments.split('"').enumerate() {
+        if index % 2 == 1 {
+            argv.push(part.to_string());
+        } else {
+            argv.extend(part.split_whitespace().map(str::to_string));
+        }
+    }
+    Command::new(env!("CARGO_BIN_EXE_labquest"))
+        .current_dir(cwd)
+        .args(argv)
+        .stdin(std::process::Stdio::null())
+        .output()
+        .unwrap()
+}
+fn check_portable_readme(root: &Path) -> String {
+    let readme = fs::read_to_string(root.join("README.md")).unwrap();
+    assert!(!readme.contains(root.to_string_lossy().as_ref()));
+    for part in readme.split("](").skip(1) {
+        let target = part.split(')').next().unwrap();
+        if !target.contains("://") && !target.starts_with('#') {
+            assert!(root.join(target).is_file(), "missing local link: {target}");
+        }
+    }
+    readme
+}
 fn patch_step(root: &Path, reference: &str, step: usize) {
     let path = root.join("src/lib.rs");
     let source = fs::read_to_string(&path).unwrap();
@@ -66,6 +103,7 @@ fn unitlab_guided_loop_does_not_hide_failure_or_skip_regressions() {
     let t = Temp::new();
     let p = t.0.join("我的 UnitLab");
     labquest::studio::init("unitlab", &p).unwrap();
+    let readme = check_portable_readme(&p);
     let initial = fs::read(p.join("src/lib.rs")).unwrap();
     for command in ["lesson", "next"] {
         assert!(learn(&p, command, &[]).status.success());
@@ -75,6 +113,10 @@ fn unitlab_guided_loop_does_not_hide_failure_or_skip_regressions() {
     let failed = learn(&p, "check", &[]);
     assert!(!failed.status.success());
     assert!(text(&failed).contains("学习反馈：第 1 步"));
+    let recovery = follow_handoff(&t.0, &text(&failed), "learn hint");
+    assert!(recovery.status.success(), "{}", text(&recovery));
+    assert!(text(&recovery).contains("第 1 层提示"));
+    assert_eq!(fs::read(p.join("src/lib.rs")).unwrap(), initial);
     let reference = include_str!("../../unitlab/src/lib.rs");
     patch_step(&p, reference, 1);
     let pass1 = learn(&p, "check", &[]);
@@ -91,7 +133,14 @@ fn unitlab_guided_loop_does_not_hide_failure_or_skip_regressions() {
     patch_step(&p, reference, 3);
     let done = learn(&p, "check", &[]);
     assert!(done.status.success(), "{}", text(&done));
-    assert!(text(&done).contains("studio start quizdeck"));
+    let next_project = follow_handoff(&t.0, &readme, "studio start quizdeck");
+    assert!(next_project.status.success(), "{}", text(&next_project));
+    check_portable_readme(&t.0.join("my-quizdeck"));
+    let next_lesson = follow_handoff(&t.0, &text(&done), "learn lesson");
+    assert!(next_lesson.status.success(), "{}", text(&next_lesson));
+    let next_check = follow_handoff(&t.0, &text(&done), "learn check");
+    assert!(!next_check.status.success());
+    assert!(text(&next_check).contains("学习反馈：第 1 步"));
     // Change previously passed behavior. A fresh check MUST catch the regression.
     fs::write(
         p.join("src/lib.rs"),
@@ -149,9 +198,26 @@ fn firstcard_can_check_without_learning_platform_internals() {
     let t = Temp::new();
     let p = t.0.join("卡片 space");
     labquest::beginner::init(&p).unwrap();
-    assert!(!learn(&p, "check", &[]).status.success());
+    check_portable_readme(&p);
     let file = p.join("src/main.rs");
     let source = fs::read_to_string(&file).unwrap();
+    // A previous learner-authored record must neither be overwritten nor used
+    // as proof that the current, still-unfinished source is correct.
+    let old_record = "# 我的旧记录\n保留这段个人复盘。\n";
+    fs::write(p.join("FIRST_WIN.md"), old_record).unwrap();
+    let readonly = learn(&p, "next", &[]);
+    assert!(readonly.status.success(), "{}", text(&readonly));
+    assert_eq!(fs::read_to_string(&file).unwrap(), source);
+    assert_eq!(
+        fs::read_to_string(p.join("FIRST_WIN.md")).unwrap(),
+        old_record
+    );
+    assert!(!p.join("target").exists());
+    let failed = learn(&p, "check", &[]);
+    assert!(!failed.status.success());
+    let recovery = follow_handoff(&t.0, &text(&failed), "beginner hint");
+    assert!(recovery.status.success(), "{}", text(&recovery));
+    assert_eq!(fs::read_to_string(&file).unwrap(), source);
     fs::write(
         &file,
         source.replace(
@@ -160,9 +226,19 @@ fn firstcard_can_check_without_learning_platform_internals() {
         ),
     )
     .unwrap();
-    let out = learn(&p, "check", &[]);
+    let out = call(&["beginner".as_ref(), "check".as_ref(), p.as_os_str()]);
     assert!(out.status.success(), "{}", text(&out));
-    assert!(text(&out).contains("studio start unitlab"));
+    assert_eq!(
+        fs::read_to_string(p.join("FIRST_WIN.md")).unwrap(),
+        old_record
+    );
+    let next_project = follow_handoff(&t.0, &text(&out), "studio start unitlab");
+    assert!(next_project.status.success(), "{}", text(&next_project));
+    let next_lesson = follow_handoff(&t.0, &text(&out), "learn lesson");
+    assert!(next_lesson.status.success(), "{}", text(&next_lesson));
+    let next_check = follow_handoff(&t.0, &text(&out), "learn check");
+    assert!(!next_check.status.success());
+    assert!(text(&next_check).contains("学习反馈：第 1 步"));
 }
 #[test]
 fn utf16_power_shell_error_file_works_through_cli() {

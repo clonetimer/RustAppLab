@@ -1,18 +1,37 @@
-# 当前学习路线（0.19.0-rc.3）
+# 从当前这一课继续学（0.19.0-rc.3）
+
+**FirstCard 已经通过，却不知道下一步？先打开 [FirstCard 完成后的衔接页](AFTER_FIRSTCARD.md)。** 它会说明刚练到的能力，并带你创建 UnitLab、修改第一个函数、检查和自测。
+
+## 先选择你所在的位置
+
+| 当前状态 | 打开哪里 | 这一课结束时，应该能做什么 |
+|---|---|---|
+| 完全没写过 Rust | [FirstCard 入门](BEGINNER_WINDOWS_GUIDE.md) | 不改源码就能用不同输入生成任务卡，并解释变量与输出 |
+| 已完成 FirstCard | [创建 UnitLab 并理解三步目标](AFTER_FIRSTCARD.md) | 用函数完成单位换算，正确处理非法输入 |
+| 已完成 UnitLab | [QuizDeck README](../apps/quizdeck/README.md) | 把自己的题目读成数据，再比较答案和评分 |
+| 已完成 QuizDeck | [TextScope README](../apps/textscope/README.md) | 分析自己的笔记，解释字节、字符、词和行的不同 |
+| 基础前三款已完成 | [后续基础作品](FOUNDATION_NEXT_STEPS.md) | 逐步做持久记录、SVG 输出和交互状态 |
+| 已有工程，忘了做到哪里 | [学习导航](LEARNING_NAVIGATOR.md) | 找到当前任务、自己的编辑文件和重新检查的命令 |
+
+每课的 README 负责“从哪里开始、如何完成和去哪里继续”；讲义解释概念，任务卡分解当前一步，`LEARNING_LOG.md` 留下你自己的输入、结果和理解。三步通过后，至少再做一次自己的正常输入与异常输入实验，并用自己的话解释一个函数；这些才帮助你判断是否能独立使用本课内容。
+
+**主线近期顺序：FirstCard → UnitLab → QuizDeck → TextScope。** 完整方向见 [课程地图](CURRICULUM.md)，操作细节见 [Studio 使用说明](STUDIO_GUIDE.md)。不要把本页后面的专题和 32 章拓展同时当成下一步任务。
+
+## 遇到概念问题时再打开
 
 [Rust Book 对照学习](BOOK_GUIDE.md) · [Rust Book 逐节覆盖审计](BOOK_COVERAGE_AUDIT.md) · [D1 Cargo 专题](BOOK_D1_CARGO.md) · [D2 智能指针](BOOK_D2_SMART_POINTERS.md) · [D3 面向对象与模式](BOOK_D3_OOP_PATTERNS.md) · [D4 高级特性](BOOK_D4_ADVANCED_FEATURES.md) · [D5 多线程 Web Server](BOOK_D5_WEB_SERVER.md) · [D6 附录 A–G](BOOK_D6_APPENDICES.md) · [D6 基础知识补齐](BOOK_D6_FOUNDATIONS.md) · [变量与模块专项](BOOK_D6_LANGUAGE_BASICS.md) · [工具/迁移/Nightly 实操](BOOK_D6_PRACTICAL.md) · [学习导航](LEARNING_NAVIGATOR.md) · [进阶 A](ADVANCED_A.md) · [进阶 B](ADVANCED_B.md)。已有学员可用 `learn reading <工程路径>` 按当前作品查找相关概念。
 
-完成 FirstCard 后先去 [作品工坊](../WORKSHOP.html)，从 [UnitLab](studio/unitlab.md) 开始。原有 00–31 讲义保留，但不再要求零基础从复杂工具源码直接入手。
+想先预览作品，可打开 [作品工坊](../WORKSHOP.html)；已经开始 UnitLab 的学员继续读 [当前讲义](studio/unitlab.md)，无需重新生成工程。
 
 需要补核心概念时，按 [所有权、接收者与切片](BOOK_OWNERSHIP_PRACTICE.md) → [集合与错误传播](BOOK_COLLECTIONS_ERRORS.md) → [泛型与生命周期](BOOK_GENERICS_LIFETIMES.md) 学习。[本次概念审计](BOOK_CONCEPT_AUDIT.md) 逐项说明六章 118 个目标中的已有证据与剩余内容。
 
 新增进阶作品：[TermGarden](studio/termgarden.md) · [StoreDesk](studio/storedesk.md) · [SQLite环境说明](SQLITE_SETUP.md)。完成基础再进入，不取代UnitLab入口。
 
-[20 款课程路线](CURRICULUM.md) · [Studio 使用说明](STUDIO_GUIDE.md)
+[完整课程路线](CURRICULUM.md) · [Studio 使用说明](STUDIO_GUIDE.md)
 
 ---
 
-# Rust AppLab · 以应用为中心的教学地图
+## 原有应用章节：按需拓展
 
 **新学员只需要先打开根目录的 [`START_HERE.html`](../START_HERE.html)，并做完 [`零基础第 0 阶段`](BEGINNER_WINDOWS_GUIDE.md)。不要在第一天就打开下表 32 章。**
 
@@ -53,9 +72,7 @@
 | 30 | LabQuest Transfer | [PageMint：第二次跨领域独立开发](30_second_independent_product.md) | 多笔记解析、排序、HTML 生成与转义 |
 | 31 | LabQuest Transfer | [用真实笔记交付网页与反思迁移能力](31_transfer_release.md) | 独立作品、跨领域复盘、平台差异记录 |
 
-如果希望先体验任务式学习，可直接从 `cargo run -p labquest -- start labquest-playground` 开始；传统基础路线则
-
-开始前先读仓库根目录的 [`README_START_HERE.md`](../README_START_HERE.md)。
+已有基础、希望体验综合调查时，在平台根目录执行 `cargo run --locked --offline -p labquest -- start labquest-playground`。它属于 CASE 01 拓展，不替代 FirstCard 后的 UnitLab 主线。首次安装先读 [`README_START_HERE.md`](../README_START_HERE.md)。
 
 **挑战与基础功能严格分离**：`cargo test --workspace` 运行当前已经实现的功能测试；尚未完成的 RED→GREEN 挑战标记为 `#[ignore]`，只有指定 `--ignored` 才会执行。学员不能把忽略的挑战理解成“已经通过”。
 

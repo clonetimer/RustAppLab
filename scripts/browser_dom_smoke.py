@@ -5,6 +5,7 @@
 Chromium 通过网络加载 LocalHub 的端到端浏览器验收。该容器的 Chromium
 对 127.0.0.1 导航返回 ERR_BLOCKED_BY_ADMINISTRATOR。
 
+输出：artifacts/browser-dom/（本机生成的诊断文件，已被 Git 忽略）。
 依赖：Python playwright 库 + 本机 Chromium；并需 Rust cargo。
 """
 from __future__ import annotations
@@ -21,8 +22,7 @@ from playwright.sync_api import sync_playwright
 
 ROOT = Path(__file__).resolve().parents[1]
 UI = ROOT / "apps/localhub/src/ui"
-OUT = ROOT / "verification"
-OUT.mkdir(exist_ok=True)
+OUT = ROOT / "artifacts/browser-dom"
 
 
 def get_json(url: str) -> dict:
@@ -33,6 +33,7 @@ def get_json(url: str) -> dict:
 
 
 def main() -> None:
+    OUT.mkdir(parents=True, exist_ok=True)
     with tempfile.TemporaryDirectory(prefix="sfs-browser-dom-") as tmp:
         demo = Path(tmp) / "demo"
         subprocess.run(

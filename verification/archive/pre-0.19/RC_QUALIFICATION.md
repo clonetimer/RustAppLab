@@ -48,4 +48,4 @@
 
 维护者在 Windows 双击根目录 `VERIFY_RELEASE_WINDOWS.cmd`，在相邻新目录获得日志/汇总，只有全工程成功后才复制本机 `.exe`。不要求学员运行该发布验收，不覆盖他们自己的作品。
 真实浏览器另运行 `scripts/browser_e2e.py`，需要维护者环境的 Playwright；不得删掉真实表单或重启恢复检查来消除阻塞。
-[发布规则](../RELEASE_POLICY.md)保留 RC/Stable 分层要求；[已知缺口](../KNOWN_ISSUES.md)仍保留未交付的异步框架、聊天、桌面、WASM 课程。
+[发布规则](../../../RELEASE_POLICY.md)保留 RC/Stable 分层要求；[已知缺口](../../../KNOWN_ISSUES.md)仍保留未交付的异步框架、聊天、桌面、WASM 课程。

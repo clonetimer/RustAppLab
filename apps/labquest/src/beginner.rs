@@ -26,68 +26,186 @@ const MAIN_RS: &str = r#"fn main() {
 }
 "#;
 
+const PROJECT_README: &str = r#"# FirstCard · 从一行输出认识 Rust
+
+这次练习要让你输入的名字和任务出现在任务卡中。你会修改一行代码，保存、运行、比较结果，再把自己的任务卡存成文本文件。按 [跟着做.md](跟着做.md) 从第 1 步开始。
+
+## 先认清三个文件
+
+| 文件 | 这次用它做什么 |
+|---|---|
+| [src/main.rs](src/main.rs) | 你的 Rust 源码；只修改 `println!` 那一行 |
+| [Cargo.toml](Cargo.toml) | Cargo 用来识别这个工程的说明；本次不用修改 |
+| [跟着做.md](跟着做.md) | 每步操作、预期输出、报错处理和完成后的自测 |
+
+本文件所在的文件夹是**学员工程目录**。完整 RustAppLab 平台根目录还有 `apps/`、`course/` 和自己的 `Cargo.toml`，两者不是同一目录。
+
+在本学员目录的终端运行：
+
+```text
+cargo run --offline -- "小林" "写 Rust"
+```
+
+`cargo run` 会编译并运行；`--` 后面两段文字是给任务卡的输入。初始输出“等待完成第一张任务卡”是正常起点。读讲义、修改、Ctrl+S 保存后再运行。
+
+## 做到什么，才可以进入下一站
+
+1. 当前源码通过 `beginner check` 的四组输入检查；只有学员包时先按讲义逐组手动比较，再用完整平台复验。
+2. 自己再选两组名字和任务，先写预期再运行；找到并打开保存的 TXT。
+3. 能指出哪一行改变输出，并用自己的话解释：`name` 和直接写死的“小林”有什么区别？为什么换输入后不用再改源码？
+
+这一步练习的是“输入 → 变量 → 格式化输出”及“编辑 → 保存 → 编译运行 → 比较”的循环。读取命令行参数和默认值的代码已经提供；一次检查通过只说明当次程序满足四组固定案例，不能证明你已独立写出整个程序、掌握参数解析或学会全部 Rust。用过提示也可以继续，把仍不理解的地方记下来。
+"#;
+
+pub(crate) const UNITLAB_HANDOFF: &str = r#"
+## 下一站：UnitLab，从显示文字到返回计算结果
+
+完成自己的任务卡和上面的解释后，回到**完整 RustAppLab 平台根目录**（有 `apps/labquest` 的目录）。下面逐条执行，不要一次粘贴后就等待自动完成：
+
+```text
+cargo run --locked --offline -p labquest -- studio start unitlab "my-unitlab"
+cargo run --locked --offline -p labquest -- learn lesson "my-unitlab" 1
+cargo run --locked --offline -p labquest -- learn check "my-unitlab" 1
+```
+
+`start` 只创建全新目录。若 `my-unitlab` 已存在，跳过第一条，直接看任务卡；也可用 `learn next` 查看已有工程。自定义目录时，把每条命令中的 `my-unitlab` 换成同一个实际路径。
+
+第 1 次检查通常失败：你还没有实现换算公式。新工程先读 `my-unitlab/README.md`；旧工程没有这份文件时，直接使用上面的 `learn lesson` 或原有 `START.html`。打开自己的 `my-unitlab/src/lib.rs`，只改 `celsius_to_fahrenheit` 中的 TODO(1)，保存后重复最后一条。第一步练习把数值交回调用者；后两步才连接单位选择、错误处理和完整命令行。第 1 步通过后看第 2 步任务卡，不要继续重复第 1 步，也不要先运行尚未完成的完整换算命令。
+
+Windows 也可返回平台文件夹双击 `CONTINUE_WINDOWS.cmd`，按 Enter 选 UnitLab；已有工程用 `LEARN_NEXT_WINDOWS.cmd`。如果使用 learner-kit，直接打开包内已有的 `Studio/unitlab/README.md`，在 `Studio/unitlab` 目录执行 `cargo test --offline --test milestones step1_`，不必再次创建工程。
+"#;
+
 const PROJECT_GUIDE: &str = r#"# 我的第一个 Rust 软件：今日任务卡
 
-本任务只需要修改 **src/main.rs 中唯一一个 println! 行**，不要一开始研究其它源码。
+目标：输入名字和任务，让输出随输入改变。我们先练习一行代码的效果，读取参数的代码已经替你写好。本次只修改 **src/main.rs 中的 println! 行**。
 
 ## 第 1 步：先运行未完成的程序
 
-打开 PowerShell，在本工程目录（能看到 Cargo.toml 的文件夹）执行：
+在本学员工程目录（本文件与 Cargo.toml 所在的文件夹）打开 PowerShell 或终端。Windows 可在资源管理器地址栏输入 `powershell` 后回车。执行：
 
-```powershell
+```text
 cargo run --offline -- "小林" "学习 Rust"
 ```
 
-第一次应该显示 **等待完成第一张任务卡**。这不是错误，只表示你还没完成它。
+第一次应该显示 **等待完成第一张任务卡**。这说明程序已运行，但还没有输出输入内容。`Compiling` 是编译过程信息；初始代码可能出现变量尚未使用的 warning，它与阻止编译的 error 不同。
 
-## 第 2 步：修改一行 Rust 代码
+`cargo run` 负责把 `.rs` 源码编译后运行；`--` 把 Cargo 的选项与程序的输入分开。这里的两段带引号文字分别是名字和任务。引号能把“学习 Rust”中的空格保留在同一个参数内。
 
-用记事本或 VS Code 打开 `src/main.rs`，找到 `println!("等待完成第一张任务卡");`。
-修改该行，使程序使用 `name` 和 `task` 两个变量，输出以下格式：
+## 第 2 步：预测，再修改一行
+
+用记事本或 VS Code 打开 `src/main.rs`。先认识你眼前的内容：
+
+- `fn main()` 是程序开始执行的位置。
+- 两行 `let` 给输入的数据起名，分别叫 `name` 和 `task`。没有提供参数时，已给出的代码会使用“朋友”和“学 Rust”。本次先使用这段代码，不要求独立写出它。
+- `println!` 把文字显示到终端；格式文本里的 `{name}` 会插入变量 `name` 的值，`{task}` 同理。
+
+先写下：如果把名字改成“阿青”，任务改成“整理笔记”，输出中应该改变哪两处？然后找到 `println!("等待完成第一张任务卡");`，让它使用这两个变量。输入“小林”“学习 Rust”时，目标格式是：
 
 ```text
 今日任务卡 | 小林 | 学习 Rust
 ```
 
-只改一行并保存（Ctrl+S）。这里的 `println!` 是打印；`{name}` 是把变量的值放进文本。
+只改这一行，保留括号、双引号、分号，按 **Ctrl+S** 保存。不要把“小林”和“学习 Rust”写死在代码里，否则下一组输入就不正确了。完整答案需要时再看第 3 层提示。
 
-## 第 3 步：自己运行一次
+## 第 3 步：用变化的输入验证
 
-```powershell
-cargo run --offline -- "小林" "学习 Rust"
+仍在本学员目录，先重复第 1 步命令，再运行：
+
+```text
+cargo run --offline -- "阿青" "整理笔记"
+cargo run --offline
 ```
 
-正确时会显示任务卡。试着改成你的名字和真实任务，再运行一次。
+预期分别是 `今日任务卡 | 阿青 | 整理笔记` 和 `今日任务卡 | 朋友 | 学 Rust`。第二条没有传入名字和任务，因此使用已提供代码的默认值。再自选两组不同输入，先预测，再比较实际输出。这里不需要每换一次名字就修改源码。
 
-## 第 4 步：回到 RustAppLab 根目录自动检查
+## 第 4 步：自动检查当前源码
 
-```powershell
-cargo run --offline -p labquest -- beginner check my-first-card
+回到**完整 RustAppLab 平台根目录**（有 `apps/` 和 `course/`）。假设学员工程是该目录下的 `my-first-card`，运行：
+
+```text
+cargo run --locked --offline -p labquest -- beginner check "my-first-card"
 ```
 
-上面的相对路径适用于你把本项目命名为 `my-first-card`，并放在 RustAppLab 根目录。
-如果你使用其它名字，请替换为自己的目录名。
-检查会先编译你的程序，再用中文、英文、带空格的输入进行测试；不能只写死一个答案。
+如果工程在其它位置，把 `my-first-card` 换成真实路径并保留引号。不要在本学员目录运行带 `-p labquest` 的命令；学员工程并不包含平台程序。
 
-## 第 5 步：把自己的软件变成作品
+检查先编译当前源码，再用四组固定输入真实运行：
 
-在本工程目录运行：
+| 输入的名字 / 任务 | 预期输出 |
+|---|---|
+| 小林 / 写 Rust | `今日任务卡 \| 小林 \| 写 Rust` |
+| Alex / 整理房间 | `今日任务卡 \| Alex \| 整理房间` |
+| 林 小 / A&B <test> | `今日任务卡 \| 林 小 \| A&B <test>` |
+| 不传参数 | `今日任务卡 \| 朋友 \| 学 Rust` |
+
+看到四项都通过，才说明这些案例满足要求。编译成功只说明代码能够编译。输出不同就先看“期待 / 实际”，修改并保存后重复检查。通过后生成 `FIRST_WIN.md`；旧记录不会覆盖，修改过源码后仍应重新检查。
+
+**只有 learner-kit？** 本包中的 FirstCard 可直接 `cargo run --offline`，但没有 LabQuest 检查器。可以按上表逐组手动运行比较；这属于手动练习，不能记成自动 4/4。要自动检查，用完整平台对本工程的实际路径执行上面的命令。
+
+## 第 5 步：保存一份自己的作品
+
+回到本学员目录。PowerShell 使用：
 
 ```powershell
 cargo run --offline -- "我的名字" "完成 Rust 入门" | Out-File -Encoding utf8 "我的任务卡.txt"
 ```
 
-然后打开 `我的任务卡.txt`。如果你已经有同名文件，请换个名称，不要覆盖自己的文件。
+Linux 终端使用：
+
+```sh
+cargo run --offline -- "我的名字" "完成 Rust 入门" > "我的任务卡.txt"
+```
+
+先把名字和任务换成自己的内容，然后打开 `我的任务卡.txt` 核对。若已有同名文件，先换一个输出文件名再执行。保存源码和保存输出是两件事：Ctrl+S 保存 `.rs`，这条命令保存程序生成的文本。
+
+## 第 6 步：用自己的话收尾
+
+在笔记中记录两组自己的“输入、预期、实际”，并回答：
+
+1. 哪一行负责显示任务卡？`{name}` 与直接写“小林”有什么区别？
+2. 只换命令里的任务，为什么可以得到新任务卡？如果修改源码却忘了保存，会发生什么？
+3. 编译成功、四组检查通过、我能解释并换新输入，各说明了什么？还在哪一步需要提示？
+
+能做这些，就有了进入 UnitLab 的起点。你还没有独立实现命令行解析，也还没有练习函数返回值、分支或错误处理；下一款作品会逐步加入这些内容。
 
 ## 如果卡住
 
-- `cargo 不是命令`：Rust 尚未安装或需要重新启动 PowerShell，先看 RustAppLab 根目录 `START_HERE.html`
-- `找不到 Cargo.toml`：先查看终端的当前目录；每条命令必须在说明的位置执行
-- `error: expected ...`：通常是引号、括号、分号不成对，先比较编辑前后是否只改了一行
-- 输出还是“等待完成”：可能忘了按 Ctrl+S 保存文件
-- 提示多个测试失败：不要写死“小林”，程序要使用 `name` 和 `task` 变量
+- `cargo 不是命令`：安装 Rust 后重新打开终端，安装说明见完整平台的 `START_HERE.html`。
+- `找不到 Cargo.toml`：核对当前位置。本工程内运行自己的程序，平台根目录运行 `-p labquest` 的命令。
+- `error: expected ...`：先比较引号、括号、分号，确认只改了指定行。
+- 输出还是“等待完成”：确认保存的是本工程 `src/main.rs`，然后重新运行。
+- 编译成功但检查失败：比较“期待 / 实际”，确认输出使用变量而非固定名字。
 
-提示分为三层：在 RustAppLab 根目录执行 `cargo run -p labquest -- beginner hint 1`；实在卡住再看 2、3。
+提示在完整平台根目录运行，先看 1，尝试后再看 2、3：
+
+```text
+cargo run --locked --offline -p labquest -- beginner hint 1
+```
+"#;
+
+const FIRST_WIN_RECORD: &str = r#"# FirstCard · 一次实际运行的完成记录
+
+生成本文件的那次检查已编译学员源码，并验证四组固定案例：中文输入、英文名字、带空格和符号的输入、未传参数的默认值。它记录的是程序行为；检查器没有验证代码由谁编写，也不能自动证明你已理解 Rust。
+
+本文件只在第一次通过时创建。已有记录会保留，源码后来改变时请重新运行 `beginner check`，以当次结果为准。
+
+## 把这次检查变成自己的学习证据
+
+在本学员目录，用自己的名字和任务运行两次，先记录预期再核对实际。PowerShell 保存输出的命令是：
+
+```powershell
+cargo run --offline -- "我的名字" "今天要做的事" | Out-File -Encoding utf8 "我的任务卡.txt"
+```
+
+Linux 把管道及后面的 PowerShell 命令换为 `> "我的任务卡.txt"`。如文件已存在，换一个新文件名后再执行。找到并打开文本，确认它是你的这次输入生成的。
+
+| 我的输入 | 我的预期 | 实际输出 | 用过的帮助 / 仍不理解的地方 |
+|---|---|---|---|
+| 第一组：待填写 | 待填写 | 待填写 | 待填写 |
+| 第二组：待填写 | 待填写 | 待填写 | 待填写 |
+
+最后用自己的话解释：哪一行负责显示？`name` 和直接写固定名字有什么区别？修改源码后为什么需要保存并重新运行？
+
+本次练习了变量参与格式化输出，以及编辑、保存、运行、比较结果的循环。参数读取和默认值逻辑已经提供；通过这个热身不等于能从空文件独立开发软件。下一步开始练习函数的输入与返回值。
 "#;
 
 const HINTS: [&str; 3] = [
@@ -134,15 +252,22 @@ pub fn init(root: &Path) -> Result<(), String> {
     fs::create_dir(root.join("src")).map_err(|err| format!("创建 src 失败：{err}"))?;
     write_new(&root.join("Cargo.toml"), CARGO_TOML)?;
     write_new(&root.join("src/main.rs"), MAIN_RS)?;
-    write_new(&root.join("跟着做.md"), PROJECT_GUIDE)?;
+    write_new(
+        &root.join("README.md"),
+        &format!("{PROJECT_README}\n{UNITLAB_HANDOFF}"),
+    )?;
+    write_new(
+        &root.join("跟着做.md"),
+        &format!("{PROJECT_GUIDE}\n{UNITLAB_HANDOFF}"),
+    )?;
     println!("[1/3] 已创建：{}", root.display());
     println!("[2/3] 现在用记事本打开 {}/src/main.rs", root.display());
     println!("[3/3] 只修改一处 println! 并保存，再运行：");
     println!(
-        "  cargo run -p labquest -- beginner check \"{}\"",
+        "  cargo run --locked --offline -p labquest -- beginner check \"{}\"",
         root.display()
     );
-    println!("不会 Rust 也没关系：详细步骤在工程中的 跟着做.md；提示用 beginner hint 1。此时 check 失败是正常的。");
+    println!("先打开工程中的 README.md，再按 跟着做.md 操作。上面的检查命令在完整 RustAppLab 平台根目录执行；初次检查失败是正常的。");
     Ok(())
 }
 
@@ -198,7 +323,7 @@ pub fn check(root: &Path) -> Result<bool, String> {
         let diagnostics = String::from_utf8_lossy(&built.stderr);
         let snippet: String = diagnostics.chars().take(2600).collect();
         println!("编译没有通过。先看看下面的错误提示（只显示前面一部分）：\n{snippet}");
-        println!("先检查 println! 那一行的双引号、括号、分号是否完整；然后再运行 beginner check。需要时用 beginner hint 1。\nWindows 如果出现 link.exe 找不到，请按官方 rustup 指引安装 MSVC C++ 构建工具。");
+        println!("先检查 println! 那一行的双引号、括号、分号是否完整。\n需要提示时，在完整 RustAppLab 平台根目录执行：\ncargo run --locked --offline -p labquest -- beginner hint 1\n保存源码后，仍在平台根目录重新检查：\ncargo run --locked --offline -p labquest -- beginner check \"{}\"\nWindows 如果出现 link.exe 找不到，请按官方 rustup 指引安装 MSVC C++ 构建工具。", root.display());
         return Ok(false);
     }
     let binary = binary_at(root);
@@ -222,7 +347,7 @@ pub fn check(root: &Path) -> Result<bool, String> {
                     println!("检查 {}/4：还没通过。", i + 1);
                     println!("  期待：{expected}");
                     println!("  实际：{}", crate::capstone::short(actual.trim(), 1200));
-                    println!("你可能仍在输出占位文本，或把某个名字写死了。只修改 println!，让它使用 name 和 task 两个变量。提示：beginner hint 1。\n这不是安装失败，可以继续修改代码并重试。");
+                    println!("你可能仍在输出占位文本，或把某个名字写死了。只修改 println!，让它使用 name 和 task 两个变量。\n需要提示时，在完整 RustAppLab 平台根目录执行：\ncargo run --locked --offline -p labquest -- beginner hint 1\n这不是安装失败。修改并保存后，仍在平台根目录重新检查：\ncargo run --locked --offline -p labquest -- beginner check \"{}\"", root.display());
                     return Ok(false);
                 }
                 println!("检查 {}/4：通过 ✓", i + 1);
@@ -243,12 +368,13 @@ pub fn check(root: &Path) -> Result<bool, String> {
         }
     }
     let badge = root.join("FIRST_WIN.md");
-    let content = "# 我完成了第一款 Rust 小软件！\n\n我亲手修改了 src/main.rs，使用变量生成今日任务卡。程序在 4 组输入下通过自动检查（包含中文、英文和默认值）。\n\n这只是本地练习记录，不是职业认证。\n\n## 我的真实作品\n\n在本目录 PowerShell 中运行：\n\n```powershell\ncargo run --offline -- \"我的名字\" \"今天要做的事\" | Out-File -Encoding utf8 \"我的任务卡.txt\"\n```\n\n打开 TXT 阅读自己的作品；再尝试修改任务内容。下一关返回 RustAppLab 根目录，双击 CONTINUE_WINDOWS.cmd，按 Enter 从 UnitLab 的第 1 步开始；不是先研究完整平台源码。\n";
     if !badge.exists() {
-        write_new(&badge, content)?;
+        write_new(&badge, &format!("{FIRST_WIN_RECORD}\n{UNITLAB_HANDOFF}"))?;
     }
     println!("\n四项都通过了！你的第一个 Rust 作品已经能处理不同输入。");
     println!("学习记录：{}（已有记录不会覆盖）", badge.display());
     println!("下一步：在你的工程目录运行 cargo run --offline -- \"我的名字\" \"今天的任务\"，也可以把输出保存为 TXT。");
+    println!("四组案例验证的是当次程序行为。再用两组自己的输入，并解释变量怎样改变输出；需要帮助的地方可记在学习记录中。");
+    print!("{UNITLAB_HANDOFF}");
     Ok(true)
 }

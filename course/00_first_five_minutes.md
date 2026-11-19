@@ -1,6 +1,6 @@
 # 00 · 第一次使用：先把软件玩起来
 
-> 如果你完全不会 Rust，先做 [第 0 阶段：完成第一张任务卡](BEGINNER_WINDOWS_GUIDE.md)，只改一行代码并获得第一次成功，再回来做本章。
+> 这是 FileQuest 的拓展体验入口。零基础先做 [FirstCard](BEGINNER_WINDOWS_GUIDE.md)，完成后按 [UnitLab 衔接页](AFTER_FIRSTCARD.md) 继续主线；能辨认输入、函数和结果后，再按兴趣回来体验本章。
 
 **核心问题**：如果你从没写过 Rust，怎样在十五分钟内辨认一个 Rust 软件的输入、处理和输出？
 

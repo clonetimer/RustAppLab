@@ -251,14 +251,16 @@ pub fn next(root: &Path) -> Result<String, String> {
         } else {
             out.push_str(&format!("下一步：第 {step} 步 · {objective}\n打开 {lesson}；修改 {code} 对应 TODO({step}) 并保存。\n"));
         }
-        out.push_str(&format!("检查：cargo run --offline -p labquest -- learn check {q} {step}\n任务卡：cargo run --offline -p labquest -- learn lesson {q} {step}\n分层提示：cargo run --offline -p labquest -- learn hint {q} 1 {step}\n"));
-        out.push_str("注意：本命令不执行测试、不发合格证。只有重新运行 studio check 才能确认当前代码行为。\n");
+        out.push_str(&format!("在完整 RustAppLab 平台根目录复验当前工程：\n检查：cargo run --locked --offline -p labquest -- learn check {q} {step}\n任务卡：cargo run --locked --offline -p labquest -- learn lesson {q} {step}\n分层提示：cargo run --locked --offline -p labquest -- learn hint {q} 1 {step}\n"));
+        out.push_str(
+            "本命令只读，不执行测试、不发合格证；重新运行上面的 learn check 才能确认当前源码的行为。\n",
+        );
         return Ok(out);
     }
     if root.join("跟着做.md").is_file() && root.join("src/main.rs").is_file() {
         let guide = format!("\"{}\"", root.join("跟着做.md").display());
         let code = format!("\"{}\"", root.join("src/main.rs").display());
-        return Ok(format!("FirstCard · 第一张任务卡\n打开 {guide}，编辑 {code} 的 println! 行。\n检查：cargo run --offline -p labquest -- beginner check {q}\n提示：cargo run --offline -p labquest -- beginner hint 1\n修改后换两组不同的名字与任务真实运行，并保存任务卡文本。\n"));
+        return Ok(format!("FirstCard · 第一张任务卡\n这是只读导航，不编译、不运行，也不根据 FIRST_WIN.md 判定当前源码通过。\n如果仍在完成任务：打开 {guide}，编辑 {code} 的 println! 行并保存。\n在完整 RustAppLab 平台根目录检查：\ncargo run --locked --offline -p labquest -- beginner check {q}\n需要提示时运行：\ncargo run --locked --offline -p labquest -- beginner hint 1\n\n如果当前源码已重新检查通过：换两组自己的名字与任务运行，保存文本，并解释输入怎样改变输出；完成后按下面进入 UnitLab。已有工程不必重建。\n{}", crate::beginner::UNITLAB_HANDOFF));
     }
     if let Some(id) = crate::independent::identify(root)? {
         return crate::independent::next(root, id);
@@ -408,22 +410,23 @@ fn step_for(root: &Path, requested: Option<usize>) -> Result<usize, String> {
 pub(crate) fn first_card(root: &Path) -> bool {
     root.join("跟着做.md").is_file() && root.join("src/main.rs").is_file()
 }
-fn handoff(id: &str) -> String {
-    match id {
-        "unitlab" => "迁移任务：用自己的数值完成一组合法和一组非法换算，记录结果。完成后进入 QuizDeck：studio start quizdeck <新目录>；从数值输入过渡到文本输入。\n".into(),
-        "quizdeck" => "迁移任务：创建自己的三道题及答案，运行一次含错题的 check，保存复习清单。完成后进入 TextScope：studio start textscope <新目录>，观察同一批文本。\n".into(),
-        "textscope" => "迁移任务：对自己的题库或笔记运行 stats/top/find，写一个新的边界测试。下一款是 LedgerLite：studio start ledgerlite <新目录>，学习持久化记录。\n".into(),
-        "ledgerlite" => "迁移任务：保存个人账目，退出后重读。下一款 BadgeForge：studio start badgeforge <新目录>，把成果做成作品卡。\n".into(),
-        "badgeforge" => "迁移任务：生成一张自己的 SVG 并打开。下一款 TermGarden：studio start termgarden <新目录>，学习事件与持续状态。\n".into(),
-        "termgarden" => "迁移任务：退出并重放自己的任务脚本。下一款 BatchMeter：studio start batchmeter <新目录>，先单文件再多线程；入口 course/SYSTEMS_PATH.md。\n".into(),
-        "batchmeter" => "迁移任务：用 1 与 4 个线程统计同一组文件并比较输出。下一款 MiniKV：studio start minikv <新目录>，建立自己的文件索引；见 course/SYSTEMS_PATH.md。\n".into(),
-        "minikv" => "迁移任务：保存并跨进程读取 snapshot/ 索引，检查前缀筛选。下一款 NetFetch：studio start netfetch <新目录>；读写日志不等于事务或断电恢复保证。\n".into(),
-        "netfetch" => "迁移任务：保存一份本机服务 JSON，验证同名重下不会覆盖。下一款 ServiceDesk：studio start servicedesk <新目录>；当前下载器同步且仅支持本机 HTTP。\n".into(),
-        "servicedesk" => "迁移任务：完成 course/SYSTEMS_PATH.md 的个人工单档案，并重启服务验证保存。之后进入 StoreDesk：studio start storedesk <新目录>，学习事务；再进入 AsyncBoard，它不是 Tokio 网络运行时。\n".into(),
-        "storedesk" => "迁移任务：按 RELIABILITY_PATH.html 故意让批次第二项失败，检查库存和流水一起回滚。下一款 AsyncBoard：studio start asyncboard <新目录>；不把两个程序当作一个跨应用事务。\n".into(),
-        "asyncboard" => "迁移任务：用自己的提醒清单生成报告，解释 wait_ms 与实测耗时的区别。完成 RELIABILITY_PATH.html 复盘后进入独立作品：app init taskpocket <新目录>，按 CONTRACT.md 独立实现，而不是继续填空。\n".into(),
-        _ => "下一步：用自己的数据真实运行 CLI，保存输出，填写 LEARNING_LOG.md，再按 learn route 选择后续作品。\n".into(),
-    }
+pub(crate) fn handoff(id: &str) -> String {
+    let (task, next, create) = match id {
+        "unitlab" => ("用自己的数值完成一组合法和一组非法换算，记录输入、预期和实际；解释返回数值与打印文字的区别。下一款 QuizDeck 将从数值输入过渡到文本输入。", "quizdeck", "studio start"),
+        "quizdeck" => ("创建自己的至少三道题及配套答案，运行一次含错题的 check，保存复习清单；解释为什么比较答案用 &str，而 Card 保存 String。下一款 TextScope 会观察同一批文本。", "textscope", "studio start"),
+        "textscope" => ("对自己的题库或笔记运行 stats/top/find，写一个新的边界测试。下一款 LedgerLite 学习持久化记录。", "ledgerlite", "studio start"),
+        "ledgerlite" => ("保存个人账目，退出后重读。下一款 BadgeForge 将成果做成作品卡。", "badgeforge", "studio start"),
+        "badgeforge" => ("生成一张自己的 SVG 并打开。下一款 TermGarden 学习事件与持续状态。", "termgarden", "studio start"),
+        "termgarden" => ("退出并重放自己的任务脚本。下一款 BatchMeter 先处理单文件，再用多线程；完整平台的 course/SYSTEMS_PATH.md 提供联合实验。", "batchmeter", "studio start"),
+        "batchmeter" => ("用 1 与 4 个线程统计同一组文件并比较输出。下一款 MiniKV 建立自己的文件索引；见完整平台的 course/SYSTEMS_PATH.md。", "minikv", "studio start"),
+        "minikv" => ("保存并跨进程读取 snapshot/ 索引，检查前缀筛选。下一款 NetFetch 练习本机下载；读写日志不等于事务或断电恢复保证。", "netfetch", "studio start"),
+        "netfetch" => ("保存一份本机服务 JSON，验证同名重下不会覆盖。下一款 ServiceDesk 练习本地服务；当前下载器同步且仅支持本机 HTTP。", "servicedesk", "studio start"),
+        "servicedesk" => ("完成 course/SYSTEMS_PATH.md 的个人工单档案，并重启服务验证保存。下一款 StoreDesk 学习事务，需要先按 course/SQLITE_SETUP.md 准备系统 SQLite。之后的 AsyncBoard 使用教学执行器，不是 Tokio 网络运行时。", "storedesk", "studio start"),
+        "storedesk" => ("按 RELIABILITY_PATH.html 故意让批次第二项失败，检查库存和流水一起回滚。下一款 AsyncBoard 学习等待；两个程序不是一个跨应用事务。", "asyncboard", "studio start"),
+        "asyncboard" => ("用自己的提醒清单生成报告，解释 wait_ms 与实测耗时的区别。完成 RELIABILITY_PATH.html 复盘后进入独立作品 TaskPocket，按 CONTRACT.md 自行拆解和实现。", "taskpocket", "app init"),
+        _ => return "用自己的数据运行 CLI，保存输出并填写 LEARNING_LOG.md。查看后续路线，在完整平台根目录执行：\ncargo run --locked --offline -p labquest -- learn route\n".into(),
+    };
+    format!("迁移任务：{task}\n\n完成上述个人实验后，在完整 RustAppLab 平台根目录逐条执行：\n\n```text\ncargo run --locked --offline -p labquest -- {create} {next} \"my-{next}\"\ncargo run --locked --offline -p labquest -- learn lesson \"my-{next}\" 1\ncargo run --locked --offline -p labquest -- learn check \"my-{next}\" 1\n```\n\n第一条只用于全新目录；已有工程跳过创建，直接看任务卡和检查。自定义路径时同步替换三条命令中的目录。初始第 1 步失败是学习起点：阅读任务卡、修改对应源码、保存，再重复检查。learner-kit 中的下一款工程已经存在，直接打开它的 START.html，并在该工程内按任务卡运行本地检查。\n")
 }
 /// Included in newly generated learner projects; no absolute build-machine paths.
 pub(crate) fn printable_tasks(id: &str) -> Option<String> {
@@ -493,7 +496,20 @@ pub fn printable_tasks_html(id: &str) -> Option<String> {
             html(c.reflection)
         ));
     }
-    out.push_str(&format!("<section><h2>三步完成之后</h2><pre><code>cargo test --offline</code></pre><p>{}</p><p>学习路线中提到的 course/ 路径位于完整平台或学员包根目录。记录真实输入、产物和用过的提示：<a href=\"LEARNING_LOG.md\">LEARNING_LOG.md</a>。</p></section><footer>页面不保存成绩，不执行代码、不请求网络。展开提示不代表通关；真实检查请使用 Cargo 或平台的 learn check。</footer></main></body></html>",html(&handoff(id))));
+    let next_html: String = handoff(id)
+        .split("\n\n")
+        .map(|paragraph| {
+            if let Some(code) = paragraph
+                .strip_prefix("```text\n")
+                .and_then(|text| text.strip_suffix("\n```"))
+            {
+                format!("<pre><code>{}</code></pre>", html(code))
+            } else {
+                format!("<p>{}</p>", html(paragraph))
+            }
+        })
+        .collect();
+    out.push_str(&format!("<section><h2>三步完成之后</h2><pre><code>cargo test --offline</code></pre>{next_html}<p>学习路线中提到的 course/ 路径位于完整平台或学员包根目录。记录真实输入、产物和用过的提示：<a href=\"LEARNING_LOG.md\">LEARNING_LOG.md</a>。</p></section><footer>页面不保存成绩，不执行代码、不请求网络。展开提示不代表通关；真实检查请使用 Cargo 或平台的 learn check。</footer></main></body></html>"));
     let references = crate::book_reading::html(id)?;
     out = out.replace("<footer>", &format!("{references}<footer>"));
     Some(out)
@@ -517,15 +533,15 @@ fn lesson_text(root: &Path, requested: Option<usize>) -> Result<String, String> 
                 .position(|line| line.contains(&format!("fn {}", card.function)))
                 .map(|n| format!("第 {} 行附近", n + 1))
                 .unwrap_or_else(|| "在编辑器中按函数名搜索".into());
-            Ok(format!("{} · 第 {step} 步\n目标：{}\n只编辑：{}（{line}），函数 {}，TODO({step})。\n本次概念：{}\n\n先预测：{}\n然后修改并保存。检查：cargo run --offline -p labquest -- learn check \"{}\" {step}\n通过后换自己的数据：{}\n复盘：{}\n提示按需递进：learn hint \"{}\" 1 {step} → 2 → 3；先尝试再查看。\n",product.title,card.goal,root.join("src/lib.rs").display(),card.function,card.concept,card.prediction,root.display(),card.experiment,card.reflection,root.display()))
+            Ok(format!("{} · 第 {step} 步\n目标：{}\n只编辑：{}（{line}），函数 {}，TODO({step})。\n本次概念：{}\n\n先预测：{}\n然后修改并保存。在完整 RustAppLab 平台根目录检查：\ncargo run --locked --offline -p labquest -- learn check \"{}\" {step}\n通过后换自己的数据：{}\n复盘：{}\n需要提示时，在完整平台根目录执行：\ncargo run --locked --offline -p labquest -- learn hint \"{}\" 1 {step}\n先尝试第 1 层；仍不会时只把提示级别 1 改成 2 或 3，最后的步骤 {step} 保持不变。\n",product.title,card.goal,root.join("src/lib.rs").display(),card.function,card.concept,card.prediction,root.display(),card.experiment,card.reflection,root.display()))
         } else {
-            Ok(format!("{} · 第 {step} 步：{}\n打开 {}/LESSON.md，编辑自己的 src/lib.rs 的 TODO({step})。本作品暂未配置额外微任务卡，使用原有分步讲义与 HINTS.md。\n检查：learn check \"{}\" {step}\n",product.title,product.steps[step-1],root.display(),root.display()))
+            Ok(format!("{} · 第 {step} 步：{}\n打开 {}/LESSON.md，编辑自己的 src/lib.rs 的 TODO({step})。本作品暂未配置额外微任务卡，使用原有分步讲义与 HINTS.md。\n在完整 RustAppLab 平台根目录检查：\ncargo run --locked --offline -p labquest -- learn check \"{}\" {step}\n",product.title,product.steps[step-1],root.display(),root.display()))
         }
     } else if first_card(root) {
         if requested.is_some_and(|s| s != 1) {
             return Err("FirstCard 是单步热身，请省略步骤或使用 1".into());
         }
-        Ok(format!("FirstCard · 第一张任务卡\n只编辑 {}/src/main.rs 中的 println! 行。\n先预测：把姓名和任务都换掉，程序应该改变哪两处输出？\nCtrl+S 保存后执行 learn check \"{}\"。\n通过后在学员目录用两组自己的姓名与任务运行，保存 TXT；再创建 UnitLab，不要从零编写平台源码。\n",root.display(),root.display()))
+        Ok(format!("FirstCard · 第一张任务卡\n只编辑 {}/src/main.rs 中的 println! 行。\n先预测：把姓名和任务都换掉，程序应该改变哪两处输出？\nCtrl+S 保存后，在完整 RustAppLab 平台根目录执行：\ncargo run --locked --offline -p labquest -- learn check \"{}\"\n通过后在学员目录用两组自己的姓名与任务运行，保存 TXT，并解释变量怎样改变输出；再按下一站的命令进入 UnitLab。\n{}",root.display(),root.display(),crate::beginner::UNITLAB_HANDOFF))
     } else if let Some(id) = crate::independent::identify(root)? {
         crate::independent::lesson(root, id, requested)
     } else {
@@ -567,7 +583,7 @@ pub fn check_current(root: &Path, requested: Option<usize>) -> Result<bool, Stri
         } else {
             let failed_step = step_for(root, None)?;
             println!(
-                "分层提示：learn hint \"{}\" 1 {failed_step}（后两个数字依次为提示级别、步骤）",
+                "需要提示时，在完整 RustAppLab 平台根目录执行：\ncargo run --locked --offline -p labquest -- learn hint \"{}\" 1 {failed_step}\n后两个数字依次为提示级别、步骤；先尝试第 1 层，再按需改成 2 或 3。",
                 root.display()
             );
         }
@@ -577,9 +593,6 @@ pub fn check_current(root: &Path, requested: Option<usize>) -> Result<bool, Stri
             return Err("FirstCard 只支持第 1 步".into());
         }
         let passed = crate::beginner::check(root)?;
-        if passed {
-            println!("换两组自己的输入，保存实际任务卡。然后在平台根目录运行 studio start unitlab my-unitlab，从函数返回值继续学习。");
-        }
         Ok(passed)
     } else if let Some(id) = crate::independent::identify(root)? {
         let stage = crate::independent::suggested(root, id, requested)?;

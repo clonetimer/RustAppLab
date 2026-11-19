@@ -1,25 +1,31 @@
 # 进阶 B：TaskPocket Pro · 从单文件到可复用软件
 
-## 软件最终形态
-独立 Cargo Workspace 包含 `taskcore` 业务库、`taskcli` 命令行与 `taskreport` Markdown 报告程序。运行同一数据文件，两个程序使用相同的业务规则。
+## 你要做成什么
 
-## 四个检查点
+把同一份任务数据交给两个程序：TaskPocket CLI 管理任务，`taskreport` 输出 Markdown；二者共用 `taskcore`。最后在独立 `json-export` 包里用 Serde 只读导出 JSON。完成后应能解释业务库、命令行适配和输出格式各自负责什么。
 
-- **B1（纯逻辑）**：编辑 `taskcore/src/lib.rs`，实现 `validate_title`、`parse_tsv`、`to_tsv`、`summary`。预测重复 ID/非法状态/中文标题的处理。
-- **B2（业务变更）**：实现 `add` 和 `complete`，处理编号溢出、非法标题、不存在的 ID；失败时内存数据保持不变。
-- **B3（软件集成）**：实现 `load`、`save`、`markdown`，然后在新目录用 CLI 加任务/完成任务，用报告程序导出。修改 `taskcli/src/main.rs` 让它支持至少一条自定义新功能，如 `search`。
+建议先做过 TaskPocket，能用 `Result` 处理文件错误。这里不是 FirstCard 后的第一款练习。完整平台的 `course/AFTER_FIRSTCARD.md` 会引导零基础继续 UnitLab。
 
-- **B4（第三方依赖）**：显式准备后，编辑 `json-export/src/lib.rs`、`json-export/src/main.rs`，用 DTO 和 `#[derive(serde::Serialize)]` 实现只读 JSON 导出；按 id 排序，精确保留 u64/bool/字符串，复用 taskcore 校验。
+**先确认目录**：本文件所在的是你的学员工程，日常改这里的源码。含 `apps/` 的 RustAppLab 目录是平台根目录，`-p labquest` 的命令在那里执行。不要修改平台 `projects/advanced-b/reference` 来完成自己的任务。
 
-从平台根目录对本工程路径运行 `advanced-b prepare-json <目录>`（明确联网），然后 `advanced-b check <目录> 4`。新工程已含扩展；旧工程先 `advanced-b add-json <目录>`，已有扩展不覆盖。`all`/`learn check` 包括 B4，显式 `3` 保留原无 registry 依赖检查。准备只运行平台固定参考源码，不运行本工程源码；日志在 `.advanced-b-dependencies/`，准备成功不等于课程通过。
+## 先完成 B1，再逐步推进
 
-B4 三级提示：① 先画 TSV→Task→DTO→JSON 数据流，确认错误不写文件；② 复用 validate_title、集合检查 id，排序 DTO 而非输入；③ 用 Serialize derive 和 serde_json::to_string，CLI 完成所有校验后再输出 JSON 与换行。拒绝 silent trim 标题，strict-titles 沿用 80 字符规则。
-
-## 手动检查
-在工程根目录依次执行：
+在 **学员工程目录**运行第一项，看到 TODO 失败后再实现：
 
 ```powershell
 cargo test --locked --offline -p taskcore --test b1
+```
+
+| 检查点 | 编辑位置与任务 | 完成后的证据 |
+|---|---|---|
+| B1：纯逻辑 | `taskcore/src/lib.rs` 的 `validate_title`、`parse_tsv`、`to_tsv`、`summary` | 能处理中文、空数据，拒绝重复 ID 和非法状态 |
+| B2：业务变更 | 同文件的 `add`、`complete` | 新增、完成任务；编号溢出或非法输入不改变原数据 |
+| B3：两程序复用 | 同文件的 `load`、`save`、`markdown`；阅读 CLI / report | 新进程读回任务，并用独立程序输出一致的报告 |
+| B4：JSON 适配 | `json-export/src/lib.rs`、`json-export/src/main.rs` | DTO / Serialize 输出按 id 排序、精确且只读的 JSON |
+
+每次先预测一个正常输入和一个失败输入，只实现当前阶段。通过后在 **学员工程目录**依次检查：
+
+```powershell
 cargo test --locked --offline -p taskcore --test b2
 cargo test --locked --offline -p taskpocket-pro --test b3
 cargo test --locked --offline -p taskpocket-report --test report_cli
@@ -27,25 +33,66 @@ cargo test --locked --offline -p taskcore --test feature --no-default-features
 cargo test --locked --offline -p taskcore --test feature --no-default-features --features strict-titles
 ```
 
-前一阶段未通过时，不要跳到下一阶段。`B3` 的 CLI 测试需要真实磁盘和进程，核对新进程的 `list` 输出和 `stats`。平台检查 B3 会累计重跑 B1、B2，再执行 CLI、独立报告程序，以及默认/`strict-titles` 两种配置的固定合同；任何一项失败都不能获得 B3 通过记录。B1、B2 不要求先完成 B3 功能。
+回到 **平台根目录**做固定验收。下面的 `my-taskpocket-pro` 替换为你的工程路径，按进度将最后的 `1` 改为 `2`、`3`：
 
-B4 准备后在本工程目录运行：
+```powershell
+cargo run --locked --offline -p labquest -- advanced-b check "my-taskpocket-pro" 1
+cargo run --locked --offline -p labquest -- advanced-b next "my-taskpocket-pro"
+```
+
+B3 会累计回归 B1 / B2、真实 CLI、独立报告、默认 / strict-titles 两种配置。B1、B2 不要求先实现 B3；本地测试通过与平台固定验收是两份不同证据。
+
+## B3 之后：真的管理自己的任务
+
+在 **学员工程目录**，用未使用的文件名运行：
+
+```powershell
+cargo run --locked --offline -p taskpocket-pro -- add my-tasks.tsv "写一条自己的回归测试"
+cargo run --locked --offline -p taskpocket-pro -- done my-tasks.tsv 1
+cargo run --locked --offline -p taskpocket-pro -- list my-tasks.tsv
+cargo run --locked --offline -p taskpocket-pro -- stats my-tasks.tsv
+cargo run --locked --offline -p taskpocket-report -- my-tasks.tsv
+```
+
+新文件第一次新增得到 `added=1`，完成后 `total=1 open=0 done=1`。报告打印到终端，不自动保存文件。试完成不存在的 ID，并核对 TSV 没有改变。再修改 `taskcli/src/main.rs` 增加一项自己的小功能（如 search），写一条回归测试；这属于个人迁移成果。
+
+## B4：先准备依赖，再写 JSON
+
+B1–B3 只用本地依赖；B4 使用 Edition 2021 / Rust 1.74 与固定锁文件。新工程已含扩展；旧工程缺少 `json-export` 时，从 **平台根目录**显式运行 `advanced-b add-json <工程路径>`，已有扩展不覆盖。
+
+在 **平台根目录**运行：
+
+```powershell
+cargo run --locked --offline -p labquest -- advanced-b prepare-json "my-taskpocket-pro"
+# 完成两个 JSON 源文件后再检查
+cargo run --locked --offline -p labquest -- advanced-b check "my-taskpocket-pro" 4
+```
+
+prepare-json 明确联网，外层 `--offline` 只限制平台启动。准备只运行平台固定参考源码，不运行本工程源码；日志在 `.advanced-b-dependencies/`。准备成功不等于课程通过。`all` / `learn check` 包含 B4，显式 `3` 可继续无 registry 依赖检查。
+
+B4 三级提示：① 画 TSV → Task → DTO → JSON 数据流，标明出错时不能写文件；② 复用标题校验、用集合查重复 ID，排序 DTO 而非输入；③ 用 Serialize derive 和 `serde_json::to_string`，全部成功后 CLI 才输出 JSON 与换行。禁止静默 trim 快照标题，strict-titles 沿用 80 字符规则。
+
+准备并实现后，在 **学员工程目录**运行：
 
 ```powershell
 cargo test --locked --offline --manifest-path json-export/Cargo.toml --all-targets
 cargo test --locked --offline --manifest-path json-export/Cargo.toml --all-targets --all-features
 cargo test --locked --offline --manifest-path json-export/Cargo.toml --doc
-cargo run --locked --offline --manifest-path json-export/Cargo.toml -- export-json tasks.tsv
+cargo run --locked --offline --manifest-path json-export/Cargo.toml -- export-json my-tasks.tsv
 ```
 
-用虚构任务测试中文、引号、反斜杠、u64::MAX、乱序 id 和 80/81 字符；比较导出前后 TSV 字节。导出不提供导入，不创建缺失数据库。旧 B3 报告不冒充 B4；修改基础或 JSON 源码后重新检查，最新一次只检查 3 时导航仍提示 B4 待检查。
+用虚构任务验证中文、引号、反斜杠、`u64::MAX`、乱序 ID、80/81 字符，并比较导出前后 TSV 字节。导出不提供导入，不创建缺失数据库；缺失数据库只输出 `[]`。旧 B3 报告不冒充 B4，源码变化后必须重新检查。
 
-## 设计审查
-1. 为什么 CLI 不直接解析 TSV？
-2. `taskreport` 为何不应该依赖 `taskcli`？
-3. 如果数据库文件原本是坏数据，`add` 应该覆写还是报错？
-4. 共享业务逻辑使用 path 依赖与复制粘贴相比，有何不同？
-5. `strict-titles` 是 Cargo feature；切换后哪些语义会变化？
-6. 尝试给 `taskcore` 的公开函数增加 `///` 文档示例，在其中断言真实行为，用 `cargo test --locked --offline -p taskcore --doc` 运行；参考实现的 `parse_tsv` 提供了示例。再用 `cargo tree` 查看依赖。
+## 最后的设计自查与下一步
 
-注意：当前 `save()` 是教学型写入，不保证多进程并发安全或断电一致性。平台自动测试不是安全沙箱。
+在自己的 `LEARNING_LOG.md` 写出实际输入、输出、一次失败和原因，并回答：
+
+1. 为什么 CLI 不直接解析 TSV，`taskreport` 不依赖 `taskcli`？
+2. 数据库坏了，为什么 add 应报错而不是覆盖？
+3. path 依赖怎样共享业务规则，`strict-titles` 怎样改变规则？
+4. JSON 的 DTO 为什么放在适配包，id 为什么一直保持 u64？
+5. 为一个公开函数补 `///` 示例，用 `cargo test --locked --offline -p taskcore --doc` 验证，再用 `cargo tree --workspace` 解释依赖。
+
+完整平台创建工程时还会附带 `ADVANCED_B.md`，其中有完整合同与分级提示。四阶段检查通过后，提交个人任务数据、新功能、测试和设计说明。回平台可读 `course/BOOK_D1_CARGO.md` 补 Cargo；具备同步 NetFetch / AsyncBoard 基础后，按 `course/ADVANCED_C1.md` 进入真实异步下载。
+
+当前 `save()` 是教学型写入，不保证多进程并发安全或断电一致性。平台自动测试只用于自己的可信代码，不是安全沙箱。

@@ -1,5 +1,30 @@
 /target/
 **/target/
+
+# Python 与 CI 工具链缓存
+__pycache__/
+*.py[cod]
+/.cargo-stable/
+/.cargo-msrv-1.74/
+/.cargo-c1/
+/.cargo-c2/
+/.cargo-delivery/
+
+# 本机诊断与工作流生成的证据、分发包
+/artifacts/
+/native-evidence/
+/windows-launcher-evidence/
+/browser-evidence/
+/msrv-evidence/
+/d6-practical-evidence/
+/c1-evidence/
+/c2-evidence/
+/candidate-evidence/
+/collected-evidence/
+/c1-distribution/
+/c2-distribution/
+/candidate-release/
+
 /filequest-playground/
 /filequest-report.html
 /loglens-playground/
@@ -35,6 +60,14 @@
 /*.db
 
 /my-minikv/
+/my-netfetch/
+/my-servicedesk/
+/my-asyncboard/
+
+# Windows 进阶入口默认学员目录
+/my-workbench/
+/my-taskpocket-pro/
+
 /network-offline-kit/
 /network-offline-kit.zip*
 /*.kv
