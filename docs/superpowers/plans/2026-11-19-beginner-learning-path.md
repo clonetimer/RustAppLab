@@ -28,7 +28,7 @@
 - [x] Generated guidance worker: add portable FirstCard/Studio READMEs and actionable completion guidance using existing course data; retain old records.
 - [x] Run existing document/link checks and relevant Rust beginner/learning/Studio tests; walk FirstCard → UnitLab → QuizDeck with documented commands.
 - [x] Independently review the integrated diff, correct concrete issues, and record development experience in verification/README_LEARNING_HANDOFF_20261119.md.
-- [ ] Publish one reviewable PR. Automatic approval review rejected the push check because this turn did not explicitly authorize publishing. Prepare a complete local patch and verification record before requesting that final authorization.
+- [x] Publish one reviewable PR. The initial automatic approval review rejected publication before authorization; the user explicitly authorized it on 2026-11-19. The exact reviewed tree is published as commit a374ae4 in PR #12. Later checks and housekeeping are tracked by the follow-up plan and PR.
 
 Review corrections: remove duplicate archive members; explain and run personal tests separately; make first-failure hints executable with quoted paths; preserve old-project entry fallbacks and the existing Tokio boundary. All 113 relevant Rust tests and 24 Python checks passed after correction. Format and actual learner-package checks passed; Rust 1.85 Clippy warnings in two unchanged baseline files, Windows native execution and browser screenshots remain explicitly unverified or blocked as recorded.
 

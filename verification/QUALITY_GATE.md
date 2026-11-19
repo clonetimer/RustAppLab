@@ -1,8 +1,7 @@
-# 当前发布门槛：0.17.0 候选线
+# 当前发布门槛入口
 
-详细且唯一的当前规则见 [RELEASE_POLICY](../RELEASE_POLICY.md)。
+当前规则以根目录的 [发布规则](../RELEASE_POLICY.md) 为准；当前支持范围见 [支持平台](../SUPPORTED_PLATFORMS.md)，已知限制见 [已知边界](../KNOWN_ISSUES.md)。本页不再重复旧版本的门槛或资格结论。
 
-本轮候选包命名为 `0.17.0-rc.1`，资格判断使用机器结果 `NOT_QUALIFIED / RC_READY / STABLE_READY`，不由版本号代替。
-真实浏览器直连仍是 RC 前提，环境阻断不是通过。Windows/macOS/MSRV/真实学员证据是完整 Stable 的附加条件。
+需要查阅实际记录时，打开 [验证记录索引](README.md)。记录只证明其中列出的源码、工具链、平台和检查范围；当前提交是否通过，须核对该提交的完整 CI 与实际交付结果。工程验证也不等于学员已经理解或独立完成课程。
 
-本轮结果见 [RC_QUALIFICATION](RC_QUALIFICATION.md)。旧数字只保留在 [历史门槛](QUALITY_GATE_HISTORY.md)；不再把旧表头当当前结果。
+原来的 0.17.0 候选线说明保留在 [历史门槛快照](archive/pre-0.19/QUALITY_GATE.md)。其中“当前”“本轮”等用语均属于记录当时，不适用于现在的源码。

@@ -14,7 +14,9 @@
 
 ## 1. 先选对包
 
-**完整学习推荐 `RustAppLab-0.19.0-rc.3-source.zip`。** 解压后包含 `apps/`、`course/`、`START_HERE.html` 和 Windows 向导。GitHub 自动生成的 Source code 归档是仓库快照；正式交付用带版本号的 source.zip 及其校验值。
+**要使用本页新增的 README、FirstCard 衔接和文档导航，请下载 [本次修订分支源码 ZIP](https://github.com/clonetimer/RustAppLab/archive/refs/heads/docs/beginner-learning-path-20261119.zip)。** 这是 [PR #12](https://github.com/clonetimer/RustAppLab/pull/12) 的源码快照；解压后包含 `apps/`、`course/`、`START_HERE.html` 和 Windows 向导。已有 `v0.19.0-rc.3` Release 包没有包含这次修订，不会因分支更新自动改变。
+
+已下载旧包时，把新平台解压到另一个文件夹，保留已有 `my-...` 目录和个人记录。新平台可直接对旧工程路径执行第 4 节的 next/check，不需要重新完成 FirstCard。正式发布包仍以 Releases 中带版本号的 source.zip 及其校验值为准。
 
 只体验成品，选择本机对应的 `windows-x64-msvc-runtime.zip` 或 `linux-x86_64-runtime.zip`。解压后程序在 `bin/`，先读其中 `START_RUNTIME.md`；它不包含完整源码目录，也不把参考程序的成功视为学员成绩。
 

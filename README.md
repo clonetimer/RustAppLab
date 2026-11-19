@@ -30,14 +30,27 @@
 
 例如，**FirstCard** 练习变量、参数与格式化输出；**UnitLab** 练习函数返回值、分支和错误；**QuizDeck** 进一步处理结构化文本与集合；**TextScope** 练习字符串统计、借用和迭代。每一步都有具体用途，自动通过不等于已经掌握整门语言。
 
+## 下载源码后，哪些文件是给我看的？
+
+| 你要做的事 | 从这里进入 |
+|---|---|
+| 开始、续学、查看当前任务 | [开始指南](README_START_HERE.md)、[FirstCard 之后](course/AFTER_FIRSTCARD.md)、[课程目录](course/README.md) |
+| 看参考源码和实验材料 | 各 `apps/`、`projects/`、`examples/` 的 README；自己的代码在 `my-...` 工程 |
+| 维护项目或打包 | [维护文档与源码地图](docs/README.md) |
+| 查旧设计、旧版本和旧验证 | [历史文档](docs/archive/README.md)、[验证记录索引](verification/README.md) |
+
+按当前作品的 README 继续即可。历史记录按当时版本保留，不是新增的学习任务。
+
 ## 选择下载内容
 
-在本仓库 Releases 的 `v0.19.0-rc.3` 候选版本中选择文件。发布状态以实际 Release 与同提交 CI 为准，文件名不是验收结论。
+**本页包含 [PR #12](https://github.com/clonetimer/RustAppLab/pull/12) 的学习引导与文档整理修订。** 已有 `v0.19.0-rc.3` Release 包保持原样，不含本轮新增入口。要立即使用本页全部指引，请下载 [本次修订分支源码 ZIP](https://github.com/clonetimer/RustAppLab/archive/refs/heads/docs/beginner-learning-path-20261119.zip)，解压到新的平台文件夹；保留原来的 `my-...` 工程，在新平台按 [开始指南第 4 节](README_START_HERE.md) 输入旧工程的实际路径继续。
+
+下面是已发布候选版的包类型；修订分支是源码快照，是否成为新发布版以实际 Release 与同提交 CI 为准。
 
 | 目的 | 下载包 | 需要什么 |
 |---|---|---|
 | 先体验成品 | `RustAppLab-0.19.0-rc.3-<平台>-runtime.zip` | 对应系统；参考程序无需 Cargo，运行学习检查仍需 Rust |
-| 跟随全部课程学习 | `RustAppLab-0.19.0-rc.3-source.zip` | Rust/Cargo 与系统构建工具；这是推荐的完整学习入口 |
+| 使用已发布候选版课程 | `RustAppLab-0.19.0-rc.3-source.zip` | Rust/Cargo 与系统构建工具；本轮新增指引请使用上方修订源码 |
 | 只取学员骨架 | `RustAppLab-0.19.0-rc.3-learner-kit.zip` | 17 个基础/进阶 A/B 工程；核心 TODO 待完成，不含 C1/C2 vendor |
 | 离线完成异步课程 | `C1-learner-offline.zip`、`C2-learner-offline.zip` | Rust 1.85.0 已安装；包内提供锁定依赖源码 |
 | 对照异步参考实现 | `C1-reference-offline.zip`、`C2-reference-offline.zip` | Rust 1.85.0；不是预编译 EXE |
@@ -79,4 +92,4 @@ cargo run --locked --offline -p labquest -- learn check "D:/练习/my-unitlab"
 
 此版本为 **RC 候选版，不是 Stable**。当前源码必须重新通过 Windows/Linux、最低版本、浏览器、C1/C2 和交付检查；旧版本证据不继承。真人学习效果与 Win10 本机体验按 [试用记录](course/USER_TRIAL.md) 记录，不能以 CI 代填。参见 [发布规则](RELEASE_POLICY.md)、[已知边界](KNOWN_ISSUES.md)、[后续范围](ROADMAP.md)。
 
-网络服务仅用于可信本机回环 HTTP；不提供公网/TLS、账号认证或恶意代码沙箱。历史发布记录保留在 [变更记录](RELEASE_NOTES.md) 与 `verification/`，不把历史状态当作当前范围。
+网络服务仅用于可信本机回环 HTTP；不提供公网/TLS、账号认证或恶意代码沙箱。当前修订见 [变更记录](RELEASE_NOTES.md)；旧版设计、发布说明与验证分别从 [历史文档](docs/archive/README.md) 和 [验证索引](verification/README.md) 查阅，按记录的版本与提交理解。
