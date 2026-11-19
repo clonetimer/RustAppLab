@@ -1,8 +1,8 @@
 ﻿# 新作品入口。只创建全新目录，不下载软件，不覆盖学员源文件。
 $ErrorActionPreference = 'Stop'
 $Root = Split-Path -Parent $PSScriptRoot
-$Ids = @('unitlab','quizdeck','textscope','ledgerlite','badgeforge','batchmeter','termgarden','storedesk','minikv','netfetch','servicedesk','asyncboard')
-$Titles = @('单位换算器：先做这个','知识闯关：自己的题库','文本观察镜：词频与搜索','生活账本：文件持久化','SVG 作品卡：trait 与泛型','并行统计台：借用与线程','任务花园：状态与交互','库存台：真实 SQLite 事务','键值仓库：错误、迭代器与共享状态','本机下载器：HTTP、TCP与文件保存','本地工单服务：业务状态与浏览器API','异步提醒工作台：Future、await与Waker')
+$Ids = @('unitlab','quizdeck','textscope','ledgerlite','badgeforge','termgarden','batchmeter','minikv','netfetch','servicedesk','storedesk','asyncboard')
+$Titles = @('单位换算器：先做这个','知识闯关：自己的题库','文本观察镜：词频与搜索','生活账本：文件持久化','SVG 作品卡：trait 与泛型','任务花园：状态与交互','并行统计台：借用与线程','键值仓库：错误、迭代器与共享状态','本机下载器：HTTP、TCP与文件保存','本地工单服务：业务状态与浏览器API','库存台：真实 SQLite 事务','异步提醒工作台：Future、await与Waker')
 function Run-Studio([string[]]$Arguments) {
     & cargo run --offline -p labquest -- studio @Arguments | Out-Host
     return [int]$LASTEXITCODE
@@ -15,6 +15,7 @@ try {
         exit 2
     }
     for ($i=0; $i -lt $Ids.Count; $i++) { Write-Host ("{0}. {1}" -f ($i+1),$Titles[$i]) }
+    Write-Host '首次完成 FirstCard 请按 Enter；后续按列表顺序继续。每课 README 说明学到了什么、如何自测和下一款。'
     $Choice = Read-Host '选择 1–12；基础较弱请按 Enter 选 1。Q 退出'
     if ($Choice -eq 'Q') { exit 0 }
     if ([string]::IsNullOrWhiteSpace($Choice)) { $Choice = '1' }
@@ -61,7 +62,9 @@ try {
                 Write-Host ('在新 PowerShell 中进入：cd "'+$Project+'"')
                 Write-Host '查看命令：cargo run --offline -- help'
                 Write-Host '交付编译：cargo build --offline --release'
-                Write-Host '完成 LEARNING_LOG.md；下一款作品仍从 CONTINUE_WINDOWS.cmd 选择。'
+                Write-Host '在 LEARNING_LOG.md 写下自己的输入、结果和一个函数的解释；下一款见工程 README.md。'
+                Write-Host '回到 RustAppLab 根目录，用下面完整命令查看具体下一步（只读导航）：'
+                Write-Host ('  cargo run --locked --offline -p labquest -- learn next "'+$Project+'"')
                 exit 0
             }
         } else { Write-Host '先处理第一个 FAIL。不要同时改三个 TODO，不要删除测试。' -ForegroundColor Yellow }

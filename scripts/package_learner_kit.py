@@ -16,34 +16,66 @@ VERSION = (ROOT / "VERSION").read_text(encoding="utf-8").strip()
 EXE = Path(os.environ.get("CARGO_TARGET_DIR", str(ROOT / "target"))) / "release" / ("labquest.exe" if platform.system() == "Windows" else "labquest")
 OUT = ROOT.parent / f"RustAppLab-{VERSION}-learner-kit.zip"
 
-INTRO = f"""# Rust AppLab {VERSION} · 无完整核心答案学员包
+INTRO = f"""# Rust AppLab {VERSION} · 学员练习包
 
-本包有十七个顶层学员 Rust 工程：包含 Advanced/TermGarden（所有权）与 Advanced/TaskPocketPro（三 crate 业务库复用与独立 B4 JSON 扩展），保留 FirstCard、十二个 Studio 小作品及两个独立开发项目。
+## 解压后先做哪一个？
 
-已通过基础课程：先学习 Advanced/TermGarden/START.html，再学习 Advanced/TaskPocketPro/START_HERE.md；不用重复旧关卡。进阶A复用旧TermGarden基础设施，不含进阶核心实现。该工程support目录中的termgarden是依赖，不另计为一个学员作品。
+| 你现在的位置 | 打开哪里 | 这一节结束应得到什么 |
+|---|---|---|
+| 还没写过 Rust | [FirstCard/README.md](FirstCard/README.md)，再按跟着做.md 操作 | 随不同姓名和任务变化的任务卡，能解释变量和输出 |
+| FirstCard 已完成 | [Studio/unitlab/README.md](Studio/unitlab/README.md)，再打开 START.html | 会计算并拒绝非法输入的单位换算器 |
+| 正在做某个 Studio 作品 | 该工程 README.md 和 TASK_CARDS.html | 找到当前要改的函数、检查命令和自己的实验 |
+| 已完成基础和独立作品 | Advanced/TermGarden/START.html → Advanced/TaskPocketPro/START_HERE.md | 共享状态、接口设计和业务库复用 |
 
-没有编程基础：先打开 FirstCard/跟着做.md。已完成任务卡：先打开 Studio/unitlab/START.html。
-在 Studio/unitlab 目录运行 `cargo test --offline --test milestones step1_`，然后只修改 src/lib.rs 的 TODO(1)，保存重试。
-UnitLab、QuizDeck、TextScope、LedgerLite、BadgeForge、TermGarden、BatchMeter、MiniKV、NetFetch、ServiceDesk、StoreDesk、AsyncBoard 的 TASK_CARDS.html（可双击打开）与 TASK_CARDS.md 提供逐步预测、三级提示与个人输入实验。每款按1→2→3推进，三步都完成后用自己的数据运行CLI。初始工程故意未实现核心逻辑，测试失败是学习起点。
+**这些工程已经生成，不要再次 start，也不要先把十七个工程全部编译一遍。** 每个工程的核心 TODO 都留给你完成，初始测试失败是学习起点。
 
-建议顺序：UnitLab → QuizDeck → TextScope → LedgerLite → BadgeForge；BatchMeter 在理解借用与错误传播之后再学。
-完整讲义、分层提示、样例、公开合同测试都在各工程里。基础课程、进阶 A 和 B1–B3 保持纯 path 依赖；B4 的独立 json-export 工作区使用真实 Serde / serde_json，首次需要联网准备依赖缓存。本包不包含 vendor 缓存。NetFetch/ServiceDesk 是同步本机 HTTP 基础版；AsyncBoard 是真实 Future/await 的离线定时器实验，但不是 Tokio 异步网络；StoreDesk 需要系统 SQLite 原生库，先看 course/SQLITE_SETUP.md；其它新手工程不要求 SQLite。
+## FirstCard 之后：先做 UnitLab 的第一个函数
 
-B4 先阅读 course/ADVANCED_B.md 和 course/ADVANCED_B_WINDOWS.md。在完整平台根目录对学员包中 Advanced/TaskPocketPro 的实际路径显式运行 `cargo run --locked --offline -p labquest -- advanced-b prepare-json <工程路径>`；这个子命令联网下载固定依赖，只构建平台参考源码，不运行学员源码。准备成功不是课程通过，之后编辑 JSON 骨架并运行 `cargo run --locked --offline -p labquest -- advanced-b check <工程路径> 4`；显式 `3` 保留原离线合同。缓存位置沿用当前用户 Cargo 配置；换机器、工具链或缓存目录后可能需要重新准备。
+1. 打开 Studio/unitlab/START.html，读第 1 步。
+2. 用编辑器打开 Studio/unitlab/src/lib.rs，只修改 celsius_to_fahrenheit 的 TODO(1)，保存。
+3. 在 **Studio/unitlab 目录**（不是本包顶层）运行：
 
-TaskPocket / PageMint 新增 START.html、DEVELOPMENT_PLAN.md、TEST_PLAN.md、RELEASE_CHECKLIST.md 和 tests/self_check.rs。初始 cargo test 只有一项入口烟测通过、一项个人测试按设计忽略，不能当成业务完成。完整平台 learn lesson/hint/check 现在也支持它们的三个累计检查点；检查点3仍是原完整合同。
+```powershell
+cargo test --offline --test milestones step1_
+```
 
-D0 Rust Book 逐节审计、D1 Cargo、D2 智能指针、D3 面向对象/模式匹配、D4 高级特性、D5 多线程 Web Server、D6-A 附录参考实验、D6-B 基础缺口补齐实验及 D/E/G 实操指南一并在本包 course/ 与 projects/ 中提供。所有权与切片、集合与错误传播、泛型与生命周期的三份新讲义从 course/BOOK_CONCEPT_AUDIT.md 导航；该文件说明六章概念目标的证据和残余，不能当作全书完成率。D1/D2/D3/D4/D5/D6-A/D6-B 都是独立参考实验，不是新增的学员作品，也不计作个人学习成绩。\n\nC1/C2请另取对应learner-offline.zip；本包不内置这两门课程或其vendor依赖。
+通过后再做第 2、3 步。三步全部完成后，仍在该目录执行：
 
-本包不包含已经完成的核心业务参考实现。MiniKV 的 journal.rs、TermGarden 的 storage.rs、StoreDesk 的 sqlite.rs 和 AsyncBoard 的 runtime.rs 是提供给学员的基础设施，不是要求学员先实现的底层作业。CLI 外壳和基础类型已经提供，它不是“从零空文件开发”考核；后续TaskPocket和PageMint才要求更独立地实现。
+```powershell
+cargo test --offline
+cargo run --offline -- convert -10 c f
+cargo run --offline -- convert 25 c m
+```
 
-权威Studio检查和Windows双击向导在完整源码包中：CONTINUE_WINDOWS.cmd。
-使用完整平台检查这个包里的工程时，提供该工程的实际路径，例如：
-`cargo run --offline -p labquest -- studio check "D:/练习包/Studio/unitlab" 1`
-本包本地 `cargo test` 也能独立完成学习；不要删除测试来取得虚假的通过。学习路线与错误练习在 `course/LEARNING_NAVIGATOR.md` 和 `course/RUST_ERROR_LABS.md`。
+第一条换算应输出 `-10.00 c = 14.00 f`；第二条应拒绝摄氏度转米。换一个自己的数值先预测再运行，在 LEARNING_LOG.md 解释函数的输入、返回值和错误。接着打开 **Studio/quizdeck/README.md**。自动检查不替你判断是否理解。
 
-需要安装 Rust/Cargo。Windows Rust 安装说明：https://rustup.rs/ 。正式声明支持 Windows x64 MSVC 和 Linux x86_64，不声明 macOS；本候选版本需要当前源码工程验证和真实试用，不继承冻结 RC 的资格。
-评测代码只用于自己的可信源码，不是沙箱。每完成一款，请填写 LEARNING_LOG.md，并保存自己的实际产物。
+本地 cargo test 使用包内公开测试；完整平台的固定检查在 source.zip 中。需要平台任务卡、提示或固定验收时，在**完整 RustAppLab 平台根目录**传入这里的实际工程路径：
+
+```powershell
+cargo run --locked --offline -p labquest -- learn lesson "D:/练习包/Studio/unitlab" 1
+cargo run --locked --offline -p labquest -- learn check "D:/练习包/Studio/unitlab" 1
+```
+
+把示例路径换成自己的位置；只有本学员包时不能在它的顶层运行 `-p labquest`。更完整的解释见 [FirstCard 后的学习方法](course/AFTER_FIRSTCARD.md)。
+
+## 顺序与每一段的用途
+
+FirstCard → UnitLab（函数与换算）→ QuizDeck（题库与集合）→ TextScope（文本与借用）→ LedgerLite（持久记录）→ BadgeForge（trait 与输出）→ TermGarden（状态与交互）→ BatchMeter（线程）→ MiniKV（日志与索引）→ NetFetch / ServiceDesk（同步本机 HTTP）→ StoreDesk（SQLite 事务）→ AsyncBoard（Future 与等待）→ TaskPocket / PageMint（独立开发）→ 进阶 A → 进阶 B。
+
+每款 Studio 都有 README.md、TASK_CARDS.html / TASK_CARDS.md、讲义、逐级提示、数据和三步公开测试。只改当前函数；之后留下自己的输入、结果和解释，再读 README 的下一步。
+
+TaskPocket / PageMint 的 CONTRACT.md、DEVELOPMENT_PLAN.md、TEST_PLAN.md、RELEASE_CHECKLIST.md 帮助你独立拆分需求。初始测试中的入口烟测通过不代表业务完成；完整平台 learn lesson/hint/check 支持三个累计检查点。
+
+## 依赖和材料各是什么？
+
+- 需要自己安装 Rust/Cargo 和系统构建工具；Windows x64 MSVC / Linux x86_64 是当前支持范围。安装入口：https://rustup.rs/ 。
+- 基础、进阶 A 和 B1–B3 使用本地 path 依赖。StoreDesk 另需系统 SQLite，按 [SQLite 说明](course/SQLITE_SETUP.md) 准备；FirstCard/UnitLab 不需要它。
+- B4 的 json-export 使用真实 Serde/serde_json，首次须联网准备固定依赖并写入当前用户的 Cargo 缓存；本包不带 vendor。按 [进阶 B](course/ADVANCED_B.md) 先完成 B1–B3，再使用完整平台的 prepare-json 和第 4 步检查。换机器或缓存位置后可能需要重新准备；准备依赖不等于完成课程。
+- C1/C2 请另取对应 learner-offline.zip 并按讲义准备 Rust 1.85.0；本包没有这两门课的学员工程和 vendor。
+- projects/book-d* 是可选的参考实验，包含 D1 Cargo、D2 智能指针、D3 面向对象与模式、D4 高级特性、D5 Web Server、D6-A 附录参考实验、D6-B 基础缺口补齐实验。D6-A/D6-B 都是独立参考实验，和其它 Book 实验一样不自动计入个人成绩。course/ 中的概念补课帮助理解当前作品，不是 FirstCard 后必须先做完的新任务。
+- MiniKV 的 journal.rs、TermGarden 的 storage.rs、StoreDesk 的 sqlite.rs、AsyncBoard 的 runtime.rs 是已提供的基础设施，任务卡会说明你亲手实现哪一层。
+
+本包有十七个顶层学员工程（FirstCard、十二款 Studio、两款独立作品、进阶 A/B）；参考实验和依赖不额外算作学员作品。测试通过不能代填个人学习记录。每课完成后保留自己的源码与产物，下次直接打开原工程继续。
 """
 
 def add(z: zipfile.ZipFile, relative: str, data: bytes):
@@ -56,12 +88,14 @@ def add(z: zipfile.ZipFile, relative: str, data: bytes):
 def course_inputs() -> list[tuple[str, bytes]]:
     """Shared course bytes for the real kit and archive-link regression tests."""
     files = [
-        "CURRICULUM.md", "BOOK_COVERAGE_AUDIT.md", "BOOK_D1_CARGO.md", "BOOK_D2_SMART_POINTERS.md", "BOOK_D3_OOP_PATTERNS.md", "BOOK_D4_ADVANCED_FEATURES.md", "BOOK_D5_WEB_SERVER.md", "BOOK_D6_APPENDICES.md", "BOOK_D6_FOUNDATIONS.md", "BOOK_D6_PRACTICAL.md", "BOOK_D6_LANGUAGE_BASICS.md", "STUDIO_GUIDE.md", "ADVANCED_B.md", "ADVANCED_B_WINDOWS.md", "BOOK_GUIDE.md", "ADVANCED_C1.md", "ADVANCED_C2.md", "USER_TRIAL.md", "SQLITE_SETUP.md", "ADVANCED_A.md",
+        "CURRICULUM.md", "AFTER_FIRSTCARD.md", "BOOK_COVERAGE_AUDIT.md", "BOOK_D1_CARGO.md", "BOOK_D2_SMART_POINTERS.md", "BOOK_D3_OOP_PATTERNS.md", "BOOK_D4_ADVANCED_FEATURES.md", "BOOK_D5_WEB_SERVER.md", "BOOK_D6_APPENDICES.md", "BOOK_D6_FOUNDATIONS.md", "BOOK_D6_PRACTICAL.md", "BOOK_D6_LANGUAGE_BASICS.md", "STUDIO_GUIDE.md", "ADVANCED_B.md", "ADVANCED_B_WINDOWS.md", "BOOK_GUIDE.md", "ADVANCED_C1.md", "ADVANCED_C2.md", "USER_TRIAL.md", "SQLITE_SETUP.md", "ADVANCED_A.md",
         "28_independent_product.md", "29_product_release.md",
         "30_second_independent_product.md", "31_transfer_release.md",
         "BEGINNER_WINDOWS_GUIDE.md", "00_first_five_minutes.md", "NETWORK_PREPARATION.md", "LEARNING_NAVIGATOR.md", "RUST_ERROR_LABS.md", "FOUNDATION_PATH.md", "FOUNDATION_NEXT_STEPS.md", "PROGRESS_OVERVIEW.md", "SYSTEMS_PATH.md", "RELIABILITY_PATH.md", "INDEPENDENT_PATH.md",
     ]
     result = [(f"course/{name}", (ROOT / "course" / name).read_bytes()) for name in files]
+    for path in sorted((ROOT / "course" / "studio").glob("*.md")):
+        result.append((path.relative_to(ROOT).as_posix(), path.read_bytes()))
     for name in ("BOOK_OWNERSHIP_PRACTICE.md", "BOOK_COLLECTIONS_ERRORS.md",
                  "BOOK_GENERICS_LIFETIMES.md", "BOOK_CONCEPT_AUDIT.md"):
         result.append((f"course/{name}", (ROOT / "course" / name).read_bytes()))
@@ -163,14 +197,13 @@ def main() -> None:
             if file.is_file(): inputs.append(("examples/systems/" + file.name, file.read_bytes()))
         for file in sorted((ROOT / "examples/reliability").glob("*")):
             if file.is_file(): inputs.append(("examples/reliability/" + file.name, file.read_bytes()))
-        for file in sorted((ROOT / "course/studio").glob("*.md")):
-            inputs.append(("course/studio/" + file.name, file.read_bytes()))
         with zipfile.ZipFile(OUT, "w") as z:
             for name, data in sorted(inputs):
                 add(z, name, data)
     with zipfile.ZipFile(OUT) as z:
         names = z.namelist()
         assert z.testzip() is None
+        assert len(names) == len(set(names)), "学员包不能包含同名的重复文件"
         assert not any("reference" in item.lower() or "fixture" in item.lower() for item in names)
         for product in ("unitlab", "quizdeck", "textscope", "ledgerlite", "badgeforge", "batchmeter", "termgarden", "storedesk", "minikv", "netfetch", "servicedesk", "asyncboard"):
             assert z.read(f"Studio/{product}/src/lib.rs").decode("utf-8").count("TODO(") == 3

@@ -1,5 +1,17 @@
 # Rust AppLab 0.19.0-rc.3 · 从下载到第一次使用
 
+**已经完成 FirstCard？直接打开 [FirstCard 做完之后](course/AFTER_FIRSTCARD.md)**：先确认自己能解释变量和参数，再进入 UnitLab。下面第 1–3 节是首次安装和起步步骤，不必每次重做。
+
+## 先看懂你要走的前三步
+
+| 作品 | 做出什么 | 学到什么 | 完成后去哪里 |
+|---|---|---|---|
+| FirstCard | 随姓名和任务变化的任务卡 | 编辑保存、变量、参数、格式化输出 | [复盘并创建 UnitLab](course/AFTER_FIRSTCARD.md) |
+| UnitLab | 能计算、能拒绝非法换算的单位工具 | 函数、返回值、枚举、分支、错误处理 | [QuizDeck](apps/quizdeck/README.md) |
+| QuizDeck | 使用自己题库的复习工具 | 结构体、文本解析、集合、借用与评分 | [TextScope](apps/textscope/README.md) |
+
+每一课先跟着任务做，再用自己的输入验证并解释；不要求第一天读完所有课程。
+
 ## 1. 先选对包
 
 **完整学习推荐 `RustAppLab-0.19.0-rc.3-source.zip`。** 解压后包含 `apps/`、`course/`、`START_HERE.html` 和 Windows 向导。GitHub 自动生成的 Source code 归档是仓库快照；正式交付用带版本号的 source.zip 及其校验值。
@@ -34,21 +46,36 @@ cargo run --locked --offline -p labquest -- beginner start "my-first-card"
 cargo run --locked --offline -p labquest -- beginner check "my-first-card"
 ```
 
-第二条命令初次失败是预期：打开 `my-first-card/src/main.rs`，按照同目录 `跟着做.md` 完成任务卡的一行 TODO，保存后再次执行 `beginner check`。通过后从平台根目录运行自己的作品：
+第二条命令初次失败是预期：打开 `my-first-card/src/main.rs`，按照 **`my-first-card/跟着做.md`** 完成任务卡的一行 TODO，保存后再次执行 `beginner check`。通过后从平台根目录运行自己的作品：
 
 ```powershell
 cargo run --offline --manifest-path "my-first-card/Cargo.toml" -- "小林" "写 Rust"
 ```
 
-预期输出包含昵称和任务。Windows 也可双击 `START_WINDOWS.cmd`，按照提示编辑自己的源码。完成后用 `CONTINUE_WINDOWS.cmd` 创建 UnitLab，或执行：
+预期输出包含昵称和任务。Windows 也可双击 `START_WINDOWS.cmd`，按照提示编辑自己的源码。
+
+**完成本课不只是看到“通过”。** 不改源码，再换两个名字和任务；说清楚 `name` / `task` 保存了什么，`println!` 做了什么，以及 `--` 后的文字给谁使用。记录自己的运行结果。你已经练习了“输入变化，输出也变化”，函数、分支和错误处理会在下一课继续学。
+
+完成后用 `CONTINUE_WINDOWS.cmd` 创建 UnitLab；Windows 菜单按 Enter 选默认的 UnitLab。手动命令仍在**平台根目录**执行：
 
 ```powershell
 cargo run --locked --offline -p labquest -- studio start unitlab "my-unitlab"
-cargo run --locked --offline -p labquest -- learn lesson "my-unitlab"
+cargo run --locked --offline -p labquest -- learn lesson "my-unitlab" 1
+```
+
+然后打开 **`my-unitlab/src/lib.rs`**，只修改 `celsius_to_fahrenheit` 的 `TODO(1)`，按 Ctrl+S 保存，再执行：
+
+```powershell
 cargo run --locked --offline -p labquest -- learn check "my-unitlab" 1
 ```
 
-每次仅完成任务卡指定函数。全部三步通过后，才进入学员目录运行完整 CLI：`cargo run --offline -- convert -10 c f`，预期 `-10.00 c = 14.00 f`。
+每次仅完成任务卡指定函数。第 1 步学计算和返回值；第 2 步用枚举和分支选择单位；第 3 步解析文本并处理错误。全部三步通过后，才运行完整 CLI。保持在平台根目录：
+
+```powershell
+cargo run --offline --manifest-path "my-unitlab/Cargo.toml" -- convert -10 c f
+```
+
+预期 `-10.00 c = 14.00 f`。然后试自己的数值和一组非法换算，记录结果，再去 QuizDeck。详细的第 2、3 步、提示命令、自测与下一课创建步骤都在 [FirstCard 完成后的衔接页](course/AFTER_FIRSTCARD.md)。
 
 ## 4. 已有工程：不重建、不覆盖
 
@@ -61,7 +88,13 @@ cargo run --locked --offline -p labquest -- learn check "D:/学习/my-unitlab"
 
 `start` 只用于全新目录。已经解压的 C1/C2 学员包带工程标记，直接传入路径检查，不要再次 start。路径有中文或空格时加引号。
 
-## 5. 完成基础后再学 B4、C1、C2
+## 5. 当前作品完成后，按什么顺序继续？
+
+近三课先走 **UnitLab → QuizDeck → TextScope**。然后依次学习 LedgerLite（持久记录）、BadgeForge（trait 与输出）、TermGarden（交互状态）；再做线程、存储、网络、事务和异步等待，最后独立完成 TaskPocket / PageMint。每个应用的 README 都有具体“下一步”和自测要求，完整入口见 [课程地图](course/CURRICULUM.md)。
+
+**每次结课留下四样东西：自己的源码、自己的输入、真实结果、两三句概念解释。** 能完成后再进入下一课；只运行过参考程序，尚不能算完成自己的实现。
+
+## 6. 完成基础与进阶前置后，再学 B4、C1、C2
 
 B4先看 [进阶B讲义](course/ADVANCED_B.md)，显式执行 `advanced-b prepare-json <工程>` 准备固定依赖；已有B1–B3工程先按讲义执行 `add-json`。
 
@@ -91,9 +124,9 @@ cargo +1.85.0 run --frozen -- serve "tickets.db" --port 3000
 
 使用 [试用记录](course/USER_TRIAL.md) 保存包名、版本、系统、实际命令、原始错误和自己的结果。它是空白记录模板，未代表真人验收通过。当前候选版先保持范围稳定，后续只根据真实问题修复。
 
-## FirstCard 之后的基础复习
+## 按需补课：不会哪个概念，再打开相应材料
 
-已经能运行自己的第一个程序后，打开 [Cargo 三步复习与数组/元组](course/BOOK_D6_FOUNDATIONS.md)，练习看清目录、区分 check/build/run，并解释测试结果。随后可做 [变量与模块路径](course/BOOK_D6_LANGUAGE_BASICS.md)。
+主线仍是 FirstCard → UnitLab。若分不清工作目录或 check/build/run，可补做 [Cargo 三步复习](course/BOOK_D6_FOUNDATIONS.md)；若变量与模块概念不清，再看 [变量与模块路径](course/BOOK_D6_LANGUAGE_BASICS.md)。这些是已有参考实验，不要求先全部做完才能继续作品。
 
 接着按顺序做三组短实验：[所有权、借用与切片](course/BOOK_OWNERSHIP_PRACTICE.md) → [集合与错误传播](course/BOOK_COLLECTIONS_ERRORS.md) → [泛型与生命周期](course/BOOK_GENERICS_LIFETIMES.md)。每组都能单独运行，先预测，再修改自己的副本，最后解释成功或编译失败的原因。它们复用已有参考工作区，不需要重新生成已完成的学员工程。
 

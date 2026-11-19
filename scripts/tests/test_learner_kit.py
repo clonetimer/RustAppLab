@@ -34,7 +34,7 @@ class LearnerKitTests(unittest.TestCase):
             with zipfile.ZipFile(archive) as output:
                 self.assertIsNone(output.testzip())
                 names = set(output.namelist())
-                for source in ('ADVANCED_B.html', 'course/ADVANCED_B.md', 'course/ADVANCED_B_WINDOWS.md', 'course/BOOK_GUIDE.md', 'course/BOOK_D1_CARGO.md', 'projects/book-d1-cargo/README.md', 'course/BOOK_D2_SMART_POINTERS.md', 'projects/book-d2-smart-pointers/README.md', 'course/BOOK_D3_OOP_PATTERNS.md', 'projects/book-d3-oop-patterns/README.md', 'course/BOOK_D4_ADVANCED_FEATURES.md', 'projects/book-d4-advanced-features/README.md'):
+                for source in ('ADVANCED_B.html', 'course/AFTER_FIRSTCARD.md', 'course/ADVANCED_B.md', 'course/ADVANCED_B_WINDOWS.md', 'course/BOOK_GUIDE.md', 'course/BOOK_D1_CARGO.md', 'projects/book-d1-cargo/README.md', 'course/BOOK_D2_SMART_POINTERS.md', 'projects/book-d2-smart-pointers/README.md', 'course/BOOK_D3_OOP_PATTERNS.md', 'projects/book-d3-oop-patterns/README.md', 'course/BOOK_D4_ADVANCED_FEATURES.md', 'projects/book-d4-advanced-features/README.md'):
                     self.assertIn(source, names)
                     text = output.read(source).decode('utf-8')
                     links = re.findall(r'href="([^"]+)"', text) if source.endswith('.html') else re.findall(r'(?<!!)\[[^\]]+\]\(([^)]+)\)', text)

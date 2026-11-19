@@ -291,6 +291,155 @@ fn require_dir(path: &Path) -> Result<(), String> {
     }
     Ok(())
 }
+
+// Generated instructions use course metadata, never build-machine paths.
+fn project_readme(p: &Product) -> String {
+    let mut text = format!(
+        r#"# {} · 我的学习入口
+
+这是一份已经接好命令行外壳的学员工程。你要逐步实现三个函数，把它变成可用作品。先做第 1 步，后面的占位函数暂时保留；它们不会阻止当前步的测试，语法错误则会阻止整个工程编译。
+
+## 现在打开什么，修改哪里
+
+- [src/lib.rs](src/lib.rs)：这次编辑的业务函数；每次只改当前 `TODO(1)`、`TODO(2)` 或 `TODO(3)`。
+- [src/main.rs](src/main.rs)：已经提供的命令行入口；先完成三个函数，再读它怎样调用你的代码。
+- [START.html](START.html) / [LESSON.md](LESSON.md)：完整讲义；[HINTS.md](HINTS.md) 提供需要时再看的提示。
+- [tests/milestones.rs](tests/milestones.rs)：可以阅读的输入和预期结果；[LEARNING_LOG.md](LEARNING_LOG.md) 用来记录你的预测、实际输出、解释及使用过的帮助。
+
+"#,
+        p.title
+    );
+    if crate::learning_cards::get(p.id, 1).is_some() {
+        text.push_str("基础薄弱时，先双击 [TASK_CARDS.html](TASK_CARDS.html) 的第 1 步；也可读 [TASK_CARDS.md](TASK_CARDS.md)。每张卡包含目标、预测、三级提示、个人输入实验和复盘问题。\n\n");
+    }
+    text.push_str(
+        "## 三个连续检查点\n\n| 步骤 | 这次修改的函数 | 要得到的能力 / 本次概念 |\n|---|---|---|\n",
+    );
+    for (index, goal) in p.steps.iter().enumerate() {
+        let step = index + 1;
+        if let Some(card) = crate::learning_cards::get(p.id, step) {
+            text.push_str(&format!(
+                "| {step} | `{}` / TODO({step}) | {goal}；{} |\n",
+                card.function, card.concept
+            ));
+        } else {
+            text.push_str(&format!("| {step} | TODO({step}) | {goal} |\n"));
+        }
+    }
+    text.push_str(r#"
+## 一次只做一步：预测 → 修改 → 保存 → 检查 → 解释
+
+在**本学员工程目录**（本文件与 Cargo.toml 所在的文件夹）打开终端。先阅读第 1 步任务卡并写下预测，再运行第一条命令观察占位实现的失败。修改当前函数、Ctrl+S 保存，然后重复同一条命令。
+
+```text
+cargo test --offline --test milestones step1_
+```
+
+看到当前步 `0 failed` 后，先读第 2 步任务卡、改 TODO(2)，再执行：
+
+```text
+cargo test --offline --test milestones step2_
+```
+
+第 2 步通过后，同样先读任务卡、改 TODO(3)，再执行：
+
+```text
+cargo test --offline --test milestones step3_
+```
+
+这三条本地命令各自只运行当前步。三步都完成后，运行 `cargo test --offline` 回归全部测试，再开始完整业务 CLI。第 1 步通过不等于整款软件已完成；`cargo run --offline -- help` 能显示帮助也只说明提供的入口能够运行。
+
+如果失败，先看第一项失败及其输入，回到当前函数；若出现 Rust `error`，先修复第一个编译错误再看功能测试。阅读提示后重新尝试，并在学习记录中写明用了哪一层帮助。
+
+## 有完整平台时：让检查器累计复验
+
+回到**完整 RustAppLab 平台根目录**（有 apps/labquest 的目录）。下面假设本工程在平台内，文件夹名为 `my-"#);
+    text.push_str(p.id);
+    text.push_str(&format!(
+        r#"`。如果用了其它位置或 learner-kit，把命令中带引号的目录换成本学员工程的实际路径；不要在本工程里执行 `-p labquest`。
+
+```text
+cargo run --locked --offline -p labquest -- learn lesson "my-{}" 1
+cargo run --locked --offline -p labquest -- learn check "my-{}" 1
+```
+
+第 1 步通过后，把上面两条命令末尾的 `1` 都改成 `2`；再通过后都改成 `3`。`learn check` 检查第 2 步时重查第 1 步，第 3 步会重查前两步。它使用平台内置合同检查当前源码，不依赖你本地修改过的 tests；每次结果保存在 `.studio-reports/`。
+
+下次回来不必重建工程。在平台根目录运行：
+
+```text
+cargo run --locked --offline -p labquest -- learn next "my-{}"
+```
+
+`next` 只根据现有文件提供导航，不执行测试。源码改变后，旧报告不能证明新源码仍然通过。Windows 也可双击平台的 `LEARN_NEXT_WINDOWS.cmd`，输入本工程实际路径。
+
+## 三步之后，运行自己的作品
+
+"#,
+        p.id, p.id, p.id
+    ));
+    match p.id {
+        "unitlab" => text.push_str(r#"在本学员目录运行：
+
+```text
+cargo run --offline -- convert -10 c f
+cargo run --offline -- convert abc c f
+```
+
+第一条预期 `-10.00 c = 14.00 f`。第二条应说明输入错误并以非零状态退出；这也是正确行为。PowerShell 在每条命令之后立即运行 `$LASTEXITCODE` 查看状态。再自选一个温度、一个距离及一个不合理的单位组合，先算预期，再比较输出。
+
+写下：为什么 `celsius_to_fahrenheit` 返回数值，而 `println!` 只显示文字？为什么非法换算返回 `Err`，不能假装得到 0？这能帮助你判断自己理解了哪一层，而不是只看到测试变绿。
+
+"#),
+        "quizdeck" => text.push_str(r#"先复制自己的题库和答案文件。PowerShell 使用：
+
+```powershell
+Copy-Item samples/deck.tsv samples/my-deck.tsv
+Copy-Item samples/answers.txt samples/my-answers.txt
+```
+
+Linux 使用 `cp samples/deck.tsv samples/my-deck.tsv` 和 `cp samples/answers.txt samples/my-answers.txt`。若个人文件已存在，继续编辑它们，不要重新复制覆盖。
+
+只改副本中的文字，保留题目与答案之间的真实 Tab；至少写三题，答案文件每题一行且数量相同。故意写错一题，先预测成绩，再运行：
+
+```text
+cargo run --offline -- check samples/my-deck.tsv samples/my-answers.txt
+cargo run --offline -- play samples/my-deck.tsv
+```
+
+三题错一题时应有 `score=2/3`，并显示那道错题的“复习：”行；答错题不等于程序出错。`play` 每出现一道题就输入答案并回车。把非交互 `check` 的运行结果保存为自己的复习清单：PowerShell 可在第一条命令后加 `| Out-File -Encoding utf8 "我的复习清单.txt"`，Linux 加 `> "我的复习清单.txt"`；已有同名文件时先换新名称。
+
+再故意少写一行答案，确认程序报告数量不匹配，然后恢复。解释：为什么 Card 保存 String，而比较函数接收 &str？为什么 zip 之前要检查两边长度？
+
+"#),
+        _ => {
+            for step in 1..=3 {
+                if let Some(card) = crate::learning_cards::get(p.id, step) {
+                    text.push_str(&format!(
+                        "- 第 {step} 步的个人实验：{} 自己解释：{}\n",
+                        card.experiment, card.reflection
+                    ));
+                }
+            }
+            text.push('\n');
+        }
+    }
+    text.push_str(r#"## 完成标准：保留哪些证据
+
+1. 当前源码累计通过三个检查点；分清“程序能够编译”与“功能满足检查案例”。
+2. 用自己的正常输入和错误输入运行，保存实际输出或生成的文件，把命令和路径写进 LEARNING_LOG.md。
+3. 回答当前任务卡的一个复盘问题，记录仍不懂的内容和用过的提示。完成提供的函数练习，不等于已经独立实现外壳、完整软件或掌握所有相关概念。
+4. 自己选一个公开案例没有给出的输入，先写预期，再参照 tests/milestones.rs 的 `#[test]` 写法，在新文件 `tests/my_cases.rs` 中写一项断言。创建后运行 `cargo test --offline --test my_cases`，再运行全部本地测试。平台的固定合同不会自动替你运行这份新测试。
+
+功能检查提供当前源码的行为证据；你能否预测新输入、解释原因和自己修改，是另需观察的学习证据。需要帮助的内容可以留在记录中，带着问题进入下一步。
+
+## 下一站
+
+"#);
+    text.push_str(&crate::learning::handoff(p.id));
+    text
+}
+
 pub fn init(id: &str, root: &Path) -> Result<(), String> {
     let p = product(id)?;
     match fs::symlink_metadata(root) {
@@ -337,13 +486,14 @@ pub fn init(id: &str, root: &Path) -> Result<(), String> {
     };
     write_new(&root.join("START.html"), &page)?;
     write_new(&root.join("HINTS.md"), p.hints)?;
+    write_new(&root.join("README.md"), &project_readme(p))?;
     write_new(&root.join(".gitignore"), "/target/\n/.studio-reports/\n")?;
     write_new(&root.join("LEARNING_LOG.md"),"# 我的学习记录\n\n## 我的需求与用途\n\n## 第 1 步：先预测，再修改，再测试\n输入、预期、实际、失败原因：\n\n## 第 2 步：用自己的话解释 Rust 概念\n\n## 第 3 步：新输入和异常场景\n\n## 我的扩展需求与新增测试\n\n## 交付作品\n运行命令、产物路径、已知限制：\n\n## 使用的帮助\n记录看过哪些提示或参考代码，不把参考程序的测试成绩当成自己的理解。\n")?;
     for (name, text) in p.samples {
         write_new(&root.join("samples").join(name), text)?;
     }
-    println!("已创建 {}：{}\n现在只做第 1 步：{}\n用浏览器打开 START.html，编辑 src/lib.rs 的 TODO(1)，保存后检查。",p.title,root.display(),p.steps[0]);
-    println!("在本学员目录内：cargo test --offline --test milestones step1_\n在 RustAppLab 根目录：cargo run --offline -p labquest -- studio check \"{}\" 1",root.display());
+    println!("已创建 {}：{}\n现在只做第 1 步：{}\n先读 README.md，再用浏览器打开 TASK_CARDS.html / START.html；编辑 src/lib.rs 的 TODO(1)，保存后检查。",p.title,root.display(),p.steps[0]);
+    println!("在本学员目录内：cargo test --offline --test milestones step1_\n在完整 RustAppLab 平台根目录：cargo run --locked --offline -p labquest -- learn check \"{}\" 1",root.display());
     Ok(())
 }
 fn identify(root: &Path) -> Result<&'static Product, String> {

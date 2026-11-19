@@ -2,28 +2,53 @@
 
 这是 Rust AppLab 0.6.0 的独立教学软件，不是 FileQuest 的子命令，也不是高可用备份服务。
 
+## 学习位置与三个观察点
+
+这是第 16–23 章的文件可靠性拓展，适合已经理解文件 I/O、路径、`Result` 与测试的学员。刚完成 FirstCard，请按 [衔接页](../../course/AFTER_FIRSTCARD.md) 学 UnitLab；备份练习不是紧接第一行代码的必修关。
+
+| 先做的实验 | 对应源码 | 你应该能解释什么 |
+|---|---|---|
+| 创建一份练习快照 | `src/ops.rs` · `backup` | 验证、复制、提交的顺序，为什么旧快照不随源文件更新 |
+| 检查一字节损坏 | `verify`、`src/sha256.rs` | 文件存在不等于字节正确，哈希校验的范围 |
+| 恢复到新目录 | `restore`、`src/manifest.rs` | 为什么先验证且拒绝覆盖，哪些文件属性没有保存 |
+
+成果应包括源目录、快照、恢复目录和正常/失败记录。先按下方命令体验，再读 [第 16 章](../../course/16_backup_first_snapshot.md)；只在专用演示数据上做损坏实验。
+
 ## 15 分钟操作
 
 在 Workspace 根目录：
 
 ```sh
-cargo run -p safesync -- demo
-cargo run -p safesync -- verify safesync-playground/backup
-cargo run -p safesync -- restore safesync-playground/backup safesync-playground/another-restore
-cargo run -p safesync -- missions
+cargo run --offline -p safesync -- demo
+cargo run --offline -p safesync -- verify safesync-playground/backup
+cargo run --offline -p safesync -- restore safesync-playground/backup safesync-playground/another-restore
+cargo run --offline -p safesync -- missions
 ```
 
-演示目录 `safesync-playground/` 是全新创建的专用练习数据，包含 `source/`、`backup/`、`restored/`。若它已存在，改用 `cargo run -p safesync -- demo my-new-demo`，不要删除已有工作目录。
+演示目录 `safesync-playground/` 是全新创建的专用练习数据，包含 `source/`、`backup/`、`restored/`。若它已存在，改用 `cargo run --offline -p safesync -- demo my-new-demo`，不要删除已有工作目录。
 
 自己的练习文件可使用：
 
 ```sh
-cargo run -p safesync -- backup ./example-project ./my-snapshot-v1
-cargo run -p safesync -- verify ./my-snapshot-v1
-cargo run -p safesync -- restore ./my-snapshot-v1 ./example-project-recovery
+cargo run --offline -p safesync -- backup ./example-project ./my-snapshot-v1
+cargo run --offline -p safesync -- verify ./my-snapshot-v1
+cargo run --offline -p safesync -- restore ./my-snapshot-v1 ./example-project-recovery
 ```
 
 **恢复目标必须是不存在的目录**，而且其父目录已经存在。已有文件、符号链接和目录均不会被覆盖。`backup` 对已经存在且完整、与源逐字节一致的快照返回 `Unchanged`；当源发生变化时应另选新的快照目录名。
+
+## 从参考工具进入自己的源码练习
+
+在自己的仓库副本阅读或修改 `apps/safesync/src/`。第 17 章的第一个挑战是在 `cli.rs` 和 `lib.rs` 增加 `verify --quiet`：成功时安静，损坏仍报错。这个选项尚待学员实现，不能当作当前基础功能。
+
+在 **平台根目录**显式检查这一项：
+
+```powershell
+cargo test --offline -p safesync --test challenges mission_17_verify_quiet -- --ignored --exact
+cargo test --offline -p safesync
+```
+
+第一条修改前应失败，完成后通过；第二条回归已有备份和恢复行为。后续 `restore --dry-run`、`verify --json` 同样是默认忽略的扩展挑战。保存一份自己的小文本快照，核对恢复字节，再写出失败为什么没有覆盖旧文件；普通测试全绿不等于已完成这些扩展。
 
 ## 备份结构与规则
 
@@ -41,7 +66,7 @@ my-snapshot-v1/
 当备份进程在临时目录写入后突然退出，可先在 **暂存目录的父目录** 运行：
 
 ```sh
-cargo run -p safesync -- stages ./my-backups
+cargo run --offline -p safesync -- stages ./my-backups
 ```
 
 新版本会将 `.sfs~B~<目标名>~<PID>~<时间>~<序号>.part` 等暂存标记为：`READY`（完整且已校验的备份）、`INCOMPLETE`（数据损坏或不完整）、`RESTORE`（恢复操作暂存）、`LEGACY`（旧版无类型标记的完整暂存）、`UNSAFE`（非目录、符号链接或非法暂存名称）。`stages` **不删除也不修改任何暂存内容**。
@@ -49,8 +74,8 @@ cargo run -p safesync -- stages ./my-backups
 如果看到 `READY` 且确认原本要提交的目标仍不存在，可将列表中显示的**完整目录路径**代入：
 
 ```sh
-cargo run -p safesync -- recover <完整暂存路径> <最初计划的新快照路径>
-cargo run -p safesync -- verify <最初计划的新快照路径>
+cargo run --offline -p safesync -- recover <完整暂存路径> <最初计划的新快照路径>
+cargo run --offline -p safesync -- verify <最初计划的新快照路径>
 ```
 
 `recover` 要求真实父目录相同、目标名字严格对应、暂存通过 `verify`，并且目标不存在。复制中途退出、恢复过程退出或目录被损坏时都不能强制提交，需要在没有故障注入的情况下**重新执行 backup / restore**，可能留下供检查的旧 `.part`。
@@ -83,3 +108,14 @@ cargo run -p safesync -- verify <最初计划的新快照路径>
 - 新暂存前缀为 `.sfs~B~<目标名>~...part`（备份）或 `.sfs~R~<目标名>~...part`（恢复），`stages` 区分 `READY`、`INCOMPLETE`、`RESTORE`、`LEGACY`、`UNSAFE`。**只有完整且类型为 B 的新暂存可以普通 `recover`**。
 - 0.5.0 未区分用途的 `.sfs-...part` 即使校验正确也只显示 `LEGACY`，需人工核实确由旧版 `backup` 留下，再显式运行 `recover-legacy <旧暂存> <原定全新目标>`。该命令不会提供旧版清单没有的身份真实性保证。
 - 教学实验见 [第 22 关：源文件变化](../../course/22_source_consistency_lab.md) 与 [第 23 关：暂存身份](../../course/23_stage_provenance.md)。
+
+## 完成拓展之后
+
+已经做过四款参考工具，可用 CASE 01 把文件地图、日志分析和快照组成一份综合交付。在 **平台根目录**运行：
+
+```powershell
+cargo run --offline -p labquest -- start my-investigation
+cargo run --offline -p labquest -- next my-investigation
+```
+
+阅读 [第 24 章](../../course/24_labquest_case.md)，按案例实际进度继续。自己的 Rust 代码位于案例的 `project/`；运行平台本身不算实现了案例。要继续 Studio 主线，请返回 [学习衔接页](../../course/AFTER_FIRSTCARD.md)。
