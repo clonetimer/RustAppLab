@@ -7,10 +7,14 @@ import json
 import os
 from pathlib import Path, PurePosixPath, PureWindowsPath
 import shutil
+import struct
+import subprocess
+import re
 import zipfile
 from release_check import ROOT, source_id
 import release_decision
 import book_d6_check
+import workbench_browser_e2e as workbench
 
 
 def sha256(path: Path) -> str:
@@ -112,6 +116,53 @@ def read_book_practice_report(path: Path, mode: str, system: str, commit: str | 
     return data
 
 
+def read_workbench_report(path: Path, identity: str) -> dict:
+    """Require real completed jobs, current runner inputs and intact PNG evidence."""
+    data = read_report(path, identity)
+    if (data.get('schema') != 1 or not data.get('browser_version')
+            or data.get('javascript_errors') != []
+            or set(data.get('observations', [])) != workbench.OBSERVATIONS):
+        raise ValueError('incomplete workbench browser observation: '+str(path))
+    jobs = data.get('actions', {})
+    if set(jobs) != set(workbench.ACTIONS):
+        raise ValueError('missing workbench action: '+str(path))
+    seen_ids = set()
+    for name, expected in workbench.ACTIONS.items():
+        job = jobs[name]
+        if (tuple(job.get(key) for key in ('course_id','action','step','status')) != expected
+                or type(job.get('id')) is not int or job['id'] in seen_ids
+                or type(job.get('exit_code')) is not int
+                or (job['exit_code'] == 0) != (expected[-1] == 'succeeded')
+                or job.get('stale') is not False or not job.get('source_digest')
+                or not job.get('output')):
+            raise ValueError('invalid workbench job: '+name)
+        seen_ids.add(job['id'])
+    revision = data.get('baseline_revision', '')
+    if not re.fullmatch(r'[0-9a-f]{40}', revision):
+        raise ValueError('missing static baseline revision')
+    if subprocess.run(['git','cat-file','-e',revision+':apps/labquest/src/workbench.rs'],
+                      cwd=ROOT, capture_output=True).returncode == 0:
+        raise ValueError('static baseline already contains the workbench')
+    for course, repo_path in workbench.BASE_PAGES.items():
+        content = subprocess.check_output(['git','show',revision+':'+repo_path], cwd=ROOT)
+        expected = {'source': repo_path, 'sha256': hashlib.sha256(content).hexdigest()}
+        if data.get('baseline_pages', {}).get(course) != expected:
+            raise ValueError('incorrect before-page evidence: '+course)
+    expected_shots = workbench.screenshot_sizes()
+    screenshots = data.get('screenshots', {})
+    if set(screenshots) != set(expected_shots):
+        raise ValueError('incomplete workbench screenshot inventory')
+    for name, (width,height) in expected_shots.items():
+        shot = safe_child(path.parent, name)
+        raw = shot.read_bytes()
+        if (screenshots[name].get('sha256') != hashlib.sha256(raw).hexdigest()
+                or screenshots[name].get('viewport') != {'width':width,'height':height}
+                or raw[:8] != b'\x89PNG\r\n\x1a\n' or raw[12:16] != b'IHDR'
+                or raw[16:24] != struct.pack('>II', width, height)):
+            raise ValueError('workbench screenshot bytes/viewport mismatch: '+name)
+    return data
+
+
 def collect_assets(inputs: Path, output: Path) -> dict:
     identity=source_id();version=(ROOT/'VERSION').read_text().strip()
     if '-rc.' not in version: raise ValueError('only candidate versions may use this publisher')
@@ -127,6 +178,9 @@ def collect_assets(inputs: Path, output: Path) -> dict:
         if not release_decision.engineering(path,identity,version):raise ValueError('native qualification missing: '+str(path))
     checked_report(inputs/'native-windows-latest/windows-launcher-evidence/engineering.json',engineering=True)
     checked_report(msrv);checked_report(browser)
+    workbench_path = inputs/'real-browser/workbench/workbench.json'
+    read_workbench_report(workbench_path, identity)
+    checked.append(str(workbench_path.relative_to(inputs)))
     for runner, system in (('ubuntu-latest', 'Linux'), ('windows-latest', 'Windows')):
         for mode in ('tools', 'edition'):
             path = inputs/f'book-practice-{runner}'/mode/'report.json'
@@ -164,7 +218,7 @@ def collect_assets(inputs: Path, output: Path) -> dict:
     for system,os_name in (('ubuntu-latest','Linux'),('windows-latest','Windows')):
         folder=inputs/f'delivery-{system}';data=checked_report(folder/'candidate.json')
         if data.get('version')!=version or data.get('system')!=os_name:raise ValueError('wrong native delivery version/platform')
-        required={'firstcard-create','firstcard-no-overwrite','firstcard-red','firstcard-green','firstcard-personal-output','firstcard-readonly-next','c1-real-demo','c2-runtime-restart-0','c2-runtime-restart-1'}
+        required={'workbench-relocated-launcher','firstcard-create','firstcard-no-overwrite','firstcard-red','firstcard-green','firstcard-personal-output','firstcard-readonly-next','c1-real-demo','c2-runtime-restart-0','c2-runtime-restart-1'}
         if not required.issubset({step['step'] for step in data['steps']}):raise ValueError('first-use path incomplete')
         fresh=checked_report(folder/'fresh-archive.json')
         source=folder/f'RustAppLab-{version}-source.zip'
@@ -191,7 +245,7 @@ def collect_assets(inputs: Path, output: Path) -> dict:
     qualification=release_decision.decide(gates)
     if qualification!='RC_READY':raise ValueError('unexpected qualification')
     files=[{'name':p.name,'bytes':p.stat().st_size,'sha256':sha256(p)} for p in sorted(output.iterdir()) if p.is_file()]
-    result={'schema':1,'version':version,'commit':os.environ.get('GITHUB_SHA'),'source_id':identity,'qualification':qualification,'prerelease':True,'human_observation':'PENDING — no fabricated learner acceptance','gates':gates,'additional_gates':{'c1':True,'c2':True,'native_runtime_and_first_use':True,'book_tools_and_edition':True,'book_ide_entry_structure':True},'checked_reports':checked,'files':files}
+    result={'schema':1,'version':version,'commit':os.environ.get('GITHUB_SHA'),'source_id':identity,'qualification':qualification,'prerelease':True,'human_observation':'PENDING — no fabricated learner acceptance','gates':gates,'additional_gates':{'c1':True,'c2':True,'native_runtime_and_first_use':True,'workbench_browser':True,'book_tools_and_edition':True,'book_ide_entry_structure':True},'checked_reports':checked,'files':files}
     (output/'RELEASE_MANIFEST.json').write_text(json.dumps(result,ensure_ascii=False,indent=2)+'\n',encoding='utf-8')
     hashes=''.join(f'{sha256(p)}  {p.name}\n' for p in sorted(output.iterdir()) if p.is_file())
     (output/'SHA256SUMS.txt').write_bytes(hashes.encode())

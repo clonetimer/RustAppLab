@@ -134,7 +134,8 @@ pub fn init(root: &Path) -> Result<(), String> {
     // 唯一新目录，拒绝覆盖；不尝试删除任何已存在的学员文件。
     fs::create_dir(root)
         .map_err(|err| format!("只能初始化不存在的新目录 {}：{err}", root.display()))?;
-    let result = (|| {
+    // 首次创建失败时不删除目录：并发修改或意外文件应由用户确认。
+    (|| {
         fs::create_dir(root.join("src")).map_err(|e| e.to_string())?;
         for (path, contents) in [
             ("Cargo.toml", CARGO_MANIFEST),
@@ -154,9 +155,7 @@ pub fn init(root: &Path) -> Result<(), String> {
         }
         crate::independent::write_materials(root, "taskpocket")?;
         Ok::<(), String>(())
-    })();
-    // 首次创建失败时不删除目录：并发修改或意外文件应由用户确认。
-    result
+    })()
 }
 
 pub(crate) struct TempWorkspace(pub(crate) PathBuf);

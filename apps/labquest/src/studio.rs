@@ -20,7 +20,7 @@ pub struct Product {
     main: &'static str,
     tests: &'static str,
     lesson: &'static str,
-    page: &'static str,
+    pub(crate) page: &'static str,
     hints: &'static str,
     samples: &'static [(&'static str, &'static str)],
     support: &'static [(&'static str, &'static str)],

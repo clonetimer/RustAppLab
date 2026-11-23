@@ -9,6 +9,7 @@
 | 查当前教学范围、近期修订 | [路线与范围](../ROADMAP.md)、[当前变更](../RELEASE_NOTES.md) |
 | 了解系统、工具链和已知问题 | [支持环境](../SUPPORTED_PLATFORMS.md)、[已知问题](../KNOWN_ISSUES.md) |
 | 贡献源码或检查课程实现 | 下方源码地图、各应用和工程的 README |
+| 维护网页学习工作台 | [操作说明](../course/WORKBENCH.md)、[设计与边界](superpowers/specs/2026-11-23-browser-learning-workbench-design.md)、[实现经验](WORKBENCH_DEVELOPMENT.md) |
 | 验证或打包交付 | [发布规则](../RELEASE_POLICY.md)、[验证记录索引](../verification/README.md) |
 | 追溯旧设计、旧版本或旧故障 | [历史文档](archive/README.md)、[历史验证](../verification/archive/README.md) |
 | 查看实现方案和当时的工作清单 | [开发计划记录](superpowers/README.md)；计划的勾选状态不代表当前验收结果 |

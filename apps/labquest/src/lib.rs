@@ -21,6 +21,7 @@ pub mod proof;
 pub mod simulation;
 pub mod studio;
 pub mod transfer;
+pub mod workbench;
 
 use std::ffi::OsString;
 use std::fs::OpenOptions;
@@ -42,6 +43,7 @@ pub fn run(args: &[OsString]) -> Result<(), String> {
         Some("advanced-b") => advanced_b::run(&args[1..])?,
         Some("studio") => studio::run(&args[1..])?,
         Some("learn") => learning::run(&args[1..])?,
+        Some("workbench") => workbench::run(&args[1..])?,
         Some("ecosystem") => ecosystem::run(&args[1..])?,
         Some("beginner") if args.len() == 3 && args[1] == "start" => {
             let root = path(args.get(2), "用法：beginner start <全新目录>")?;

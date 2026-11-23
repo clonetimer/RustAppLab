@@ -1,4 +1,4 @@
-# Rust AppLab 0.19.0-rc.3 · 从下载到第一次使用
+# Rust AppLab 0.19.0-rc.4 · 从下载到第一次使用
 
 **已经完成 FirstCard？直接打开 [FirstCard 做完之后](course/AFTER_FIRSTCARD.md)**：先确认自己能解释变量和参数，再进入 UnitLab。下面第 1–3 节是首次安装和起步步骤，不必每次重做。
 
@@ -14,11 +14,11 @@
 
 ## 1. 先选对包
 
-**要使用本页新增的 README、FirstCard 衔接和文档导航，请下载 [本次修订分支源码 ZIP](https://github.com/clonetimer/RustAppLab/archive/refs/heads/docs/beginner-learning-path-20261119.zip)。** 这是 [PR #12](https://github.com/clonetimer/RustAppLab/pull/12) 的源码快照；解压后包含 `apps/`、`course/`、`START_HERE.html` 和 Windows 向导。已有 `v0.19.0-rc.3` Release 包没有包含这次修订，不会因分支更新自动改变。
+**网页工作台从 0.19.0-rc.4 开始提供。** 在 [Releases](https://github.com/clonetimer/RustAppLab/releases) 选择该版本的 `source.zip` 或本机对应的 `runtime.zip`，核对同目录校验文件；是否已发布以实际 Release 为准。[当前 main 源码 ZIP](https://github.com/clonetimer/RustAppLab/archive/refs/heads/main.zip) 也包含合入主线的修订。已有 `v0.19.0-rc.3` 下载包保持原样。
 
 已下载旧包时，把新平台解压到另一个文件夹，保留已有 `my-...` 目录和个人记录。新平台可直接对旧工程路径执行第 4 节的 next/check，不需要重新完成 FirstCard。正式发布包仍以 Releases 中带版本号的 source.zip 及其校验值为准。
 
-只体验成品，选择本机对应的 `windows-x64-msvc-runtime.zip` 或 `linux-x86_64-runtime.zip`。解压后程序在 `bin/`，先读其中 `START_RUNTIME.md`；它不包含完整源码目录，也不把参考程序的成功视为学员成绩。
+选择本机对应的 `windows-x64-msvc-runtime.zip` 或 `linux-x86_64-runtime.zip`，可直接打开已编译的网页工作台和参考程序。解压后程序在 `bin/`，先读 `START_RUNTIME.md`；FirstCard/Studio 的中文任务卡和编辑界面已内置，但运行、检查自己的源码仍需 Rust/Cargo。参考程序的成功不会记为学员成绩。
 
 `learner-kit.zip` 是17个基础/进阶A/B学员工程的源码骨架。C1/C2另有 `learner-offline.zip`（核心 TODO）和 `reference-offline.zip`（完整参考），均带 vendor 依赖源码。**这些源码包都不包含 Rust 编译器、MSVC 或 Linux C 工具链。**
 
@@ -41,7 +41,10 @@ StoreDesk 是后续数据库课程，另需系统 SQLite；新手开始 FirstCar
 
 ## 3. 零基础：FirstCard → UnitLab
 
-在完整源码包根目录打开 PowerShell 或终端：
+**推荐使用同页学习流程：** Windows 双击 `START_WORKBENCH_WINDOWS.cmd`；Linux 执行 `./START_WORKBENCH.sh`。保留启动窗口，浏览器会打开本机地址。在左侧选择 FirstCard，点击创建工程，阅读当前中文任务卡，直接在编辑区修改自己的源码，按“保存”后点击“正式检查”。失败时底部输出区会展开并显示原检查器的错误；通过后换自己的输入运行，再进入 UnitLab。完整操作见 [网页工作台指南](course/WORKBENCH.md)。
+
+原有终端流程继续可用。在完整源码包根目录打开 PowerShell 或终端：
+
 
 ```powershell
 cargo run --locked --offline -p labquest -- beginner start "my-first-card"
@@ -80,6 +83,8 @@ cargo run --offline --manifest-path "my-unitlab/Cargo.toml" -- convert -10 c f
 预期 `-10.00 c = 14.00 f`。然后试自己的数值和一组非法换算，记录结果，再去 QuizDeck。详细的第 2、3 步、提示命令、自测与下一课创建步骤都在 [FirstCard 完成后的衔接页](course/AFTER_FIRSTCARD.md)。
 
 ## 4. 已有工程：不重建、不覆盖
+
+打开网页工作台，先选择对应课程，再在已有项目目录输入框中输入原来的 `my-...` 完整路径。路径可以含中文和空格。已有工程缺少新版讲义时，工作台仍显示平台内置任务卡。源码在外部编辑器中变化后，旧草稿保存会被拒绝并保留，避免覆盖外部修改；旧通过记录会标记为历史结果，需重新检查当前源码。
 
 使用完整平台的 `LEARN_NEXT_WINDOWS.cmd`，输入已有工程的实际路径。L看任务卡、E编辑、C真实检查、1/2/3分级提示；Q退出不删除作品。命令行也可以：
 
@@ -121,6 +126,9 @@ cargo +1.85.0 run --frozen -- serve "tickets.db" --port 3000
 | 检查报 TODO 或断言失败 | 阅读任务卡，只改指定函数，保存后重试；不删除测试 |
 | 进入了错误目录 | `cargo ... -p labquest` 在完整平台根目录；学员自己的 `cargo run/test` 在学员目录 |
 | Rust源码包能解压但不能双击运行 | 源码需要编译；直接体验用对应平台runtime包 |
+| 浏览器未自动打开 | 保留启动窗口，复制其中的 `http://127.0.0.1:端口/` 地址到浏览器 |
+| 网页提示保存冲突或工程已在另一页面切换 | 先保留编辑区草稿，重新打开正确工程并核对磁盘内容后保存 |
+| 查看结果时连接中断 | 使用页面的重试入口继续查看原操作；不要因等待而反复提交检查 |
 
 ## 试用与反馈
 
