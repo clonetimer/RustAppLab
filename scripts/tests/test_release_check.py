@@ -128,6 +128,28 @@ class DecisionTests(unittest.TestCase):
 
 
 class WindowsEntryTests(unittest.TestCase):
+    def test_windows_and_python_bind_evidence_to_the_same_ui_test_sources(self):
+        import re
+        from unittest.mock import patch
+        script = (release.ROOT/'scripts/verify_release_windows.ps1').read_text(encoding='utf-8-sig')
+        suffixes = re.search(r'\$_.Extension -cin @\(([^)]+)\)', script)
+        self.assertIsNotNone(suffixes)
+        windows_suffixes = set(re.findall(r"'([^']+)'", suffixes.group(1)))
+        with tempfile.TemporaryDirectory() as temp:
+            root = Path(temp)
+            (root/'scripts/tests').mkdir(parents=True)
+            source = root/'scripts/tests/learner_state.cjs'
+            source.write_text('check_current_source();', encoding='utf-8')
+            before = release.source_id(root)
+            with patch.object(release, 'CODE_SUFFIXES', windows_suffixes):
+                self.assertEqual(release.source_id(root), before,
+                                 'Windows and Python must qualify the same source snapshot')
+            source.write_text('check_current_source_and_project();', encoding='utf-8')
+            after = release.source_id(root)
+            self.assertNotEqual(after, before)
+            with patch.object(release, 'CODE_SUFFIXES', windows_suffixes):
+                self.assertEqual(release.source_id(root), after)
+
     def test_cmd_launchers_have_no_unintended_control_bytes(self):
         for script in release.ROOT.glob('*.cmd'):
             with self.subTest(script=script.name):
