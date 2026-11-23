@@ -205,10 +205,28 @@ mod workbench_topic_tests {
     use super::*;
     #[test]
     fn topics_are_bounded_and_not_user_paths() {
-        for id in ["d1", "d2", "d3", "d4", "d5", "d6a", "d6b", "ownership", "collections", "generics"] {
+        for id in [
+            "d1",
+            "d2",
+            "d3",
+            "d4",
+            "d5",
+            "d6a",
+            "d6b",
+            "ownership",
+            "collections",
+            "generics",
+        ] {
             assert!(workbench_topic(id).unwrap().1.len() > 200);
         }
-        for id in ["", "../README.md", "/etc/passwd", "d1/..", "D1", "http://127.0.0.1"] {
+        for id in [
+            "",
+            "../README.md",
+            "/etc/passwd",
+            "d1/..",
+            "D1",
+            "http://127.0.0.1",
+        ] {
             assert!(workbench_topic(id).is_none());
         }
     }
