@@ -1,4 +1,4 @@
-# Rust AppLab · 0.19.0-rc.4 候选发布版
+# Rust AppLab · 0.19.0-rc.5 候选发布版
 
 通过亲手制作小软件学习 Rust：先读懂输入和输出，每次实现一个函数，用自己的数据验证，最后完成独立作品。
 
@@ -45,15 +45,15 @@
 
 ## 选择下载内容
 
-网页工作台随 **0.19.0-rc.4** 源码和对应平台运行包交付。请从 [Releases](https://github.com/clonetimer/RustAppLab/releases) 选择该版本及其校验文件；发布资格以同一提交的 CI 与实际 Release 为准。也可下载 [当前 main 源码 ZIP](https://github.com/clonetimer/RustAppLab/archive/refs/heads/main.zip)。旧 `v0.19.0-rc.3` 包保持原样，不会自动获得新界面。
+网页工作台随 **0.19.0-rc.5** 源码和对应平台运行包交付。请从 [Releases](https://github.com/clonetimer/RustAppLab/releases) 选择该版本及其校验文件；发布资格以同一提交的 CI 与实际 Release 为准。也可下载 [当前 main 源码 ZIP](https://github.com/clonetimer/RustAppLab/archive/refs/heads/main.zip)。旧 `v0.19.0-rc.3` 包保持原样，不会自动获得新界面。
 
 更新时解压到新的平台文件夹，保留原来的 `my-...` 工程，再从工作台打开其实际路径。
 
 | 目的 | 下载包 | 需要什么 |
 |---|---|---|
-| 直接打开工作台、体验成品 | `RustAppLab-0.19.0-rc.4-<平台>-runtime.zip` | 对应系统；工作台与参考程序已编译，运行或检查自己的 Rust 仍需 Rust/Cargo |
-| 使用完整源码与课程 | `RustAppLab-0.19.0-rc.4-source.zip` | Rust/Cargo 与系统构建工具；首次打开会编译本地工作台 |
-| 只取学员骨架 | `RustAppLab-0.19.0-rc.4-learner-kit.zip` | 17 个基础/进阶 A/B 工程；核心 TODO 待完成，不含 C1/C2 vendor |
+| 直接打开工作台、体验成品 | `RustAppLab-0.19.0-rc.5-<平台>-runtime.zip` | 对应系统；工作台与参考程序已编译，运行或检查自己的 Rust 仍需 Rust/Cargo |
+| 使用完整源码与课程 | `RustAppLab-0.19.0-rc.5-source.zip` | Rust/Cargo 与系统构建工具；首次打开会编译本地工作台 |
+| 只取学员骨架 | `RustAppLab-0.19.0-rc.5-learner-kit.zip` | 17 个基础/进阶 A/B 工程；核心 TODO 待完成，不含 C1/C2 vendor |
 | 离线完成异步课程 | `C1-learner-offline.zip`、`C2-learner-offline.zip` | Rust 1.85.0 已安装；包内提供锁定依赖源码 |
 | 对照异步参考实现 | `C1-reference-offline.zip`、`C2-reference-offline.zip` | Rust 1.85.0；不是预编译 EXE |
 
@@ -70,9 +70,9 @@ FirstCard → UnitLab → QuizDeck → TextScope → LedgerLite / BadgeForge / T
 | C1 | Tokio/Reqwest 有界异步下载、超时、取消、暂存发布 | [C1 讲义](course/ADVANCED_C1.md) |
 | C2 | Axum JSON 路由、单写者日志、并发客户端与优雅关闭 | [C2 讲义](course/ADVANCED_C2.md) |
 
-中文 Rust Book 用于基础概念与项目组织对照；异步 API 按锁定版本的官方文档学习。使用 `learn reading <工程>` 查阅相关章节，见 [Book 对照指南](course/BOOK_GUIDE.md)。
+新版工作台可在课程内查看中文与官方 Rust Book 对照、常见编译错误解释，或离线阅读 D1–D6 及专项讲义。独立专题的运行验收仍需按 Cargo 命令执行。中文 Rust Book 用于基础概念与项目组织对照；异步 API 按锁定版本的官方文档学习。使用 `learn reading <工程>` 查阅相关章节，见 [Book 对照指南](course/BOOK_GUIDE.md)。
 
-遇到相应概念时，可补读 [所有权与切片](course/BOOK_OWNERSHIP_PRACTICE.md)、[集合与错误传播](course/BOOK_COLLECTIONS_ERRORS.md)、[泛型与生命周期](course/BOOK_GENERICS_LIFETIMES.md)。它们不要求在 UnitLab 前完成。[概念审计](course/BOOK_CONCEPT_AUDIT.md) 记录第 4–6、8–10 章本次 118 个目标的证据和剩余 31 项；这个范围不能作为整本书的完成率。
+遇到相应概念时，可补读 [所有权与切片](course/BOOK_OWNERSHIP_PRACTICE.md)、[集合与错误传播](course/BOOK_COLLECTIONS_ERRORS.md)、[泛型与生命周期](course/BOOK_GENERICS_LIFETIMES.md)。它们不要求在 UnitLab 前完成。[31 项概念补课任务](course/BOOK_31_GAPS_REPAIR.md)、[学员学习效果观察](course/LEARNER_EVIDENCE_PROTOCOL.md) 和 [概念审计](course/BOOK_CONCEPT_AUDIT.md) 记录第 4–6、8–10 章本次 118 个目标的证据和剩余 31 项；这个范围不能作为整本书的完成率。
 
 ## 已有工程继续用
 
