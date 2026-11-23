@@ -554,3 +554,14 @@ summary:hover { color: var(--text); }
 .compiler-help { padding: 10px 14px; border-top: 1px solid var(--line); background: #25243a; color: #e8d8d2; font-size: 12px; line-height: 1.6; }
 .compiler-help li { margin: 6px 0; overflow-wrap: anywhere; }
 .compiler-help p { margin-top: 8px; color: var(--muted); }
+
+/* Inert offline Book reader; never changes an open learner project. */
+.book-launch { flex: none; margin: 11px 3px 2px; }
+.book-dialog { width: min(960px, 96vw); max-height: 92vh; padding: 0; color: var(--text); background: var(--panel); border: 1px solid var(--line); border-radius: 12px; }
+.book-dialog::backdrop { background: #030711ce; }
+.book-toolbar { display: flex; align-items: center; flex-wrap: wrap; gap: 10px; padding: 12px; border-bottom: 1px solid var(--line); }
+.book-toolbar select { padding: 8px; min-height: 38px; }
+#book-status, .book-limit { color: var(--muted); font-size: 12px; }
+.book-text { min-height: 170px; max-height: 68vh; overflow: auto; padding: 18px; white-space: pre-wrap; word-break: break-word; font: 13px/1.7 var(--mono); }
+.book-limit { border-top: 1px solid var(--line); padding: 10px 16px; }
+@media (max-width: 540px) { .book-dialog { width: 99vw; } .book-text { padding: 11px; max-height: 73vh; } }

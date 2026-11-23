@@ -85,6 +85,20 @@ fn route(app: &Arc<App>, request: http::Request) -> Result<Response, ApiError> {
                     json_string(env!("CARGO_PKG_VERSION"))
                 ),
             )),
+            "/api/book" => {
+                http::only(&fields, &["id"])?;
+                let id = http::required(&fields, "id")?;
+                let (title, markdown) = crate::book_reading::workbench_topic(id)
+                    .ok_or_else(|| ApiError::new(404, "未找到知识专题"))?;
+                Ok(Response::json(
+                    200,
+                    format!(
+                        "{{\"title\":{},\"markdown\":{}}}",
+                        json_string(title),
+                        json_string(markdown)
+                    ),
+                ))
+            }
             "/api/job" => {
                 http::only(&fields, &["id"])?;
                 let id = http::required(&fields, "id")?

@@ -140,6 +140,21 @@ function buildCourses() {
   }));
 }
 
+async function loadBook() {
+  const id = ui.bookSelect.value;
+  text(ui.bookStatus, '正在读取离线讲义…');
+  text(ui.bookText, '');
+  try {
+    const material = await api('/api/book', { query: { id } });
+    if (ui.bookSelect.value !== id) return;
+    text(ui.bookText, material.markdown);
+    text(ui.bookStatus, material.title);
+    ui.bookText.scrollTop = 0;
+  } catch (error) {
+    text(ui.bookStatus, error.message);
+  }
+}
+
 function renderReading(reading) {
   if (!ui.reading || typeof document.createElement !== 'function') return;
   ui.reading.hidden = !reading || !reading.topics?.length;
@@ -783,6 +798,8 @@ function initialize() {
     console: 'console-panel', consoleOutput: 'console-output', consoleSummary: 'console-summary',
     consoleSize: 'console-size', consoleToggle: 'console-toggle',
     compilerHelp: 'compiler-help', compilerHelpList: 'compiler-help-list',
+    bookOpen: 'book-open', bookClose: 'book-close', bookDialog: 'book-dialog',
+    bookSelect: 'book-select', bookStatus: 'book-status', bookText: 'book-text',
   };
   for (const [name, id] of Object.entries(ids)) ui[name] = document.getElementById(id);
 
@@ -795,6 +812,9 @@ function initialize() {
     if (control) void selectCourse(state.card.id, Number(control.dataset.step));
   });
   ui.create.addEventListener('click', () => { void changeProject('create'); });
+  ui.bookOpen.addEventListener('click', () => { ui.bookDialog.showModal(); void loadBook(); });
+  ui.bookClose.addEventListener('click', () => ui.bookDialog.close());
+  ui.bookSelect.addEventListener('change', () => { void loadBook(); });
   ui.projectForm.addEventListener('submit', event => {
     event.preventDefault();
     void changeProject('open');

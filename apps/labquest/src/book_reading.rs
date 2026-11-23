@@ -145,6 +145,67 @@ pub(crate) fn workbench_json(id: &str) -> String {
     )
 }
 
+/// Read-only built-in Markdown whitelist; HTTP never selects filesystem paths.
+pub(crate) fn workbench_topic(id: &str) -> Option<(&'static str, &'static str)> {
+    match id {
+        "d1" => Some((
+            "D1 · Cargo",
+            include_str!("../../../course/BOOK_D1_CARGO.md"),
+        )),
+        "d2" => Some((
+            "D2 · 智能指针",
+            include_str!("../../../course/BOOK_D2_SMART_POINTERS.md"),
+        )),
+        "d3" => Some((
+            "D3 · 对象与模式",
+            include_str!("../../../course/BOOK_D3_OOP_PATTERNS.md"),
+        )),
+        "d4" => Some((
+            "D4 · 高级 Rust",
+            include_str!("../../../course/BOOK_D4_ADVANCED_FEATURES.md"),
+        )),
+        "d5" => Some((
+            "D5 · 多线程 Web Server",
+            include_str!("../../../course/BOOK_D5_WEB_SERVER.md"),
+        )),
+        "d6a" => Some((
+            "D6-A · 附录",
+            include_str!("../../../course/BOOK_D6_APPENDICES.md"),
+        )),
+        "d6b" => Some((
+            "D6-B · 基础概念",
+            include_str!("../../../course/BOOK_D6_FOUNDATIONS.md"),
+        )),
+        "ownership" => Some((
+            "所有权与切片",
+            include_str!("../../../course/BOOK_OWNERSHIP_PRACTICE.md"),
+        )),
+        "collections" => Some((
+            "集合与错误",
+            include_str!("../../../course/BOOK_COLLECTIONS_ERRORS.md"),
+        )),
+        "generics" => Some((
+            "泛型与生命周期",
+            include_str!("../../../course/BOOK_GENERICS_LIFETIMES.md"),
+        )),
+        _ => None,
+    }
+}
+
+#[cfg(test)]
+mod workbench_topic_tests {
+    use super::*;
+    #[test]
+    fn topics_are_bounded_and_not_user_paths() {
+        for id in ["d1", "d2", "d3", "d4", "d5", "d6a", "d6b", "ownership", "collections", "generics"] {
+            assert!(workbench_topic(id).unwrap().1.len() > 200);
+        }
+        for id in ["", "../README.md", "/etc/passwd", "d1/..", "D1", "http://127.0.0.1"] {
+            assert!(workbench_topic(id).is_none());
+        }
+    }
+}
+
 pub(crate) fn overview() -> String {
     format!("Rust AppLab · 对照阅读\n\n本项目以现有作品练习，Book 用于理解当前行为：\nFirstCard → Cargo 与字符串；12 款 Studio → match、Result、借用、测试与并发；TaskPocket / PageMint → 独立作品；进阶 A / B → trait、工作空间与跨模块验证。\n按作品查看：cargo run --offline -p labquest -- learn reading <学员工程目录>\n只选当前作品的 1–3 个概念，预测自己的输入，再回到 learn check 或 advanced / advanced-b check 验证。\n中文参考：https://rust.bootcss.com/\n官方参考：https://doc.rust-lang.org/book/\n\n{VERSIONS}\n{READ_ONLY}\n")
 }

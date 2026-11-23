@@ -24,6 +24,7 @@
         <span id="catalog-count"></span>
       </div>
       <nav id="course-list" class="course-list" aria-label="课程"></nav>
+      <button type="button" id="book-open" class="secondary book-launch">知识专题 · D1–D6</button>
     </aside>
     <main class="workspace" aria-labelledby="course-title">
       <header class="course-header">
@@ -149,6 +150,30 @@
       </footer>
     </main>
   </div>
+  <dialog id="book-dialog" class="book-dialog" aria-labelledby="book-title">
+    <header class="panel-heading">
+      <h2 id="book-title">知识专题 · D1–D6</h2>
+      <button type="button" id="book-close" class="secondary">返回工作台</button>
+    </header>
+    <div class="book-toolbar">
+      <label for="book-select">选择专题</label>
+      <select id="book-select">
+        <option value="d1">D1 · Cargo</option>
+        <option value="d2">D2 · 智能指针</option>
+        <option value="d3">D3 · 对象与模式</option>
+        <option value="d4">D4 · 高级 Rust</option>
+        <option value="d5">D5 · 多线程 Web Server</option>
+        <option value="d6a">D6-A · 附录</option>
+        <option value="d6b">D6-B · 基础概念</option>
+        <option value="ownership">所有权与切片</option>
+        <option value="collections">集合与错误</option>
+        <option value="generics">泛型与生命周期</option>
+      </select>
+      <span id="book-status" role="status">离线材料</span>
+    </div>
+    <pre id="book-text" class="book-text" tabindex="0" aria-label="专题讲义原文"></pre>
+    <p class="book-limit">阅读与独立实验分开：D1–D6 的验证命令仍需按讲义运行 Cargo；阅读不计为正式通过。</p>
+  </dialog>
   <dialog id="lesson-dialog" aria-labelledby="lesson-dialog-title">
     <header class="panel-heading">
       <h2 id="lesson-dialog-title">完整讲义</h2>
