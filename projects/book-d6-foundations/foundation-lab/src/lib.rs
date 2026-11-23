@@ -27,6 +27,7 @@ use std::io::{self, BufRead};
 use std::path::PathBuf;
 use std::time::{Duration, Instant};
 
+pub mod book_gap4;
 pub mod collections;
 pub mod generic_lifetimes;
 pub mod language_basics;

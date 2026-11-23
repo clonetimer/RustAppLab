@@ -188,6 +188,14 @@ pub(crate) fn workbench_topic(id: &str) -> Option<(&'static str, &'static str)> 
             "泛型与生命周期",
             include_str!("../../../course/BOOK_GENERICS_LIFETIMES.md"),
         )),
+        "gap31" => Some((
+            "31 项概念补课清单",
+            include_str!("../../../course/BOOK_31_GAPS_REPAIR.md"),
+        )),
+        "evidence" => Some((
+            "学习效果观察协议",
+            include_str!("../../../course/LEARNER_EVIDENCE_PROTOCOL.md"),
+        )),
         _ => None,
     }
 }
