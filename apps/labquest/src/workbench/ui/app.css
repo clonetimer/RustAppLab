@@ -540,3 +540,17 @@ summary:hover { color: var(--text); }
   }
   .console-title { gap: 1px 7px; }
 }
+
+/* Contextual Book references share the existing task-card layout; no new top-level panel. */
+.book-reading { margin-top: 12px; border: 1px solid var(--line); border-radius: 8px; background: #162439; }
+.book-reading summary { color: #dce9ff; }
+.book-reading[open] { padding-bottom: 10px; }
+.book-reading p, .book-reading ul { margin: 7px 12px; font-size: 12px; line-height: 1.65; overflow-wrap: anywhere; }
+.book-reading ul, .compiler-help ul { padding-left: 18px; }
+.book-reading li { margin: 6px 0; }
+.book-reading li strong { display: block; font-weight: 600; }
+.book-reading a, .compiler-help a { display: inline-block; color: #b6d8ff; margin-right: 14px; text-underline-offset: 2px; }
+.book-reading .book-version, .book-reading .book-help { color: var(--muted); }
+.compiler-help { padding: 10px 14px; border-top: 1px solid var(--line); background: #25243a; color: #e8d8d2; font-size: 12px; line-height: 1.6; }
+.compiler-help li { margin: 6px 0; overflow-wrap: anywhere; }
+.compiler-help p { margin-top: 8px; color: var(--muted); }

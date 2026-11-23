@@ -434,10 +434,10 @@ impl Workspace {
             .unwrap_or_else(|| "null".into());
         Ok(format!(concat!("{{\"id\":{},\"title\":{},\"step\":{},\"step_count\":{},\"step_title\":{},",
             "\"goal\":{},\"function\":{},\"concept\":{},\"prediction\":{},\"hints\":{},",
-            "\"experiment\":{},\"reflection\":{},\"next_course\":{},\"run_args\":{},\"project\":{}}}"),
+            "\"experiment\":{},\"reflection\":{},\"next_course\":{},\"run_args\":{},\"reading\":{},\"project\":{}}}"),
             json_string(id), json_string(c.title), step, c.steps.len(), json_string(c.steps[step-1]),
             json_string(card.goal), json_string(card.function), json_string(card.concept), json_string(card.prediction),
-            json_list(card.hints), json_string(card.experiment), json_string(card.reflection), next, json_list(run_args(id).iter().copied()), project))
+            json_list(card.hints), json_string(card.experiment), json_string(card.reflection), next, json_list(run_args(id).iter().copied()), crate::book_reading::workbench_json(id), project))
     }
 
     fn project_json(path: &Path, id: &str) -> Result<String, ApiError> {
@@ -633,6 +633,9 @@ mod tests {
             assert!(ws.course_json(id, 1).unwrap().contains("\"project\":null"));
         }
         assert_eq!(course_ids().count(), 13);
+        let unitlab = ws.course_json("unitlab", 1).unwrap();
+        assert!(unitlab.contains(r#""reading":{"topics":["#));
+        assert!(unitlab.contains("rust.bootcss.com/ch06-02-match.html"));
         for card in learning_cards::CARDS {
             let course = ws.course_json(card.id, card.step).unwrap();
             for field in [card.function, card.goal, card.hints[2], card.reflection] {

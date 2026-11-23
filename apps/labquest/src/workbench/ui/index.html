@@ -56,6 +56,14 @@
               <div><dt>要改哪里</dt><dd id="lesson-function"></dd></div>
               <div><dt>本步知识</dt><dd id="lesson-concept"></dd></div>
             </dl>
+            <details id="book-reading" class="book-reading" hidden>
+              <summary>理解本步知识 · Rust Book 中文与官方对照</summary>
+              <p class="book-help">优先看当前知识点，不必现在读完整本书；外部教材将在新标签页打开。</p>
+              <ul id="book-reading-topics"></ul>
+              <p id="book-reading-question"></p>
+              <p id="book-reading-version" class="book-version"></p>
+              <p class="book-help">回到工作台修改自己的代码，再使用“正式检查”验证。阅读不计为通关。</p>
+            </details>
             <section class="prediction" aria-labelledby="prediction-title">
               <h4 id="prediction-title">写代码前，先预测</h4>
               <p id="lesson-prediction"></p>
@@ -131,6 +139,11 @@
               <button type="button" id="console-toggle" class="text-button" aria-controls="console-output" aria-expanded="true">折叠</button>
             </div>
           </header>
+          <div id="compiler-help" class="compiler-help" hidden aria-live="polite">
+            <strong>与编译错误相关的知识</strong>
+            <ul id="compiler-help-list"></ul>
+            <p>先阅读错误位置和原因，再修正源码并重新检查；这里的建议不是自动修复，也不表示通过。</p>
+          </div>
           <pre id="console-output" tabindex="0" aria-label="本次操作的实际输出"></pre>
         </section>
       </footer>

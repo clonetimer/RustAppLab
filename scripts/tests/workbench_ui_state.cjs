@@ -206,3 +206,17 @@ test('returning to a workbench tab refreshes old success without replacing the o
   assert.equal(requests.length, 1);
   assert.match(requests[0], /^\/api\/file\?/);
 });
+
+test('book navigation has a bounded allowlist and diagnostics never pretend to fix code', () => {
+  const context = loadApp();
+  const docs = context.compilerDiagnostics([
+    'error[E0382]: borrow of moved value',
+    'error[E0502]: cannot borrow as mutable',
+    'error[E0382]: borrow of moved value',
+    'error[E9999]: unknown code',
+  ].join('\\n'));
+  assert.deepEqual(Array.from(docs, item => item.code), ['E0382', 'E0502']);
+  assert.ok(docs.every(item => item.url.startsWith('https://doc.rust-lang.org/')));
+  assert.equal(context.compilerDiagnostics('test failed: assertion failed').length, 0);
+  assert.equal(context.compilerDiagnostics('error[E9999] unknown').length, 0);
+});

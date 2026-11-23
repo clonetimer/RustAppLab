@@ -102,6 +102,36 @@ fn mapping(id: &str) -> Option<Reading> {
     })
 }
 
+/// Structured, read-only Book companion for the offline workbench.
+/// This deliberately reuses the existing mapping instead of inventing a second syllabus.
+pub(crate) fn workbench_json(id: &str) -> String {
+    fn quoted(value: &str) -> String {
+        let mut out = String::from("\"");
+        for c in value.chars() {
+            match c {
+                '"' => out.push_str("\\\""),
+                '\\' => out.push_str("\\\\"),
+                '\n' => out.push_str("\\n"),
+                '\r' => out.push_str("\\r"),
+                '\t' => out.push_str("\\t"),
+                c if c < ' ' => out.push_str(&format!("\\u{:04x}", c as u32)),
+                c => out.push(c),
+            }
+        }
+        out.push('"');
+        out
+    }
+    let Some(reading) = mapping(id) else { return "null".to_string(); };
+    let topics = reading.topics.iter().map(|topic| format!(
+        r#"{{"title":{},"chinese":{},"official":{}}}"#,
+        quoted(topic.title), quoted(topic.chinese), quoted(topic.official)
+    )).collect::<Vec<_>>().join(",");
+    format!(
+        r#"{{"topics":[{}],"question":{},"version_note":{}}}"#,
+        topics, quoted(reading.question), quoted(VERSIONS)
+    )
+}
+
 pub(crate) fn overview() -> String {
     format!("Rust AppLab · 对照阅读\n\n本项目以现有作品练习，Book 用于理解当前行为：\nFirstCard → Cargo 与字符串；12 款 Studio → match、Result、借用、测试与并发；TaskPocket / PageMint → 独立作品；进阶 A / B → trait、工作空间与跨模块验证。\n按作品查看：cargo run --offline -p labquest -- learn reading <学员工程目录>\n只选当前作品的 1–3 个概念，预测自己的输入，再回到 learn check 或 advanced / advanced-b check 验证。\n中文参考：https://rust.bootcss.com/\n官方参考：https://doc.rust-lang.org/book/\n\n{VERSIONS}\n{READ_ONLY}\n")
 }

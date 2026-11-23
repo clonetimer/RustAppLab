@@ -140,6 +140,74 @@ function buildCourses() {
   }));
 }
 
+function renderReading(reading) {
+  if (!ui.reading || typeof document.createElement !== 'function') return;
+  ui.reading.hidden = !reading || !reading.topics?.length;
+  ui.readingTopics.replaceChildren();
+  if (ui.reading.hidden) return;
+  for (const topic of reading.topics) {
+    const item = document.createElement('li');
+    const label = document.createElement('strong');
+    label.textContent = topic.title + '：';
+    item.append(label);
+    for (const [caption, url] of [['中文旧版', topic.chinese], ['当前官方', topic.official]]) {
+      // Only the server's built-in Book mapping is used; never echo arbitrary links.
+      if (!/^https:\/\/(rust\.bootcss\.com|doc\.rust-lang\.org)\//.test(url)) continue;
+      const link = document.createElement('a');
+      link.href = url;
+      link.target = '_blank';
+      link.rel = 'noopener noreferrer';
+      link.referrerPolicy = 'no-referrer';
+      link.textContent = caption;
+      item.append(link);
+    }
+    ui.readingTopics.append(item);
+  }
+  text(ui.readingQuestion, '思考：' + reading.question);
+  text(ui.readingVersion, reading.version_note);
+}
+
+const RUST_ERROR_GUIDES = Object.freeze({
+  E0382: ['值被移动后再次使用', '检查所有权是否已移交；考虑借用或明确克隆。', 'https://doc.rust-lang.org/book/ch04-01-what-is-ownership.html'],
+  E0502: ['可变借用与共享借用冲突', '定位两个引用的实际使用区间，不要为了消除错误而随意复制状态。', 'https://doc.rust-lang.org/book/ch04-02-references-and-borrowing.html'],
+  E0499: ['存在重叠的可变借用', '确认同一数据是否同时有两个可变借用。', 'https://doc.rust-lang.org/book/ch04-02-references-and-borrowing.html'],
+  E0308: ['类型不匹配', '对照期望类型与实际类型，检查参数和返回值。', 'https://doc.rust-lang.org/book/ch03-02-data-types.html'],
+  E0277: ['Trait 约束未满足', '查看 bound 与实现，不能仅靠类型强制转换解决。', 'https://doc.rust-lang.org/book/ch10-02-traits.html'],
+  E0599: ['方法或关联项不可用', '检查类型、导入的 trait 与该方法是否真实存在。', 'https://doc.rust-lang.org/book/ch10-02-traits.html'],
+  E0596: ['不能通过当前绑定进行可变借用', '检查绑定 mut 与方法接收者的约束。', 'https://doc.rust-lang.org/book/ch04-02-references-and-borrowing.html'],
+  E0425: ['名称不存在', '核对变量名、作用域及导入路径。', 'https://doc.rust-lang.org/book/ch07-03-paths-for-referring-to-an-item-in-the-module-tree.html'],
+  E0432: ['无法解析导入', '核对模块层级、pub 和 use 路径。', 'https://doc.rust-lang.org/book/ch07-04-bringing-paths-into-scope-with-the-use-keyword.html'],
+  E0433: ['模块或 crate 路径无法解析', '查看 Cargo 依赖与模块路径是否匹配。', 'https://doc.rust-lang.org/book/ch07-03-paths-for-referring-to-an-item-in-the-module-tree.html'],
+});
+
+function compilerDiagnostics(output) {
+  const codes = [...new Set((output || '').match(/\bE\d{4}\b/g) || [])];
+  return codes.filter(code => RUST_ERROR_GUIDES[code]).slice(0, 3).map(code => {
+    const [title, explanation, url] = RUST_ERROR_GUIDES[code];
+    return { code, title, explanation, url };
+  });
+}
+
+function renderCompilerHelp(job) {
+  if (!ui.compilerHelp || typeof document.createElement !== 'function') return;
+  const guides = job?.status === 'failed' ? compilerDiagnostics(job.output) : [];
+  ui.compilerHelp.hidden = guides.length === 0;
+  ui.compilerHelpList.replaceChildren();
+  for (const guide of guides) {
+    const item = document.createElement('li');
+    const description = document.createElement('span');
+    description.textContent = guide.code + ' · ' + guide.title + '：' + guide.explanation + ' ';
+    const link = document.createElement('a');
+    link.href = guide.url;
+    link.target = '_blank';
+    link.rel = 'noopener noreferrer';
+    link.referrerPolicy = 'no-referrer';
+    link.textContent = '阅读对应知识';
+    item.append(description, link);
+    ui.compilerHelpList.append(item);
+  }
+}
+
 function renderCard(previous) {
   const { card } = state;
   const course = state.catalog.courses.find(item => item.id === card.id);
@@ -168,6 +236,7 @@ function renderCard(previous) {
     text(ui.goal, card.goal);
     text(ui.target, card.function);
     text(ui.concept, card.concept);
+    renderReading(card.reading);
     text(ui.prediction, card.prediction);
     text(ui.experiment, card.experiment);
     text(ui.reflection, card.reflection);
@@ -413,6 +482,7 @@ function renderOutput() {
   ui.consoleSummary.dataset.state = tone;
   text(ui.consoleSummary, summary);
   text(ui.consoleOutput, output?.job?.output ?? output?.details ?? '');
+  renderCompilerHelp(output?.job);
 }
 
 // Navigation, saving and polling all use the same operation lock. A failed
@@ -703,6 +773,8 @@ function initialize() {
     lessonFrame: 'lesson-frame', lessonContent: 'lesson-content', lessonLoading: 'lesson-loading',
     stepTitle: 'step-title', goal: 'lesson-goal', target: 'lesson-function', concept: 'lesson-concept',
     prediction: 'lesson-prediction', hints: 'hint-list', experiment: 'lesson-experiment',
+    reading: 'book-reading', readingTopics: 'book-reading-topics',
+    readingQuestion: 'book-reading-question', readingVersion: 'book-reading-version',
     experimentTitle: 'experiment-title', reflection: 'lesson-reflection', fileSelect: 'file-select',
     saveStatus: 'save-status', reloadFile: 'reload-file-button', editor: 'source-editor',
     save: 'save-button', run: 'run-button', check: 'check-button', runSettings: 'run-settings',
@@ -710,6 +782,7 @@ function initialize() {
     retry: 'retry-button', stopWaiting: 'stop-waiting-button', next: 'next-button',
     console: 'console-panel', consoleOutput: 'console-output', consoleSummary: 'console-summary',
     consoleSize: 'console-size', consoleToggle: 'console-toggle',
+    compilerHelp: 'compiler-help', compilerHelpList: 'compiler-help-list',
   };
   for (const [name, id] of Object.entries(ids)) ui[name] = document.getElementById(id);
 
