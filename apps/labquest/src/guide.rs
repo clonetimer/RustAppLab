@@ -4,9 +4,11 @@ pub const HELP: &str = concat!(
     env!("CARGO_PKG_VERSION"),
     r#" · Rust AppLab 的案例式学习控制台
 
-完全零基础：请先打开 START_HERE.html，Windows 用户可双击 START_WINDOWS.cmd。
+网页学习：Windows 双击 START_WORKBENCH_WINDOWS.cmd，在同一页面读教程、编辑代码和检查。
+原有终端向导仍可使用 START_WINDOWS.cmd；离线讲义入口为 START_HERE.html。
 
 从 RustAppLab 根目录运行：
+  cargo run --locked --offline -p labquest -- workbench --open     打开本机网页学习工作台
   cargo run --offline -p labquest -- advanced start my-workbench    进入进阶 A
   cargo run --offline -p labquest -- advanced check my-workbench 1  累计检查1/2/3
   cargo run --offline -p labquest -- advanced lesson 1              读取进阶讲义

@@ -17,8 +17,10 @@ import sys
 import tempfile
 import time
 import urllib.request
+import urllib.parse
 import zipfile
 from release_check import ROOT, source_id
+from workbench_process import running_workbench
 
 APPS = ('filequest','loglens','localhub','safesync','labquest','unitlab','quizdeck',
         'textscope','ledgerlite','badgeforge','batchmeter','termgarden','storedesk',
@@ -42,6 +44,8 @@ def runtime_files(target: Path, suffix: str) -> dict[str, Path]:
 
 def pack_runtime(destination: Path, files: dict[str, Path], info: dict, notices: dict[str, bytes]) -> None:
     content = {name:path.read_bytes() for name,path in files.items()}
+    launcher = 'START_WORKBENCH_WINDOWS.cmd' if info['system'] == 'Windows' else 'START_WORKBENCH.sh'
+    content[launcher] = (ROOT/launcher).read_bytes()
     content['LICENSE']=(ROOT/'LICENSE').read_bytes()
     content['BUILD_INFO.json']=(json.dumps(info,ensure_ascii=False,indent=2)+'\n').encode()
     content.update(notices)
@@ -52,7 +56,13 @@ def pack_runtime(destination: Path, files: dict[str, Path], info: dict, notices:
 本包是 {info['system']} {info['machine']} 的实际构建，不是源码包或安装器。程序在 bin/。
 参考程序可直接运行，LabQuest编译和检查学员源码仍需要安装Rust/Cargo和系统工具链。
 Windows结果来自CI runner，不代表你的Win10/11已经验收。Linux需兼容的glibc及系统库，具体构建环境见BUILD_INFO.json；StoreDesk另需系统SQLite。
-完整学习请另取同版本source.zip并打开START_HERE.html；B4/C1/C2依赖准备按各课讲义进行。
+查阅完整平台源码、独立作品与进阶课程，请另取同版本source.zip并打开START_HERE.html；B4/C1/C2依赖准备按各课讲义进行。
+
+## 在浏览器学习 FirstCard 和 12 个 Studio 项目
+
+Windows 双击 START_WORKBENCH_WINDOWS.cmd，Linux 在解压目录运行 ./START_WORKBENCH.sh。请保持终端打开。
+若浏览器未自动打开，把终端中 http://127.0.0.1 地址复制到浏览器。可直接打开已有项目，在工作台读任务、编辑、保存并检查。
+如 Linux 解压后没有执行权限，运行 chmod +x START_WORKBENCH.sh bin/*。正式检查与运行学员程序需要 Rust 和 Cargo。
 
 ## 先体验
 
@@ -76,10 +86,46 @@ THIRD_PARTY保留构建所用锁定依赖的清单与授权文本；完整依赖
     with zipfile.ZipFile(destination,'w',compression=zipfile.ZIP_DEFLATED,compresslevel=9) as z:
         for name,data in sorted(content.items()):
             entry=zipfile.ZipInfo(name,date_time=(2026,11,4,0,0,0));entry.create_system=3
-            entry.external_attr=(0o100755 if name.startswith('bin/') else 0o100644)<<16
+            entry.external_attr=(0o100755 if name.startswith('bin/') or name.endswith('.sh') else 0o100644)<<16
             entry.compress_type=zipfile.ZIP_DEFLATED;z.writestr(entry,data)
     with zipfile.ZipFile(destination) as z:
         if z.testzip() is not None: raise ValueError('runtime ZIP CRC failed')
+
+
+def verify_runtime_workbench(fresh: Path, learner: Path, logfile: Path, env: dict) -> None:
+    """Run the packaged launcher in the relocated archive with no repository cwd."""
+    if os.name == 'nt':
+        # Use only relative, fixed command tokens so cmd.exe never needs to
+        # reinterpret the absolute extraction path or any user-supplied text.
+        cmd = ['cmd.exe', '/d', '/c', 'START_WORKBENCH_WINDOWS.cmd']
+    else:
+        launcher = fresh/'START_WORKBENCH.sh'
+        launcher.chmod(0o755)  # ZipFile.extractall does not restore POSIX modes.
+        cmd = [str(launcher)]
+    with running_workbench([*cmd, '--port', '0', '--workspace', '.'], fresh, logfile, env) as base:
+        opener = urllib.request.build_opener(urllib.request.ProxyHandler({}))
+
+        def fetch(route, fields=None):
+            body = None if fields is None else urllib.parse.urlencode(fields).encode('ascii')
+            req = urllib.request.Request(base+route, data=body, headers={
+                'Origin': base, 'X-RustAppLab': 'workbench',
+                'Content-Type': 'application/x-www-form-urlencoded; charset=UTF-8'})
+            with opener.open(req, timeout=10) as response:
+                return response.read()
+
+        catalog = json.loads(fetch('/api/catalog'))
+        if len(catalog['courses']) != 13 or catalog['courses'][0]['id'] != 'firstcard':
+            raise ValueError('relocated runtime lacks its embedded course catalog')
+        for route, marker in (('/', b'source-editor'), ('/assets/app.js', b'/api/'),
+                              ('/assets/app.css', b'{'), ('/api/lesson?id=unitlab', b'UnitLab')):
+            if marker not in fetch(route):
+                raise ValueError('relocated runtime lacks embedded content: '+route)
+        opened = json.loads(fetch('/api/open', {'id':'firstcard','path':str(learner)}))
+        if not Path(opened['project']['path']).samefile(learner):
+            raise ValueError('runtime did not open the extracted learner project')
+        source = json.loads(fetch('/api/file?id=firstcard&path=src%2Fmain.rs'))
+        if source['content'] != (learner/'src/main.rs').read_text(encoding='utf-8'):
+            raise ValueError('relocated workbench did not read the learner source')
 
 
 def main() -> int:
@@ -138,6 +184,9 @@ def main() -> int:
         with tempfile.TemporaryDirectory(prefix='applab-rc-handoff-') as temp:
             fresh=Path(temp)/'中文 runtime';fresh.mkdir()
             with zipfile.ZipFile(archive) as z:
+                launcher = 'START_WORKBENCH_WINDOWS.cmd' if system=='Windows' else 'START_WORKBENCH.sh'
+                if launcher not in z.namelist() or (system=='Linux' and not (z.getinfo(launcher).external_attr >> 16) & 0o111):
+                    raise ValueError('runtime ZIP launcher missing or not executable')
                 z.extractall(fresh)
                 for line in z.read('FILES_SHA256SUMS.txt').decode().splitlines():
                     sha,name=line.split('  ',1)
@@ -148,6 +197,10 @@ def main() -> int:
             student_env=dict(env,CARGO_TARGET_DIR=str(Path(temp)/'student-target'))
             run('reference-conversion',[binary('unitlab'),'convert','25','c','f'],cwd=fresh)
             run('firstcard-create',[lab,'beginner','start',learner],cwd=fresh)
+            server_log = logs/'workbench-runtime.txt'
+            verify_runtime_workbench(fresh, learner, server_log, student_env)
+            steps.append({'step':'workbench-relocated-launcher','passed':True,
+                          'log':'logs/'+server_log.name,'sha256':digest(server_log)})
             original=(learner/'src/main.rs').read_bytes()
             run('firstcard-no-overwrite',[lab,'beginner','start',learner],cwd=fresh,expected=2)
             if original!=(learner/'src/main.rs').read_bytes(): raise ValueError('existing learner overwritten')

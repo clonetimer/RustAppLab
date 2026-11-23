@@ -1,0 +1,147 @@
+<!doctype html>
+<html lang="zh-CN">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <title>RustAppLab · Rust 学习工作台</title>
+  <link rel="stylesheet" href="/assets/app.css">
+  <script src="/assets/app.js" defer></script>
+</head>
+<body>
+  <a class="skip-link" href="#lesson-panel">跳到任务卡</a>
+  <header class="masthead">
+    <div class="brand">
+      <span class="brand-mark" aria-hidden="true">Rs</span>
+      <div><strong>RustAppLab</strong><small>Rust 学习工作台</small></div>
+    </div>
+    <span id="engine-status" class="connection" data-state="pending" role="status">正在连接</span>
+  </header>
+  <div class="shell">
+    <aside class="rail" aria-labelledby="course-list-title">
+      <div class="rail-heading">
+        <h2 id="course-list-title">学习路线</h2>
+        <span id="catalog-count"></span>
+      </div>
+      <nav id="course-list" class="course-list" aria-label="课程"></nav>
+    </aside>
+    <main class="workspace" aria-labelledby="course-title">
+      <header class="course-header">
+        <div class="course-heading">
+          <h1 id="course-title">学习工作台</h1>
+          <p id="project-state" class="project-state">正在读取任务卡</p>
+        </div>
+        <div class="project-controls">
+          <button type="button" id="create-button" class="secondary" disabled>创建学习项目</button>
+          <form id="project-form" class="project-form">
+            <label class="visually-hidden" for="project-path">已有项目目录</label>
+            <input id="project-path" placeholder="已有项目目录，例如 D:\练习 Rust\FirstCard" autocomplete="off" spellcheck="false" required disabled>
+            <button type="submit" id="open-project-button" class="secondary" disabled>打开项目</button>
+          </form>
+        </div>
+      </header>
+
+      <nav id="step-list" class="step-list" aria-label="学习步骤" hidden></nav>
+
+      <div class="work-area">
+        <section id="lesson-panel" class="panel" aria-labelledby="lesson-title" tabindex="-1">
+          <header class="panel-heading">
+            <h2 id="lesson-title">任务卡</h2>
+            <button type="button" id="lesson-open" class="text-button" aria-haspopup="dialog" aria-controls="lesson-dialog" disabled>完整讲义 <span aria-hidden="true">↗</span></button>
+          </header>
+          <article id="lesson-content" class="lesson-body" tabindex="0" aria-labelledby="step-title" hidden>
+            <h3 id="step-title" tabindex="-1"></h3>
+            <dl class="objectives">
+              <div><dt>目标</dt><dd id="lesson-goal"></dd></div>
+              <div><dt>要改哪里</dt><dd id="lesson-function"></dd></div>
+              <div><dt>本步知识</dt><dd id="lesson-concept"></dd></div>
+            </dl>
+            <section class="prediction" aria-labelledby="prediction-title">
+              <h4 id="prediction-title">写代码前，先预测</h4>
+              <p id="lesson-prediction"></p>
+            </section>
+            <section class="hints" aria-labelledby="hints-title">
+              <h4 id="hints-title">遇到卡点时逐层查看</h4>
+              <div id="hint-list"></div>
+            </section>
+            <section class="lesson-exercise" aria-labelledby="experiment-title">
+              <h4 id="experiment-title" tabindex="-1">用自己的输入试一试</h4>
+              <p id="lesson-experiment"></p>
+            </section>
+            <section class="lesson-exercise" aria-labelledby="reflection-title">
+              <h4 id="reflection-title">想一想</h4>
+              <p id="lesson-reflection"></p>
+            </section>
+          </article>
+          <p id="lesson-loading" class="empty-lesson">正在读取课程目录…</p>
+        </section>
+
+        <section id="editor-panel" class="panel editor-panel" aria-labelledby="editor-title">
+          <header class="panel-heading editor-heading">
+            <h2 id="editor-title">源码编辑器</h2>
+            <div class="editor-actions">
+              <button type="button" id="save-button" class="secondary" title="Ctrl+S / ⌘S" disabled>保存</button>
+              <button type="button" id="run-button" class="secondary" disabled>运行程序</button>
+              <button type="button" id="check-button" class="primary" disabled>正式检查</button>
+            </div>
+          </header>
+          <div class="file-row">
+            <label for="file-select">文件</label>
+            <select id="file-select" disabled><option value="">请选择项目</option></select>
+            <span id="save-status" data-state="idle" role="status">尚未打开文件</span>
+            <button type="button" id="reload-file-button" class="text-button" hidden>重读磁盘版本</button>
+          </div>
+          <label class="visually-hidden" for="source-editor">当前文件内容</label>
+          <textarea id="source-editor" rows="12" wrap="off" spellcheck="false" autocapitalize="off" autocomplete="off" aria-describedby="editor-shortcuts" placeholder="创建学习项目或打开已有目录后，在这里编辑源文件。" readonly></textarea>
+          <div class="editor-footer">
+            <span id="editor-shortcuts">Tab 缩进 · Esc 后按 Tab 离开编辑器 · Ctrl / ⌘ + S 保存</span>
+            <details class="run-settings" id="run-settings">
+              <summary>运行参数</summary>
+              <div class="run-options">
+                <label for="run-args">程序参数，每行一个</label>
+                <textarea id="run-args" rows="3" spellcheck="false" autocomplete="off" autocapitalize="off" aria-describedby="args-help" disabled></textarea>
+                <p id="args-help">一行里的空格保留原样，无需加引号。留空表示无参数。点击「运行程序」使用这些输入。</p>
+              </div>
+            </details>
+          </div>
+        </section>
+      </div>
+
+      <footer class="workspace-footer">
+        <div class="status-row">
+          <div class="status-copy">
+            <p id="status-message" data-state="neutral" role="status">正在连接本地工作台…</p>
+            <p id="history-summary" hidden></p>
+          </div>
+          <div class="status-actions">
+            <button type="button" id="retry-button" class="secondary" hidden>重试</button>
+            <button type="button" id="stop-waiting-button" class="text-button" hidden>停止等待</button>
+            <button type="button" id="next-button" class="primary" hidden></button>
+          </div>
+        </div>
+
+        <section id="console-panel" class="console-panel" data-mode="normal" data-phase="idle" aria-labelledby="console-title">
+          <header class="console-heading">
+            <div class="console-title">
+              <h2 id="console-title">输出</h2>
+              <p id="console-summary" data-state="neutral" role="status">运行与检查的输出显示在这里</p>
+            </div>
+            <div class="console-actions">
+              <button type="button" id="console-size" class="text-button" aria-controls="console-output" aria-pressed="false">放大</button>
+              <button type="button" id="console-toggle" class="text-button" aria-controls="console-output" aria-expanded="true">折叠</button>
+            </div>
+          </header>
+          <pre id="console-output" tabindex="0" aria-label="本次操作的实际输出"></pre>
+        </section>
+      </footer>
+    </main>
+  </div>
+  <dialog id="lesson-dialog" aria-labelledby="lesson-dialog-title">
+    <header class="panel-heading">
+      <h2 id="lesson-dialog-title">完整讲义</h2>
+      <button type="button" class="secondary" id="lesson-close" autofocus>返回工作台</button>
+    </header>
+    <iframe id="lesson-frame" title="课程完整讲义" sandbox=""></iframe>
+  </dialog>
+</body>
+</html>

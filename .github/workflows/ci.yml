@@ -51,18 +51,30 @@ jobs:
             windows-launcher-evidence/*.txt
   browser:
     runs-on: ubuntu-latest
-    timeout-minutes: 15
+    timeout-minutes: 20
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: dtolnay/rust-toolchain@stable
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
-      - run: cargo build --locked --offline --release -p localhub -p servicedesk
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - name: Workbench draft, project and result state regressions
+        run: node --test scripts/tests/workbench_ui_state.cjs
+      - run: cargo build --locked --offline --release -p localhub -p servicedesk -p labquest
       - run: python -m pip install playwright
       - run: python -m playwright install --with-deps chromium
+      - run: sudo apt-get install -y fonts-noto-cjk
       - name: Actual browser navigation, HTTP, create/close, restart, mobile
         run: python scripts/browser_e2e.py --output browser-evidence
+      - name: Embedded learning workbench, compiler feedback and before/after screenshots
+        env:
+          WORKBENCH_BASE_REVISION: ${{ github.event.pull_request.base.sha || github.event.before }}
+        run: python scripts/workbench_browser_e2e.py --output browser-evidence/workbench
       - name: C2 real Axum browser workflow
         run: |
           cargo fetch --locked --manifest-path projects/advanced-c2/reference/Cargo.toml
@@ -135,6 +147,8 @@ jobs:
       actions: read
     steps:
       - uses: actions/checkout@v4
+        with:
+          fetch-depth: 0
       - uses: actions/setup-python@v5
         with:
           python-version: '3.12'
@@ -203,13 +217,13 @@ jobs:
           fi
           (cd candidate-release && sha256sum -c SHA256SUMS.txt)
           cat > candidate-notes.md <<'EOF'
-          Rust Book补齐候选版。完整源码、17工程学员包、C1/C2离线源码包及Windows/Linux参考运行包已验证。
-          新增所有权/切片、集合/错误传播、泛型/生命周期实操和六章118项目标审计；87项具备完整教学链，31项仍有残余，不代表全书完成率。D/E包含可打开的IDE工作区入口及配置校验，实际IDE操作仍待个人记录。
-          D/E工具和Edition迁移保留Linux/Windows真实执行证据；Nightly实验为独立选修，不替代Stable/MSRV验收。
-          先阅读QUICK_START.md；直接体验下载对应平台runtime.zip，完整学习下载source.zip。
+          网页学习工作台候选版。FirstCard 与全部 12 款 Studio 在同一页阅读中文任务卡、编辑保存源码、运行程序并查看原检查器的真实结果。
+          Windows 双击 START_WORKBENCH_WINDOWS.cmd，Linux 运行 ./START_WORKBENCH.sh；已有工程输入实际路径继续，不重新初始化。界面内置，无新增 Python、Node 或 WSL 前置。
+          完整源码、17工程学员包、C1/C2离线源码包及Windows/Linux运行包经过同提交准入；浏览器证据包含四种尺寸的实际页面和前后对照。独立作品、进阶 A/B/C 与 Book 专题保持原入口。
+          先阅读 QUICK_START.md 和 course/WORKBENCH.md；已编译工作台选择对应平台 runtime.zip，完整源码与课程选择 source.zip。
           此发布为RC，不是Stable。真实学习观察仍待填写USER_TRIAL.md，不能以自动测试代替。
-          参考运行包无需Cargo；编译/检查学员工程仍需Rust与系统工具链。Linux系统库要求见包内BUILD_INFO.json，Windows CI不等于用户本机Win10验收。
+          运行包打开工作台无需Cargo；运行或检查学员源码仍需Rust与系统工具链。StoreDesk需系统SQLite。Linux系统库要求见包内BUILD_INFO.json，Windows CI不等于用户本机Win10验收。
           版本、提交、来源指纹与所有文件校验见RELEASE_MANIFEST.json和SHA256SUMS.txt，原始证据见VERIFICATION_EVIDENCE.zip。
           EOF
-          gh release create "$tag" candidate-release/* --verify-tag --draft --prerelease --latest=false --title "Rust AppLab $version — Rust Book补齐候选版" --notes-file candidate-notes.md
+          gh release create "$tag" candidate-release/* --verify-tag --draft --prerelease --latest=false --title "Rust AppLab $version — 网页学习工作台" --notes-file candidate-notes.md
           gh release edit "$tag" --draft=false --prerelease --latest=false

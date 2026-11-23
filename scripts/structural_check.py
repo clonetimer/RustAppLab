@@ -24,6 +24,7 @@ def require(condition: bool, message: str) -> None:
 ROOT_ALLOWED = {
     "VERSION", "RELEASE_POLICY.md", "KNOWN_ISSUES.md", "VERIFY_RELEASE_WINDOWS.cmd", "VERIFY_BROWSER_WINDOWS.cmd", "Cargo.toml", "Cargo.lock", ".gitignore", ".gitattributes", "LICENSE", "PROJECT_DESIGN.md",
     "README.md", "README_START_HERE.md", "REFERENCE_ANALYSIS.md",
+    "START_WORKBENCH_WINDOWS.cmd", "START_WORKBENCH.sh",
     "RELEASE_NOTES.md", "ROADMAP.md", "START_HERE.html", "SYSTEMS_PATH.html", "RELIABILITY_PATH.html", "INDEPENDENT_PATH.html", "ADVANCED_A.html", "ADVANCED_B.html", "START_ADVANCED_B_WINDOWS.cmd", "START_ADVANCED_WINDOWS.cmd", "START_WINDOWS.cmd", "WORKSHOP.html", "CONTINUE_WINDOWS.cmd", "PREPARE_NETWORK_WINDOWS.cmd", "LEARN_NEXT_WINDOWS.cmd", "SUPPORTED_PLATFORMS.md", "VERIFY_BROWSER_WINDOWS.cmd",
 }
 APPS = ('filequest', 'loglens', 'localhub', 'safesync', 'labquest', 'unitlab', 'quizdeck', 'textscope', 'ledgerlite', 'badgeforge', 'batchmeter', 'termgarden', 'storedesk', 'minikv', 'netfetch', 'servicedesk', 'asyncboard')
@@ -51,7 +52,7 @@ def allowed(path: Path) -> bool:
     if parts[0] in ("course", "docs"):
         return path.suffix == ".md"
     if parts[0] == "scripts":
-        return path.suffix in (".py", ".sh", ".ps1")
+        return path.suffix in (".py", ".sh", ".ps1", ".cjs")
     if parts[0] == "verification":
         return path.suffix in (".md", ".txt", ".json") or path.name in (
             "LOCALHUB_UI_DOM_DESKTOP.png", "LOCALHUB_UI_DOM_MOBILE.png", "STUDIO_DESKTOP.png", "STUDIO_MOBILE.png", "MINIKV_WORKSHOP_DESKTOP.png", "MINIKV_LESSON_MOBILE.png"

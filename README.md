@@ -1,14 +1,16 @@
-# Rust AppLab · 0.19.0-rc.3 候选发布版
+# Rust AppLab · 0.19.0-rc.4 候选发布版
 
 通过亲手制作小软件学习 Rust：先读懂输入和输出，每次实现一个函数，用自己的数据验证，最后完成独立作品。
+
+**推荐从网页工作台开始。** Windows 双击 `START_WORKBENCH_WINDOWS.cmd`，Linux 执行 `./START_WORKBENCH.sh`。在一个浏览器窗口内读中文任务卡、编辑自己的源码、保存、运行和查看真实检查结果；已接入 FirstCard 与全部 12 款 Studio。安装、续学和操作说明见 [网页学习工作台](course/WORKBENCH.md)。
 
 ## 我现在应该做什么？
 
 | 你现在的位置 | 现在只做这一件事 | 做完应得到什么 |
 |---|---|---|
-| 还没有运行过 Rust | 打开 [开始指南](README_START_HERE.md)；Windows 也可双击 [START_HERE.html](START_HERE.html)，跟着做 FirstCard | 能随姓名和任务变化的个人任务卡 |
+| 还没有运行过 Rust | 按 [开始指南](README_START_HERE.md) 准备环境，打开网页工作台并创建 FirstCard | 能随姓名和任务变化的个人任务卡 |
 | **FirstCard 已经通过，不知道怎么继续** | **打开 [FirstCard 完成后的下一步](course/AFTER_FIRSTCARD.md)**；复盘后创建 UnitLab | 明确自己练到了什么，并开始第一个计算函数 |
-| 已有 `my-unitlab` 等工程，今天想接着学 | 双击 `LEARN_NEXT_WINDOWS.cmd`，或使用下方 `learn next` 命令 | 找到当前任务、要改的函数和检查命令 |
+| 已有 `my-unitlab` 等工程，今天想接着学 | 工作台选对应课程，输入实际路径并点击“打开项目” | 找到当前任务、自己的源码和真实检查结果 |
 | 当前作品三步都通过了 | 用自己的输入运行一次、试一个错误输入、写下解释，再按该作品 README 的“下一步”继续 | 有真实用途、运行结果和理解记录的作品 |
 | 想先了解整个课程 | 看 [课程地图](course/CURRICULUM.md)，再回到当前这一步 | 知道每个阶段为什么学，不必现在学完所有专题 |
 
@@ -43,15 +45,15 @@
 
 ## 选择下载内容
 
-**本页包含 [PR #12](https://github.com/clonetimer/RustAppLab/pull/12) 的学习引导与文档整理修订。** 已有 `v0.19.0-rc.3` Release 包保持原样，不含本轮新增入口。要立即使用本页全部指引，请下载 [本次修订分支源码 ZIP](https://github.com/clonetimer/RustAppLab/archive/refs/heads/docs/beginner-learning-path-20261119.zip)，解压到新的平台文件夹；保留原来的 `my-...` 工程，在新平台按 [开始指南第 4 节](README_START_HERE.md) 输入旧工程的实际路径继续。
+网页工作台随 **0.19.0-rc.4** 源码和对应平台运行包交付。请从 [Releases](https://github.com/clonetimer/RustAppLab/releases) 选择该版本及其校验文件；发布资格以同一提交的 CI 与实际 Release 为准。也可下载 [当前 main 源码 ZIP](https://github.com/clonetimer/RustAppLab/archive/refs/heads/main.zip)。旧 `v0.19.0-rc.3` 包保持原样，不会自动获得新界面。
 
-下面是已发布候选版的包类型；修订分支是源码快照，是否成为新发布版以实际 Release 与同提交 CI 为准。
+更新时解压到新的平台文件夹，保留原来的 `my-...` 工程，再从工作台打开其实际路径。
 
 | 目的 | 下载包 | 需要什么 |
 |---|---|---|
-| 先体验成品 | `RustAppLab-0.19.0-rc.3-<平台>-runtime.zip` | 对应系统；参考程序无需 Cargo，运行学习检查仍需 Rust |
-| 使用已发布候选版课程 | `RustAppLab-0.19.0-rc.3-source.zip` | Rust/Cargo 与系统构建工具；本轮新增指引请使用上方修订源码 |
-| 只取学员骨架 | `RustAppLab-0.19.0-rc.3-learner-kit.zip` | 17 个基础/进阶 A/B 工程；核心 TODO 待完成，不含 C1/C2 vendor |
+| 直接打开工作台、体验成品 | `RustAppLab-0.19.0-rc.4-<平台>-runtime.zip` | 对应系统；工作台与参考程序已编译，运行或检查自己的 Rust 仍需 Rust/Cargo |
+| 使用完整源码与课程 | `RustAppLab-0.19.0-rc.4-source.zip` | Rust/Cargo 与系统构建工具；首次打开会编译本地工作台 |
+| 只取学员骨架 | `RustAppLab-0.19.0-rc.4-learner-kit.zip` | 17 个基础/进阶 A/B 工程；核心 TODO 待完成，不含 C1/C2 vendor |
 | 离线完成异步课程 | `C1-learner-offline.zip`、`C2-learner-offline.zip` | Rust 1.85.0 已安装；包内提供锁定依赖源码 |
 | 对照异步参考实现 | `C1-reference-offline.zip`、`C2-reference-offline.zip` | Rust 1.85.0；不是预编译 EXE |
 
@@ -74,6 +76,8 @@ FirstCard → UnitLab → QuizDeck → TextScope → LedgerLite / BadgeForge / T
 
 ## 已有工程继续用
 
+网页工作台内选择课程，再输入旧工程的完整路径。课程卡来自平台内置材料，即使旧工程缺少新生成的讲义也能继续学习；已有源码不会被重新初始化。终端方式仍可使用：
+
 在完整源码包的根目录运行，不需要重建旧工程：
 
 ```powershell
@@ -86,7 +90,7 @@ cargo run --locked --offline -p labquest -- learn check "D:/练习/my-unitlab"
 
 ## 候选版范围与试用
 
-此轮功能冻结在 **B4、C1、C2**；优先修复实际使用和教学衔接问题，不再增加课程数量。
+课程范围保持在 **B4、C1、C2**；本次改善 FirstCard/Studio 的学习界面，不增加课程数量。独立作品、进阶 A/B/C 与 Book 专题继续使用原有入口。
 
 支持范围为 Windows x64 MSVC、Linux x86_64；基础/A/B 的最低 Rust 为 1.74，C1/C2 单独要求 1.85.0。StoreDesk 需系统 SQLite，见 [支持说明](SUPPORTED_PLATFORMS.md)。普通学员不需要 Python 或 Playwright，不运行维护者的发布验收脚本。
 

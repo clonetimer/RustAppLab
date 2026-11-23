@@ -1,8 +1,10 @@
-# Rust AppLab 0.19.0-rc.3 · 本轮收尾与后续范围
+# Rust AppLab 0.19.0-rc.4 · 本轮收尾与后续范围
 
 ## 已完成的功能范围
 
 基础17包、12款Studio与FirstCard、TaskPocket/PageMint独立作品；进阶A；B1–B3多程序复用；B4 Serde JSON导出；C1 Tokio/Reqwest异步下载；C2 Axum工单服务。
+
+FirstCard 与 12 款 Studio 通过原生本地网页工作台连接任务卡、源码、保存、运行和真实检查。独立作品与进阶课程保持既有执行入口，课程数量和通关规则不变。
 
 C2已包含持久化、真实并发客户端验证和优雅关闭，不再另建一门内容重复的C3。本轮以C2为功能边界，候选发布只整理文档、使用入口、交付包和证据。
 

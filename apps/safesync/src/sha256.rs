@@ -145,7 +145,7 @@ pub fn from_hex(text: &str) -> Option<Vec<u8>> {
             b'a'..=b'f' => Some(byte - b'a' + 10),
             _ => None,
         };
-        out.push(digit(pair[0])? << 4 | digit(pair[1])?);
+        out.push((digit(pair[0])? << 4) | digit(pair[1])?);
     }
     if !pairs.remainder().is_empty() {
         return None;

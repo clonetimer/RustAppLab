@@ -115,14 +115,14 @@ fn source_hashes(root: &Path) -> Result<BTreeMap<String, String>, String> {
 
 /// 只用于教学引导。报告可由学员编辑，绝不据此发出 PASS 证明。
 #[derive(Debug, Clone, Copy)]
-struct ReportState {
-    passed: u8,
-    upto: u8,
-    same_source: bool,
-    compilation_failed: bool,
+pub(crate) struct ReportState {
+    pub(crate) passed: u8,
+    pub(crate) upto: u8,
+    pub(crate) same_source: bool,
+    pub(crate) compilation_failed: bool,
 }
 impl ReportState {
-    fn step(self) -> usize {
+    pub(crate) fn step(self) -> usize {
         if self.compilation_failed {
             // Compilation failed before any milestone could run; retry its scope.
             usize::from(self.upto)
@@ -210,6 +210,11 @@ fn report_hashes(text: &str) -> BTreeMap<String, String> {
 }
 
 pub fn next(root: &Path) -> Result<String, String> {
+    navigation(root).map(|(text, _)| text)
+}
+
+/// Return the CLI guidance and the same historical snapshot used to produce it.
+pub(crate) fn navigation(root: &Path) -> Result<(String, Option<ReportState>), String> {
     let meta = fs::symlink_metadata(root).map_err(|_| {
         format!(
             "没有找到项目目录：{}。请先用 studio start 创建，或检查目录名",
@@ -255,15 +260,19 @@ pub fn next(root: &Path) -> Result<String, String> {
         out.push_str(
             "本命令只读，不执行测试、不发合格证；重新运行上面的 learn check 才能确认当前源码的行为。\n",
         );
-        return Ok(out);
+        return Ok((out, state));
     }
-    if root.join("跟着做.md").is_file() && root.join("src/main.rs").is_file() {
-        let guide = format!("\"{}\"", root.join("跟着做.md").display());
+    if first_card(root) {
+        let guide = if root.join("跟着做.md").is_file() {
+            format!("打开 \"{}\"，", root.join("跟着做.md").display())
+        } else {
+            String::new()
+        };
         let code = format!("\"{}\"", root.join("src/main.rs").display());
-        return Ok(format!("FirstCard · 第一张任务卡\n这是只读导航，不编译、不运行，也不根据 FIRST_WIN.md 判定当前源码通过。\n如果仍在完成任务：打开 {guide}，编辑 {code} 的 println! 行并保存。\n在完整 RustAppLab 平台根目录检查：\ncargo run --locked --offline -p labquest -- beginner check {q}\n需要提示时运行：\ncargo run --locked --offline -p labquest -- beginner hint 1\n\n如果当前源码已重新检查通过：换两组自己的名字与任务运行，保存文本，并解释输入怎样改变输出；完成后按下面进入 UnitLab。已有工程不必重建。\n{}", crate::beginner::UNITLAB_HANDOFF));
+        return Ok((format!("FirstCard · 第一张任务卡\n这是只读导航，不编译、不运行，也不根据 FIRST_WIN.md 判定当前源码通过。\n如果仍在完成任务：{guide}编辑 {code} 的 println! 行并保存。\n在完整 RustAppLab 平台根目录检查：\ncargo run --locked --offline -p labquest -- beginner check {q}\n需要提示时运行：\ncargo run --locked --offline -p labquest -- beginner hint 1\n\n如果当前源码已重新检查通过：换两组自己的名字与任务运行，保存文本，并解释输入怎样改变输出；完成后按下面进入 UnitLab。已有工程不必重建。\n{}", crate::beginner::UNITLAB_HANDOFF), None));
     }
     if let Some(id) = crate::independent::identify(root)? {
-        return crate::independent::next(root, id);
+        return crate::independent::next(root, id).map(|text| (text, None));
     }
 
     Err("当前目录不是已识别的 FirstCard/Studio/TaskPocket/PageMint 学习工程；请阅读 START_HERE.html，不会对目录做更改".into())
@@ -408,7 +417,36 @@ fn step_for(root: &Path, requested: Option<usize>) -> Result<usize, String> {
     Ok(last_report(root)?.map(ReportState::step).unwrap_or(1))
 }
 pub(crate) fn first_card(root: &Path) -> bool {
-    root.join("跟着做.md").is_file() && root.join("src/main.rs").is_file()
+    let main = root.join("src/main.rs");
+    if !fs::symlink_metadata(main).is_ok_and(|m| m.is_file()) {
+        return false;
+    }
+    if root.join("跟着做.md").is_file() {
+        return true;
+    }
+    first_card_manifest(root)
+}
+
+pub(crate) fn first_card_manifest(root: &Path) -> bool {
+    // Older/imported projects may no longer have their generated guide.
+    // Accept the original package identity only inside the [package] table.
+    let Ok(manifest) = require_regular(&root.join("Cargo.toml"), 64 * 1024) else {
+        return false;
+    };
+    let mut in_package = false;
+    for line in manifest.lines() {
+        let line = line.trim();
+        if line.starts_with('[') {
+            in_package = line == "[package]";
+        } else if in_package {
+            if let Some((key, value)) = line.split_once('=') {
+                if key.trim() == "name" {
+                    return matches!(value.trim(), "\"first-rust-card\"" | "'first-rust-card'");
+                }
+            }
+        }
+    }
+    false
 }
 pub(crate) fn handoff(id: &str) -> String {
     let (task, next, create) = match id {
