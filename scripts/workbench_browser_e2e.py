@@ -36,7 +36,7 @@ STATE_SHOTS = ('pending', 'firstcard-initial', 'firstcard-pass', 'firstcard-pers
                'collapsed-error', 'external-conflict', 'restored-selection')
 OBSERVATIONS = {'all-course-cards', 'full-lesson-and-hints', 'desktop-mobile-layout',
                 'save-and-reload', 'existing-project', 'dirty-navigation', 'external-conflict',
-                'disconnect-retry'}
+                'disconnect-retry', 'book-learning-bridge'}
 
 
 def screenshot_sizes():
@@ -45,6 +45,9 @@ def screenshot_sizes():
              for w, h in SIZES}
     sizes.update({name+'.png': SIZES[0] for name in STATE_SHOTS})
     sizes['mobile-pending.png'] = (320,844)
+    sizes['book-link-1440x1000.png'] = (1440, 1000)
+    sizes['book-reader-1440x1000.png'] = (1440, 1000)
+    sizes['book-reader-320x844.png'] = (320, 844)
     for course in BASE_PAGES:
         for w,h in SIZES[2:]:
             sizes[f'after-workbench-{course}-editor-{w}x{h}.png'] = (w,h)
@@ -150,6 +153,33 @@ def run_flow(page, base, tmp, out, report, expect, exe):
             step(number)
             check_card(course, number)
     report['observations'].append('all-course-cards')
+
+    # The Book bridge is real server data, not a decorative link.
+    choose('unitlab')
+    bridge = course_data('unitlab', 1)['reading']
+    assert bridge['topics'] and bridge['version_note']
+    expect(loc('#book-reading')).to_be_visible()
+    loc('#book-reading summary').click()
+    expect(loc('#book-reading-topics a').first).to_have_attribute(
+        'href', re.compile(r'^https://(rust\\.bootcss\\.com|doc\\.rust-lang\\.org)/'))
+    capture(page, out, report, 'book-link-1440x1000.png')
+
+    # D1-D6 are original offline Markdown, strictly read-only.
+    loc('#book-open').click()
+    expect(loc('#book-dialog')).to_be_visible()
+    expect(loc('#book-text')).to_contain_text('Cargo')
+    loc('#book-select').select_option('gap31')
+    expect(loc('#book-text')).to_contain_text('31 项')
+    loc('#book-select').select_option('evidence')
+    expect(loc('#book-text')).to_contain_text('学员')
+    capture(page, out, report, 'book-reader-1440x1000.png')
+    viewport(page, 320, 844)
+    expect(loc('#book-close')).to_be_visible()
+    capture(page, out, report, 'book-reader-320x844.png')
+    loc('#book-close').click()
+    viewport(page, *SIZES[0])
+    report['observations'].append('book-learning-bridge')
+
     choose('firstcard')
     step(1)
     loc('#lesson-open').click()
