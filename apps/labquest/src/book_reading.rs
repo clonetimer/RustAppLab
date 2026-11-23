@@ -121,14 +121,27 @@ pub(crate) fn workbench_json(id: &str) -> String {
         out.push('"');
         out
     }
-    let Some(reading) = mapping(id) else { return "null".to_string(); };
-    let topics = reading.topics.iter().map(|topic| format!(
-        r#"{{"title":{},"chinese":{},"official":{}}}"#,
-        quoted(topic.title), quoted(topic.chinese), quoted(topic.official)
-    )).collect::<Vec<_>>().join(",");
+    let Some(reading) = mapping(id) else {
+        return "null".to_string();
+    };
+    let topics = reading
+        .topics
+        .iter()
+        .map(|topic| {
+            format!(
+                r#"{{"title":{},"chinese":{},"official":{}}}"#,
+                quoted(topic.title),
+                quoted(topic.chinese),
+                quoted(topic.official)
+            )
+        })
+        .collect::<Vec<_>>()
+        .join(",");
     format!(
         r#"{{"topics":[{}],"question":{},"version_note":{}}}"#,
-        topics, quoted(reading.question), quoted(VERSIONS)
+        topics,
+        quoted(reading.question),
+        quoted(VERSIONS)
     )
 }
 
