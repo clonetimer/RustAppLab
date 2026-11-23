@@ -161,7 +161,7 @@ def run_flow(page, base, tmp, out, report, expect, exe):
     expect(loc('#book-reading')).to_be_visible()
     loc('#book-reading summary').click()
     expect(loc('#book-reading-topics a').first).to_have_attribute(
-        'href', re.compile(r'^https://(rust\\.bootcss\\.com|doc\\.rust-lang\\.org)/'))
+        'href', re.compile(r'^https://(rust\.bootcss\.com|doc\.rust-lang\.org)/'))
     capture(page, out, report, 'book-link-1440x1000.png')
 
     # D1-D6 are original offline Markdown, strictly read-only.
