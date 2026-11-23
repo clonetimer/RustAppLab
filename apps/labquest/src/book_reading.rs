@@ -200,38 +200,6 @@ pub(crate) fn workbench_topic(id: &str) -> Option<(&'static str, &'static str)> 
     }
 }
 
-#[cfg(test)]
-mod workbench_topic_tests {
-    use super::*;
-    #[test]
-    fn topics_are_bounded_and_not_user_paths() {
-        for id in [
-            "d1",
-            "d2",
-            "d3",
-            "d4",
-            "d5",
-            "d6a",
-            "d6b",
-            "ownership",
-            "collections",
-            "generics",
-        ] {
-            assert!(workbench_topic(id).unwrap().1.len() > 200);
-        }
-        for id in [
-            "",
-            "../README.md",
-            "/etc/passwd",
-            "d1/..",
-            "D1",
-            "http://127.0.0.1",
-        ] {
-            assert!(workbench_topic(id).is_none());
-        }
-    }
-}
-
 pub(crate) fn overview() -> String {
     format!("Rust AppLab · 对照阅读\n\n本项目以现有作品练习，Book 用于理解当前行为：\nFirstCard → Cargo 与字符串；12 款 Studio → match、Result、借用、测试与并发；TaskPocket / PageMint → 独立作品；进阶 A / B → trait、工作空间与跨模块验证。\n按作品查看：cargo run --offline -p labquest -- learn reading <学员工程目录>\n只选当前作品的 1–3 个概念，预测自己的输入，再回到 learn check 或 advanced / advanced-b check 验证。\n中文参考：https://rust.bootcss.com/\n官方参考：https://doc.rust-lang.org/book/\n\n{VERSIONS}\n{READ_ONLY}\n")
 }
@@ -320,4 +288,36 @@ pub(crate) fn html(id: &str) -> Option<String> {
     }
     text.push_str(&format!("</ul><p>用自己的输入思考/实验：{}</p><p>回到平台运行 <code>learn reading &lt;本学员工程目录&gt;</code> 查看导航，再用 <code>learn check &lt;本学员工程目录&gt;</code> 实际验证。</p><p>{}</p><p>{}</p></section>", escape(reading.question), escape(VERSIONS), escape(READ_ONLY)));
     Some(text)
+}
+
+#[cfg(test)]
+mod workbench_topic_tests {
+    use super::*;
+    #[test]
+    fn topics_are_bounded_and_not_user_paths() {
+        for id in [
+            "d1",
+            "d2",
+            "d3",
+            "d4",
+            "d5",
+            "d6a",
+            "d6b",
+            "ownership",
+            "collections",
+            "generics",
+        ] {
+            assert!(workbench_topic(id).unwrap().1.len() > 200);
+        }
+        for id in [
+            "",
+            "../README.md",
+            "/etc/passwd",
+            "d1/..",
+            "D1",
+            "http://127.0.0.1",
+        ] {
+            assert!(workbench_topic(id).is_none());
+        }
+    }
 }
