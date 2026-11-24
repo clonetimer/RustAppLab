@@ -184,6 +184,70 @@ fn assert_job(job: &str, action: &str, success: bool) {
     assert_eq!(scalar(job, "stale"), "false", "{job}");
 }
 
+#[test]
+fn error_experiments_run_in_isolation_and_do_not_award_a_course_pass() {
+    let server = Server::start();
+    let before = server.get("/api/course?id=firstcard");
+    assert_eq!(scalar(&before, "project"), "null");
+    for script in ["knowledge.js", "experiments.js"] {
+        assert!(!server.get(&format!("/assets/{script}")).is_empty());
+    }
+    let material = server.get("/api/experiment?code=E0502");
+    assert_eq!(scalar(&material, "code"), "E0502");
+    assert!(
+        material.contains("\"failure\":")
+            && material.contains("\"repair\":")
+            && material.contains("assert_eq!")
+    );
+    assert_eq!(
+        server.request("GET", "/api/experiment?code=unknown", "").0,
+        404
+    );
+    assert_eq!(
+        server
+            .post(
+                "/api/experiment",
+                &[("code", "E0502"), ("variant", "shell")]
+            )
+            .0,
+        400
+    );
+    assert_eq!(
+        server
+            .post(
+                "/api/experiment",
+                &[
+                    ("code", "E0502"),
+                    ("variant", "failure"),
+                    ("source", "untrusted")
+                ]
+            )
+            .0,
+        400
+    );
+    let (status, job) = server.post(
+        "/api/experiment",
+        &[("code", "E0502"), ("variant", "failure")],
+    );
+    assert_eq!(status, 202, "{job}");
+    let id = scalar(&job, "id");
+    assert!(server.get("/api/health").contains("rustapplab-workbench"));
+    let deadline = Instant::now() + Duration::from_secs(40);
+    loop {
+        let result = server.get(&format!("/api/experiment-job?id={id}"));
+        if scalar(&result, "status") != "running" {
+            assert_eq!(scalar(&result, "matched"), "true", "{result}");
+            assert_ne!(scalar(&result, "compiler_exit_code"), "0", "{result}");
+            assert_eq!(scalar(&result, "program_exit_code"), "null");
+            break;
+        }
+        assert!(Instant::now() < deadline, "{result}");
+        sleep(Duration::from_millis(20));
+    }
+    assert_eq!(server.get("/api/course?id=firstcard"), before);
+    assert!(!server.workspace.join("my-first-card").exists());
+}
+
 fn initialize_old_project(command: &[&str], path: &Path) {
     let result = Command::new(env!("CARGO_BIN_EXE_labquest"))
         .args(command)

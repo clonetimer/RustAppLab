@@ -15,6 +15,7 @@ from urllib.parse import urlencode, urlparse
 from browser_e2e import find_browser
 from release_check import ROOT, source_id
 from workbench_process import running_workbench
+from book_workbench_browser_e2e import run_book_flow
 
 # Immutable comparison for manual runs and future PRs that already contain
 # the workbench. The introduction PR uses its actual base revision.
@@ -36,7 +37,7 @@ STATE_SHOTS = ('pending', 'firstcard-initial', 'firstcard-pass', 'firstcard-pers
                'collapsed-error', 'external-conflict', 'restored-selection')
 OBSERVATIONS = {'all-course-cards', 'full-lesson-and-hints', 'desktop-mobile-layout',
                 'save-and-reload', 'existing-project', 'dirty-navigation', 'external-conflict',
-                'disconnect-retry'}
+                'disconnect-retry', 'book-learning-bridge'}
 
 
 def screenshot_sizes():
@@ -45,6 +46,9 @@ def screenshot_sizes():
              for w, h in SIZES}
     sizes.update({name+'.png': SIZES[0] for name in STATE_SHOTS})
     sizes['mobile-pending.png'] = (320,844)
+    sizes['book-link-1440x1000.png'] = (1440, 1000)
+    sizes['book-reader-1440x1000.png'] = (1440, 1000)
+    sizes['book-reader-320x844.png'] = (320, 844)
     for course in BASE_PAGES:
         for w,h in SIZES[2:]:
             sizes[f'after-workbench-{course}-editor-{w}x{h}.png'] = (w,h)
@@ -140,8 +144,9 @@ def run_flow(page, base, tmp, out, report, expect, exe):
 
     page.goto(base+'/', wait_until='domcontentloaded')
     catalog = get_json(page, base, '/api/catalog')['courses']
-    assert len(catalog) == 13 and len({c['id'] for c in catalog}) == 13
-    expect(loc('#course-list [data-course]')).to_have_count(13)
+    expected = {'firstcard', 'unitlab', 'quizdeck', 'textscope', 'ledgerlite', 'badgeforge', 'termgarden', 'batchmeter', 'minikv', 'netfetch', 'servicedesk', 'storedesk', 'asyncboard', 'book-d1', 'book-d2', 'book-d3', 'book-d4', 'book-d5', 'book-d6', 'book-foundations'}
+    assert {c['id'] for c in catalog} == expected and len(catalog) == len(expected)
+    expect(loc('#course-list [data-course]')).to_have_count(len(expected))
     for item in catalog:
         course = item['id']
         choose(course)
@@ -150,6 +155,34 @@ def run_flow(page, base, tmp, out, report, expect, exe):
             step(number)
             check_card(course, number)
     report['observations'].append('all-course-cards')
+
+    # The Book bridge is real server data, not a decorative link.
+    choose('unitlab')
+    bridge = course_data('unitlab', 1)['reading']
+    assert bridge['topics'] and bridge['version_note']
+    expect(loc('#book-reading')).to_be_visible()
+    loc('#book-reading summary').click()
+    expect(loc('#book-reading-topics a').first).to_have_attribute(
+        'href', re.compile(r'^https://(rust\.bootcss\.com|doc\.rust-lang\.org)/'))
+    capture(page, out, report, 'book-link-1440x1000.png')
+
+    # Local lessons remain readable without selecting a project or changing code.
+    loc('#book-open').click()
+    expect(loc('#book-dialog')).to_be_visible()
+    loc('#book-select').select_option('d1')
+    expect(loc('#book-text')).to_contain_text('Cargo')
+    loc('#book-select').select_option('gap31')
+    expect(loc('#book-text')).to_contain_text('31 项')
+    loc('#book-select').select_option('evidence')
+    expect(loc('#book-text')).to_contain_text('学员')
+    capture(page, out, report, 'book-reader-1440x1000.png')
+    viewport(page, 320, 844)
+    expect(loc('#book-close')).to_be_visible()
+    capture(page, out, report, 'book-reader-320x844.png')
+    loc('#book-close').click()
+    viewport(page, *SIZES[0])
+    report['observations'].append('book-learning-bridge')
+
     choose('firstcard')
     step(1)
     loc('#lesson-open').click()
@@ -323,6 +356,7 @@ def main():
                 cmd = [str(exe), 'workbench', '--workspace', str(workspace), '--port']
                 with running_workbench([*cmd,'0'], tmp, out/'server.txt') as base:
                     run_flow(page, base, tmp, out, report, expect, exe)
+                    report['book_practice'] = run_book_flow(page, base, tmp, out, expect)
                 # Refuse a real connection while preserving the page. Restart
                 # the real server on the same URL before retrying navigation.
                 page.locator('#course-list [data-course="quizdeck"]').click()

@@ -1,6 +1,6 @@
 //! The browser edits a small, explicitly selected learner project. All course
 //! content and historical check interpretation come from the offline CLI.
-use super::ApiError;
+use super::{book_projects, ApiError};
 use crate::{beginner, learning, learning_cards, studio};
 use learning_cards::Card;
 use safesync::sha256::{hex, Sha256};
@@ -30,12 +30,14 @@ const FIRST: Card = Card {
 };
 
 fn course_ids() -> impl Iterator<Item = &'static str> {
-    std::iter::once(FIRST.id).chain(
-        learning_cards::CARDS
-            .iter()
-            .filter(|c| c.step == 1)
-            .map(|c| c.id),
-    )
+    std::iter::once(FIRST.id)
+        .chain(
+            learning_cards::CARDS
+                .iter()
+                .filter(|c| c.step == 1)
+                .map(|c| c.id),
+        )
+        .chain(book_projects::COURSES.iter().map(|c| c.id))
 }
 
 struct Course {
@@ -46,6 +48,14 @@ struct Course {
 }
 
 fn course(id: &str) -> Result<Course, ApiError> {
+    if let Some(book) = book_projects::get(id) {
+        return Ok(Course {
+            title: book.title,
+            steps: book_projects::STEPS,
+            default_file: book.default_file,
+            page: "",
+        });
+    }
     if id == FIRST.id {
         return Ok(Course {
             title: FIRST_TITLE,
@@ -72,6 +82,9 @@ pub(super) fn validate_step(id: &str, step: usize) -> Result<(), ApiError> {
 }
 
 fn run_args(id: &str) -> &'static [&'static str] {
+    if let Some(book) = book_projects::get(id) {
+        return book.run.as_ref().map(|run| run.args).unwrap_or(&[]);
+    }
     match id {
         "firstcard" => &["小林", "写 Rust"],
         "unitlab" => &["convert", "25", "c", "f"],
@@ -205,8 +218,29 @@ struct Snapshot {
 }
 
 impl Snapshot {
-    fn read(root: &Path) -> Result<Self, ApiError> {
+    fn read(root: &Path, id: &str) -> Result<Self, ApiError> {
         let mut snapshot = Self::default();
+        if let Some(book) = book_projects::get(id) {
+            snapshot.walk_book(root, "", book, 0, &mut TreeBudget::default())?;
+            for file in book.files.iter().filter(|file| book.protected(file.path)) {
+                let actual = snapshot.files.get(file.path).ok_or_else(|| {
+                    invalid(format!(
+                        "Book 工程缺少课程检查文件 {}；请创建新学员副本并迁移自己的源码，保留旧目录作为备份",
+                        file.path
+                    ))
+                })?;
+                let actual = std::str::from_utf8(&actual.bytes)
+                    .map_err(|_| invalid("Book 工程清单和检查文件需要是 UTF-8"))?;
+                if actual.replace("\r\n", "\n") != file.content.replace("\r\n", "\n") {
+                    return Err(invalid(format!(
+                        "课程清单或检查文件 {} 已改变；工作台只接受本课程的原始清单和检查文件",
+                        file.path
+                    )));
+                }
+            }
+            snapshot.file(book.default_file)?;
+            return Ok(snapshot);
+        }
         snapshot.insert(root, "Cargo.toml", false, MAX_BYTES)?;
         snapshot.walk(root, "src", true, 0, &mut TreeBudget::default())?;
         if present(&root.join("samples"))? {
@@ -285,6 +319,66 @@ impl Snapshot {
         Ok(())
     }
 
+    fn walk_book(
+        &mut self,
+        root: &Path,
+        rel: &str,
+        book: &book_projects::BookCourse,
+        depth: usize,
+        budget: &mut TreeBudget,
+    ) -> Result<(), ApiError> {
+        let dir = root.join(rel);
+        if depth > MAX_DEPTH || !metadata(&dir)?.is_dir() {
+            return Err(invalid("Book 工程需要普通目录，嵌套最多 16 层"));
+        }
+        for item in fs::read_dir(&dir).map_err(|e| io_error(&dir, e))? {
+            let entry = item.map_err(|e| io_error(&dir, e))?;
+            budget.entries += 1;
+            if budget.entries > 1024 {
+                return Err(ApiError::new(413, "目录条目过多"));
+            }
+            let name = entry
+                .file_name()
+                .into_string()
+                .map_err(|_| invalid("文件名需要是 UTF-8"))?;
+            if name.contains(['\\', ':']) || name.chars().any(char::is_control) {
+                return Err(invalid("文件名包含不可用的路径字符"));
+            }
+            let child = if rel.is_empty() {
+                name.clone()
+            } else {
+                format!("{rel}/{name}")
+            };
+            let meta = metadata(&entry.path())?;
+            if meta.is_dir() {
+                // Cargo output and Git metadata are not inputs. Their directory
+                // itself must still be real, never a symlink or reparse point.
+                if name == "target" || name == ".git" {
+                    continue;
+                }
+                if name == ".cargo" {
+                    return Err(invalid("Book 学员副本不能覆盖课程的 Cargo 执行配置"));
+                }
+                self.walk_book(root, &child, book, depth + 1, budget)?;
+                continue;
+            }
+            let canonical = book.files.iter().any(|file| file.path == child);
+            let source = book.source_path(&child);
+            if !canonical && !source && child != "LEARNING_LOG.md" {
+                return Err(invalid(format!(
+                    "Book 工程包含课程外的输入文件 {child}；请在干净的学员副本中继续"
+                )));
+            }
+            budget.files += 1;
+            if budget.files > MAX_FILES {
+                return Err(ApiError::new(413, "Book 工程最多支持 64 个输入文件"));
+            }
+            let editable = (source && child.ends_with(".rs")) || child == "LEARNING_LOG.md";
+            budget.bytes += self.insert(root, &child, editable, MAX_BYTES - budget.bytes)?;
+        }
+        Ok(())
+    }
+
     fn file(&self, rel: &str) -> Result<&ProjectFile, ApiError> {
         self.files
             .get(rel)
@@ -332,6 +426,16 @@ fn present(path: &Path) -> Result<bool, ApiError> {
 
 fn identify(root: &Path, id: &str) -> Result<(), ApiError> {
     check_dirs(root)?;
+    if let Some(book) = book_projects::get(id) {
+        let canonical = root.canonicalize().map_err(|e| io_error(root, e))?;
+        if book.is_reference(&canonical) {
+            return Err(invalid(
+                "这是课程参考源码，请先创建学员副本；工作台不会编辑老师的原始工程",
+            ));
+        }
+        Snapshot::read(root, id)?;
+        return Ok(());
+    }
     for name in [".applab-studio", ".studio-reports"] {
         let path = root.join(name);
         if present(&path)? {
@@ -375,7 +479,7 @@ impl Workspace {
         };
         for id in course_ids() {
             let path = ws.default_path(id);
-            if identify(&path, id).is_ok() && Snapshot::read(&path).is_ok() {
+            if identify(&path, id).is_ok() && Snapshot::read(&path, id).is_ok() {
                 ws.selected.insert(id.to_owned(), path);
             }
         }
@@ -395,11 +499,14 @@ impl Workspace {
         for id in course_ids() {
             let c = course(id)?;
             entries.push(format!(
-                "{{\"id\":{},\"title\":{},\"steps\":{},\"default_file\":{}}}",
+                "{{\"id\":{},\"title\":{},\"steps\":{},\"default_file\":{},\"kind\":{},\"can_run\":{},\"lesson_topic\":{}}}",
                 json_string(id),
                 json_string(c.title),
                 json_list(c.steps.iter().copied()),
-                json_string(c.default_file)
+                json_string(c.default_file),
+                json_string(if book_projects::get(id).is_some() { "book" } else { "studio" }),
+                book_projects::get(id).map(|book| book.run.is_some()).unwrap_or(true),
+                book_projects::get(id).map(|book| json_string(book.lesson_topic)).unwrap_or_else(|| "null".into())
             ));
         }
         Ok(format!(
@@ -421,7 +528,11 @@ impl Workspace {
 
     fn card_json(&self, id: &str, step: usize, project: &str) -> Result<String, ApiError> {
         let c = course(id)?;
-        let card = if id == FIRST.id {
+        let book = book_projects::get(id);
+        let book_card = book.map(|book| book.card(step));
+        let card = if let Some(card) = book_card.as_ref() {
+            card
+        } else if id == FIRST.id {
             &FIRST
         } else {
             learning_cards::get(id, step)
@@ -434,16 +545,24 @@ impl Workspace {
             .unwrap_or_else(|| "null".into());
         Ok(format!(concat!("{{\"id\":{},\"title\":{},\"step\":{},\"step_count\":{},\"step_title\":{},",
             "\"goal\":{},\"function\":{},\"concept\":{},\"prediction\":{},\"hints\":{},",
-            "\"experiment\":{},\"reflection\":{},\"next_course\":{},\"run_args\":{},\"project\":{}}}"),
+            "\"experiment\":{},\"reflection\":{},\"next_course\":{},\"run_args\":{},\"reading\":{},\"project\":{},",
+            "\"kind\":{},\"can_run\":{},\"lesson_topic\":{}}}"),
             json_string(id), json_string(c.title), step, c.steps.len(), json_string(c.steps[step-1]),
             json_string(card.goal), json_string(card.function), json_string(card.concept), json_string(card.prediction),
-            json_list(card.hints), json_string(card.experiment), json_string(card.reflection), next, json_list(run_args(id).iter().copied()), project))
+            json_list(card.hints), json_string(card.experiment), json_string(card.reflection), next, json_list(run_args(id).iter().copied()), crate::book_reading::workbench_json(id), project,
+            json_string(if book.is_some() { "book" } else { "studio" }),
+            book.map(|book| book.run.is_some()).unwrap_or(true),
+            book.map(|book| json_string(book.lesson_topic)).unwrap_or_else(|| "null".into())))
     }
 
     fn project_json(path: &Path, id: &str) -> Result<String, ApiError> {
         identify(path, id)?;
-        let snap = Snapshot::read(path)?;
-        let (text, state) = learning::navigation(path).map_err(invalid)?;
+        let snap = Snapshot::read(path, id)?;
+        let (text, state) = if book_projects::get(id).is_some() {
+            ("Book 实验工程：按预测、修改、检查、解释、迁移完成学习记录。检查执行当前副本的真实单测和文档测试；通过不代表学习步骤已完成。".to_string(), None)
+        } else {
+            learning::navigation(path).map_err(invalid)?
+        };
         let history = state.map(|r| format!("{{\"passed_steps\":{},\"upto_step\":{},\"same_source\":{},\"compilation_failed\":{}}}", r.passed, r.upto, r.same_source, r.compilation_failed)).unwrap_or_else(|| "null".into());
         Ok(format!(
             concat!(
@@ -460,6 +579,14 @@ impl Workspace {
     }
 
     pub(super) fn lesson_html(&self, id: &str) -> Result<String, ApiError> {
+        if let Some(book) = book_projects::get(id) {
+            let body = book
+                .readme()
+                .replace('&', "&amp;")
+                .replace('<', "&lt;")
+                .replace('>', "&gt;");
+            return Ok(format!("<!doctype html><html lang=\"zh-CN\"><meta charset=\"utf-8\"><meta name=\"viewport\" content=\"width=device-width, initial-scale=1\"><title>{}</title><body><pre>{body}</pre></body></html>", book.title));
+        }
         Ok(course(id)?.page.to_owned())
     }
 
@@ -473,7 +600,9 @@ impl Workspace {
                 format!("已有路径不会覆盖：{}；请打开已有工程", path.display()),
             ));
         }
-        if id == FIRST.id {
+        if let Some(book) = book_projects::get(id) {
+            book.create(&path)
+        } else if id == FIRST.id {
             beginner::init(&path)
         } else {
             studio::init(id, &path)
@@ -506,12 +635,12 @@ impl Workspace {
 
     pub(super) fn source_digest(&self, id: &str) -> Result<String, ApiError> {
         let root = self.project_path(id)?;
-        Ok(Snapshot::read(&root)?.digest(&root))
+        Ok(Snapshot::read(&root, id)?.digest(&root))
     }
 
     pub(super) fn file_json(&self, id: &str, rel: &str) -> Result<String, ApiError> {
         let root = self.project_path(id)?;
-        let snapshot = Snapshot::read(&root)?;
+        let snapshot = Snapshot::read(&root, id)?;
         let bytes = &snapshot.file(rel)?.bytes;
         let content = std::str::from_utf8(bytes).map_err(|_| invalid("文本需要是 UTF-8"))?;
         Ok(format!(
@@ -534,13 +663,23 @@ impl Workspace {
             return Err(ApiError::new(413, "文件大小超过 1 MiB"));
         }
         let root = self.project_path(id)?;
-        let mut snapshot = Snapshot::read(&root)?;
+        let mut snapshot = Snapshot::read(&root, id)?;
         let file = snapshot.file(rel)?;
         let path = root.join(rel);
         if file_revision(&path, &file.bytes) != revision {
             return Err(conflict());
         }
-        if let Some((dir, _)) = rel.split_once('/') {
+        if book_projects::get(id).is_some() {
+            let other_bytes: usize = snapshot
+                .files
+                .iter()
+                .filter(|(p, _)| p.as_str() != rel)
+                .map(|(_, file)| file.bytes.len())
+                .sum();
+            if other_bytes + content.len() > MAX_BYTES {
+                return Err(ApiError::new(413, "Book 工程输入总量超过 1 MiB"));
+            }
+        } else if let Some((dir, _)) = rel.split_once('/') {
             let prefix = format!("{dir}/");
             let other_bytes: usize = snapshot
                 .files
@@ -632,7 +771,10 @@ mod tests {
             assert!(ws.lesson_html(id).unwrap().contains("</html>"));
             assert!(ws.course_json(id, 1).unwrap().contains("\"project\":null"));
         }
-        assert_eq!(course_ids().count(), 13);
+        assert_eq!(course_ids().count(), 13 + book_projects::COURSES.len());
+        let unitlab = ws.course_json("unitlab", 1).unwrap();
+        assert!(unitlab.contains(r#""reading":{"topics":["#));
+        assert!(unitlab.contains("rust.bootcss.com/ch06-02-match.html"));
         for card in learning_cards::CARDS {
             let course = ws.course_json(card.id, card.step).unwrap();
             for field in [card.function, card.goal, card.hints[2], card.reflection] {
@@ -642,6 +784,180 @@ mod tests {
         assert!(validate_step("firstcard", 2).is_err());
         assert!(validate_step("unitlab", 0).is_err());
         assert!(validate_step("taskpocket", 1).is_err());
+    }
+
+    #[test]
+    fn book_copies_expose_nested_sources_without_fabricated_history() {
+        let (_parent, mut ws) = workspace();
+        let cases = [
+            ("book-d1", "book-card/src/lib.rs"),
+            ("book-d2", "smart-pointer-lab/src/lib.rs"),
+            ("book-d3", "oop-pattern-lab/src/lib.rs"),
+            ("book-d4", "advanced-lab/src/lib.rs"),
+            ("book-d5", "webserver-lab/src/lib.rs"),
+            ("book-d6", "appendix-lab/src/lib.rs"),
+            ("book-foundations", "foundation-lab/src/lib.rs"),
+        ];
+        for (id, source) in cases {
+            let card = ws.create(id).unwrap();
+            assert!(card.contains("\"kind\":\"book\""), "{id}");
+            assert!(card.contains("\"history\":null"), "{id}");
+            assert!(ws.file_json(id, source).is_ok(), "{id}: {source}");
+            assert!(ws.file_json(id, "LEARNING_LOG.md").is_ok());
+            assert!(ws.file_json(id, "Cargo.toml").is_err());
+            assert!(ws.file_json(id, "Cargo.lock").is_err());
+            assert_eq!(ws.create(id).unwrap_err().status, 409);
+        }
+    }
+
+    #[test]
+    fn book_check_inputs_are_immutable_and_source_edits_change_freshness() {
+        let (_parent, mut ws) = workspace();
+        ws.create("book-d1").unwrap();
+        let root = ws.project_path("book-d1").unwrap();
+        let before = ws.source_digest("book-d1").unwrap();
+        let source = root.join("book-card/src/lib.rs");
+        let original = fs::read(&source).unwrap();
+        let revised = format!(
+            "{}\n// 学员自己的实验\n",
+            String::from_utf8_lossy(&original)
+        );
+        ws.save(
+            "book-d1",
+            "book-card/src/lib.rs",
+            &revised,
+            &file_revision(&source, &original),
+        )
+        .unwrap();
+        assert_ne!(ws.source_digest("book-d1").unwrap(), before);
+        assert!(ws
+            .file_json("book-d1", "cargo-applab-map/tests/cli.rs")
+            .is_err());
+        fs::write(root.join("cargo-applab-map/tests/cli.rs"), "// no tests").unwrap();
+        assert!(ws.source_digest("book-d1").is_err());
+    }
+
+    #[test]
+    fn book_nested_input_budget_and_extra_check_files_are_enforced() {
+        let (_parent, mut ws) = workspace();
+        ws.create("book-d4").unwrap();
+        let root = ws.project_path("book-d4").unwrap();
+        let source = root.join("d4-proc-macros/src/lib.rs");
+        let original = fs::read(&source).unwrap();
+        assert_eq!(
+            ws.save(
+                "book-d4",
+                "d4-proc-macros/src/lib.rs",
+                &"x".repeat(MAX_BYTES),
+                &file_revision(&source, &original)
+            )
+            .unwrap_err()
+            .status,
+            413
+        );
+        assert_eq!(fs::read(&source).unwrap(), original);
+        fs::write(
+            root.join("advanced-lab/tests/extra.rs"),
+            "#[test] fn fabricated() {}",
+        )
+        .unwrap();
+        assert!(ws.source_digest("book-d4").is_err());
+        fs::remove_file(root.join("advanced-lab/tests/extra.rs")).unwrap();
+        fs::write(root.join("advanced-lab/build.rs"), "fn main() {}").unwrap();
+        assert!(ws.source_digest("book-d4").is_err());
+        fs::remove_file(root.join("advanced-lab/build.rs")).unwrap();
+        fs::create_dir(root.join(".cargo")).unwrap();
+        assert!(ws.source_digest("book-d4").is_err());
+        fs::remove_dir(root.join(".cargo")).unwrap();
+        let before = ws.source_digest("book-d4").unwrap();
+        let log = root.join("LEARNING_LOG.md");
+        let old_log = fs::read(&log).unwrap();
+        ws.save(
+            "book-d4",
+            "LEARNING_LOG.md",
+            "我预测宏会在编译期展开",
+            &file_revision(&log, &old_log),
+        )
+        .unwrap();
+        assert_eq!(ws.source_digest("book-d4").unwrap(), before);
+    }
+
+    #[cfg(unix)]
+    #[test]
+    fn book_nested_sources_and_output_paths_cannot_follow_symlinks() {
+        use std::os::unix::fs::symlink;
+        let (parent, mut ws) = workspace();
+        ws.create("book-d1").unwrap();
+        let root = ws.project_path("book-d1").unwrap();
+        let external = parent.0.join("outside.rs");
+        fs::write(&external, "// preserved").unwrap();
+        symlink(&external, root.join("book-card/src/linked.rs")).unwrap();
+        assert!(ws.file_json("book-d1", "book-card/src/linked.rs").is_err());
+        fs::remove_file(root.join("book-card/src/linked.rs")).unwrap();
+        symlink(&parent.0, root.join("target")).unwrap();
+        assert!(ws.source_digest("book-d1").is_err());
+        assert_eq!(fs::read_to_string(external).unwrap(), "// preserved");
+    }
+
+    #[test]
+    fn teacher_book_sources_are_not_opened_for_editing() {
+        let (_parent, mut ws) = workspace();
+        let reference = Path::new(env!("CARGO_MANIFEST_DIR"))
+            .join("../../projects/book-d1-cargo")
+            .canonicalize()
+            .unwrap();
+        assert_eq!(ws.open("book-d1", &reference).unwrap_err().status, 400);
+    }
+
+    #[test]
+    fn learner_kit_book_references_are_read_only_without_platform_sources() {
+        let (parent, mut ws) = workspace();
+        let kit = parent.0.join("learner-kit");
+        fs::create_dir_all(kit.join("projects")).unwrap();
+        fs::create_dir(kit.join("course")).unwrap();
+        // These root paths are shipped by package_learner_kit.py. The kit does
+        // not contain apps/labquest; reference detection must not depend on it.
+        for name in [
+            "START_HERE.md",
+            "SUPPORTED_PLATFORMS.md",
+            "course/CURRICULUM.md",
+        ] {
+            fs::write(kit.join(name), "learner-kit material").unwrap();
+        }
+        let reference = kit.join("projects/book-d6-appendices");
+        book_projects::get("book-d6")
+            .unwrap()
+            .create(&reference)
+            .unwrap();
+        assert!(!kit.join("apps").exists());
+        assert_eq!(ws.open("book-d6", &reference).unwrap_err().status, 400);
+        let standalone = parent.0.join("my-older-book-copy");
+        fs::rename(&reference, &standalone).unwrap();
+        assert!(ws.open("book-d6", &standalone).is_ok());
+    }
+
+    #[test]
+    fn standalone_book_copy_keeps_edits_and_rejects_wrong_identity() {
+        let (parent, mut ws) = workspace();
+        ws.create("book-d4").unwrap();
+        let old = ws.project_path("book-d4").unwrap();
+        let moved = parent.0.join("已有 D4 工程");
+        fs::rename(&old, &moved).unwrap();
+        fs::remove_file(moved.join("README.md")).unwrap();
+        fs::write(moved.join("advanced-lab/src/lib.rs"), "// 我的修改").unwrap();
+        assert!(ws.open("book-d2", &moved).is_err());
+        assert!(ws.open("book-d4", &moved).is_ok());
+        assert_eq!(
+            fs::read_to_string(moved.join("advanced-lab/src/lib.rs")).unwrap(),
+            "// 我的修改"
+        );
+        assert!(!moved.join("README.md").exists());
+        fs::write(
+            moved.join("advanced-lab/Cargo.toml"),
+            "[package]\nname = \"unrelated\"\n",
+        )
+        .unwrap();
+        assert!(ws.open("book-d4", &moved).is_err());
     }
 
     #[test]

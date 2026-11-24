@@ -58,10 +58,11 @@ def pack_runtime(destination: Path, files: dict[str, Path], info: dict, notices:
 Windows结果来自CI runner，不代表你的Win10/11已经验收。Linux需兼容的glibc及系统库，具体构建环境见BUILD_INFO.json；StoreDesk另需系统SQLite。
 查阅完整平台源码、独立作品与进阶课程，请另取同版本source.zip并打开START_HERE.html；B4/C1/C2依赖准备按各课讲义进行。
 
-## 在浏览器学习 FirstCard 和 12 个 Studio 项目
+## 在浏览器学习 FirstCard、12 个 Studio 项目和 D1–D6 专项
 
 Windows 双击 START_WORKBENCH_WINDOWS.cmd，Linux 在解压目录运行 ./START_WORKBENCH.sh。请保持终端打开。
 若浏览器未自动打开，把终端中 http://127.0.0.1 地址复制到浏览器。可直接打开已有项目，在工作台读任务、编辑、保存并检查。
+“查知识 · 找实验”关联 Rust Book、本地讲义与编译错误对照实验；7 个 Book 专项入口可创建个人副本、编辑并运行真实测试。
 如 Linux 解压后没有执行权限，运行 chmod +x START_WORKBENCH.sh bin/*。正式检查与运行学员程序需要 Rust 和 Cargo。
 
 ## 先体验
@@ -114,9 +115,16 @@ def verify_runtime_workbench(fresh: Path, learner: Path, logfile: Path, env: dic
                 return response.read()
 
         catalog = json.loads(fetch('/api/catalog'))
-        if len(catalog['courses']) != 13 or catalog['courses'][0]['id'] != 'firstcard':
+        expected = {'firstcard', 'unitlab', 'quizdeck', 'textscope', 'ledgerlite',
+                    'badgeforge', 'termgarden', 'batchmeter', 'minikv', 'netfetch',
+                    'servicedesk', 'storedesk', 'asyncboard', 'book-d1', 'book-d2',
+                    'book-d3', 'book-d4', 'book-d5', 'book-d6', 'book-foundations'}
+        actual = [course['id'] for course in catalog['courses']]
+        if len(actual) != len(expected) or set(actual) != expected or actual[0] != 'firstcard':
             raise ValueError('relocated runtime lacks its embedded course catalog')
         for route, marker in (('/', b'source-editor'), ('/assets/app.js', b'/api/'),
+                              ('/assets/knowledge.js', b'knowledgeMatches'),
+                              ('/assets/experiments.js', b'/api/experiment'),
                               ('/assets/app.css', b'{'), ('/api/lesson?id=unitlab', b'UnitLab')):
             if marker not in fetch(route):
                 raise ValueError('relocated runtime lacks embedded content: '+route)

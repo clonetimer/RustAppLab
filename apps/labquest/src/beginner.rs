@@ -30,13 +30,14 @@ const PROJECT_README: &str = r#"# FirstCard · 从一行输出认识 Rust
 
 这次练习要让你输入的名字和任务出现在任务卡中。你会修改一行代码，保存、运行、比较结果，再把自己的任务卡存成文本文件。按 [跟着做.md](跟着做.md) 从第 1 步开始。
 
-## 先认清三个文件
+## 先认清学习文件
 
 | 文件 | 这次用它做什么 |
 |---|---|
 | [src/main.rs](src/main.rs) | 你的 Rust 源码；只修改 `println!` 那一行 |
 | [Cargo.toml](Cargo.toml) | Cargo 用来识别这个工程的说明；本次不用修改 |
 | [跟着做.md](跟着做.md) | 每步操作、预期输出、报错处理和完成后的自测 |
+| [LEARNING_LOG.md](LEARNING_LOG.md) | 动手前的预测、自己的输入、用过的提示和换题后的解释 |
 
 本文件所在的文件夹是**学员工程目录**。完整 RustAppLab 平台根目录还有 `apps/`、`course/` 和自己的 `Cargo.toml`，两者不是同一目录。
 
@@ -259,6 +260,10 @@ pub fn init(root: &Path) -> Result<(), String> {
     write_new(
         &root.join("跟着做.md"),
         &format!("{PROJECT_GUIDE}\n{UNITLAB_HANDOFF}"),
+    )?;
+    write_new(
+        &root.join("LEARNING_LOG.md"),
+        include_str!("../../../course/LEARNING_LOG_TEMPLATE.md"),
     )?;
     println!("[1/3] 已创建：{}", root.display());
     println!("[2/3] 现在用记事本打开 {}/src/main.rs", root.display());

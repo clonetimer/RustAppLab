@@ -1,10 +1,11 @@
 //! Actual existing checker execution. A successful personal run is not a check.
 use super::model::{json_string, validate_step};
-use super::{ApiError, App};
+use super::{book_projects, ApiError, App};
 use std::collections::VecDeque;
+use std::path::Path;
 use std::process::Command;
 use std::sync::Arc;
-use std::time::Duration;
+use std::time::{Duration, Instant};
 
 #[derive(Clone)]
 pub(super) struct Job {
@@ -85,6 +86,125 @@ fn arguments(text: &str) -> Result<Vec<String>, ApiError> {
     Ok(args)
 }
 
+fn commands(
+    course_id: &str,
+    action: &str,
+    step: usize,
+    args: &[String],
+    root: &Path,
+) -> Result<Vec<Command>, ApiError> {
+    let mut plan = Vec::new();
+    if let Some(book) = book_projects::get(course_id) {
+        if action == "check" {
+            // --all-targets intentionally excludes rustdoc's examples; run both
+            // commands and stop on the first failure instead of hiding it.
+            for target in ["--all-targets", "--doc"] {
+                let mut command = Command::new("cargo");
+                command.args(["test", "--locked", "--offline", "--workspace", target]);
+                if course_id == "book-d1" {
+                    command.arg("--all-features");
+                }
+                command
+                    .arg("--manifest-path")
+                    .arg(root.join("Cargo.toml"))
+                    .arg("--target-dir")
+                    .arg(root.join("target"));
+                crate::process::learner_cargo(&mut command);
+                plan.push(command);
+            }
+        } else {
+            let target = book.run.as_ref().ok_or_else(|| {
+                ApiError::new(
+                    400,
+                    "本实验没有适合浏览器启动的有限运行入口；请用“检查实验”运行单测与文档测试",
+                )
+            })?;
+            let mut command = Command::new("cargo");
+            command
+                .args([
+                    "run",
+                    "--locked",
+                    "--offline",
+                    "--package",
+                    target.package,
+                    "--bin",
+                    target.binary,
+                    "--manifest-path",
+                ])
+                .arg(root.join("Cargo.toml"))
+                .arg("--target-dir")
+                .arg(root.join("target"));
+            crate::process::learner_cargo(&mut command);
+            command.arg("--").args(args);
+            plan.push(command);
+        }
+    } else if action == "check" {
+        let exe = std::env::current_exe()
+            .map_err(|e| ApiError::new(500, format!("找不到学习检查程序：{e}")))?;
+        let mut command = Command::new(exe);
+        command
+            .arg("learn")
+            .arg("check")
+            .arg(root)
+            .arg(step.to_string());
+        plan.push(command);
+    } else {
+        let mut command = Command::new("cargo");
+        command
+            .args(["run", "--offline", "--manifest-path"])
+            .arg(root.join("Cargo.toml"))
+            .arg("--target-dir")
+            .arg(root.join("target"));
+        crate::process::learner_cargo(&mut command);
+        command.arg("--").args(args);
+        plan.push(command);
+    }
+    for command in &mut plan {
+        command.current_dir(root);
+    }
+    Ok(plan)
+}
+
+fn execute(mut plan: Vec<Command>, root: &Path, limit: Duration) -> (String, Option<i32>) {
+    let scratch = match crate::capstone::TempWorkspace::new_named("workbench-operation") {
+        Ok(scratch) => scratch,
+        Err(error) => return (format!("无法创建操作日志：{error}"), None),
+    };
+    let started = Instant::now();
+    let mut text = String::new();
+    for command in &mut plan {
+        text.push_str(&format!(
+            "程序：{:?}\n参数：{:?}\n工程：{}\n\n",
+            command.get_program(),
+            command.get_args().collect::<Vec<_>>(),
+            root.display()
+        ));
+        let Some(remaining) = limit.checked_sub(started.elapsed()) else {
+            text.push_str("本次操作总时限已到，后续命令没有执行。\n");
+            return (text, None);
+        };
+        match crate::process::capture(command, remaining, &scratch.0, "学习工作台操作") {
+            Ok(output) => {
+                text.push_str(&String::from_utf8_lossy(&output.stdout));
+                if !output.stdout.ends_with(b"\n") && !output.stdout.is_empty() {
+                    text.push('\n');
+                }
+                text.push_str(&String::from_utf8_lossy(&output.stderr));
+                if !output.status.success() {
+                    return (text, output.status.code());
+                }
+            }
+            Err(error) => {
+                text.push_str(&format!(
+                    "执行失败：{error}\n请检查 Rust/Cargo 与当前课程所需环境，然后重试。"
+                ));
+                return (text, None);
+            }
+        }
+    }
+    (text, Some(0))
+}
+
 pub(super) fn start(
     app: &Arc<App>,
     course_id: &str,
@@ -120,34 +240,7 @@ pub(super) fn start(
         }
         (root, model.source_digest(course_id)?)
     };
-    let mut command = if action == "check" {
-        let exe = std::env::current_exe()
-            .map_err(|e| ApiError::new(500, format!("找不到学习检查程序：{e}")))?;
-        let mut command = Command::new(exe);
-        command
-            .arg("learn")
-            .arg("check")
-            .arg(&root)
-            .arg(step.to_string());
-        command
-    } else {
-        let mut command = Command::new("cargo");
-        command
-            .args(["run", "--offline", "--manifest-path"])
-            .arg(root.join("Cargo.toml"))
-            .arg("--target-dir")
-            .arg(root.join("target"));
-        crate::process::learner_cargo(&mut command);
-        command.arg("--").args(&args);
-        command
-    };
-    command.current_dir(&root);
-    let printed = format!(
-        "程序：{:?}\n参数：{:?}\n工程：{}\n\n",
-        command.get_program(),
-        command.get_args().collect::<Vec<_>>(),
-        root.display()
-    );
+    let plan = commands(course_id, action, step, &args, &root)?;
     let id = jobs.next;
     jobs.next += 1;
     let job = Job {
@@ -159,7 +252,11 @@ pub(super) fn start(
         output: format!(
             "{}\n首次编译可能需要稍等，完成后在这里显示真实输出。",
             if action == "check" {
-                "正在检查当前步骤…"
+                if book_projects::get(course_id).is_some() {
+                    "正在检查当前 Book 实验副本的单测与文档测试；通过不自动完成学习步骤…"
+                } else {
+                    "正在检查当前步骤…"
+                }
             } else {
                 "正在运行自己的程序…"
             }
@@ -175,20 +272,25 @@ pub(super) fn start(
     let shared = Arc::clone(app);
     let course = course_id.to_string();
     let limit = if action == "check" { 180 } else { 120 };
-    let worker=std::thread::Builder::new().name(format!("learning-operation-{id}")).spawn(move|| {
-        let outcome=(|| {
-            let scratch=crate::capstone::TempWorkspace::new_named("workbench-operation")?;
-            crate::process::capture(&mut command,Duration::from_secs(limit),&scratch.0,"学习工作台操作")
-        })();
-        let (mut text,exit_code)=match outcome {
-            Ok(output)=>(format!("{printed}{}{}{}",String::from_utf8_lossy(&output.stdout),if output.stdout.ends_with(b"\n") || output.stdout.is_empty() {""} else {"\n"},String::from_utf8_lossy(&output.stderr)),output.status.code()),
-            Err(error)=>(format!("{printed}执行失败：{error}\n请检查 Rust/Cargo 与当前课程所需环境，然后重试。"),None),
-        };
-        let after=shared.workspace.lock().ok().and_then(|model|model.source_digest(&course).ok());
-        let stale=after.as_deref()!=Some(digest.as_str());
-        if stale { text.push_str("\n源码在本次操作期间发生变化；这份结果不能验证当前代码，请重新检查。\n"); }
-        if let Ok(mut jobs)=shared.jobs.lock() { jobs.finish(id,text,exit_code,stale); }
-    });
+    let worker = std::thread::Builder::new()
+        .name(format!("learning-operation-{id}"))
+        .spawn(move || {
+            let (mut text, exit_code) = execute(plan, &root, Duration::from_secs(limit));
+            let after = shared
+                .workspace
+                .lock()
+                .ok()
+                .and_then(|model| model.source_digest(&course).ok());
+            let stale = after.as_deref() != Some(digest.as_str());
+            if stale {
+                text.push_str(
+                    "\n源码在本次操作期间发生变化；这份结果不能验证当前代码，请重新检查。\n",
+                );
+            }
+            if let Ok(mut jobs) = shared.jobs.lock() {
+                jobs.finish(id, text, exit_code, stale);
+            }
+        });
     if let Err(error) = worker {
         jobs.finish(id, format!("无法启动操作：{error}。请重试。"), None, false);
         return jobs.get(id);
@@ -215,6 +317,158 @@ pub(super) fn get(app: &App, id: u64) -> Result<Job, ApiError> {
 #[cfg(test)]
 mod tests {
     use super::*;
+    fn book_app(id: &str) -> (crate::capstone::TempWorkspace, Arc<App>) {
+        let temp = crate::capstone::TempWorkspace::new_named("book-workbench-job").unwrap();
+        let mut workspace = super::super::model::Workspace::new(temp.0.clone()).unwrap();
+        workspace.create(id).unwrap();
+        let app = Arc::new(App {
+            workspace: std::sync::Mutex::new(workspace),
+            jobs: std::sync::Mutex::new(Jobs::new()),
+            experiments: std::sync::Mutex::new(super::super::experiments::Store::new()),
+        });
+        (temp, app)
+    }
+
+    fn completed(app: &Arc<App>, id: u64) -> Job {
+        let deadline = std::time::Instant::now() + Duration::from_secs(180);
+        loop {
+            let job = get(app, id).unwrap();
+            if job.status != "running" {
+                return job;
+            }
+            assert!(
+                std::time::Instant::now() < deadline,
+                "Book job never completed"
+            );
+            std::thread::sleep(Duration::from_millis(20));
+        }
+    }
+
+    #[test]
+    fn book_job_runs_real_workspace_tests_and_doctests_on_the_selected_copy() {
+        let (_temp, app) = book_app("book-d6");
+        let job = start(&app, "book-d6", "check", 2, "", None).unwrap();
+        let result = completed(&app, job.id);
+        assert_eq!(result.exit_code, Some(0), "{}", result.output);
+        assert!(result.output.contains("test result: ok"));
+        assert!(result.output.contains("Doc-tests"));
+        assert!(result.output.contains("--locked"));
+        assert!(!result.stale);
+        let path = app
+            .workspace
+            .lock()
+            .unwrap()
+            .project_path("book-d6")
+            .unwrap();
+        std::fs::write(
+            path.join("appendix-lab/src/lib.rs"),
+            "compile_error!(\"learner diagnostic\");",
+        )
+        .unwrap();
+        assert!(get(&app, result.id).unwrap().stale);
+        let failed = start(&app, "book-d6", "check", 2, "", None).unwrap();
+        let failed = completed(&app, failed.id);
+        assert_eq!(failed.status, "failed");
+        assert!(failed.output.contains("learner diagnostic"));
+        assert!(!failed.output.contains("Doc-tests"));
+        assert!(!failed.stale);
+    }
+
+    #[test]
+    fn every_embedded_book_copy_executes_its_real_contract_without_repository_paths() {
+        for book in book_projects::COURSES {
+            let (_temp, app) = book_app(book.id);
+            let job = start(&app, book.id, "check", 1, "", None).unwrap();
+            let done = completed(&app, job.id);
+            assert_eq!(done.exit_code, Some(0), "{}: {}", book.id, done.output);
+            assert!(!done.stale, "{}: {}", book.id, done.output);
+            assert!(
+                done.output.contains("Doc-tests"),
+                "{}: {}",
+                book.id,
+                done.output
+            );
+            assert!(app
+                .workspace
+                .lock()
+                .unwrap()
+                .course_json(book.id, 1)
+                .unwrap()
+                .contains("\"history\":null"));
+        }
+    }
+
+    #[test]
+    fn empty_book_library_cannot_pass_by_removing_its_embedded_unit_tests() {
+        let (_temp, app) = book_app("book-d6");
+        let root = app
+            .workspace
+            .lock()
+            .unwrap()
+            .project_path("book-d6")
+            .unwrap();
+        let path = root.join("appendix-lab/src/lib.rs");
+        let original = std::fs::read(&path).unwrap();
+        std::fs::write(&path, "").unwrap();
+        let job = start(&app, "book-d6", "check", 2, "", None).unwrap();
+        let failed = completed(&app, job.id);
+        assert_eq!(failed.status, "failed", "{}", failed.output);
+        assert_ne!(failed.exit_code, Some(0));
+        std::fs::write(&path, original).unwrap();
+        let job = start(&app, "book-d6", "check", 2, "", None).unwrap();
+        let repaired = completed(&app, job.id);
+        assert_eq!(repaired.exit_code, Some(0), "{}", repaired.output);
+        assert!(repaired.output.contains("contracts"));
+        assert!(!repaired.stale);
+    }
+
+    #[test]
+    fn book_without_bounded_binary_refuses_run() {
+        for id in ["book-d5", "book-d6"] {
+            let (_temp, app) = book_app(id);
+            match start(&app, id, "run", 1, "", None) {
+                Err(error) => assert_eq!(error.status, 400),
+                Ok(_) => panic!("{id} must not start a server or missing binary"),
+            }
+        }
+    }
+
+    #[test]
+    fn book_check_covers_all_features_and_never_turns_run_args_into_cargo_flags() {
+        let root = Path::new("/learner");
+        let plan = commands("book-d1", "check", 2, &[], root).unwrap();
+        assert_eq!(plan.len(), 2);
+        for command in plan {
+            let args: Vec<_> = command
+                .get_args()
+                .map(|arg| arg.to_string_lossy())
+                .collect();
+            for required in ["--locked", "--offline", "--workspace", "--all-features"] {
+                assert!(args.iter().any(|arg| arg == required));
+            }
+            assert_eq!(command.get_current_dir(), Some(root));
+        }
+        let literal = vec!["--manifest-path".into(), "somewhere else".into()];
+        let run = commands("book-d1", "run", 1, &literal, root).unwrap();
+        let args: Vec<_> = run[0].get_args().map(|arg| arg.to_string_lossy()).collect();
+        let separator = args.iter().position(|arg| arg == "--").unwrap();
+        assert_eq!(
+            &args[separator + 1..],
+            &["--manifest-path", "somewhere else"]
+        );
+    }
+
+    #[test]
+    fn book_binary_arguments_are_not_cargo_options() {
+        let (_temp, app) = book_app("book-d1");
+        let started = start(&app, "book-d1", "run", 1, "workspace", None).unwrap();
+        let done = completed(&app, started.id);
+        assert_eq!(done.exit_code, Some(0), "{}", done.output);
+        assert!(done.output.contains("workspace"));
+        assert!(done.output.contains("cargo-applab-map"));
+        assert!(!done.output.contains("Doc-tests"));
+    }
+
     #[test]
     fn argument_lines_remain_literal_without_shell_parsing() {
         let args = arguments("林 小\nA&B <test>\n$(touch sentinel)\n\"quoted\"\r\n").unwrap();

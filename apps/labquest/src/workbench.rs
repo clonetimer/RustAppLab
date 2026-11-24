@@ -1,4 +1,6 @@
 //! Native, offline browser interface for existing trusted learner projects.
+mod book_projects;
+mod experiments;
 mod http;
 mod jobs;
 mod model;
@@ -16,7 +18,9 @@ use std::sync::{Arc, Mutex};
 const INDEX: &str = include_str!("workbench/ui/index.html");
 const STYLE: &str = include_str!("workbench/ui/app.css");
 const SCRIPT: &str = include_str!("workbench/ui/app.js");
-const HELP:&str="Rust AppLab 网页学习工作台\n\n用法：labquest workbench [--workspace 现有学习目录] [--port 0] [--open]\n默认使用当前目录，端口 0 自动选择空闲端口；仅监听 127.0.0.1。\n在同一网页阅读任务卡、编辑自己的代码、运行真实检查和查看结果。\nFirstCard 与 12 款 Studio 已接入；Cargo 与课程原有系统依赖仍需安装。\n--open 打开默认浏览器；关闭本窗口或按 Ctrl+C 停止本地服务。\n";
+const KNOWLEDGE_SCRIPT: &str = include_str!("workbench/ui/knowledge.js");
+const EXPERIMENT_SCRIPT: &str = include_str!("workbench/ui/experiments.js");
+const HELP:&str="Rust AppLab 网页学习工作台\n\n用法：labquest workbench [--workspace 现有学习目录] [--port 0] [--open]\n默认使用当前目录，端口 0 自动选择空闲端口；仅监听 127.0.0.1。\n在同一网页阅读任务卡、编辑自己的代码、运行真实检查和查看结果。\nFirstCard、12 款 Studio 与 D1–D6 七个专题已接入；Cargo 与课程原有系统依赖仍需安装。\n--open 打开默认浏览器；关闭本窗口或按 Ctrl+C 停止本地服务。\n";
 
 #[derive(Debug)]
 pub(super) struct ApiError {
@@ -35,6 +39,7 @@ impl ApiError {
 struct App {
     workspace: Mutex<Workspace>,
     jobs: Mutex<jobs::Jobs>,
+    experiments: Mutex<experiments::Store>,
 }
 
 fn error_response(error: ApiError) -> Response {
@@ -78,6 +83,16 @@ fn route(app: &Arc<App>, request: http::Request) -> Result<Response, ApiError> {
                 "text/javascript; charset=utf-8",
                 SCRIPT.as_bytes().to_vec(),
             )),
+            "/assets/knowledge.js" => Ok(Response::new(
+                200,
+                "text/javascript; charset=utf-8",
+                KNOWLEDGE_SCRIPT.as_bytes().to_vec(),
+            )),
+            "/assets/experiments.js" => Ok(Response::new(
+                200,
+                "text/javascript; charset=utf-8",
+                EXPERIMENT_SCRIPT.as_bytes().to_vec(),
+            )),
             "/api/health" => Ok(Response::json(
                 200,
                 format!(
@@ -85,6 +100,34 @@ fn route(app: &Arc<App>, request: http::Request) -> Result<Response, ApiError> {
                     json_string(env!("CARGO_PKG_VERSION"))
                 ),
             )),
+            "/api/book" => {
+                http::only(&fields, &["id"])?;
+                let id = http::required(&fields, "id")?;
+                let (title, markdown) = crate::book_reading::workbench_topic(id)
+                    .ok_or_else(|| ApiError::new(404, "未找到知识专题"))?;
+                Ok(Response::json(
+                    200,
+                    format!(
+                        "{{\"title\":{},\"markdown\":{}}}",
+                        json_string(title),
+                        json_string(markdown)
+                    ),
+                ))
+            }
+            "/api/experiment" => {
+                http::only(&fields, &["code"])?;
+                Ok(Response::json(
+                    200,
+                    experiments::material(http::required(&fields, "code")?)?,
+                ))
+            }
+            "/api/experiment-job" => {
+                http::only(&fields, &["id"])?;
+                let id = http::required(&fields, "id")?
+                    .parse::<u64>()
+                    .map_err(|_| ApiError::new(400, "实验编号不正确"))?;
+                Ok(Response::json(200, experiments::get(app, id)?.json()))
+            }
             "/api/job" => {
                 http::only(&fields, &["id"])?;
                 let id = http::required(&fields, "id")?
@@ -140,6 +183,18 @@ fn route(app: &Arc<App>, request: http::Request) -> Result<Response, ApiError> {
             return Err(ApiError::new(400, "操作参数请放在表单中"));
         }
         let fields = http::fields(&request.body)?;
+        if path == "/api/experiment" {
+            http::only(&fields, &["code", "variant"])?;
+            return Ok(Response::json(
+                202,
+                experiments::start(
+                    app,
+                    http::required(&fields, "code")?,
+                    http::required(&fields, "variant")?,
+                )?
+                .json(),
+            ));
+        }
         if path == "/api/action" {
             http::only(&fields, &["id", "action", "step", "args", "project_path"])?;
             let job = jobs::start(
@@ -288,6 +343,7 @@ pub fn run(args: &[OsString]) -> Result<(), String> {
     let app = Arc::new(App {
         workspace: Mutex::new(workspace),
         jobs: Mutex::new(jobs::Jobs::new()),
+        experiments: Mutex::new(experiments::Store::new()),
     });
     if open {
         open_browser(&url);

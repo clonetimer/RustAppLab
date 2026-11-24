@@ -17,7 +17,10 @@ function loadApp(fetch = () => assert.fail('unexpected request'), bindings = {})
     clearTimeout,
     ...bindings,
   });
-  vm.runInContext(readFileSync(app, 'utf8'), context, { filename: app });
+  for (const asset of ['knowledge.js', 'experiments.js', 'app.js']) {
+    const path = resolve(__dirname, '../../apps/labquest/src/workbench/ui', asset);
+    vm.runInContext(readFileSync(path, 'utf8'), context, { filename: path });
+  }
   return context;
 }
 
@@ -205,4 +208,54 @@ test('returning to a workbench tab refreshes old success without replacing the o
   assert.equal(vm.runInContext('ui.editor.value', context), '保存版本');
   assert.equal(requests.length, 1);
   assert.match(requests[0], /^\/api\/file\?/);
+});
+
+test('book navigation has a bounded allowlist and diagnostics never pretend to fix code', () => {
+  const context = loadApp();
+  const docs = context.compilerDiagnostics([
+    'error[E0382]: borrow of moved value',
+    'error[E0502]: cannot borrow as mutable',
+    'error[E0382]: borrow of moved value',
+    'error[E9999]: unknown code',
+  ].join('\n'));
+  assert.deepEqual(Array.from(docs, item => item.code), ['E0382', 'E0502']);
+  assert.ok(docs.every(item => item.url.startsWith('https://doc.rust-lang.org/')));
+  assert.equal(context.compilerDiagnostics('test failed: assertion failed').length, 0);
+  assert.equal(context.compilerDiagnostics('error[E9999] unknown').length, 0);
+});
+
+test('compiler help ignores error-like text in program output and links supported diagnostics to experiments', () => {
+  const context = loadApp();
+  assert.equal(context.compilerDiagnostics('printed E0382 in my program').length, 0);
+  assert.equal(context.compilerDiagnostics('error[E0425]: missing variable\n  | println!("E0382");').length, 1);
+  const docs = context.compilerDiagnostics('error[E0597]: borrowed value does not live long enough');
+  assert.equal(docs[0].experiment, 'E0597');
+  assert.equal(docs[0].lesson, 'generics');
+});
+
+test('knowledge navigation searches Chinese terms, Rust names and compiler codes', () => {
+  const context = loadApp();
+  assert.ok(context.knowledgeMatches('HashMap').some(item => item.id === 'collections'));
+  assert.ok(context.knowledgeMatches('借用').some(item => item.id === 'ownership'));
+  assert.ok(context.knowledgeMatches('E0502').some(item => item.id === 'ownership'));
+  assert.equal(context.knowledgeMatches('does-not-exist').length, 0);
+  assert.equal(context.bookCourseFor('generics'), 'book-foundations');
+  assert.equal(context.bookCourseFor('d6a'), 'book-d6');
+  assert.equal(context.bookCourseFor('evidence'), null);
+});
+
+test('knowledge and experiment actions unlock when a project check finishes', () => {
+  const context = loadApp();
+  primeEditor(context, { ...card, project: { ...card.project, path: '/projects/A' } });
+  vm.runInContext(`
+    state.busy = 'check';
+    experimentState.code = 'E0382';
+    ui.bookPractice.disabled = true;
+    experimentControls();
+  `, context);
+  assert.equal(vm.runInContext('ui.experimentFailure.disabled', context), true);
+  vm.runInContext("state.busy = null; renderControls()", context);
+  assert.equal(vm.runInContext('ui.bookPractice.disabled', context), false);
+  assert.equal(vm.runInContext('ui.experimentFailure.disabled', context), false);
+  assert.equal(vm.runInContext('ui.experimentRepair.disabled', context), false);
 });

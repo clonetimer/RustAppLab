@@ -1,4 +1,4 @@
-# Rust AppLab 0.19.0-rc.4 · 从下载到第一次使用
+# Rust AppLab 0.19.0-rc.5 · 从下载到第一次使用
 
 **已经完成 FirstCard？直接打开 [FirstCard 做完之后](course/AFTER_FIRSTCARD.md)**：先确认自己能解释变量和参数，再进入 UnitLab。下面第 1–3 节是首次安装和起步步骤，不必每次重做。
 
@@ -14,7 +14,7 @@
 
 ## 1. 先选对包
 
-**网页工作台从 0.19.0-rc.4 开始提供。** 在 [Releases](https://github.com/clonetimer/RustAppLab/releases) 选择该版本的 `source.zip` 或本机对应的 `runtime.zip`，核对同目录校验文件；是否已发布以实际 Release 为准。[当前 main 源码 ZIP](https://github.com/clonetimer/RustAppLab/archive/refs/heads/main.zip) 也包含合入主线的修订。已有 `v0.19.0-rc.3` 下载包保持原样。
+**网页工作台从 0.19.0-rc.4 开始提供。** 在 [Releases](https://github.com/clonetimer/RustAppLab/releases) 选择 rc.5 的 `source.zip` 或本机对应的 `runtime.zip`，核对同目录校验文件；是否已发布以实际 Release 为准。[当前 main 源码 ZIP](https://github.com/clonetimer/RustAppLab/archive/refs/heads/main.zip) 也包含合入主线的修订。已有 `v0.19.0-rc.3` 下载包保持原样。
 
 已下载旧包时，把新平台解压到另一个文件夹，保留已有 `my-...` 目录和个人记录。新平台可直接对旧工程路径执行第 4 节的 next/check，不需要重新完成 FirstCard。正式发布包仍以 Releases 中带版本号的 source.zip 及其校验值为准。
 

@@ -123,7 +123,17 @@ function button(label, dataName, value) {
 function buildCourses() {
   const courses = state.catalog.courses;
   text(ui.catalogCount, `${courses.length} 门`);
-  ui.courseList.replaceChildren(...courses.map(course => {
+  const controls = [];
+  let previousKind = null;
+  for (const course of courses) {
+    const kind = course.kind || 'studio';
+    if (kind !== previousKind) {
+      const heading = document.createElement('p');
+      heading.className = 'course-group';
+      heading.textContent = kind === 'book' ? 'RUST BOOK · 专项练习' : '从作品开始';
+      controls.push(heading);
+      previousKind = kind;
+    }
     const [name, ...subtitle] = course.title.split(' · ');
     const control = button('', 'course', course.id);
     control.className = 'course-link';
@@ -136,8 +146,9 @@ function buildCourses() {
       detail.textContent = subtitle.join(' · ');
       control.append(detail);
     }
-    return control;
-  }));
+    controls.push(control);
+  }
+  ui.courseList.replaceChildren(...controls);
 }
 
 function renderCard(previous) {
@@ -168,6 +179,7 @@ function renderCard(previous) {
     text(ui.goal, card.goal);
     text(ui.target, card.function);
     text(ui.concept, card.concept);
+    renderReading(card.reading);
     text(ui.prediction, card.prediction);
     text(ui.experiment, card.experiment);
     text(ui.reflection, card.reflection);
@@ -309,7 +321,7 @@ function renderNext() {
 
 function renderControls() {
   const { busy, pending, card, file, retry, saveIssue } = state;
-  const locked = Boolean(busy || pending);
+  const locked = Boolean(busy || pending || isExperimentRunning());
   const project = Boolean(card?.project);
   const changed = dirty();
   const saving = busy === 'save' || (busy && ui.save.dataset.saving === 'true');
@@ -335,7 +347,13 @@ function renderControls() {
   ui.runArgs.disabled = locked || !project || !file;
   ui.save.disabled = locked || !file || !changed || saveIssue?.status === 409;
   ui.check.disabled = locked || !file || saveIssue?.status === 409;
-  ui.run.disabled = locked || !file || saveIssue?.status === 409;
+  ui.run.disabled = locked || !file || card?.can_run === false || saveIssue?.status === 409;
+  ui.run.hidden = card?.can_run === false;
+  ui.runSettings.hidden = card?.can_run === false;
+  if (ui.learningLog) ui.learningLog.disabled = locked;
+  if (ui.bookPractice) ui.bookPractice.disabled = locked;
+  if (ui.experimentFailure) experimentControls();
+  ui.check.title = card?.kind === 'book' ? '执行当前专题的真实 Cargo 测试和文档测试；不等于理解评分' : '检查当前步骤的实际行为';
   ui.next.disabled = locked;
   ui.retry.hidden = !retry;
   ui.retry.disabled = Boolean(busy);
@@ -351,7 +369,7 @@ function renderControls() {
   text(ui.create, busy === 'create' ? '正在创建…' : '创建学习项目');
   text(ui.openProject, busy === 'open' ? '正在打开…' : '打开项目');
   text(ui.save, saving ? '正在保存…' : '保存');
-  text(ui.check, checking ? '正在检查…' : '正式检查');
+  text(ui.check, checking ? '正在检查…' : card?.kind === 'book' ? '验证专题' : '正式检查');
   text(ui.run, running ? '正在运行…' : '运行程序');
   if (saving) {
     ui.saveStatus.dataset.state = 'pending';
@@ -389,7 +407,7 @@ function renderOutput() {
   let tone = output?.tone || 'neutral';
   if (output?.job) {
     const job = output.job;
-    const label = job.action === 'check' ? `第 ${job.step} 步检查` : '程序运行';
+    const label = job.action === 'check' ? (state.card.kind === 'book' ? '专题代码测试' : `第 ${job.step} 步检查`) : '程序运行';
     const old = job.stale || job.source_digest !== state.card.project.source_digest || sourceChanged();
     if (output.paused) {
       summary = `${label} · 连接中断，等待继续查询`;
@@ -413,6 +431,7 @@ function renderOutput() {
   ui.consoleSummary.dataset.state = tone;
   text(ui.consoleSummary, summary);
   text(ui.consoleOutput, output?.job?.output ?? output?.details ?? '');
+  renderCompilerHelp(output?.job);
 }
 
 // Navigation, saving and polling all use the same operation lock. A failed
@@ -668,7 +687,7 @@ async function startJob(action) {
   if (control.disabled) return;
   const { id, step, project } = state.card;
   const isCheck = action === 'check';
-  const label = isCheck ? `第 ${step} 步检查` : '程序运行';
+  const label = isCheck ? (state.card.kind === 'book' ? '专题测试' : `第 ${step} 步检查`) : '程序运行';
   const args = isCheck ? '' : ui.runArgs.value;
   state.output = { summary: `${label}准备中…`, tone: 'pending' };
   if (ui.console.dataset.mode === 'collapsed') setConsoleMode('normal');
@@ -703,6 +722,8 @@ function initialize() {
     lessonFrame: 'lesson-frame', lessonContent: 'lesson-content', lessonLoading: 'lesson-loading',
     stepTitle: 'step-title', goal: 'lesson-goal', target: 'lesson-function', concept: 'lesson-concept',
     prediction: 'lesson-prediction', hints: 'hint-list', experiment: 'lesson-experiment',
+    reading: 'book-reading', readingTopics: 'book-reading-topics',
+    readingQuestion: 'book-reading-question', readingVersion: 'book-reading-version',
     experimentTitle: 'experiment-title', reflection: 'lesson-reflection', fileSelect: 'file-select',
     saveStatus: 'save-status', reloadFile: 'reload-file-button', editor: 'source-editor',
     save: 'save-button', run: 'run-button', check: 'check-button', runSettings: 'run-settings',
@@ -710,6 +731,9 @@ function initialize() {
     retry: 'retry-button', stopWaiting: 'stop-waiting-button', next: 'next-button',
     console: 'console-panel', consoleOutput: 'console-output', consoleSummary: 'console-summary',
     consoleSize: 'console-size', consoleToggle: 'console-toggle',
+    compilerHelp: 'compiler-help', compilerHelpList: 'compiler-help-list',
+    bookOpen: 'book-open', bookClose: 'book-close', bookDialog: 'book-dialog',
+    bookSelect: 'book-select', bookStatus: 'book-status', bookText: 'book-text',
   };
   for (const [name, id] of Object.entries(ids)) ui[name] = document.getElementById(id);
 
@@ -722,11 +746,14 @@ function initialize() {
     if (control) void selectCourse(state.card.id, Number(control.dataset.step));
   });
   ui.create.addEventListener('click', () => { void changeProject('create'); });
+  initializeKnowledge();
+  initializeExperiments();
   ui.projectForm.addEventListener('submit', event => {
     event.preventDefault();
     void changeProject('open');
   });
   ui.lessonOpen.addEventListener('click', () => {
+    if (state.card.lesson_topic) { openBook(state.card.lesson_topic); return; }
     ui.lessonFrame.src = `/api/lesson?${new URLSearchParams({ id: state.card.id })}`;
     ui.lessonDialog.showModal();
   });
