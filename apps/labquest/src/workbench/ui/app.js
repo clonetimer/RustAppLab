@@ -123,7 +123,17 @@ function button(label, dataName, value) {
 function buildCourses() {
   const courses = state.catalog.courses;
   text(ui.catalogCount, `${courses.length} 门`);
-  ui.courseList.replaceChildren(...courses.map(course => {
+  const controls = [];
+  let previousKind = null;
+  for (const course of courses) {
+    const kind = course.kind || 'studio';
+    if (kind !== previousKind) {
+      const heading = document.createElement('p');
+      heading.className = 'course-group';
+      heading.textContent = kind === 'book' ? 'RUST BOOK · 专项练习' : '从作品开始';
+      controls.push(heading);
+      previousKind = kind;
+    }
     const [name, ...subtitle] = course.title.split(' · ');
     const control = button('', 'course', course.id);
     control.className = 'course-link';
@@ -136,91 +146,9 @@ function buildCourses() {
       detail.textContent = subtitle.join(' · ');
       control.append(detail);
     }
-    return control;
-  }));
-}
-
-async function loadBook() {
-  const id = ui.bookSelect.value;
-  text(ui.bookStatus, '正在读取离线讲义…');
-  text(ui.bookText, '');
-  try {
-    const material = await api('/api/book', { query: { id } });
-    if (ui.bookSelect.value !== id) return;
-    text(ui.bookText, material.markdown);
-    text(ui.bookStatus, material.title);
-    ui.bookText.scrollTop = 0;
-  } catch (error) {
-    text(ui.bookStatus, error.message);
+    controls.push(control);
   }
-}
-
-function renderReading(reading) {
-  if (!ui.reading || typeof document.createElement !== 'function') return;
-  ui.reading.hidden = !reading || !reading.topics?.length;
-  ui.readingTopics.replaceChildren();
-  if (ui.reading.hidden) return;
-  for (const topic of reading.topics) {
-    const item = document.createElement('li');
-    const label = document.createElement('strong');
-    label.textContent = topic.title + '：';
-    item.append(label);
-    for (const [caption, url] of [['中文旧版', topic.chinese], ['当前官方', topic.official]]) {
-      // Only the server's built-in Book mapping is used; never echo arbitrary links.
-      if (!/^https:\/\/(rust\.bootcss\.com|doc\.rust-lang\.org)\//.test(url)) continue;
-      const link = document.createElement('a');
-      link.href = url;
-      link.target = '_blank';
-      link.rel = 'noopener noreferrer';
-      link.referrerPolicy = 'no-referrer';
-      link.textContent = caption;
-      item.append(link);
-    }
-    ui.readingTopics.append(item);
-  }
-  text(ui.readingQuestion, '思考：' + reading.question);
-  text(ui.readingVersion, reading.version_note);
-}
-
-const RUST_ERROR_GUIDES = Object.freeze({
-  E0382: ['值被移动后再次使用', '检查所有权是否已移交；考虑借用或明确克隆。', 'https://doc.rust-lang.org/book/ch04-01-what-is-ownership.html'],
-  E0502: ['可变借用与共享借用冲突', '定位两个引用的实际使用区间，不要为了消除错误而随意复制状态。', 'https://doc.rust-lang.org/book/ch04-02-references-and-borrowing.html'],
-  E0499: ['存在重叠的可变借用', '确认同一数据是否同时有两个可变借用。', 'https://doc.rust-lang.org/book/ch04-02-references-and-borrowing.html'],
-  E0308: ['类型不匹配', '对照期望类型与实际类型，检查参数和返回值。', 'https://doc.rust-lang.org/book/ch03-02-data-types.html'],
-  E0277: ['Trait 约束未满足', '查看 bound 与实现，不能仅靠类型强制转换解决。', 'https://doc.rust-lang.org/book/ch10-02-traits.html'],
-  E0599: ['方法或关联项不可用', '检查类型、导入的 trait 与该方法是否真实存在。', 'https://doc.rust-lang.org/book/ch10-02-traits.html'],
-  E0596: ['不能通过当前绑定进行可变借用', '检查绑定 mut 与方法接收者的约束。', 'https://doc.rust-lang.org/book/ch04-02-references-and-borrowing.html'],
-  E0425: ['名称不存在', '核对变量名、作用域及导入路径。', 'https://doc.rust-lang.org/book/ch07-03-paths-for-referring-to-an-item-in-the-module-tree.html'],
-  E0432: ['无法解析导入', '核对模块层级、pub 和 use 路径。', 'https://doc.rust-lang.org/book/ch07-04-bringing-paths-into-scope-with-the-use-keyword.html'],
-  E0433: ['模块或 crate 路径无法解析', '查看 Cargo 依赖与模块路径是否匹配。', 'https://doc.rust-lang.org/book/ch07-03-paths-for-referring-to-an-item-in-the-module-tree.html'],
-});
-
-function compilerDiagnostics(output) {
-  const codes = [...new Set((output || '').match(/\bE\d{4}\b/g) || [])];
-  return codes.filter(code => RUST_ERROR_GUIDES[code]).slice(0, 3).map(code => {
-    const [title, explanation, url] = RUST_ERROR_GUIDES[code];
-    return { code, title, explanation, url };
-  });
-}
-
-function renderCompilerHelp(job) {
-  if (!ui.compilerHelp || typeof document.createElement !== 'function') return;
-  const guides = job?.status === 'failed' ? compilerDiagnostics(job.output) : [];
-  ui.compilerHelp.hidden = guides.length === 0;
-  ui.compilerHelpList.replaceChildren();
-  for (const guide of guides) {
-    const item = document.createElement('li');
-    const description = document.createElement('span');
-    description.textContent = guide.code + ' · ' + guide.title + '：' + guide.explanation + ' ';
-    const link = document.createElement('a');
-    link.href = guide.url;
-    link.target = '_blank';
-    link.rel = 'noopener noreferrer';
-    link.referrerPolicy = 'no-referrer';
-    link.textContent = '阅读对应知识';
-    item.append(description, link);
-    ui.compilerHelpList.append(item);
-  }
+  ui.courseList.replaceChildren(...controls);
 }
 
 function renderCard(previous) {
@@ -393,7 +321,7 @@ function renderNext() {
 
 function renderControls() {
   const { busy, pending, card, file, retry, saveIssue } = state;
-  const locked = Boolean(busy || pending);
+  const locked = Boolean(busy || pending || isExperimentRunning());
   const project = Boolean(card?.project);
   const changed = dirty();
   const saving = busy === 'save' || (busy && ui.save.dataset.saving === 'true');
@@ -419,7 +347,13 @@ function renderControls() {
   ui.runArgs.disabled = locked || !project || !file;
   ui.save.disabled = locked || !file || !changed || saveIssue?.status === 409;
   ui.check.disabled = locked || !file || saveIssue?.status === 409;
-  ui.run.disabled = locked || !file || saveIssue?.status === 409;
+  ui.run.disabled = locked || !file || card?.can_run === false || saveIssue?.status === 409;
+  ui.run.hidden = card?.can_run === false;
+  ui.runSettings.hidden = card?.can_run === false;
+  if (ui.learningLog) ui.learningLog.disabled = locked;
+  if (ui.bookPractice) ui.bookPractice.disabled = locked;
+  if (ui.experimentFailure) experimentControls();
+  ui.check.title = card?.kind === 'book' ? '执行当前专题的真实 Cargo 测试和文档测试；不等于理解评分' : '检查当前步骤的实际行为';
   ui.next.disabled = locked;
   ui.retry.hidden = !retry;
   ui.retry.disabled = Boolean(busy);
@@ -435,7 +369,7 @@ function renderControls() {
   text(ui.create, busy === 'create' ? '正在创建…' : '创建学习项目');
   text(ui.openProject, busy === 'open' ? '正在打开…' : '打开项目');
   text(ui.save, saving ? '正在保存…' : '保存');
-  text(ui.check, checking ? '正在检查…' : '正式检查');
+  text(ui.check, checking ? '正在检查…' : card?.kind === 'book' ? '验证专题' : '正式检查');
   text(ui.run, running ? '正在运行…' : '运行程序');
   if (saving) {
     ui.saveStatus.dataset.state = 'pending';
@@ -473,7 +407,7 @@ function renderOutput() {
   let tone = output?.tone || 'neutral';
   if (output?.job) {
     const job = output.job;
-    const label = job.action === 'check' ? `第 ${job.step} 步检查` : '程序运行';
+    const label = job.action === 'check' ? (state.card.kind === 'book' ? '专题代码测试' : `第 ${job.step} 步检查`) : '程序运行';
     const old = job.stale || job.source_digest !== state.card.project.source_digest || sourceChanged();
     if (output.paused) {
       summary = `${label} · 连接中断，等待继续查询`;
@@ -753,7 +687,7 @@ async function startJob(action) {
   if (control.disabled) return;
   const { id, step, project } = state.card;
   const isCheck = action === 'check';
-  const label = isCheck ? `第 ${step} 步检查` : '程序运行';
+  const label = isCheck ? (state.card.kind === 'book' ? '专题测试' : `第 ${step} 步检查`) : '程序运行';
   const args = isCheck ? '' : ui.runArgs.value;
   state.output = { summary: `${label}准备中…`, tone: 'pending' };
   if (ui.console.dataset.mode === 'collapsed') setConsoleMode('normal');
@@ -812,14 +746,14 @@ function initialize() {
     if (control) void selectCourse(state.card.id, Number(control.dataset.step));
   });
   ui.create.addEventListener('click', () => { void changeProject('create'); });
-  ui.bookOpen.addEventListener('click', () => { ui.bookDialog.showModal(); void loadBook(); });
-  ui.bookClose.addEventListener('click', () => ui.bookDialog.close());
-  ui.bookSelect.addEventListener('change', () => { void loadBook(); });
+  initializeKnowledge();
+  initializeExperiments();
   ui.projectForm.addEventListener('submit', event => {
     event.preventDefault();
     void changeProject('open');
   });
   ui.lessonOpen.addEventListener('click', () => {
+    if (state.card.lesson_topic) { openBook(state.card.lesson_topic); return; }
     ui.lessonFrame.src = `/api/lesson?${new URLSearchParams({ id: state.card.id })}`;
     ui.lessonDialog.showModal();
   });

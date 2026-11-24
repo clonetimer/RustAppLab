@@ -196,6 +196,10 @@ pub(crate) fn workbench_topic(id: &str) -> Option<(&'static str, &'static str)> 
             "学习效果观察协议",
             include_str!("../../../course/LEARNER_EVIDENCE_PROTOCOL.md"),
         )),
+        "errors" => Some((
+            "编译错误 · 失败与修复",
+            include_str!("../../../course/RUST_ERROR_LABS.md"),
+        )),
         _ => None,
     }
 }

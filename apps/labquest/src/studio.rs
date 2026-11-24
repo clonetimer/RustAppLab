@@ -488,7 +488,10 @@ pub fn init(id: &str, root: &Path) -> Result<(), String> {
     write_new(&root.join("HINTS.md"), p.hints)?;
     write_new(&root.join("README.md"), &project_readme(p))?;
     write_new(&root.join(".gitignore"), "/target/\n/.studio-reports/\n")?;
-    write_new(&root.join("LEARNING_LOG.md"),"# 我的学习记录\n\n## 我的需求与用途\n\n## 第 1 步：先预测，再修改，再测试\n输入、预期、实际、失败原因：\n\n## 第 2 步：用自己的话解释 Rust 概念\n\n## 第 3 步：新输入和异常场景\n\n## 我的扩展需求与新增测试\n\n## 交付作品\n运行命令、产物路径、已知限制：\n\n## 使用的帮助\n记录看过哪些提示或参考代码，不把参考程序的测试成绩当成自己的理解。\n")?;
+    write_new(
+        &root.join("LEARNING_LOG.md"),
+        include_str!("../../../course/LEARNING_LOG_TEMPLATE.md"),
+    )?;
     for (name, text) in p.samples {
         write_new(&root.join("samples").join(name), text)?;
     }

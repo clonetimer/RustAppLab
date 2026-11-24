@@ -15,6 +15,7 @@ from urllib.parse import urlencode, urlparse
 from browser_e2e import find_browser
 from release_check import ROOT, source_id
 from workbench_process import running_workbench
+from book_workbench_browser_e2e import run_book_flow
 
 # Immutable comparison for manual runs and future PRs that already contain
 # the workbench. The introduction PR uses its actual base revision.
@@ -143,8 +144,9 @@ def run_flow(page, base, tmp, out, report, expect, exe):
 
     page.goto(base+'/', wait_until='domcontentloaded')
     catalog = get_json(page, base, '/api/catalog')['courses']
-    assert len(catalog) == 13 and len({c['id'] for c in catalog}) == 13
-    expect(loc('#course-list [data-course]')).to_have_count(13)
+    expected = {'firstcard', 'unitlab', 'quizdeck', 'textscope', 'ledgerlite', 'badgeforge', 'termgarden', 'batchmeter', 'minikv', 'netfetch', 'servicedesk', 'storedesk', 'asyncboard', 'book-d1', 'book-d2', 'book-d3', 'book-d4', 'book-d5', 'book-d6', 'book-foundations'}
+    assert {c['id'] for c in catalog} == expected and len(catalog) == len(expected)
+    expect(loc('#course-list [data-course]')).to_have_count(len(expected))
     for item in catalog:
         course = item['id']
         choose(course)
@@ -164,9 +166,10 @@ def run_flow(page, base, tmp, out, report, expect, exe):
         'href', re.compile(r'^https://(rust\.bootcss\.com|doc\.rust-lang\.org)/'))
     capture(page, out, report, 'book-link-1440x1000.png')
 
-    # D1-D6 are original offline Markdown, strictly read-only.
+    # Local lessons remain readable without selecting a project or changing code.
     loc('#book-open').click()
     expect(loc('#book-dialog')).to_be_visible()
+    loc('#book-select').select_option('d1')
     expect(loc('#book-text')).to_contain_text('Cargo')
     loc('#book-select').select_option('gap31')
     expect(loc('#book-text')).to_contain_text('31 项')
@@ -353,6 +356,7 @@ def main():
                 cmd = [str(exe), 'workbench', '--workspace', str(workspace), '--port']
                 with running_workbench([*cmd,'0'], tmp, out/'server.txt') as base:
                     run_flow(page, base, tmp, out, report, expect, exe)
+                    report['book_practice'] = run_book_flow(page, base, tmp, out, expect)
                 # Refuse a real connection while preserving the page. Restart
                 # the real server on the same URL before retrying navigation.
                 page.locator('#course-list [data-course="quizdeck"]').click()

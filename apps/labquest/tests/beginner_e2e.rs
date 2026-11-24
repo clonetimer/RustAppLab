@@ -173,6 +173,31 @@ fn refuses_existing_folder_without_overwrite() {
 }
 
 #[test]
+fn firstcard_has_a_blank_learning_log_before_checks_and_preserves_personal_notes() {
+    let base = temp_workspace("learning-log");
+    let project = base.join("card");
+    labquest::beginner::init(&project).unwrap();
+    let path = project.join("LEARNING_LOG.md");
+    assert!(
+        path.is_file(),
+        "predictions need a writable log before the first check"
+    );
+    let template = fs::read_to_string(&path).unwrap();
+    assert!(template.contains("未评估"));
+    assert!(template.contains("预测"));
+    assert!(!project.join("FIRST_WIN.md").exists());
+    fs::write(&path, "我的独立预测，尚未运行。\n").unwrap();
+    assert!(labquest::beginner::init(&project).is_err());
+    let red = command(&["beginner".as_ref(), "check".as_ref(), project.as_os_str()]);
+    assert!(!red.status.success());
+    assert_eq!(
+        fs::read_to_string(&path).unwrap(),
+        "我的独立预测，尚未运行。\n"
+    );
+    let _ = fs::remove_dir_all(base);
+}
+
+#[test]
 fn syntax_error_explains_next_step_and_does_not_issue_badge() {
     let base = temp_workspace("syntax");
     let project = base.join("card");

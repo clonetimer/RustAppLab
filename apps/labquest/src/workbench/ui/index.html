@@ -6,6 +6,8 @@
   <meta name="color-scheme" content="dark">
   <title>RustAppLab · Rust 学习工作台</title>
   <link rel="stylesheet" href="/assets/app.css">
+  <script src="/assets/knowledge.js" defer></script>
+  <script src="/assets/experiments.js" defer></script>
   <script src="/assets/app.js" defer></script>
 </head>
 <body>
@@ -24,7 +26,7 @@
         <span id="catalog-count"></span>
       </div>
       <nav id="course-list" class="course-list" aria-label="课程"></nav>
-      <button type="button" id="book-open" class="secondary book-launch">知识专题 · D1–D6</button>
+      <button type="button" id="book-open" class="secondary book-launch">查知识 · 找实验</button>
     </aside>
     <main class="workspace" aria-labelledby="course-title">
       <header class="course-header">
@@ -80,6 +82,7 @@
             <section class="lesson-exercise" aria-labelledby="reflection-title">
               <h4 id="reflection-title">想一想</h4>
               <p id="lesson-reflection"></p>
+              <button type="button" id="learning-log-button" class="text-button">记录预测、解释与新输入</button>
             </section>
           </article>
           <p id="lesson-loading" class="empty-lesson">正在读取课程目录…</p>
@@ -152,10 +155,18 @@
   </div>
   <dialog id="book-dialog" class="book-dialog" aria-labelledby="book-title">
     <header class="panel-heading">
-      <h2 id="book-title">知识专题 · D1–D6</h2>
+      <h2 id="book-title">知识导航 · 读懂后亲手验证</h2>
       <button type="button" id="book-close" class="secondary">返回工作台</button>
     </header>
-    <div class="book-toolbar">
+    <div class="knowledge-layout">
+      <aside class="knowledge-sidebar" aria-label="知识点导航">
+        <label for="knowledge-search">想弄懂什么？</label>
+        <input id="knowledge-search" type="search" placeholder="借用、HashMap、E0502…" autocomplete="off">
+        <span id="knowledge-count" class="muted" role="status"></span>
+        <nav id="knowledge-results" aria-label="相关知识主题"></nav>
+      </aside>
+      <div class="knowledge-reader">
+      <div class="book-toolbar">
       <label for="book-select">选择专题</label>
       <select id="book-select">
         <option value="d1">D1 · Cargo</option>
@@ -172,9 +183,36 @@
         <option value="evidence">学员理解与迁移观察</option>
       </select>
       <span id="book-status" role="status">离线材料</span>
+      </div>
+      <div class="book-actions">
+        <button type="button" id="book-practice" class="primary">在工作台学习并验证 →</button>
+        <a id="book-official" target="_blank" rel="noopener noreferrer" referrerpolicy="no-referrer">当前官方 Book</a>
+        <button type="button" id="book-error-experiments" class="text-button">编译错误对照实验</button>
+      </div>
+      <article id="book-text" class="book-text" tabindex="0" aria-label="本地专题讲义"></article>
+      <p class="book-limit">专题测试验证代码行为。理解与迁移记录保存在自己的学习日志中，尚未观察的项目保持“未评估”。</p>
+      </div>
     </div>
-    <pre id="book-text" class="book-text" tabindex="0" aria-label="专题讲义原文"></pre>
-    <p class="book-limit">阅读与独立实验分开：D1–D6 的验证命令仍需按讲义运行 Cargo；阅读不计为正式通过。</p>
+  </dialog>
+  <dialog id="experiment-dialog" class="experiment-dialog" aria-labelledby="experiment-dialog-title">
+    <header class="panel-heading">
+      <h2 id="experiment-dialog-title">编译错误 · 失败与修复对照</h2>
+      <button type="button" id="experiment-close" class="secondary">返回自己的代码</button>
+    </header>
+    <div class="experiment-content">
+      <label for="experiment-select">选择错误</label>
+      <select id="experiment-select"></select>
+      <p id="experiment-question"></p>
+      <label for="experiment-prediction">先预测：哪里会失败，为什么？</label>
+      <textarea id="experiment-prediction" rows="2" placeholder="用自己的话写下预测。此处暂存到本页；课后可整理到学习记录。"></textarea>
+      <div class="experiment-comparison">
+        <section><h3>失败示例</h3><pre id="experiment-bad"></pre><button type="button" id="experiment-failure" class="secondary">运行预期失败</button></section>
+        <section><h3>修复示例</h3><pre id="experiment-good"></pre><button type="button" id="experiment-repair" class="primary">运行修复与断言</button></section>
+      </div>
+      <p id="experiment-status" role="status" aria-live="polite"></p>
+      <pre id="experiment-output" tabindex="0" aria-label="实验的真实编译与运行输出"></pre>
+      <p class="book-limit">实验在独立临时目录中运行。回到自己的项目后，修正源码并重新检查。</p>
+    </div>
   </dialog>
   <dialog id="lesson-dialog" aria-labelledby="lesson-dialog-title">
     <header class="panel-heading">

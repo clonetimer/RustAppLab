@@ -2,7 +2,7 @@
 
 通过亲手制作小软件学习 Rust：先读懂输入和输出，每次实现一个函数，用自己的数据验证，最后完成独立作品。
 
-**推荐从网页工作台开始。** Windows 双击 `START_WORKBENCH_WINDOWS.cmd`，Linux 执行 `./START_WORKBENCH.sh`。在一个浏览器窗口内读中文任务卡、编辑自己的源码、保存、运行和查看真实检查结果；已接入 FirstCard 与全部 12 款 Studio。安装、续学和操作说明见 [网页学习工作台](course/WORKBENCH.md)。
+**推荐从网页工作台开始。** Windows 双击 `START_WORKBENCH_WINDOWS.cmd`，Linux 执行 `./START_WORKBENCH.sh`。在一个浏览器窗口内读中文任务卡、编辑自己的源码、保存、运行和查看真实检查结果；已接入 FirstCard、全部 12 款 Studio 和 D1–D6 的 7 个既有专题工程。安装、续学和操作说明见 [网页学习工作台](course/WORKBENCH.md)。
 
 ## 我现在应该做什么？
 
@@ -70,9 +70,9 @@ FirstCard → UnitLab → QuizDeck → TextScope → LedgerLite / BadgeForge / T
 | C1 | Tokio/Reqwest 有界异步下载、超时、取消、暂存发布 | [C1 讲义](course/ADVANCED_C1.md) |
 | C2 | Axum JSON 路由、单写者日志、并发客户端与优雅关闭 | [C2 讲义](course/ADVANCED_C2.md) |
 
-新版工作台可在课程内查看中文与官方 Rust Book 对照、常见编译错误解释，或离线阅读 D1–D6 及专项讲义。独立专题的运行验收仍需按 Cargo 命令执行。中文 Rust Book 用于基础概念与项目组织对照；异步 API 按锁定版本的官方文档学习。使用 `learn reading <工程>` 查阅相关章节，见 [Book 对照指南](course/BOOK_GUIDE.md)。
+新版工作台可以搜索中文概念、Rust 名称或错误编号，打开本地讲义与官方章节，再进入对应专题的个人副本。D1–D6 支持同页编辑、保存与真实 Cargo 测试；11 类编译错误提供隔离的失败／修复对照实验。中文 Rust Book 用于基础概念与项目组织对照；异步 API 按锁定版本的官方文档学习。使用 `learn reading <工程>` 查阅相关章节，见 [Book 对照指南](course/BOOK_GUIDE.md)。
 
-遇到相应概念时，可补读 [所有权与切片](course/BOOK_OWNERSHIP_PRACTICE.md)、[集合与错误传播](course/BOOK_COLLECTIONS_ERRORS.md)、[泛型与生命周期](course/BOOK_GENERICS_LIFETIMES.md)。它们不要求在 UnitLab 前完成。[31 项概念补课任务](course/BOOK_31_GAPS_REPAIR.md)、[学员学习效果观察](course/LEARNER_EVIDENCE_PROTOCOL.md) 和 [概念审计](course/BOOK_CONCEPT_AUDIT.md) 记录第 4–6、8–10 章本次 118 个目标的证据和剩余 31 项；这个范围不能作为整本书的完成率。
+遇到相应概念时，可补读 [所有权与切片](course/BOOK_OWNERSHIP_PRACTICE.md)、[集合与错误传播](course/BOOK_COLLECTIONS_ERRORS.md)、[泛型与生命周期](course/BOOK_GENERICS_LIFETIMES.md)。它们不要求在 UnitLab 前完成。[31 项概念补课任务](course/BOOK_31_GAPS_REPAIR.md)、[学员学习效果观察](course/LEARNER_EVIDENCE_PROTOCOL.md) 和 [概念审计](course/BOOK_CONCEPT_AUDIT.md) 保留第 4–6、8–10 章 118 个目标的历史审计，并补齐其中原先未完成的 31 项解释、预测、成功／失败、修复与迁移练习；[本轮补充证据](verification/concept-repair-20261124.json)单独记录技术验证。这个范围不能作为整本书的完成率，示例验证也不表示真实学员已经掌握。
 
 ## 已有工程继续用
 
@@ -90,7 +90,7 @@ cargo run --locked --offline -p labquest -- learn check "D:/练习/my-unitlab"
 
 ## 候选版范围与试用
 
-课程范围保持在 **B4、C1、C2**；本次改善 FirstCard/Studio 的学习界面，不增加课程数量。独立作品、进阶 A/B/C 与 Book 专题继续使用原有入口。
+课程内容范围保持在 **B4、C1、C2** 及已有 Rust Book 专题；本次把 D1–D6 接入网页，不新增进阶路线。独立作品与进阶 A/B/C 保留原入口。D6 的 Edition 迁移、nightly 和 IDE 操作仍按原讲义单独验证。
 
 支持范围为 Windows x64 MSVC、Linux x86_64；基础/A/B 的最低 Rust 为 1.74，C1/C2 单独要求 1.85.0。StoreDesk 需系统 SQLite，见 [支持说明](SUPPORTED_PLATFORMS.md)。普通学员不需要 Python 或 Playwright，不运行维护者的发布验收脚本。
 

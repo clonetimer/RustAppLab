@@ -21,8 +21,8 @@
 //! `examples/panic_backtrace_probe.rs` runs out of process. Test harnesses
 //! must never switch their own panic strategy to abort.
 
-use std::collections::HashMap;
 use std::collections::hash_map::DefaultHasher;
+use std::collections::HashMap;
 use std::hash::BuildHasherDefault;
 
 /// Map two parallel lists. Extra elements are dropped by zip; explain that boundary.

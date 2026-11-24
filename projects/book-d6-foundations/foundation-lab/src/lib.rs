@@ -29,6 +29,7 @@ use std::time::{Duration, Instant};
 
 pub mod book_gap4;
 pub mod collections;
+pub mod concept_repairs;
 pub mod generic_lifetimes;
 pub mod language_basics;
 pub mod ownership;

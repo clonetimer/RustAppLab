@@ -565,3 +565,67 @@ summary:hover { color: var(--text); }
 .book-text { min-height: 170px; max-height: 68vh; overflow: auto; padding: 18px; white-space: pre-wrap; word-break: break-word; font: 13px/1.7 var(--mono); }
 .book-limit { border-top: 1px solid var(--line); padding: 10px 16px; }
 @media (max-width: 540px) { .book-dialog { width: 99vw; } .book-text { padding: 11px; max-height: 73vh; } }
+
+/* The same workbench serves projects and Book practice; the reader stays optional. */
+.course-group { margin: 16px 8px 6px; color: var(--muted); font-size: 11px; letter-spacing: .05em; }
+.knowledge-layout { display: grid; grid-template-columns: 225px minmax(0, 1fr); min-height: 0; }
+.knowledge-sidebar { padding: 16px 12px; border-right: 1px solid var(--line); }
+.knowledge-sidebar label { display: block; font-size: 13px; font-weight: 600; margin-bottom: 8px; }
+#knowledge-search { padding: 9px 10px; width: 100%; font-size: 12px; }
+#knowledge-count { display: block; color: var(--muted); font-size: 11px; margin: 10px 0 8px; }
+#knowledge-results { max-height: 58vh; overflow-y: auto; }
+.knowledge-link { display: block; width: 100%; min-height: 39px; text-align: left; font-size: 12px; font-weight: 500; line-height: 1.5; margin: 3px 0; }
+.knowledge-link:hover, .knowledge-link[aria-current="true"] { background: var(--selected); color: var(--accent); }
+.knowledge-reader { min-width: 0; }
+.book-dialog { width: min(1120px, 96vw); }
+.book-toolbar { padding: 10px 16px; gap: 8px; }
+.book-toolbar label { font-size: 12px; }
+.book-toolbar select { max-width: 100%; font-size: 12px; }
+#book-status { flex-basis: 100%; }
+.book-actions { display: flex; align-items: center; flex-wrap: wrap; gap: 7px 14px; padding: 8px 16px 10px; border-bottom: 1px solid var(--line); }
+.book-actions a, .book-text a { color: #b6d8ff; text-underline-offset: 3px; }
+.book-actions a { font-size: 12px; }
+.book-actions button { font-size: 12px; }
+.book-text { white-space: normal; word-break: normal; overflow-wrap: anywhere; font: 14px/1.8 "Segoe UI", "Microsoft YaHei", "Noto Sans CJK SC", sans-serif; max-height: 57vh; }
+.book-text h2 { font-size: 20px; line-height: 1.5; margin: 4px 0 16px; }
+.book-text h3 { font-size: 16px; margin: 24px 0 10px; color: #d9e8ff; }
+.book-text h4, .book-text h5, .book-text h6 { font-size: 14px; margin: 18px 0 8px; }
+.book-text p { margin: 10px 0; }
+.book-text li { margin: 5px 0; }
+.book-text ul, .book-text ol { padding-left: 22px; }
+.book-text code { font: 12px/1.7 var(--mono); background: #0d1726; padding: 2px 4px; border-radius: 3px; }
+.book-text pre { padding: 12px; white-space: pre-wrap; overflow-wrap: anywhere; border: 1px solid var(--line); border-radius: 6px; background: var(--editor); }
+.book-text pre code { padding: 0; background: transparent; }
+.lesson-table { overflow-x: auto; margin: 14px 0; }
+.lesson-table table { border-collapse: collapse; width: 100%; font-size: 12px; }
+.lesson-table th, .lesson-table td { padding: 8px; vertical-align: top; border: 1px solid var(--line); text-align: left; }
+.lesson-table th { background: #1c2c43; }
+.compiler-help p { margin-bottom: 3px; }
+.compiler-help button { min-height: 30px; font-size: 12px; padding: 4px 8px; }
+.experiment-dialog { width: min(980px, 96vw); max-height: 92vh; padding: 0; color: var(--text); background: var(--panel); border: 1px solid var(--line); border-radius: 12px; }
+.experiment-dialog::backdrop { background: #030711ce; }
+.experiment-content { padding: 16px; }
+.experiment-content > label { display: block; font-size: 12px; margin: 9px 0 6px; color: var(--muted); }
+.experiment-content select { padding: 9px; width: min(100%, 470px); }
+#experiment-question { margin: 12px 0; line-height: 1.7; }
+#experiment-prediction { width: 100%; padding: 9px; resize: vertical; min-height: 60px; }
+.experiment-comparison { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin: 16px 0; }
+.experiment-comparison section { min-width: 0; }
+.experiment-comparison h3 { font-size: 14px; margin: 8px 0; }
+.experiment-comparison pre, #experiment-output { padding: 12px; background: var(--editor); border: 1px solid var(--line); border-radius: 7px; font: 12px/1.65 var(--mono); white-space: pre-wrap; overflow-wrap: anywhere; }
+.experiment-comparison pre { min-height: 155px; }
+#experiment-status { margin: 14px 0 8px; font-size: 13px; }
+#experiment-output { max-height: 260px; overflow: auto; min-height: 48px; }
+@media (max-width: 680px) {
+  .book-dialog > .panel-heading, .experiment-dialog > .panel-heading { flex-wrap: wrap; }
+  .knowledge-layout { grid-template-columns: minmax(0, 1fr); }
+  .knowledge-sidebar { border-right: 0; border-bottom: 1px solid var(--line); padding: 10px 12px; }
+  #knowledge-results { max-height: 100px; display: grid; grid-template-columns: 1fr 1fr; gap: 3px; }
+  .knowledge-link { font-size: 11px; margin: 0; padding: 6px; }
+  .book-text { max-height: 44vh; font-size: 13px; padding: 12px; }
+  .book-toolbar, .book-actions { padding-inline: 12px; }
+  .experiment-comparison { grid-template-columns: minmax(0, 1fr); }
+  .experiment-dialog { width: 98vw; }
+  .experiment-content { padding: 12px; }
+  .experiment-comparison pre { min-height: auto; }
+}

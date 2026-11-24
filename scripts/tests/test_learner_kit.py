@@ -54,6 +54,21 @@ class LearnerKitTests(unittest.TestCase):
             self.assertIn(path, assets)
         self.assertIn("publish = false", assets["projects/book-d1-cargo/book-card/Cargo.toml"].decode())
 
+    def test_observation_protocol_and_gap_tasks_are_available_offline(self):
+        assets = dict(self.assets().course_inputs())
+        for name in ("course/LEARNER_EVIDENCE_PROTOCOL.md", "course/BOOK_31_GAPS_REPAIR.md",
+                     "verification/concept-repair-20261124.json"):
+            with self.subTest(name=name):
+                self.assertTrue(name in assets, f"missing offline course asset: {name}")
+                self.assertEqual(assets[name], (ROOT / name).read_bytes())
+        for source in ("course/LEARNER_EVIDENCE_PROTOCOL.md", "course/USER_TRIAL.md",
+                       "course/BOOK_31_GAPS_REPAIR.md"):
+            for target in re.findall(r'(?<!!)\[[^\]]+\]\(([^)]+)\)', assets[source].decode()):
+                if target.startswith(("http://", "https://", "#")):
+                    continue
+                resolved = posixpath.normpath(posixpath.join(posixpath.dirname(source), target.split("#", 1)[0]))
+                self.assertTrue(resolved in assets, f"{source}: missing linked asset {target}")
+
     def test_d6_practice_guide_has_runner_and_local_links_in_archive(self):
         assets = self.assets()
         with tempfile.TemporaryDirectory() as temp:

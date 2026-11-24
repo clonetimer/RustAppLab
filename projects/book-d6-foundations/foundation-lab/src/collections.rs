@@ -156,9 +156,10 @@
 //! ```compile_fail,E0277
 //! use book_d6_foundation_lab::collections::read_score;
 //!
-//! fn main() {
+//! fn read_without_result() {
 //!     let _ = read_score(&b"42\n"[..])?;
 //! }
+//! read_without_result();
 //! ```
 //!
 //! ```

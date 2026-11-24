@@ -219,7 +219,7 @@ jobs:
           cat > candidate-notes.md <<'EOF'
           网页学习工作台候选版。FirstCard 与全部 12 款 Studio 在同一页阅读中文任务卡、编辑保存源码、运行程序并查看原检查器的真实结果。
           Windows 双击 START_WORKBENCH_WINDOWS.cmd，Linux 运行 ./START_WORKBENCH.sh；已有工程输入实际路径继续，不重新初始化。界面内置，无新增 Python、Node 或 WSL 前置。
-          完整源码、17工程学员包、C1/C2离线源码包及Windows/Linux运行包经过同提交准入；浏览器证据包含四种尺寸的实际页面和前后对照。独立作品、进阶 A/B/C 与 Book 专题保持原入口。
+          完整源码、17工程学员包、C1/C2离线源码包及Windows/Linux运行包经过同提交准入；浏览器证据包含四种尺寸的实际页面和前后对照。D1–D6 七个专题已接入网页编辑与真实测试；独立作品、进阶 A/B/C 保留原入口。
           先阅读 QUICK_START.md 和 course/WORKBENCH.md；已编译工作台选择对应平台 runtime.zip，完整源码与课程选择 source.zip。
           此发布为RC，不是Stable。真实学习观察仍待填写USER_TRIAL.md，不能以自动测试代替。
           运行包打开工作台无需Cargo；运行或检查学员源码仍需Rust与系统工具链。StoreDesk需系统SQLite。Linux系统库要求见包内BUILD_INFO.json，Windows CI不等于用户本机Win10验收。

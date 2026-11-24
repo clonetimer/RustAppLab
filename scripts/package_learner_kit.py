@@ -91,6 +91,7 @@ def course_inputs() -> list[tuple[str, bytes]]:
         "CURRICULUM.md", "AFTER_FIRSTCARD.md", "BOOK_COVERAGE_AUDIT.md", "BOOK_D1_CARGO.md", "BOOK_D2_SMART_POINTERS.md", "BOOK_D3_OOP_PATTERNS.md", "BOOK_D4_ADVANCED_FEATURES.md", "BOOK_D5_WEB_SERVER.md", "BOOK_D6_APPENDICES.md", "BOOK_D6_FOUNDATIONS.md", "BOOK_D6_PRACTICAL.md", "BOOK_D6_LANGUAGE_BASICS.md", "STUDIO_GUIDE.md", "ADVANCED_B.md", "ADVANCED_B_WINDOWS.md", "BOOK_GUIDE.md", "ADVANCED_C1.md", "ADVANCED_C2.md", "USER_TRIAL.md", "SQLITE_SETUP.md", "ADVANCED_A.md",
         "28_independent_product.md", "29_product_release.md",
         "30_second_independent_product.md", "31_transfer_release.md",
+        "LEARNER_EVIDENCE_PROTOCOL.md", "LEARNING_LOG_TEMPLATE.md", "BOOK_31_GAPS_REPAIR.md",
         "BEGINNER_WINDOWS_GUIDE.md", "00_first_five_minutes.md", "NETWORK_PREPARATION.md", "LEARNING_NAVIGATOR.md", "RUST_ERROR_LABS.md", "FOUNDATION_PATH.md", "FOUNDATION_NEXT_STEPS.md", "PROGRESS_OVERVIEW.md", "SYSTEMS_PATH.md", "RELIABILITY_PATH.md", "INDEPENDENT_PATH.md",
     ]
     result = [(f"course/{name}", (ROOT / "course" / name).read_bytes()) for name in files]
@@ -101,6 +102,8 @@ def course_inputs() -> list[tuple[str, bytes]]:
         result.append((f"course/{name}", (ROOT / "course" / name).read_bytes()))
     result.append(("verification/concept-audit-rc3.json",
                    (ROOT / "verification/concept-audit-rc3.json").read_bytes()))
+    result.append(("verification/concept-repair-20261124.json",
+                   (ROOT / "verification/concept-repair-20261124.json").read_bytes()))
     result.append(("scripts/book_d6_check.py", (ROOT / "scripts/book_d6_check.py").read_bytes()))
     # D1 is a runnable reference lab, not an 18th learner exercise. Its code
     # must accompany the docs so offline links do not dangle in learner-kit.
