@@ -67,7 +67,7 @@
         "exit_code": 0,
         "summaries": [],
         "rust_passed_count": 0,
-        "log_sha256": "e84ae02019e3a309d643e52b3e47d07e5e47b4f1b39799595d3f21c723dbe7a1"
+        "log_sha256": "456d3c4810a2fa2a361471f6e38a0259936493d20cecfe51e21802cf31bd266c"
       },
       {
         "name": "debug",
@@ -88,15 +88,15 @@
           "test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
           "test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
           "test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
-          "test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.53s",
+          "test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.83s",
           "test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
           "test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
           "test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
           "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
           "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s"
         ],
-        "rust_passed_count": 56,
-        "log_sha256": "a35fde7df0749e5a2ace25144bd00d868f48390601dfc4543a64deb6e91c3a79"
+        "rust_passed_count": 57,
+        "log_sha256": "cb7ec68df750437c553397fdc73f9179b582f778338ce474aaac8fadb6e708b0"
       },
       {
         "name": "release",
@@ -118,15 +118,15 @@
           "test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
           "test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
           "test result: ok. 4 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
-          "test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.58s",
+          "test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.75s",
           "test result: ok. 7 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
           "test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
           "test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
           "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s",
           "test result: ok. 0 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.00s"
         ],
-        "rust_passed_count": 56,
-        "log_sha256": "47f129c78fc029d900cf6b247764c49e37daf731f9d7c749e47bdaad9d44d2bf"
+        "rust_passed_count": 57,
+        "log_sha256": "8bbf1b7387ac32ae47a2010ae26e45cda1bac65d3f90d6e7faed6ae2b65d8c19"
       },
       {
         "name": "doctests",
@@ -163,10 +163,10 @@
         ],
         "exit_code": 0,
         "summaries": [
-          "test result: ok. 5 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.57s"
+          "test result: ok. 6 passed; 0 failed; 0 ignored; 0 measured; 0 filtered out; finished in 0.74s"
         ],
-        "rust_passed_count": 5,
-        "log_sha256": "19ec928527f6ddf9880dbcea60fe5886375713682697ac15b3190b542740138a"
+        "rust_passed_count": 6,
+        "log_sha256": "5e2e2ca45a183af0a0aa986db04c45c5cf340a718a83ccdba9490d406120badd"
       },
       {
         "name": "audit-contract",
@@ -236,7 +236,7 @@
     "evidence_log_note": "Command outputs were captured locally; SHA-256 records their exact bytes. Reproduce using the listed commands; remote CI must independently validate its own exact source.",
     "tested_source_sha256": {
       "projects/book-d6-foundations/foundation-lab/src/concept_repairs.rs": "328c307b11a31988adb978cae1a7bfadeb636905ba305ede362f375587a998fd",
-      "projects/book-d6-foundations/foundation-lab/tests/concept_repairs.rs": "ee11074617290dbc6cb165e87f4d14e2ac002535ee86bb30dbbe2a036d0c7bf5",
+      "projects/book-d6-foundations/foundation-lab/tests/concept_repairs.rs": "488c5182eef4e31f189e198b6ba69404a8d82b276a145b642dda93b820e0bbf4",
       "projects/book-d6-foundations/foundation-lab/examples/panic_strategy_probe.rs": "0aed406dbda7d0f2ddfa9d39d9381ebb4fd5ee94ed5b4cfef1810ad287cdf0ca",
       "projects/book-d6-foundations/foundation-lab/examples/panic_backtrace_probe.rs": "1c68037186a0f4094b7f22afa44cfd40f86fbbbb685219e1613609608e16abe3",
       "projects/book-d6-foundations/foundation-lab/src/collections.rs": "96b6016f6b70baa5e8615b035ef5fb02479500a6f05e97dbc367fcf72c760819",
@@ -359,7 +359,26 @@
       ],
       "explicit_source_location": "panic_backtrace_probe.rs:9:9",
       "index_source_location": "panic_backtrace_probe.rs:7:25",
-      "interpretation": "These are observations of the actual local integration run, not fixed cross-platform expected exit codes or source line numbers."
+      "interpretation": "These are observations of the actual local integration run, not fixed cross-platform expected exit codes or source line numbers.",
+      "relocated_executable_regression": "Passed after copying the actual test executable to an otherwise empty target/debug/build/.../out directory, under a temporary path containing spaces and Chinese text; no neighboring Cargo library artifacts were present."
+    },
+    "cargo_layout_repair": {
+      "reason": "The current stable toolchain can place test executables outside the library artifact directory. Looking for rlib siblings of current_exe was an invalid assumption.",
+      "implementation": "Compile CARGO_MANIFEST_DIR/src/lib.rs as an isolated temporary rlib with the same rustc used for the 25 diagnostic snippets. No Cargo private-directory search or timestamp selection remains.",
+      "regression_test": "diagnostics_work_without_cargo_artifacts_beside_the_test_executable",
+      "red_green": "The relocated executable reproduced the original missing-library panic before the fix, then passed with all intended E-code checks preserved.",
+      "outside_repository_copy": {
+        "path_properties": [
+          "spaces",
+          "Chinese characters",
+          "separate CARGO_TARGET_DIR"
+        ],
+        "debug_passed": 57,
+        "release_passed": 57,
+        "doctests_passed": 134,
+        "strict_clippy_exit_code": 0
+      },
+      "platform_boundary": "These reruns used local Rust 1.85 on Linux. Windows and current-stable/MSRV execution require the exact-commit CI rerun."
     }
   },
   "primary_reference_urls": [

@@ -30,21 +30,58 @@ fn rustc() -> Command {
     Command::new(std::env::var_os("RUSTC").unwrap_or_else(|| "rustc".into()))
 }
 
-fn library_artifact() -> PathBuf {
-    let executable = std::env::current_exe().expect("integration-test location");
-    let deps = executable.parent().unwrap();
-    fs::read_dir(deps)
-        .expect("compiled dependency directory")
-        .map(|entry| entry.unwrap().path())
-        .filter(|path| {
-            path.file_name()
-                .unwrap()
-                .to_string_lossy()
-                .starts_with("libbook_d6_foundation_lab-")
-                && path.extension().is_some_and(|ext| ext == "rlib")
-        })
-        .max_by_key(|path| fs::metadata(path).unwrap().modified().unwrap())
-        .expect("Cargo has built the teaching library")
+fn compile_teaching_library(scratch: &Path) -> PathBuf {
+    // This teaching crate has no external dependencies or build script. Build
+    // its actual source with the same rustc used for the diagnostic snippets,
+    // instead of depending on Cargo's private artifact directory layout.
+    let source = Path::new(env!("CARGO_MANIFEST_DIR")).join("src/lib.rs");
+    let library = scratch.join("libbook_d6_foundation_lab.rlib");
+    let output = rustc()
+        .arg(&source)
+        .args([
+            "--edition=2021",
+            "--crate-name",
+            "book_d6_foundation_lab",
+            "--crate-type=rlib",
+        ])
+        .arg("-o")
+        .arg(&library)
+        .output()
+        .expect("compile the teaching library from its declared source");
+    assert!(
+        output.status.success(),
+        "cannot compile diagnostic dependency {}:\n{}",
+        source.display(),
+        String::from_utf8_lossy(&output.stderr)
+    );
+    library
+}
+
+#[test]
+fn diagnostics_work_without_cargo_artifacts_beside_the_test_executable() {
+    let scratch = Scratch::new("executable layout 中文");
+    let out = scratch
+        .0
+        .join("target/debug/build/book-d6-foundation-lab/layout/out");
+    fs::create_dir_all(&out).unwrap();
+    let relocated = out.join(format!("concept_repairs{}", std::env::consts::EXE_SUFFIX));
+    fs::copy(std::env::current_exe().unwrap(), &relocated).unwrap();
+    assert_eq!(fs::read_dir(&out).unwrap().count(), 1);
+    let output = Command::new(&relocated)
+        .args([
+            "--exact",
+            "compile_fail_examples_report_the_intended_rust_error",
+            "--nocapture",
+        ])
+        .current_dir(&scratch.0)
+        .output()
+        .expect("run the actual test from an output directory with no library artifacts");
+    assert!(
+        output.status.success(),
+        "relocated diagnostic checks failed:\n{}\n{}",
+        String::from_utf8_lossy(&output.stdout),
+        String::from_utf8_lossy(&output.stderr)
+    );
 }
 
 #[test]
@@ -53,7 +90,7 @@ fn compile_fail_examples_report_the_intended_rust_error() {
     assert!(source.is_file(), "the 31 repair examples must exist");
     let text = fs::read_to_string(source).unwrap();
     let scratch = Scratch::new("diagnostics");
-    let library = library_artifact();
+    let library = compile_teaching_library(&scratch.0);
     let mut concept = "";
     let mut blocks = Vec::new();
     let mut lines = text.lines();
@@ -95,11 +132,6 @@ fn compile_fail_examples_report_the_intended_rust_error() {
             ])
             .arg("--extern")
             .arg(format!("book_d6_foundation_lab={}", library.display()))
-            .arg("-L")
-            .arg(format!(
-                "dependency={}",
-                library.parent().unwrap().display()
-            ))
             .arg("-o")
             .arg(scratch.0.join("failure.rmeta"))
             .output()
