@@ -17,8 +17,8 @@
 | D7 | 最新 Book 基线 | 固定官方发布快照；87 项唯一 ID；旧 ID 一对一映射；六节异步分开标记；证据路径检查；自动结构测试 | 本 PR 建立基线；新版内容复核仍待做 |
 | D8 | Edition 2024 教学环境 | 独立 workspace + rust-toolchain 固定 1.100.0；最小工程、2021/2024 对照、resolver 3、迁移诊断、运行/测试；不改旧 MSRV；学员入口 | [代码与讲义](BOOK_D8_EDITION_2024.md) 已提交，待 CI |
 | D9 | 1.75–1.100 稳定特性 | 版本增量审计和优先级；语法、Trait、生命周期捕获、async closure、Never、DropGuard 等代表性练习；按稳定范围逐项验收 | D9-A [九项实际任务](BOOK_D9_STABLE_FEATURES.md) 与 [26 版本索引](MODERN_STABLE_FEATURE_INDEX.md) 已提交待 CI；D9-B [逐版代表性审计及标准库/Cargo 实验](BOOK_D9_STDLIB_CARGO.md) 已提交，待当前 CI；完整 API 清单、Unsafe 等专项不纳入覆盖率 |
-| D10 | 异步核心课 | 六节目标逐项关闭；Future、Poll、Waker、Pin/Unpin、Stream、join/select、async trait、取消与阻塞；以已有应用串起概念而非重复项目 | D10-A 六步实验双平台专项通过（Run 45586040166）；D10-B [七步真实 Tokio/Stream 实验与离线交付](BOOK_D10_TOKIO_STREAM.md) 已提交，待当前 CI |
-| D11 | 现代开发工具 | IDE 断点、Clippy、Miri、属性测试、Fuzzing、基准与依赖审计；独立运行证据及学员迁移记录 | 待实施 |
+| D10 | 异步核心课 | 六节目标逐项关闭；Future、Poll、Waker、Pin/Unpin、Stream、join/select、async trait、取消与阻塞；以已有应用串起概念而非重复项目 | D10-A 六步实验双平台专项通过（Run 45586040166）；D10-B [七步真实 Tokio/Stream 实验与离线交付](BOOK_D10_TOKIO_STREAM.md) 双平台专项及完整 PR CI 通过，#20 已合并（b6f2abec） |
+| D11 | 现代开发工具 | IDE 断点、Clippy、Miri、属性测试、Fuzzing、基准与依赖审计；独立运行证据及学员迁移记录 | D11-A [工程质量与工具实验](BOOK_D11_QUALITY.md) 已提交待 CI；D11-B Miri/libFuzzer/依赖漏洞审计与真人 IDE 操作待补 |
 | E1 | 网络工程 | TLS、认证、数据库、可观测性、错误边界；明确本地教学与公网安全差异 | 待评估 |
 | E2 | 桌面 GUI | 一款完整可交互软件，模型/视图/状态分离，跨平台测试 | 待评估 |
 | E3 | 嵌入式与实时 | no_std、硬件抽象、仿真与硬件分别验证 | 待评估 |
@@ -58,3 +58,9 @@ D7–D9 集成修复已在 #18 单独验收，D10-A 不取消其当前 CI。用�
 复用 C1 已锁定的 Tokio 1.48.0 与 futures-util 0.3.34 依赖图和 registry SHA-256，不以不必要的全新框架或网络应用替代教学。新增锁须 cargo vendor --locked 与空缓存 frozen 独立核验；用虚拟 Tokio 时钟和在途数量、Waker、Drop/JoinError、线程 ID 与通道握手证明行为，不靠机器耗时猜并发。7 个固定合同（9 个 TODO）、真实 Stream 的 Pending/Some/EOF、Send RPITIT 与非 Unpin Stream 诊断补齐第 17 章代表性目标。离线学员包先保存 TODO 原始字节，只对搬移后的副本注入答案，ZIP 哈希不变。D7–D9 #18 的累计完整 CI、D10-A #19 的集成 CI 仍独立收口；所有新工作区同时更新 Python/PowerShell 指纹范围，保持 rc.5 原发布资产不变。网页与真人效果尚待验收。
 
 D10-B 首轮 [Run 45588756708 Linux 原始日志](https://github.com/clonetimer/RustAppLab/actions/runs/45588756708/job/139117061724) 中 vendor、Debug/Release、两个诊断、搬移学员包、七项 RED/GREEN、CLI 均通过，最后仅因 registry 目录存在拒绝交付。修复不删除离线门槛：两个 Cargo home 初始必须为空；在 frozen 模式读取真实 metadata，核验所有解析出的 registry 包 manifest 位于随包 vendor；记录 registry 全目录及文件哈希，仅允许标准 CACHEDIR.TAG 管理标记和空目录，不允许 index/cache/src 数据。修复后必须重跑双平台验证，不能沿用首轮 FAIL 作为离线交付 PASS。
+
+## 开发经验（D11-A）
+
+D10-B 在 fe2493b9 的完整 PR CI 19/19 适用 Job、五套双平台专项均成功，#20 已合并为 b6f2abec。此前 main bbca9f49 的 Windows StoreDesk 第三关真实里程碑 8 秒超时复现（Run 45589200104 artifact 15011300527），不删测试、不放宽限制、不把原因猜成新异步课错误；新主干仍需实际回归。D11-A 复用独立 Edition 2024 工作区；四步教学帧编解码与计数、三个固定性质、三种真实 mutant、rustfmt/Clippy 红绿、GDB 实际断点和 Release 测量。有限生成输入不等于 libFuzzer，不宣称性能胜负；Windows IDE、Miri、libFuzzer 与 RustSec 另验。学员包无答案，源清单和 Python/PowerShell 指纹同步，经典课程及 rc.5 不变。
+
+D11-A 首轮 Run 45605693046 的 Windows/Linux reference-debug 均失败；[Linux 原始日志](https://github.com/clonetimer/RustAppLab/actions/runs/45605693046/artifacts/15018045979) 确认 Edition 2024 的 gen 保留字被误用为局部变量。参考与学员属性测试统一改名 generator，保留全部种子、生成样本、断言和测试数量；必须重新通过当前提交 CI。这也说明 Edition 迁移检查应真实覆盖测试和 examples，不只检查 lib.rs。

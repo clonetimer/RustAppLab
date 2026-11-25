@@ -29,7 +29,7 @@ def allowed(path: Path) -> bool:
         return path.suffix in (".rs", ".toml", ".md", ".html", ".css", ".js", ".tsv", ".txt", ".svg", ".ps1")
     if parts[0] == "examples":
         return path.suffix in (".svg", ".txt", ".md", ".html", ".json", ".kv", ".tsv")
-    if len(parts) >= 3 and parts[:2] in (("projects", "advanced-b"), ("projects", "advanced-c1"), ("projects", "advanced-c2"), ("projects", "book-d1-cargo"), ("projects", "book-d2-smart-pointers"), ("projects", "book-d3-oop-patterns"), ("projects", "book-d4-advanced-features"), ("projects", "book-d5-webserver"), ("projects", "book-d6-appendices"), ("projects", "book-d6-foundations"), ("projects", "modern-d8-edition"), ("projects", "modern-d9-stable"), ("projects", "modern-d9-stdlib"), ("projects", "modern-d10-async-core"), ("projects", "modern-d10-tokio")):
+    if len(parts) >= 3 and parts[:2] in (("projects", "advanced-b"), ("projects", "advanced-c1"), ("projects", "advanced-c2"), ("projects", "book-d1-cargo"), ("projects", "book-d2-smart-pointers"), ("projects", "book-d3-oop-patterns"), ("projects", "book-d4-advanced-features"), ("projects", "book-d5-webserver"), ("projects", "book-d6-appendices"), ("projects", "book-d6-foundations"), ("projects", "modern-d8-edition"), ("projects", "modern-d9-stable"), ("projects", "modern-d9-stdlib"), ("projects", "modern-d10-async-core"), ("projects", "modern-d10-tokio"), ("projects", "modern-d11-quality")):
         return path.suffix in (".rs", ".toml", ".md", ".lock", ".html", ".css", ".js") or path.name == "Cargo.lock"
     if parts[0] in ("course", "docs"):
         return path.suffix == ".md"
