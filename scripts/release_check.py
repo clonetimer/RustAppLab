@@ -244,7 +244,7 @@ def source_id(root: Path = ROOT) -> str:
         if not path.is_file() or any(x in {'target', '.git', '__pycache__'} for x in rel.parts):
             continue
         if (rel.parts[0] not in {'apps', 'scripts', '.github', 'course', 'examples'}
-                and rel.parts[:2] not in {('projects', 'advanced-b'), ('projects', 'advanced-c1'), ('projects', 'advanced-c2'), ('projects', 'book-d1-cargo'), ('projects', 'book-d2-smart-pointers'), ('projects', 'book-d3-oop-patterns'), ('projects', 'book-d4-advanced-features'), ('projects', 'book-d5-webserver'), ('projects', 'book-d6-appendices'), ('projects', 'book-d6-foundations')} and len(rel.parts) != 1):
+                and rel.parts[:2] not in {('projects', 'advanced-b'), ('projects', 'advanced-c1'), ('projects', 'advanced-c2'), ('projects', 'book-d1-cargo'), ('projects', 'book-d2-smart-pointers'), ('projects', 'book-d3-oop-patterns'), ('projects', 'book-d4-advanced-features'), ('projects', 'book-d5-webserver'), ('projects', 'book-d6-appendices'), ('projects', 'book-d6-foundations'), ('projects', 'modern-d8-edition')} and len(rel.parts) != 1):
             continue
         if path.suffix in CODE_SUFFIXES or rel.as_posix() == 'VERSION':
             paths.append(path)

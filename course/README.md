@@ -35,7 +35,7 @@
 
 ## 现代 Rust 选修路线（建设中）
 
-已完成基础课程后，可参考 [现代化教学计划](MODERN_RUST_ROADMAP.md) 和 [新版 Book 逐节映射](BOOK_MODERN_COVERAGE_D7.md)。D7 只是新版审计基线，D8–D11 尚未交付；继续使用现有经典路线，不需要更新旧学员工程。
+已完成基础课程后，可参考 [现代化教学计划](MODERN_RUST_ROADMAP.md) 和 [新版 Book 逐节映射](BOOK_MODERN_COVERAGE_D7.md)。D7 是新版审计基线；D8 已提交 [Edition 2024 告警筛选器](BOOK_D8_EDITION_2024.md)（待当前 CI），学员可独立复制工程练习。D9–D11 尚未交付；经典路线保持不变，不需要更新旧学员工程。
 
 ## 原有应用章节：按需拓展
 
