@@ -18,8 +18,8 @@
 | D8 | Edition 2024 教学环境 | 独立 workspace + rust-toolchain 固定 1.100.0；最小工程、2021/2024 对照、resolver 3、迁移诊断、运行/测试；不改旧 MSRV；学员入口 | [代码与讲义](BOOK_D8_EDITION_2024.md) 已提交，待 CI |
 | D9 | 1.75–1.100 稳定特性 | 版本增量审计和优先级；语法、Trait、生命周期捕获、async closure、Never、DropGuard 等代表性练习；按稳定范围逐项验收 | D9-A [九项实际任务](BOOK_D9_STABLE_FEATURES.md) 与 [26 版本索引](MODERN_STABLE_FEATURE_INDEX.md) 已提交待 CI；D9-B [逐版代表性审计及标准库/Cargo 实验](BOOK_D9_STDLIB_CARGO.md) 已提交，待当前 CI；完整 API 清单、Unsafe 等专项不纳入覆盖率 |
 | D10 | 异步核心课 | 六节目标逐项关闭；Future、Poll、Waker、Pin/Unpin、Stream、join/select、async trait、取消与阻塞；以已有应用串起概念而非重复项目 | D10-A 六步实验双平台专项通过（Run 45586040166）；D10-B [七步真实 Tokio/Stream 实验与离线交付](BOOK_D10_TOKIO_STREAM.md) 双平台专项及完整 PR CI 通过，#20 已合并（b6f2abec） |
-| D11 | 现代开发工具 | IDE 断点、Clippy、Miri、属性测试、Fuzzing、基准与依赖审计；独立运行证据及学员迁移记录 | D11-A [工程质量与工具实验](BOOK_D11_QUALITY.md) 完整 CI 与专项通过，#21 已合并（c470154）；D11-B [Miri/libFuzzer/RustSec 实验](BOOK_D11_SAFETY.md) 专项 5/5 PASS（45611450910），完整回归待验收；真人 IDE 与网页入口待验 |
-| E1 | 网络工程 | TLS、认证、数据库、可观测性、错误边界；明确本地教学与公网安全差异 | E1-0 [依赖安全收口](NETWORK_SECURITY_BASELINE.md) 已提交待验收；E1-A TLS/认证；E1-B 持久化/可观测性 |
+| D11 | 现代开发工具 | IDE 断点、Clippy、Miri、属性测试、Fuzzing、基准与依赖审计；独立运行证据及学员迁移记录 | D11-A [工程质量与工具实验](BOOK_D11_QUALITY.md) 完整 CI 与专项通过，#21 已合并（c470154）；D11-B [Miri/libFuzzer/RustSec 实验](BOOK_D11_SAFETY.md) 专项 5/5 PASS，完整回归和 E1-0 安全修复合并（#23，0e71b443）；真人 IDE 与网页入口待验 |
+| E1 | 网络工程 | TLS、认证、数据库、可观测性、错误边界；明确本地教学与公网安全差异 | E1-0 [依赖安全收口](NETWORK_SECURITY_BASELINE.md) 已合并；E1-A [真实 TLS/认证](BOOK_E1_TLS_AUTH.md) 源码已提交待 CI；E1-B 持久化/可观测性待补 |
 | E2 | 桌面 GUI | 一款完整可交互软件，模型/视图/状态分离，跨平台测试 | 待评估 |
 | E3 | 嵌入式与实时 | no_std、硬件抽象、仿真与硬件分别验证 | 待评估 |
 | E4 | 互操作与 WASM | C ABI、安全封装、跨语言所有权；浏览器 WASM 独立小项目 | 待评估 |
@@ -72,3 +72,7 @@ D11-A 修复后同提交完整 CI 与六套专项通过，#21 合并；D10-B 主
 ## 开发经验（E1-0）
 
 D11-B Run 45611450910 五个专项全部通过，审计 artifact 15020451443 发现 C1/C2 的 url 2.5.8 命中 RUSTSEC-2026-0592、C1/C2/D10-B 的 Tokio 1.48.0 命中 unsound 公告 RUSTSEC-2026-0386。历史 regex 夹具红绿正确、基础根锁/D11-A 无公告；不据此推断全部程序安全。E1 先修补依赖，选 Tokio 1.53.3 LTS（上游 MSRV 1.71）及 URL 2.5.9，按实际 crates.io 索引校验值同步 tokio-macros 2.7.0 和 form_urlencoded 1.2.3；保持 C1/C2 Rust 1.85、D10-B Rust 1.100、所有教学合同和旧 rc.5 原样。旧探针更新 pin 并使用固定 URL 解析器。扩大 RustSec 到六份参考/学员实际锁并要求漏洞与 unsound 均为空才准入，原始 JSON 即使失败仍保留。新锁的实际 Cargo --locked、移植、运行与同快照审计必须通过，未宣称已安全；E1-A 不复用已知告警依赖，保留真人/网页任务。
+
+## 开发经验（E1-A）
+
+#23 在 a43d85f 的八套 CI 全部成功，包括固定数据库六份网络锁漏洞/unsound 准入，累计合入 D11-B 与 E1-0，main 0e71b443；避免单独发布已知风险的中间树。E1-A 直接 path 依赖已完成 C2 路由/单写者，避免重写业务；旧 HTTP Origin 校验原样，HTTPS 只开放显式 API，写入拒绝 Origin。四个 TODO、五个合同；真 rustls/Tokio TLS 1.3、客户端显式信任、错误 hostname/信任和明文拒绝、16 在途握手/2 秒期限、401/403 不改日志、授权后真实重启读取。凭证为随机等长教学值，不宣称完整账号系统。直接版本固定，完整新锁由 CI resolve 一次实际生成并审计，两平台复用哈希；后续冻结通过的锁，避免伪造锁文件。独立学员 ZIP 提供已学 C2 支持代码与 vendor，不含 E1 答案；普通 learner-kit 仅模板。网页、真人效果、E1-B 数据库与可观测性仍待验收。

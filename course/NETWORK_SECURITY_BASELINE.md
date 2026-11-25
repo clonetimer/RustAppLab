@@ -35,3 +35,7 @@ C1、C2、D10-B 的 learner/reference 清单与锁同时更新；四个版本的
 - E1-0 先实际回归、重审计、合并；新工程不复用已知告警版本。图形化工作台与真人理解另验。
 
 参考：[Tokio 1.53.3 文档](https://docs.rs/crate/tokio/1.53.3) · [url 2.5.9](https://docs.rs/crate/url/2.5.9) · [RustSec](https://rustsec.org/advisories/)。
+
+## 实际收口（2026-11-25）
+
+候选 a43d85f 的 [完整 CI](https://github.com/clonetimer/RustAppLab/actions/runs/45612993818) 与 [D11-B/RustSec 专项](https://github.com/clonetimer/RustAppLab/actions/runs/45612993552) 均成功；[PR #23](https://github.com/clonetimer/RustAppLab/pull/23) 累计合入 D11-B/E1-0，main 0e71b443。六份锁的固定快照准入通过，旧 rc.5 仍为历史资产。E1-A 新增依赖须另审计，见 [HTTPS 教学](BOOK_E1_TLS_AUTH.md)。
