@@ -1,0 +1,56 @@
+name: Modern Rust D11-B safety fuzz and audit
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+jobs:
+  stable:
+    name: D11-B stable safety / ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: dtolnay/rust-toolchain@1.100.0
+      - name: Validate specialist isolation and delivery
+        run: python -m unittest discover -s scripts/tests -p test_modern_d11b_delivery.py -v
+      - name: Execute stable reference and learner contracts
+        run: python scripts/modern_d11b_check.py --mode stable --output d11b-evidence
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: modern-d11b-stable-${{ matrix.os }}
+          path: d11b-evidence/
+  specialist:
+    name: D11-B ${{ matrix.mode }} / Ubuntu
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    strategy:
+      fail-fast: false
+      matrix:
+        mode: [miri, fuzz, audit]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: dtolnay/rust-toolchain@1.100.0
+      - name: Execute actual specialist tool and preserve evidence
+        run: python scripts/modern_d11b_check.py --mode ${{ matrix.mode }} --output d11b-evidence
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: modern-d11b-${{ matrix.mode }}-ubuntu
+          path: d11b-evidence/

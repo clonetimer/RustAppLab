@@ -1,0 +1,12 @@
+[package]
+name = "d11-audit-fixture"
+version = "0.1.0"
+edition = "2024"
+publish = false
+
+[workspace]
+resolver = "3"
+
+# Historical lockfile demonstration only. Do not compile or run this dependency.
+[dependencies]
+regex = "=1.5.4"
