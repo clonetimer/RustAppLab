@@ -1,5 +1,6 @@
 """E1-A source/learner scope; real TLS and dependency resolution in dedicated CI."""
 import ast
+import hashlib
 import importlib.util
 from pathlib import Path
 import tomllib
@@ -26,11 +27,15 @@ class ModernE1ATests(unittest.TestCase):
             self.assertEqual(manifest["dependencies"]["rustls"]["version"], "=0.23.46")
             self.assertEqual(manifest["dependencies"]["tokio-rustls"]["version"], "=0.26.6")
             self.assertEqual(manifest["dependencies"]["servicedesk-c2"]["path"], "../../advanced-c2/reference")
-        for p in ("Cargo.toml", "tests/contracts.rs", "tests/support/mod.rs", "src/main.rs"):
+        for p in ("Cargo.toml", "Cargo.lock", "tests/contracts.rs", "tests/support/mod.rs", "src/main.rs", "examples/local_demo.rs"):
             self.assertEqual((BASE / "learner" / p).read_bytes(), (BASE / "reference" / p).read_bytes())
         self.assertEqual((BASE / "learner/src/lib.rs").read_text(encoding="utf-8").count("TODO("), 4)
         self.assertNotEqual((BASE / "learner/src/lib.rs").read_bytes(), (BASE / "reference/src/lib.rs").read_bytes())
         self.assertEqual((BASE / "reference/tests/contracts.rs").read_text(encoding="utf-8").count("fn step"), 5)
+        frozen = (BASE / "reference/Cargo.lock").read_bytes()
+        self.assertEqual(hashlib.sha256(frozen).hexdigest(), "44ef895eb533fcf092d77f52c2488513d9dddb1b8faa0ad034d4cf7615d2c3fd")
+        self.assertEqual(len([p for p in tomllib.loads(frozen.decode())["package"] if p.get("source")]), 101)
+        self.assertIn("init_store(&journal)", (BASE / "reference/tests/contracts.rs").read_text(encoding="utf-8"))
         ast.parse((ROOT / "scripts/modern_e1a_check.py").read_text(encoding="utf-8"))
 
     def test_packaging_no_e1_answers_or_c2_answers_in_global_learner(self):

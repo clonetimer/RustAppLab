@@ -68,10 +68,13 @@ def resolve(e, scratch, report):
     work = scratch / "resolved"
     stage("reference", work)
     lock = work / "Cargo.lock"
-    shutil.copyfile(C2 / "Cargo.lock", lock)
+    committed = LAB / "reference/Cargo.lock"
+    require(digest(committed) == digest(LAB / "learner/Cargo.lock"), "committed lock copies differ")
+    shutil.copyfile(committed, lock)
     e.env["CARGO_NET_OFFLINE"] = "false"
-    # A real Cargo resolution updates the seed; do not hand-author new checksums.
-    e.execute("resolve-from-c2-lock", CARGO + ["fetch"], work, timeout=900)
+    # The first real resolved artifact has been frozen. Never silently re-resolve.
+    e.execute("fetch-frozen-source-lock", CARGO + ["fetch", "--locked"], work, timeout=900)
+    require(digest(lock) == digest(committed), "committed lock changed")
     count = verify_lock(lock)
     saved = e.output / "Cargo.lock"
     shutil.copyfile(lock, saved)
@@ -99,7 +102,7 @@ def resolve(e, scratch, report):
     report["lock"] = dict(sha256=sha, registry_packages=count, advisory_db=DB_SHA,
                           vulnerabilities=len(vulnerabilities), unsound=len(unsound),
                           other_warnings=data.get("warnings", {}), yanked_check=False,
-                          initial_resolution="CI generated; freeze in follow-up")
+                          initial_resolution="frozen from real artifact 15043180053; re-audited")
     require(code == 0 and not vulnerabilities and not unsound, "TLS dependency gate rejected; see audit JSON")
 
 
@@ -146,6 +149,7 @@ def replay(e, scratch, report, lockfile):
     lockfile = lockfile.resolve()
     expected_hash = lockfile.with_suffix(".lock.sha256").read_text(encoding="utf-8").split()[0]
     require(digest(lockfile) == expected_hash, "resolved lock checksum mismatch")
+    require(expected_hash == digest(LAB / "reference/Cargo.lock") == digest(LAB / "learner/Cargo.lock"), "resolved artifact differs from committed lock")
     count = verify_lock(lockfile)
     reference, learner = scratch / "reference", scratch / "learner-template"
     stage("reference", reference)
@@ -191,6 +195,11 @@ def replay(e, scratch, report, lockfile):
             require("5 passed; 0 failed; 0 ignored" in out, "learner fixed contracts did not pass")
             out, _, _ = e.execute("local-demo", CARGO + ["run", "--frozen", "--example", "local_demo"], work, timeout=300)
             require("HTTPS verified; missing=401; reader_write=403; writer_create=201; reader_list=200" in out, "actual HTTPS demo missing")
+            journal = scratch / "cli-new-journal.db"
+            e.execute("cli-init", CARGO + ["run", "--frozen", "--", "init", journal], work)
+            initial = digest(journal)
+            e.execute("cli-init-refuses-overwrite", CARGO + ["run", "--frozen", "--", "init", journal], work, expected=(1,))
+            require(digest(journal) == initial, "init overwrote existing journal")
         verify_vendor(e, work, home, label, count)
         require(digest(fixed) == fixed_hash and digest(work / "Cargo.lock") == expected_hash, "fixed inputs changed")
     require(digest(artifact) == archive_hash, "pristine learner archive changed")

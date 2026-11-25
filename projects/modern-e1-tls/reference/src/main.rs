@@ -2,12 +2,17 @@ use e1_secure_lab::{Credentials, TlsListener, protected_router, server_config, s
 use std::{env, fs, path::Path, process::ExitCode};
 use tokio::net::TcpListener;
 
-const HELP: &str = "E1-A local HTTPS API\n  e1-secure-lab serve <journal> <cert.der> <key.pkcs8.der> <port>\n  Set E1_READ_TOKEN and E1_WRITE_TOKEN (distinct random 64-hex credentials).\n  Loopback only; never use a public interface or real credentials in this lesson.";
+const HELP: &str = "E1-A local HTTPS API\n  e1-secure-lab init <new-journal>\n  e1-secure-lab serve <journal> <cert.der> <key.pkcs8.der> <port>\n  Set E1_READ_TOKEN and E1_WRITE_TOKEN (distinct random 64-hex credentials).\n  Loopback only; never use a public interface or real credentials in this lesson.";
 
 async fn run() -> Result<(), &'static str> {
     let args: Vec<_> = env::args_os().skip(1).collect();
     if args.len() == 1 && args[0] == "--help" {
         println!("{HELP}");
+        return Ok(());
+    }
+    if args.len() == 2 && args[0] == "init" {
+        servicedesk_c2::init_store(Path::new(&args[1])).map_err(|_| "journal init failed (will not overwrite)")?;
+        println!("Journal created");
         return Ok(());
     }
     if args.len() != 5 || args[0] != "serve" {

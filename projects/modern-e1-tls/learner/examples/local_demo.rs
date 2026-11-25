@@ -14,7 +14,9 @@ async fn main() {
     let tcp = TcpListener::bind(("127.0.0.1", 0)).await.unwrap();
     let addr = tcp.local_addr().unwrap();
     let tls = TlsListener::new(tcp, server_config(&cert.der, &cert.key).unwrap()).unwrap();
-    let state = servicedesk_c2::start_store(&directory.0.join("tickets.db")).unwrap();
+    let journal = directory.0.join("tickets.db");
+    servicedesk_c2::init_store(&journal).unwrap();
+    let state = servicedesk_c2::start_store(&journal).unwrap();
     let (stop, signal) = oneshot::channel::<()>();
     let server = tokio::spawn(serve(tls, protected_router(state, auth), async { let _ = signal.await; }));
     let missing = request(addr, &cert.der, "localhost", http("GET", "/api/tickets", None, "", "")).await.unwrap().0;

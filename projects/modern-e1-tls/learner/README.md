@@ -16,6 +16,6 @@
 
 预期实际输出 HTTPS verified; missing=401; reader_write=403; writer_create=201; reader_list=200。测试/演示在进程内临时生成证书及随机凭证，不打印密钥，不需要手工创建证书。
 
-进一步体验：cargo run --frozen --example local_cert -- <新的私有目录>，只生成 localhost 教学证书与密钥。服务 CLI cargo run --frozen -- serve <journal> <cert.der> <key.pkcs8.der> <port> 使用环境变量 E1_READ_TOKEN、E1_WRITE_TOKEN（两份不同的安全随机 32 字节十六进制值）；不要硬编码真实凭证或提交密钥。在自己可信的客户端仅对本次请求信任 cert.pem，使用 localhost 作为主机名；切勿使用 -k 或 disable certificate verification。Ctrl+C 优雅退出。真实账号、会话、轮换和撤销另学，不把两枚教学凭证当正式身份系统。
+进一步体验：cargo run --frozen --example local_cert -- <新的私有目录>，只生成 localhost 教学证书与密钥。先执行 `cargo run --frozen -- init <新工单日志>`（拒绝覆盖已有文件）。服务 CLI cargo run --frozen -- serve <journal> <cert.der> <key.pkcs8.der> <port> 使用环境变量 E1_READ_TOKEN、E1_WRITE_TOKEN（两份不同的安全随机 32 字节十六进制值）；不要硬编码真实凭证或提交密钥。在自己可信的客户端仅对本次请求信任 cert.pem，使用 localhost 作为主机名；切勿使用 -k 或 disable certificate verification。Ctrl+C 优雅退出。真实账号、会话、轮换和撤销另学，不把两枚教学凭证当正式身份系统。
 
 在 LEARNING_LOG.md 记录不同错误、状态码及为什么持久状态不变。完整讲义见 course/BOOK_E1_TLS_AUTH.md；网页接入和真人理解仍待验。

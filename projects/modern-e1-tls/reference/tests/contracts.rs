@@ -96,6 +96,9 @@ async fn step5_real_https_c2_api_permissions_and_persistence() {
     let reader = token(); let writer = token(); let invalid = token();
     let config = server_config(&cert.der, &cert.key).unwrap();
     let auth = Credentials::new(&reader, &writer).unwrap();
+    // Exercise the real C2 lifecycle: startup must not silently create a store.
+    assert!(matches!(servicedesk_c2::start_store(&journal), Err(servicedesk_c2::ApiError::Storage)));
+    servicedesk_c2::init_store(&journal).unwrap();
     let state = servicedesk_c2::start_store(&journal).unwrap();
     let before = std::fs::read(&journal).unwrap();
     let tcp = TcpListener::bind(("127.0.0.1", 0)).await.unwrap();

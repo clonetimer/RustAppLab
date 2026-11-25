@@ -76,3 +76,5 @@ D11-B Run 45611450910 五个专项全部通过，审计 artifact 15020451443 发
 ## 开发经验（E1-A）
 
 #23 在 a43d85f 的八套 CI 全部成功，包括固定数据库六份网络锁漏洞/unsound 准入，累计合入 D11-B 与 E1-0，main 0e71b443；避免单独发布已知风险的中间树。E1-A 直接 path 依赖已完成 C2 路由/单写者，避免重写业务；旧 HTTP Origin 校验原样，HTTPS 只开放显式 API，写入拒绝 Origin。四个 TODO、五个合同；真 rustls/Tokio TLS 1.3、客户端显式信任、错误 hostname/信任和明文拒绝、16 在途握手/2 秒期限、401/403 不改日志、授权后真实重启读取。凭证为随机等长教学值，不宣称完整账号系统。直接版本固定，完整新锁由 CI resolve 一次实际生成并审计，两平台复用哈希；后续冻结通过的锁，避免伪造锁文件。独立学员 ZIP 提供已学 C2 支持代码与 vendor，不含 E1 答案；普通 learner-kit 仅模板。网页、真人效果、E1-B 数据库与可观测性仍待验收。
+
+E1-A Run 45654557009 实际 Cargo resolve/RustSec 通过：101 个 registry 包，0 vulnerability/unsound；[原始锁产物](https://github.com/clonetimer/RustAppLab/actions/runs/45654557009/artifacts/15043180053) SHA-256 44ef895eb533fcf092d77f52c2488513d9dddb1b8faa0ad034d4cf7615d2c3fd。已冻结原始字节，后续只允许 --locked fetch 与复审；两份锁及 artifact 哈希绑定。首轮 Linux 4/5 测试通过，集成在 tests/contracts.rs:99 调用 start_store 前未初始化日志（C2 ensure_store 明确要求先 init），见 artifact 15042116734。增加 C2 的 init_store 公共重导出（仍由原 servicedesk::init 实施，非覆盖），测试/演示显式 init，CLI 增加 init 和不覆盖回归；并新增未初始化启动拒绝断言。不是通过删除测试或放宽存储保护修复。Windows 首轮也失败；当前提交须完整重跑，不提前宣布交付。
