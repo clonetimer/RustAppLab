@@ -72,6 +72,7 @@ TaskPocket / PageMint 的 CONTRACT.md、DEVELOPMENT_PLAN.md、TEST_PLAN.md、REL
 - 基础、进阶 A 和 B1–B3 使用本地 path 依赖。StoreDesk 另需系统 SQLite，按 [SQLite 说明](course/SQLITE_SETUP.md) 准备；FirstCard/UnitLab 不需要它。
 - B4 的 json-export 使用真实 Serde/serde_json，首次须联网准备固定依赖并写入当前用户的 Cargo 缓存；本包不带 vendor。按 [进阶 B](course/ADVANCED_B.md) 先完成 B1–B3，再使用完整平台的 prepare-json 和第 4 步检查。换机器或缓存位置后可能需要重新准备；准备依赖不等于完成课程。
 - 可选现代 D8：在 [Edition 2024 讲义](course/BOOK_D8_EDITION_2024.md) 按步骤复制独立学员工程，需 Rust 1.100.0；不改变原十七个顶层工程与成绩。
+- 可选现代 D9-A：完成 D8 后进入 [稳定特性讲义](course/BOOK_D9_STABLE_FEATURES.md)；九项独立实验，不替换十七个经典学员工程。
 - C1/C2 请另取对应 learner-offline.zip 并按讲义准备 Rust 1.85.0；本包没有这两门课的学员工程和 vendor。
 - projects/book-d* 是可选的参考实验，包含 D1 Cargo、D2 智能指针、D3 面向对象与模式、D4 高级特性、D5 Web Server、D6-A 附录参考实验、D6-B 基础缺口补齐实验。D6-A/D6-B 都是独立参考实验，和其它 Book 实验一样不自动计入个人成绩。course/ 中的概念补课帮助理解当前作品，不是 FirstCard 后必须先做完的新任务。
 - MiniKV 的 journal.rs、TermGarden 的 storage.rs、StoreDesk 的 sqlite.rs、AsyncBoard 的 runtime.rs 是已提供的基础设施，任务卡会说明你亲手实现哪一层。
@@ -94,6 +95,7 @@ def course_inputs() -> list[tuple[str, bytes]]:
         "30_second_independent_product.md", "31_transfer_release.md",
         "LEARNER_EVIDENCE_PROTOCOL.md", "LEARNING_LOG_TEMPLATE.md", "BOOK_31_GAPS_REPAIR.md",
         "BOOK_MODERN_COVERAGE_D7.md", "MODERN_RUST_ROADMAP.md", "BOOK_D8_EDITION_2024.md",
+        "BOOK_D9_STABLE_FEATURES.md", "MODERN_STABLE_FEATURE_INDEX.md",
         "BEGINNER_WINDOWS_GUIDE.md", "00_first_five_minutes.md", "NETWORK_PREPARATION.md", "LEARNING_NAVIGATOR.md", "RUST_ERROR_LABS.md", "FOUNDATION_PATH.md", "FOUNDATION_NEXT_STEPS.md", "PROGRESS_OVERVIEW.md", "SYSTEMS_PATH.md", "RELIABILITY_PATH.md", "INDEPENDENT_PATH.md",
     ]
     result = [(f"course/{name}", (ROOT / "course" / name).read_bytes()) for name in files]
@@ -161,6 +163,13 @@ def course_inputs() -> list[tuple[str, bytes]]:
     # D8 is an optional modern exercise. Ship the TODO project, not the solution.
     modern = ROOT / "projects" / "modern-d8-edition"
     result.append((f"projects/modern-d8-edition/README.md", (modern / "README.md").read_bytes()))
+    for path in sorted((modern / "learner").rglob("*")):
+        if (path.is_file() and not {"target", ".git", "__pycache__"}.intersection(path.relative_to(modern).parts)
+                and path.suffix in {".toml", ".lock", ".md", ".rs"}):
+            result.append((path.relative_to(ROOT).as_posix(), path.read_bytes()))
+    # D9-A ships only the optional learner tree, never diagnostic solutions.
+    modern = ROOT / "projects" / "modern-d9-stable"
+    result.append(("projects/modern-d9-stable/README.md", (modern / "README.md").read_bytes()))
     for path in sorted((modern / "learner").rglob("*")):
         if (path.is_file() and not {"target", ".git", "__pycache__"}.intersection(path.relative_to(modern).parts)
                 and path.suffix in {".toml", ".lock", ".md", ".rs"}):

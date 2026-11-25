@@ -16,7 +16,7 @@
 |---|---|---|---|
 | D7 | 最新 Book 基线 | 固定官方发布快照；87 项唯一 ID；旧 ID 一对一映射；六节异步分开标记；证据路径检查；自动结构测试 | 本 PR 建立基线；新版内容复核仍待做 |
 | D8 | Edition 2024 教学环境 | 独立 workspace + rust-toolchain 固定 1.100.0；最小工程、2021/2024 对照、resolver 3、迁移诊断、运行/测试；不改旧 MSRV；学员入口 | [代码与讲义](BOOK_D8_EDITION_2024.md) 已提交，待 CI |
-| D9 | 1.75–1.100 稳定特性 | 版本增量审计和优先级；语法、Trait、生命周期捕获、async closure、Never、DropGuard 等代表性练习；按稳定范围逐项验收 | 待实施 |
+| D9 | 1.75–1.100 稳定特性 | 版本增量审计和优先级；语法、Trait、生命周期捕获、async closure、Never、DropGuard 等代表性练习；按稳定范围逐项验收 | D9-A [九项实际任务](BOOK_D9_STABLE_FEATURES.md) 与 [26 版本索引](MODERN_STABLE_FEATURE_INDEX.md) 已提交待 CI；D9-B 逐版补审与标准库/Cargo 尚未完成 |
 | D10 | 异步核心课 | 六节目标逐项关闭；Future、Poll、Waker、Pin/Unpin、Stream、join/select、async trait、取消与阻塞；以已有应用串起概念而非重复项目 | 待实施 |
 | D11 | 现代开发工具 | IDE 断点、Clippy、Miri、属性测试、Fuzzing、基准与依赖审计；独立运行证据及学员迁移记录 | 待实施 |
 | E1 | 网络工程 | TLS、认证、数据库、可观测性、错误边界；明确本地教学与公网安全差异 | 待评估 |
@@ -36,3 +36,7 @@ D7 CI 复核：Run 45579401311 的 tooling/structure 已通过，Linux 旧 D6 �
 ## 开发经验（D8）
 
 同一 Rust 1.100.0 编译器下比较两种 Edition；同一 shared.rs 消除实现差异。告警筛选器有独立 RED 合同和参考解答，只向学员包交付 TODO；维护者将答案注入隔离副本验证 GREEN。Cargo resolver 2/3 使用本地合成目录源实测而非线上不稳定版本。新增项目必须同时进入 source manifest、source_id 与学员包白名单。新版教学使用单独的 Windows/Linux CI 工作，不修改旧 MSRV 或发布版本。当前仍为 CLI 选修，网页工作台接入和真人试用未完成。
+
+## 开发经验（D9-A）
+
+以 1.100.0 发布公告及官方 API 稳定标签为准；GAT 为 1.65 前置，不算新版增量。九个 TODO 与固定参考合同对照，8 组编译失败/修复及 DropGuard 的 unwind/dismiss 行为单独运行；异步只使用立即完成的 Future，不拿单次 poll 假装通用运行时。系统 Allocator 安全调用替代自造 unsafe 分配器，未稳定 allocator_ext 不纳入。D8 原专项 Run 45580912220 双平台成功，D9-A 必须验证当前提交。26 个版本入口不等于 26 个版本完成审计。旧 MSRV 与发布资产不变，CLI 选修；网页与真人观察另行验收。

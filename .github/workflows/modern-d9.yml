@@ -1,0 +1,35 @@
+name: Modern Rust D9 stable-feature experiments
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+jobs:
+  d9:
+    name: D9 Rust 1.100.0 / ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: dtolnay/rust-toolchain@1.100.0
+      - name: Validate source and learner distribution
+        run: python -m unittest discover -s scripts/tests -p test_modern_d9_delivery.py -v
+      - name: Execute fixed contracts and compiler diagnostic pairs
+        run: python scripts/modern_d9_check.py --output d9-evidence
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: modern-d9-${{ matrix.os }}
+          path: d9-evidence/
