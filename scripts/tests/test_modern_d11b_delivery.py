@@ -4,6 +4,7 @@ import importlib.util
 from pathlib import Path
 import tomllib
 import unittest
+import sys
 
 ROOT = Path(__file__).resolve().parents[2]
 BASE = ROOT / "projects/modern-d11-safety"
@@ -41,6 +42,48 @@ class ModernD11BTests(unittest.TestCase):
                      "fuzz-replay-corrected", "RUSTSEC-2022-0013", "fixture_built_or_run=False",
                      '"--no-fetch"', '"--no-yanked"', "source_unchanged"):
             self.assertIn(text, runner)
+
+    def test_security_remediation_gate_preserves_findings_and_rejects_old_versions(self):
+        sys.path.insert(0, str(ROOT / "scripts"))
+        try:
+            runner = load("modern_d11b_check.py")
+        finally:
+            sys.path.pop(0)
+        clean = {label: dict(vulnerabilities=[], warnings={}, exit_code=0)
+                 for label in runner.NETWORK_LOCK_LABELS}
+        self.assertEqual(runner.network_gate(clean)["status"], "PASS")
+        # A successful tool exit alone cannot qualify an unsound dependency.
+        warning = {"advisory": {"id": "RUSTSEC-2026-0386"}}
+        clean["d10b-learner"]["warnings"] = {"unsound": [warning]}
+        gate = runner.network_gate(clean)
+        self.assertEqual(gate["status"], "FAIL")
+        self.assertEqual(gate["failed_locks"]["d10b-learner"]["unsound"], ["RUSTSEC-2026-0386"])
+        self.assertEqual(clean["d10b-learner"]["warnings"]["unsound"], [warning])
+        clean["c1"]["vulnerabilities"] = ["RUSTSEC-2026-0592"]
+        clean["c1"]["exit_code"] = 1
+        self.assertIn("c1", runner.network_gate(clean)["failed_locks"])
+
+    def test_network_lock_versions_and_old_msrvs(self):
+        for project, msrv in (("advanced-c1", "1.85"), ("advanced-c2", "1.85"),
+                              ("modern-d10-tokio", "1.100")):
+            root = ROOT / "projects" / project
+            for name in ("Cargo.toml", "Cargo.lock"):
+                self.assertEqual((root / "learner" / name).read_bytes(), (root / "reference" / name).read_bytes())
+            manifest = tomllib.loads((root / "reference/Cargo.toml").read_text(encoding="utf-8"))
+            self.assertEqual(manifest["package"]["rust-version"], msrv)
+            self.assertEqual(manifest["dependencies"]["tokio"]["version"], "=1.53.3")
+            packages = tomllib.loads((root / "reference/Cargo.lock").read_text(encoding="utf-8"))["package"]
+            by_name = {}
+            for package in packages:
+                by_name.setdefault(package["name"], []).append(package)
+            expected = {"tokio": "1.53.3", "tokio-macros": "2.7.0"}
+            if project != "modern-d10-tokio":
+                expected.update(url="2.5.9", form_urlencoded="1.2.3")
+            for name, version in expected.items():
+                self.assertEqual([p["version"] for p in by_name[name]], [version], (project, name))
+        probe = tomllib.loads((ROOT / "apps/labquest/ecosystem/Cargo.toml").read_text(encoding="utf-8"))
+        self.assertEqual(probe["dependencies"]["tokio"]["version"], "=1.53.3")
+        self.assertEqual(probe["dependencies"]["url"], "=2.5.9")
 
     def test_packaging(self):
         pack = load("package.py")

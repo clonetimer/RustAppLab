@@ -26,10 +26,39 @@ ADVISORY = "RUSTSEC-2022-0013"
 LOCKS = {
     "root": ROOT / "Cargo.lock",
     "c1": ROOT / "projects/advanced-c1/reference/Cargo.lock",
+    "c1-learner": ROOT / "projects/advanced-c1/learner/Cargo.lock",
     "c2": ROOT / "projects/advanced-c2/reference/Cargo.lock",
+    "c2-learner": ROOT / "projects/advanced-c2/learner/Cargo.lock",
     "d10b": ROOT / "projects/modern-d10-tokio/reference/Cargo.lock",
+    "d10b-learner": ROOT / "projects/modern-d10-tokio/learner/Cargo.lock",
     "d11a": QUALITY / "Cargo.lock",
 }
+
+NETWORK_LOCK_LABELS = ("c1", "c1-learner", "c2", "c2-learner", "d10b", "d10b-learner")
+REMEDIATION_ADVISORIES = {"RUSTSEC-2026-0592", "RUSTSEC-2026-0386"}
+
+
+def network_gate(findings):
+    """Evaluate every shipped network lock after collecting ALL raw reports.
+
+    This gate is scoped to the fixed database and excludes yanked checks.
+    Reject vulnerabilities and unsoundness; report other warnings unchanged.
+    """
+    failures = {}
+    for label in NETWORK_LOCK_LABELS:
+        finding = findings[label]
+        vulnerabilities = list(finding["vulnerabilities"])
+        warning_ids = [w["advisory"]["id"] for group in finding["warnings"].values()
+                       for w in group if w.get("advisory") and w["advisory"].get("id")]
+        unsound = [w["advisory"]["id"] for w in finding["warnings"].get("unsound", [])
+                   if w.get("advisory") and w["advisory"].get("id")]
+        target = sorted(REMEDIATION_ADVISORIES.intersection(vulnerabilities + warning_ids))
+        if vulnerabilities or finding["warnings"].get("unsound") or target or finding["exit_code"] != 0:
+            failures[label] = dict(vulnerabilities=vulnerabilities, unsound=unsound,
+                                   unresolved_target_advisories=target, exit_code=finding["exit_code"])
+    return dict(status="FAIL" if failures else "PASS", failed_locks=failures,
+                checked_locks=list(NETWORK_LOCK_LABELS),
+                scope="fixed DB; vulnerabilities and unsound warnings; no yanked query")
 
 
 class Runner(Evidence):
@@ -224,10 +253,12 @@ def audit(e, scratch, report):
             require(code == 1 and ADVISORY in ids, "historical advisory not detected")
         elif label == "patched":
             require(ADVISORY not in ids, "target advisory still present after version change")
+    gate = network_gate(findings)
     report["audit"] = dict(database_revision=DB_SHA, tool_version=AUDIT_VERSION,
                            target_advisory=ADVISORY, fixture_built_or_run=False,
                            yanked_check=False, findings=findings,
-                           project_findings_require_review=True)
+                           project_findings_require_review=True, network_remediation=gate)
+    require(gate["status"] == "PASS", "network dependency gate rejected: " + json.dumps(gate["failed_locks"], ensure_ascii=False))
 
 
 def main():

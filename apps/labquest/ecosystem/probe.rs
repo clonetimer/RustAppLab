@@ -37,8 +37,9 @@ mod tests {
             .timeout(Duration::from_secs(5))
             .build()
             .unwrap();
+        let url = url::Url::parse(&format!("http://{address}/health")).unwrap();
         let response = client
-            .get(format!("http://{address}/health"))
+            .get(url)
             .send()
             .await
             .unwrap();

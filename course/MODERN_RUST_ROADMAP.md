@@ -18,8 +18,8 @@
 | D8 | Edition 2024 教学环境 | 独立 workspace + rust-toolchain 固定 1.100.0；最小工程、2021/2024 对照、resolver 3、迁移诊断、运行/测试；不改旧 MSRV；学员入口 | [代码与讲义](BOOK_D8_EDITION_2024.md) 已提交，待 CI |
 | D9 | 1.75–1.100 稳定特性 | 版本增量审计和优先级；语法、Trait、生命周期捕获、async closure、Never、DropGuard 等代表性练习；按稳定范围逐项验收 | D9-A [九项实际任务](BOOK_D9_STABLE_FEATURES.md) 与 [26 版本索引](MODERN_STABLE_FEATURE_INDEX.md) 已提交待 CI；D9-B [逐版代表性审计及标准库/Cargo 实验](BOOK_D9_STDLIB_CARGO.md) 已提交，待当前 CI；完整 API 清单、Unsafe 等专项不纳入覆盖率 |
 | D10 | 异步核心课 | 六节目标逐项关闭；Future、Poll、Waker、Pin/Unpin、Stream、join/select、async trait、取消与阻塞；以已有应用串起概念而非重复项目 | D10-A 六步实验双平台专项通过（Run 45586040166）；D10-B [七步真实 Tokio/Stream 实验与离线交付](BOOK_D10_TOKIO_STREAM.md) 双平台专项及完整 PR CI 通过，#20 已合并（b6f2abec） |
-| D11 | 现代开发工具 | IDE 断点、Clippy、Miri、属性测试、Fuzzing、基准与依赖审计；独立运行证据及学员迁移记录 | D11-A [工程质量与工具实验](BOOK_D11_QUALITY.md) 完整 CI 与专项通过，#21 已合并（c470154）；D11-B [Miri/libFuzzer/RustSec 实验](BOOK_D11_SAFETY.md) 已提交待 CI；真人 IDE 与网页入口待验 |
-| E1 | 网络工程 | TLS、认证、数据库、可观测性、错误边界；明确本地教学与公网安全差异 | 待评估 |
+| D11 | 现代开发工具 | IDE 断点、Clippy、Miri、属性测试、Fuzzing、基准与依赖审计；独立运行证据及学员迁移记录 | D11-A [工程质量与工具实验](BOOK_D11_QUALITY.md) 完整 CI 与专项通过，#21 已合并（c470154）；D11-B [Miri/libFuzzer/RustSec 实验](BOOK_D11_SAFETY.md) 专项 5/5 PASS（45611450910），完整回归待验收；真人 IDE 与网页入口待验 |
+| E1 | 网络工程 | TLS、认证、数据库、可观测性、错误边界；明确本地教学与公网安全差异 | E1-0 [依赖安全收口](NETWORK_SECURITY_BASELINE.md) 已提交待验收；E1-A TLS/认证；E1-B 持久化/可观测性 |
 | E2 | 桌面 GUI | 一款完整可交互软件，模型/视图/状态分离，跨平台测试 | 待评估 |
 | E3 | 嵌入式与实时 | no_std、硬件抽象、仿真与硬件分别验证 | 待评估 |
 | E4 | 互操作与 WASM | C ABI、安全封装、跨语言所有权；浏览器 WASM 独立小项目 | 待评估 |
@@ -68,3 +68,7 @@ D11-A 首轮 Run 45605693046 的 Windows/Linux reference-debug 均失败；[Linu
 ## 开发经验（D11-B）
 
 D11-A 修复后同提交完整 CI 与六套专项通过，#21 合并；D10-B 主干回归 Run 45605275350 也通过。D11-B 稳定接口合同与 Linux specialist jobs 分离，固定 nightly-2026-11-17（沿用 D6 日期）、cargo-fuzz 0.13.2、libfuzzer-sys 0.4.13、cargo-audit 0.23.0 及 RustSec DB b9b8a3c2。故意 UB 仅在 Miri 临时解释执行；用实际 libFuzzer 运行、校验变异反例 artifact 与修复重放，锁文件真实生成后保存并保持不变；历史漏洞夹具只解析/审计锁，不构建不运行，指定公告对照与实际项目所有发现分开，禁用额外 yanked 查询。源包/学员包和 Python/PowerShell 指纹同步。未通过当前 CI 不能宣布 specialist 完成，Windows 原生不冒称 Miri/libFuzzer 支持，旧发布及人类效果保持独立。
+
+## 开发经验（E1-0）
+
+D11-B Run 45611450910 五个专项全部通过，审计 artifact 15020451443 发现 C1/C2 的 url 2.5.8 命中 RUSTSEC-2026-0592、C1/C2/D10-B 的 Tokio 1.48.0 命中 unsound 公告 RUSTSEC-2026-0386。历史 regex 夹具红绿正确、基础根锁/D11-A 无公告；不据此推断全部程序安全。E1 先修补依赖，选 Tokio 1.53.3 LTS（上游 MSRV 1.71）及 URL 2.5.9，按实际 crates.io 索引校验值同步 tokio-macros 2.7.0 和 form_urlencoded 1.2.3；保持 C1/C2 Rust 1.85、D10-B Rust 1.100、所有教学合同和旧 rc.5 原样。旧探针更新 pin 并使用固定 URL 解析器。扩大 RustSec 到六份参考/学员实际锁并要求漏洞与 unsound 均为空才准入，原始 JSON 即使失败仍保留。新锁的实际 Cargo --locked、移植、运行与同快照审计必须通过，未宣称已安全；E1-A 不复用已知告警依赖，保留真人/网页任务。
