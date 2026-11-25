@@ -1,5 +1,7 @@
 # C1：用 Tokio / Reqwest 实现真实异步下载
 
+> 依赖安全迁移：当前候选源码已统一 Tokio 1.53.3（C1/C2 同时锁定 URL 2.5.9），旧网络课离线包不会自动修补。使用新验收包前保留自己的源码与学习记录，详见 [E1-0 网络依赖安全基线](NETWORK_SECURITY_BASELINE.md)。
+
 C1 在原同步 NetFetch 和 AsyncBoard 之后学习，复用所有权、Result 和测试组织的知识。目标是亲手实现一个可取消的回环 HTTP 下载队列。C1 的三个检查点仍属于同一款软件，不是 C2/C3 课程。
 
 ## 安装与入口
@@ -91,4 +93,4 @@ cargo +1.85.0 test --locked --offline --test contracts c1_3_
 
 输出父目录应为可信本地目录，每个输出路径只有一个写者。本课不提供敌对目录竞争安全、断电原子性、公网/TLS、重试、完整流式落盘或生产服务承诺。本地有界文件写入使用标准库同步 I/O，网络传输是真正的 Tokio/Reqwest 异步 I/O。评测会执行自己的可信 Rust 代码，不是恶意程序沙箱。C2 Axum 留在下一阶段。
 
-阅读：[中文 Book 测试组织](https://rust.bootcss.com/ch11-03-test-organization.html)、[官方 async/await](https://doc.rust-lang.org/book/ch17-00-async-await.html)、[Tokio 教程](https://tokio.rs/tokio/tutorial)、[JoinSet](https://docs.rs/tokio/1.48.0/tokio/task/struct.JoinSet.html)、[Reqwest 0.12.24 源码](https://github.com/seanmonstar/reqwest/tree/v0.12.24)、[Cargo vendor](https://doc.rust-lang.org/cargo/commands/cargo-vendor.html)。中文旧 Book 用来理解基础概念，异步 API 按所锁定版本的官方资料核对。
+阅读：[中文 Book 测试组织](https://rust.bootcss.com/ch11-03-test-organization.html)、[官方 async/await](https://doc.rust-lang.org/book/ch17-00-async-await.html)、[Tokio 教程](https://tokio.rs/tokio/tutorial)、[JoinSet](https://docs.rs/tokio/1.53.3/tokio/task/struct.JoinSet.html)、[Reqwest 0.12.24 源码](https://github.com/seanmonstar/reqwest/tree/v0.12.24)、[Cargo vendor](https://doc.rust-lang.org/cargo/commands/cargo-vendor.html)。中文旧 Book 用来理解基础概念，异步 API 按所锁定版本的官方资料核对。

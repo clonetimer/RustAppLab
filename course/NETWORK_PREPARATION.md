@@ -1,6 +1,6 @@
 # C1/C2 网络课程与依赖准备
 
-当前C1已使用Tokio1.48.0/Reqwest0.12.24实现异步下载；C2使用Axum0.8.8/Tokio1.48.0实现工单服务。两者均有实际Cargo生成的锁文件、固定测试及独立vendor包，详见 [C1](ADVANCED_C1.md)、[C2](ADVANCED_C2.md)。基础/A/B仍按各自课程组织，不将网络依赖加入根工作区。
+当前C1已使用Tokio1.53.3/Reqwest0.12.24实现异步下载；C2使用Axum0.8.8/Tokio1.53.3实现工单服务。两者均有实际Cargo生成的锁文件、固定测试及独立vendor包，详见 [C1](ADVANCED_C1.md)、[C2](ADVANCED_C2.md)。基础/A/B仍按各自课程组织，不将网络依赖加入根工作区。C1/C2 的 URL 锁定 2.5.9；旧网络包仍保留历史依赖，请先阅读 [安全基线与迁移说明](NETWORK_SECURITY_BASELINE.md)。新锁以当前同提交完整 CI 和 RustSec 重审计为准。
 
 完整平台创建学员工程后，显式运行 `advanced-c1 prepare <工程>` 或 `advanced-c2 prepare <工程>`。首次联网获取固定参考依赖，之后评分locked/offline。`prepare`成功只证明环境准备，不是学员通过。
 

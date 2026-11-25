@@ -35,7 +35,7 @@
 
 ## 现代 Rust 选修路线（建设中）
 
-已完成基础课程后，可参考 [现代化教学计划](MODERN_RUST_ROADMAP.md) 和 [新版 Book 逐节映射](BOOK_MODERN_COVERAGE_D7.md)。D7 是新版审计基线；D8 [Edition 2024 告警筛选器](BOOK_D8_EDITION_2024.md)（已合并），学员可独立复制工程练习。D9-A [现代稳定特性批量数据实验](BOOK_D9_STABLE_FEATURES.md)（已合并）；D9-B [标准库与 Cargo 实验室](BOOK_D9_STDLIB_CARGO.md)（已合并）；D10-A [异步核心实验](BOOK_D10_ASYNC_CORE.md)（已合并）；D10-B 已提交 [Tokio 与 Stream 工程实验](BOOK_D10_TOKIO_STREAM.md)（专项与集成已通过并合并）；D11-A 已提交 [工程质量实验](BOOK_D11_QUALITY.md)（待当前 CI）；D11-B 安全验证/模糊测试与依赖审计待推进；经典路线保持不变，不需要更新旧学员工程。
+已完成基础课程后，可参考 [现代化教学计划](MODERN_RUST_ROADMAP.md) 和 [新版 Book 逐节映射](BOOK_MODERN_COVERAGE_D7.md)。D7 是新版审计基线；D8 [Edition 2024 告警筛选器](BOOK_D8_EDITION_2024.md)（已合并），学员可独立复制工程练习。D9-A [现代稳定特性批量数据实验](BOOK_D9_STABLE_FEATURES.md)（已合并）；D9-B [标准库与 Cargo 实验室](BOOK_D9_STDLIB_CARGO.md)（已合并）；D10-A [异步核心实验](BOOK_D10_ASYNC_CORE.md)（已合并）；D10-B 已提交 [Tokio 与 Stream 工程实验](BOOK_D10_TOKIO_STREAM.md)（专项与集成已通过并合并）；D11-A [工程质量实验](BOOK_D11_QUALITY.md)（专项与集成已通过并合并）；D11-B [安全验证、模糊测试与依赖审计](BOOK_D11_SAFETY.md) 专项通过（完整回归待验）；E1-0 [网络依赖安全收口与学员迁移](NETWORK_SECURITY_BASELINE.md) 已提交待验收。经典基础路线保持不变；已下载旧网络课包的学员按迁移说明保留个人源码，不能将历史包视为已修复。
 
 ## 原有应用章节：按需拓展
 

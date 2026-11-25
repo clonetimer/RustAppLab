@@ -1,5 +1,7 @@
 # C2：基于 Axum 的异步 ServiceDesk 工单服务
 
+> 依赖安全迁移：当前候选源码已统一 Tokio 1.53.3（C1/C2 同时锁定 URL 2.5.9），旧网络课离线包不会自动修补。使用新验收包前保留自己的源码与学习记录，详见 [E1-0 网络依赖安全基线](NETWORK_SECURITY_BASELINE.md)。
+
 C1 已学习真正的 Tokio/Reqwest 客户端；C2 对照同步版 ServiceDesk，完成 Axum JSON 路由、Tokio 共享状态、单写者持久化以及优雅关闭。独立工程使用 Rust 1.85.0，原平台 Rust 1.74、C1 与 B4 不变。
 
 ## 开始学习

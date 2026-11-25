@@ -41,6 +41,7 @@ SOURCE_PROJECTS = {('projects', name) for name in (
     'modern-d10-async-core',
     'modern-d10-tokio',
     'modern-d11-quality',
+    'modern-d11-safety',
 )}
 BOOK_D1_MANIFEST = 'projects/book-d1-cargo/Cargo.toml'
 BOOK_D2_MANIFEST = 'projects/book-d2-smart-pointers/Cargo.toml'

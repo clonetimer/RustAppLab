@@ -1,0 +1,23 @@
+[package]
+name = "d11-quality-fuzz"
+version = "0.0.0"
+publish = false
+edition = "2024"
+
+[package.metadata]
+cargo-fuzz = true
+
+[dependencies]
+libfuzzer-sys = "=0.4.13"
+d11-quality-lab = { path = ".." }
+
+[workspace]
+members = ["."]
+resolver = "3"
+
+[[bin]]
+name = "frame"
+path = "fuzz_targets/frame.rs"
+test = false
+doc = false
+bench = false
