@@ -16,7 +16,7 @@
 |---|---|---|---|
 | D7 | 最新 Book 基线 | 固定官方发布快照；87 项唯一 ID；旧 ID 一对一映射；六节异步分开标记；证据路径检查；自动结构测试 | 本 PR 建立基线；新版内容复核仍待做 |
 | D8 | Edition 2024 教学环境 | 独立 workspace + rust-toolchain 固定 1.100.0；最小工程、2021/2024 对照、resolver 3、迁移诊断、运行/测试；不改旧 MSRV；学员入口 | [代码与讲义](BOOK_D8_EDITION_2024.md) 已提交，待 CI |
-| D9 | 1.75–1.100 稳定特性 | 版本增量审计和优先级；语法、Trait、生命周期捕获、async closure、Never、DropGuard 等代表性练习；按稳定范围逐项验收 | D9-A [九项实际任务](BOOK_D9_STABLE_FEATURES.md) 与 [26 版本索引](MODERN_STABLE_FEATURE_INDEX.md) 已提交待 CI；D9-B 逐版补审与标准库/Cargo 尚未完成 |
+| D9 | 1.75–1.100 稳定特性 | 版本增量审计和优先级；语法、Trait、生命周期捕获、async closure、Never、DropGuard 等代表性练习；按稳定范围逐项验收 | D9-A [九项实际任务](BOOK_D9_STABLE_FEATURES.md) 与 [26 版本索引](MODERN_STABLE_FEATURE_INDEX.md) 已提交待 CI；D9-B [逐版代表性审计及标准库/Cargo 实验](BOOK_D9_STDLIB_CARGO.md) 已提交，待当前 CI；完整 API 清单、Unsafe 等专项不纳入覆盖率 |
 | D10 | 异步核心课 | 六节目标逐项关闭；Future、Poll、Waker、Pin/Unpin、Stream、join/select、async trait、取消与阻塞；以已有应用串起概念而非重复项目 | 待实施 |
 | D11 | 现代开发工具 | IDE 断点、Clippy、Miri、属性测试、Fuzzing、基准与依赖审计；独立运行证据及学员迁移记录 | 待实施 |
 | E1 | 网络工程 | TLS、认证、数据库、可观测性、错误边界；明确本地教学与公网安全差异 | 待评估 |
@@ -40,3 +40,7 @@ D7 CI 复核：Run 45579401311 的 tooling/structure 已通过，Linux 旧 D6 �
 ## 开发经验（D9-A）
 
 以 1.100.0 发布公告及官方 API 稳定标签为准；GAT 为 1.65 前置，不算新版增量。九个 TODO 与固定参考合同对照，8 组编译失败/修复及 DropGuard 的 unwind/dismiss 行为单独运行；异步只使用立即完成的 Future，不拿单次 poll 假装通用运行时。系统 Allocator 安全调用替代自造 unsafe 分配器，未稳定 allocator_ext 不纳入。D8 原专项 Run 45580912220 双平台成功，D9-A 必须验证当前提交。26 个版本入口不等于 26 个版本完成审计。旧 MSRV 与发布资产不变，CLI 选修；网页与真人观察另行验收。
+
+## 开发经验（D9-B）
+
+D9-A Run 45581790026、D8 回归 Run 45581790007 均双平台通过。D7 Windows 交付 Run 45580476027 的 StoreDesk 旧第三关 8 秒超时有原始日志（artifact 15005899591），不删除测试或放宽时限；主干待完整 CI。D9-B 逐版查阅 26 个官方发布说明的代表主题；16 个合同覆盖选定 API（17 个 TODO），真实学员 RED/GREEN；Cargo 使用独立 path 依赖、配置 include 和实际 lint 拒绝。冷却验证只用临时回环 sparse registry、自造 crate 及 pubtime，校验 Cargo.lock 与执行输出。使用 cargo run 而非硬编码 target 路径以适配新版构建目录。网页工作台和真人观察仍待后续；旧 MSRV 与发布资产保持不变。

@@ -1,0 +1,37 @@
+name: Modern Rust D9-B standard-library and Cargo
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+jobs:
+  d9b:
+    name: D9-B Rust 1.100.0 / ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: dtolnay/rust-toolchain@1.100.0
+        with:
+          components: rustfmt, clippy
+      - name: Validate source and learner distribution
+        run: python -m unittest discover -s scripts/tests -p test_modern_d9b_delivery.py -v
+      - name: Execute stdlib contracts, Cargo diagnostics and local registry
+        run: python scripts/modern_d9b_check.py --output d9b-evidence
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: modern-d9b-${{ matrix.os }}
+          path: d9b-evidence/
