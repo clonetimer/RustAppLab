@@ -33,6 +33,10 @@
 
 ---
 
+## 现代 Rust 选修路线（建设中）
+
+已完成基础课程后，可参考 [现代化教学计划](MODERN_RUST_ROADMAP.md) 和 [新版 Book 逐节映射](BOOK_MODERN_COVERAGE_D7.md)。D7 只是新版审计基线，D8–D11 尚未交付；继续使用现有经典路线，不需要更新旧学员工程。
+
 ## 原有应用章节：按需拓展
 
 **新学员只需要先打开根目录的 [`START_HERE.html`](../START_HERE.html)，并做完 [`零基础第 0 阶段`](BEGINNER_WINDOWS_GUIDE.md)。不要在第一天就打开下表 32 章。**
