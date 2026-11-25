@@ -1,4 +1,5 @@
 use d9_stdlib_lab::*;
+use std::assert_matches;
 use std::ffi::OsStr;
 use std::io;
 use std::path::Path;

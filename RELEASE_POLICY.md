@@ -23,3 +23,7 @@
 冻结 `0.17.0-rc.2` 的RC_READY和原始证据保持原样，只证明当时源码；不继承到本版本。历史材料从 [验证索引](verification/README.md) 与 [历史版本记录](docs/archive/releases/RELEASE_NOTES_THROUGH_0_19_RC_2.md) 查阅；当前修订见 [变更记录](RELEASE_NOTES.md)。
 
 启动C2时同步校验已有日志；请求期磁盘工作在独立阻塞线程执行。回环HTTP不作公网服务、账号认证或数据安全沙箱；StoreDesk依赖系统SQLite。系统支持详情见 [SUPPORTED_PLATFORMS](SUPPORTED_PLATFORMS.md)。
+
+## 保持已发布 RC 与持续开发分离
+
+当 main 的完整 CI 通过但 VERSION 仍对应已发布的不可变 prerelease，且对应 tag 是当前提交的祖先时，只记录新的开发 checkpoint，不创建或替换同名发布。标签存在但缺少正式发布、发布仍为 draft 或标签不在祖先历史中，继续拒绝发布。提高 VERSION 并通过新版本全部准入是发布新 RC 的独立操作；已发布 rc.5 不因此改变。

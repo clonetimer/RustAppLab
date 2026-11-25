@@ -150,6 +150,30 @@ class WindowsEntryTests(unittest.TestCase):
             with patch.object(release, 'CODE_SUFFIXES', windows_suffixes):
                 self.assertEqual(release.source_id(root), after)
 
+    def test_windows_and_python_project_fingerprint_scope_is_identical(self):
+        import re
+        script = (release.ROOT/'scripts/verify_release_windows.ps1').read_text(encoding='utf-8-sig')
+        pattern = re.search(r"\^projects/\(([^)]+)\)/", script)
+        self.assertIsNotNone(pattern)
+        windows_projects = set(pattern.group(1).split('|'))
+        self.assertEqual(windows_projects, {p[1] for p in release.SOURCE_PROJECTS})
+        for project in sorted(windows_projects):
+            with self.subTest(project=project), tempfile.TemporaryDirectory() as temp:
+                root = Path(temp)
+                path = root / 'projects' / project / 'learner' / 'src' / 'lib.rs'
+                before = release.source_id(root)
+                path.parent.mkdir(parents=True)
+                path.write_text('before', encoding='utf-8')
+                after = release.source_id(root)
+                self.assertNotEqual(before, after)
+                path.write_text('after', encoding='utf-8')
+                self.assertNotEqual(after, release.source_id(root))
+                before = release.source_id(root)
+                ignored = path.parent / 'target' / 'generated.rs'
+                ignored.parent.mkdir()
+                ignored.write_text('ignored', encoding='utf-8')
+                self.assertEqual(before, release.source_id(root))
+
     def test_cmd_launchers_have_no_unintended_control_bytes(self):
         for script in release.ROOT.glob('*.cmd'):
             with self.subTest(script=script.name):

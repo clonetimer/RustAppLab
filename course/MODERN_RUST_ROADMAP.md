@@ -44,3 +44,7 @@ D7 CI 复核：Run 45579401311 的 tooling/structure 已通过，Linux 旧 D6 �
 ## 开发经验（D9-B）
 
 D9-A Run 45581790026、D8 回归 Run 45581790007 均双平台通过。D7 Windows 交付 Run 45580476027 的 StoreDesk 旧第三关 8 秒超时有原始日志（artifact 15005899591），不删除测试或放宽时限；主干待完整 CI。D9-B 逐版查阅 26 个官方发布说明的代表主题；16 个合同覆盖选定 API（17 个 TODO），真实学员 RED/GREEN；Cargo 使用独立 path 依赖、配置 include 和实际 lint 拒绝。冷却验证只用临时回环 sparse registry、自造 crate 及 pubtime，校验 Cargo.lock 与执行输出。使用 cargo run 而非硬编码 target 路径以适配新版构建目录。网页工作台和真人观察仍待后续；旧 MSRV 与发布资产保持不变。
+
+## 集成验收修复（D7–D9-B）
+
+D7 修复后 Run 45580476027 第 2 次尝试完整通过；D8/D9-A 的原生和专项通过但候选汇总 Run 45580912179 / 45581790022 拒绝 Windows launcher source_id：PowerShell 目录白名单落后于 Python。统一新工作区范围，新增逐目录指纹变化、构建缓存忽略及两端集合相等测试。D9-B Run 45582928572 的两平台 reference-debug 因 assert_matches! 未导入失败，参考和学员合同均显式 use std::assert_matches，保持相同合同和测试数量。rc.5 已固定为 4e9857b 的发布资产；后续相同 VERSION 的普通主干提交只有在已有发布为非 draft 的 prerelease 且 tag 是当前提交祖先时创建开发检查点并跳过重复发布，不改任何旧标签和资产。D7–D9-B 收敛到 #18 对 main 的累计集成；不以旧专项结果代替当前完整 CI。
