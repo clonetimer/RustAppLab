@@ -30,3 +30,5 @@
 旧站与最新版章号不同，不能简单沿用 81 项；用 Rust 发布 tag 的 Book 子模块固定目录与文档。复用已有证据路径，所有条目保留待核验分类，不把重编号当成教学完成。当前项目的 AsyncBoard 已经有教学 executor，C1/C2 有实际 Tokio 应用；现代章节的 Stream、Pin 和动态 Future 仍需针对性学习任务，而不是重新建同类应用。
 
 参考：[官方 Book](https://doc.rust-lang.org/book/) · [Edition Guide](https://doc.rust-lang.org/edition-guide/rust-2024/index.html) · [发布记录](https://blog.rust-lang.org/releases/) · [1.100.0 公告](https://blog.rust-lang.org/2026/11/12/Rust-1.100.0/)。
+
+D7 CI 复核：Run 45579401311 的 tooling/structure 已通过，Linux 旧 D6 诊断复制实验因 ETXTBSY 失败；原始日志见 [Linux artifact](https://github.com/clonetimer/RustAppLab/actions/runs/45579401311/artifacts/15005702349)。只对 Linux 启动时 raw_os_error 26 有界重试，不重试子进程实际失败、不删除断言；修复后的 CI 必须重新验证。
