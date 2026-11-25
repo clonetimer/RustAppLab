@@ -38,6 +38,7 @@ SOURCE_PROJECTS = {('projects', name) for name in (
     'modern-d8-edition',
     'modern-d9-stable',
     'modern-d9-stdlib',
+    'modern-d10-async-core',
 )}
 BOOK_D1_MANIFEST = 'projects/book-d1-cargo/Cargo.toml'
 BOOK_D2_MANIFEST = 'projects/book-d2-smart-pointers/Cargo.toml'
