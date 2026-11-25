@@ -67,15 +67,32 @@ fn diagnostics_work_without_cargo_artifacts_beside_the_test_executable() {
     let relocated = out.join(format!("concept_repairs{}", std::env::consts::EXE_SUFFIX));
     fs::copy(std::env::current_exe().unwrap(), &relocated).unwrap();
     assert_eq!(fs::read_dir(&out).unwrap().count(), 1);
-    let output = Command::new(&relocated)
-        .args([
-            "--exact",
-            "compile_fail_examples_report_the_intended_rust_error",
-            "--nocapture",
-        ])
-        .current_dir(&scratch.0)
-        .output()
-        .expect("run the actual test from an output directory with no library artifacts");
+    // Linux can briefly return ETXTBSY when launching a freshly copied executable
+    // while another test starts a subprocess. Retry only that spawn error, never
+    // an executed child's failing status or any other IO error.
+    let mut retries = 0;
+    let output = loop {
+        match Command::new(&relocated)
+            .args([
+                "--exact",
+                "compile_fail_examples_report_the_intended_rust_error",
+                "--nocapture",
+            ])
+            .current_dir(&scratch.0)
+            .output()
+        {
+            Ok(output) => break output,
+            Err(error)
+                if cfg!(target_os = "linux")
+                    && error.raw_os_error() == Some(26)
+                    && retries < 20 =>
+            {
+                retries += 1;
+                std::thread::sleep(std::time::Duration::from_millis(25));
+            }
+            Err(error) => panic!("cannot run relocated diagnostic test: {error}"),
+        }
+    };
     assert!(
         output.status.success(),
         "relocated diagnostic checks failed:\n{}\n{}",

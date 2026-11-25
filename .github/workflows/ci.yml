@@ -194,6 +194,7 @@ jobs:
       - uses: actions/checkout@v4
         with:
           ref: ${{ github.sha }}
+          fetch-depth: 0
       - uses: actions/download-artifact@v4
         with:
           name: candidate-release
@@ -209,7 +210,16 @@ jobs:
           tag="v$version"
           remote=$(git ls-remote --tags origin "refs/tags/$tag" | cut -f1)
           if [[ -n "$remote" && "$remote" != "$GITHUB_SHA" ]]; then
-            echo "Existing release tag points to another commit" >&2; exit 1
+            # Ordinary development checkpoints may retain the last released VERSION.
+            # Only preserve an already published prerelease whose immutable tag is an
+            # ancestor of this commit. A missing/draft/unrelated release is still an error.
+            git fetch --no-tags origin "refs/tags/$tag:refs/tags/$tag"
+            if git merge-base --is-ancestor "$remote" "$GITHUB_SHA" &&
+               [[ "$(gh release view "$tag" --json isDraft,isPrerelease,tagName --jq '.tagName + ":" + (.isDraft|tostring) + ":" + (.isPrerelease|tostring)')" == "$tag:false:true" ]]; then
+              echo "Checkpoint only: published $tag remains at $remote; no release assets or tags changed."
+              exit 0
+            fi
+            echo "Existing release tag is not a published ancestor RC" >&2; exit 1
           fi
           if [[ -z "$remote" ]]; then
             git tag "$tag" "$GITHUB_SHA"

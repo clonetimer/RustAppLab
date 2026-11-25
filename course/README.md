@@ -33,6 +33,10 @@
 
 ---
 
+## 现代 Rust 选修路线（建设中）
+
+已完成基础课程后，可参考 [现代化教学计划](MODERN_RUST_ROADMAP.md) 和 [新版 Book 逐节映射](BOOK_MODERN_COVERAGE_D7.md)。D7 是新版审计基线；D8 已提交 [Edition 2024 告警筛选器](BOOK_D8_EDITION_2024.md)（待当前 CI），学员可独立复制工程练习。D9-A 已提交 [现代稳定特性批量数据实验](BOOK_D9_STABLE_FEATURES.md)（待当前 CI）；D9-B 已提交 [标准库与 Cargo 实验室](BOOK_D9_STDLIB_CARGO.md)（待当前 CI）；D10–D11 待推进；经典路线保持不变，不需要更新旧学员工程。
+
 ## 原有应用章节：按需拓展
 
 **新学员只需要先打开根目录的 [`START_HERE.html`](../START_HERE.html)，并做完 [`零基础第 0 阶段`](BEGINNER_WINDOWS_GUIDE.md)。不要在第一天就打开下表 32 章。**
