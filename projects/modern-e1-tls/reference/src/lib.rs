@@ -134,8 +134,14 @@ async fn guard(State(credentials): State<Credentials>, request: Request, next: N
     response
 }
 
+/// Apply exactly the E1-A route/role policy to a supplied router.
+/// E1-B changes the storage backend, not the authorization or TLS contract.
+pub fn protect_router(app: Router, credentials: Credentials) -> Router {
+    app.layer(middleware::from_fn_with_state(credentials, guard))
+}
+
 pub fn protected_router(state: servicedesk_c2::AppState, credentials: Credentials) -> Router {
-    servicedesk_c2::router(state).layer(middleware::from_fn_with_state(credentials, guard))
+    protect_router(servicedesk_c2::router(state), credentials)
 }
 
 /// Loopback-only, bounded pending TLS handshakes. This is not a global HTTP
