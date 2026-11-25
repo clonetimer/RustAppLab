@@ -59,6 +59,54 @@ def pack_learner(stage, archive):
     return digest(archive)
 
 
+def verify_vendor_resolution(evidence, label, work, home):
+    """Frozen resolution must point to the bundled directory source, not a cache."""
+    output, _ = evidence.run(label + "-metadata-frozen",
+                             CARGO + ["metadata", "--frozen", "--format-version", "1"], work)
+    metadata = json.loads(output)
+    expected = {(p["name"], p["version"]) for p in
+                tomllib.loads((work / "Cargo.lock").read_text(encoding="utf-8"))["package"]
+                if p.get("source")}
+    registry_packages = [p for p in metadata["packages"] if p.get("source")]
+    observed = {(p["name"], p["version"]) for p in registry_packages}
+    if not {("tokio", "1.48.0"), ("futures-util", "0.3.34")} <= observed <= expected:
+        raise RuntimeError(label + ": unexpected dependency metadata")
+    vendor = (work / "vendor").resolve()
+    locations = []
+    for package in registry_packages:
+        manifest = Path(package["manifest_path"]).resolve()
+        if not manifest.is_relative_to(vendor) or not manifest.is_file():
+            raise RuntimeError(label + ": dependency not resolved from shipped vendor: " + str(manifest))
+        locations.append(dict(name=package["name"], version=package["version"],
+                              manifest=manifest.relative_to(work.resolve()).as_posix()))
+    registry = home / "registry"
+    entries = []
+    unexpected = []
+    if registry.exists():
+        for path in sorted(registry.rglob("*")):
+            relative = path.relative_to(registry).as_posix()
+            if path.is_file():
+                # Cargo may create a cache-directory marker even when all
+                # dependencies are read from a directory source. It is not a
+                # registry index, downloaded crate, or extracted package.
+                marker = (relative == "CACHEDIR.TAG" and
+                          path.read_bytes().startswith(b"Signature: 8a477f597d28d172789f06886806bc55"))
+                entries.append(dict(path=relative, kind="file", bytes=path.stat().st_size,
+                                    sha256=digest(path), cache_marker=marker))
+                if not marker:
+                    unexpected.append(relative)
+            elif path.is_dir():
+                entries.append(dict(path=relative, kind="directory"))
+            else:
+                unexpected.append(relative)
+    write(evidence.output / (label + "-vendor-resolution.json"),
+          json.dumps(dict(registry_entries=entries, vendor_packages=locations,
+                          unexpected_registry_entries=unexpected), ensure_ascii=False, indent=2) + "\n")
+    if unexpected:
+        raise RuntimeError(label + ": frozen replay populated registry data: " + repr(unexpected))
+    return len(locations)
+
+
 def experiments(evidence, scratch, report):
     evidence.run("rustc-version", RUSTC + ["--version"], scratch, contains="rustc 1.100.0 ")
     evidence.run("cargo-version", CARGO + ["--version"], scratch, contains="cargo 1.100.0 ")
@@ -84,6 +132,8 @@ def experiments(evidence, scratch, report):
     # Separate empty Cargo homes for reference and relocated learner.
     ref_home = scratch / "empty-reference-cargo"
     ref_home.mkdir()
+    if any(ref_home.iterdir()):
+        raise RuntimeError("reference Cargo home is not initially empty")
     evidence.env["CARGO_HOME"] = str(ref_home)
     common = ["--frozen"]
     evidence.run("reference-debug", CARGO + ["test"] + common + ["--all-targets"],
@@ -100,8 +150,11 @@ def experiments(evidence, scratch, report):
                      ["--example", "diagnostic_probe"], reference, contains="ok")
         example.unlink()
 
+    reference_vendor_count = verify_vendor_resolution(evidence, "reference", reference, ref_home)
     home = scratch / "empty-learner-cargo"
     home.mkdir()
+    if any(home.iterdir()):
+        raise RuntimeError("learner Cargo home is not initially empty")
     evidence.env["CARGO_HOME"] = str(home)
     fixed = learner / "tests/contracts.rs"
     fixed_hash = digest(fixed)
@@ -125,13 +178,14 @@ def experiments(evidence, scratch, report):
         raise RuntimeError("fixed contract or dependency lock changed")
     if archive_hash != digest(archive):
         raise RuntimeError("shipped TODO ZIP was modified")
-    if (home / "registry").exists() or (ref_home / "registry").exists():
-        raise RuntimeError("frozen replay must not use registry cache")
+    learner_vendor_count = verify_vendor_resolution(evidence, "learner", learner, home)
     deps = [p for p in tomllib.loads((LAB / "reference/Cargo.lock").read_text(encoding="utf-8"))["package"]
             if p.get("source")]
     report["portable"] = dict(file=archive.name, sha256=archive_hash,
                               bytes=archive.stat().st_size, registry_dependencies=len(deps),
-                              empty_cache_relocated_replay="PASS", fixed_contract_red_then_green=7)
+                              empty_cache_relocated_replay="PASS", fixed_contract_red_then_green=7,
+                              reference_vendor_packages=reference_vendor_count,
+                              learner_vendor_packages=learner_vendor_count)
 
 
 def main():

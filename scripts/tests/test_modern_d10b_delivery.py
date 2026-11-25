@@ -45,6 +45,15 @@ class ModernD10BTests(unittest.TestCase):
         self.assertEqual(len(list((BASE / "reference/probes").glob("*/green.rs"))), 2)
         ast.parse((ROOT / "scripts/modern_d10b_check.py").read_text(encoding="utf-8"))
 
+    def test_frozen_proof_checks_actual_metadata_and_cache_contents(self):
+        runner = (ROOT / "scripts/modern_d10b_check.py").read_text(encoding="utf-8")
+        for requirement in ('"metadata", "--frozen"', 'manifest.is_relative_to(vendor)',
+                            'unexpected_registry_entries', '"CACHEDIR.TAG"',
+                            'verify_vendor_resolution(evidence, "reference"',
+                            'verify_vendor_resolution(evidence, "learner"',
+                            'initially empty'):
+            self.assertIn(requirement, runner)
+
     def test_source_and_learner_kit(self):
         pack = load("package.py")
         assets = dict(load("package_learner_kit.py").course_inputs())

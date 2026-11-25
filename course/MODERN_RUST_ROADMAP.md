@@ -56,3 +56,5 @@ D7–D9 集成修复已在 #18 单独验收，D10-A 不取消其当前 CI。用�
 ## 开发经验（D10-B）
 
 复用 C1 已锁定的 Tokio 1.48.0 与 futures-util 0.3.34 依赖图和 registry SHA-256，不以不必要的全新框架或网络应用替代教学。新增锁须 cargo vendor --locked 与空缓存 frozen 独立核验；用虚拟 Tokio 时钟和在途数量、Waker、Drop/JoinError、线程 ID 与通道握手证明行为，不靠机器耗时猜并发。7 个固定合同（9 个 TODO）、真实 Stream 的 Pending/Some/EOF、Send RPITIT 与非 Unpin Stream 诊断补齐第 17 章代表性目标。离线学员包先保存 TODO 原始字节，只对搬移后的副本注入答案，ZIP 哈希不变。D7–D9 #18 的累计完整 CI、D10-A #19 的集成 CI 仍独立收口；所有新工作区同时更新 Python/PowerShell 指纹范围，保持 rc.5 原发布资产不变。网页与真人效果尚待验收。
+
+D10-B 首轮 [Run 45588756708 Linux 原始日志](https://github.com/clonetimer/RustAppLab/actions/runs/45588756708/job/139117061724) 中 vendor、Debug/Release、两个诊断、搬移学员包、七项 RED/GREEN、CLI 均通过，最后仅因 registry 目录存在拒绝交付。修复不删除离线门槛：两个 Cargo home 初始必须为空；在 frozen 模式读取真实 metadata，核验所有解析出的 registry 包 manifest 位于随包 vendor；记录 registry 全目录及文件哈希，仅允许标准 CACHEDIR.TAG 管理标记和空目录，不允许 index/cache/src 数据。修复后必须重跑双平台验证，不能沿用首轮 FAIL 作为离线交付 PASS。
