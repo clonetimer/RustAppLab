@@ -17,7 +17,7 @@
 | D7 | 最新 Book 基线 | 固定官方发布快照；87 项唯一 ID；旧 ID 一对一映射；六节异步分开标记；证据路径检查；自动结构测试 | 本 PR 建立基线；新版内容复核仍待做 |
 | D8 | Edition 2024 教学环境 | 独立 workspace + rust-toolchain 固定 1.100.0；最小工程、2021/2024 对照、resolver 3、迁移诊断、运行/测试；不改旧 MSRV；学员入口 | [代码与讲义](BOOK_D8_EDITION_2024.md) 已提交，待 CI |
 | D9 | 1.75–1.100 稳定特性 | 版本增量审计和优先级；语法、Trait、生命周期捕获、async closure、Never、DropGuard 等代表性练习；按稳定范围逐项验收 | D9-A [九项实际任务](BOOK_D9_STABLE_FEATURES.md) 与 [26 版本索引](MODERN_STABLE_FEATURE_INDEX.md) 已提交待 CI；D9-B [逐版代表性审计及标准库/Cargo 实验](BOOK_D9_STDLIB_CARGO.md) 已提交，待当前 CI；完整 API 清单、Unsafe 等专项不纳入覆盖率 |
-| D10 | 异步核心课 | 六节目标逐项关闭；Future、Poll、Waker、Pin/Unpin、Stream、join/select、async trait、取消与阻塞；以已有应用串起概念而非重复项目 | 待实施 |
+| D10 | 异步核心课 | 六节目标逐项关闭；Future、Poll、Waker、Pin/Unpin、Stream、join/select、async trait、取消与阻塞；以已有应用串起概念而非重复项目 | D10-A [六步独立核心实验](BOOK_D10_ASYNC_CORE.md) 已提交待 CI；D10-B 真实 Stream/Tokio task/channel/select/spawn_blocking 仍待补 |
 | D11 | 现代开发工具 | IDE 断点、Clippy、Miri、属性测试、Fuzzing、基准与依赖审计；独立运行证据及学员迁移记录 | 待实施 |
 | E1 | 网络工程 | TLS、认证、数据库、可观测性、错误边界；明确本地教学与公网安全差异 | 待评估 |
 | E2 | 桌面 GUI | 一款完整可交互软件，模型/视图/状态分离，跨平台测试 | 待评估 |
@@ -48,3 +48,7 @@ D9-A Run 45581790026、D8 回归 Run 45581790007 均双平台通过。D7 Windows
 ## 集成验收修复（D7–D9-B）
 
 D7 修复后 Run 45580476027 第 2 次尝试完整通过；D8/D9-A 的原生和专项通过但候选汇总 Run 45580912179 / 45581790022 拒绝 Windows launcher source_id：PowerShell 目录白名单落后于 Python。统一新工作区范围，新增逐目录指纹变化、构建缓存忽略及两端集合相等测试。D9-B Run 45582928572 的两平台 reference-debug 因 assert_matches! 未导入失败，参考和学员合同均显式 use std::assert_matches，保持相同合同和测试数量。rc.5 已固定为 4e9857b 的发布资产；后续相同 VERSION 的普通主干提交只有在已有发布为非 draft 的 prerelease 且 tag 是当前提交祖先时创建开发检查点并跳过重复发布，不改任何旧标签和资产。D7–D9-B 收敛到 #18 对 main 的累计集成；不以旧专项结果代替当前完整 CI。
+
+## 开发经验（D10-A）
+
+D7–D9 集成修复已在 #18 单独验收，D10-A 不取消其当前 CI。用标准库 Wake + 容量 1 通知通道提供最小单根执行器，协作式截止时间不伪称抢占；测试真正观察首次 Pending、真实跨线程唤醒、最新 Waker 替换、无忙轮询、完成 Future 不再 poll、race loser drop、Pin 与异构 Future 类型。学员六个 TODO 与固定 runtime/合同一致；4 组真实诊断/修复独立运行。课程明确不等同 Tokio/Stream/生产任务调度，D10-B 衔接现有 C1/C2。保持 Windows/Python 源指纹项目范围一致，源码包和学员包白名单同步；无新增第三方依赖。网页及真人验收仍待后续。
