@@ -62,3 +62,5 @@ D10-B 首轮 [Run 45588756708 Linux 原始日志](https://github.com/clonetimer/
 ## 开发经验（D11-A）
 
 D10-B 在 fe2493b9 的完整 PR CI 19/19 适用 Job、五套双平台专项均成功，#20 已合并为 b6f2abec。此前 main bbca9f49 的 Windows StoreDesk 第三关真实里程碑 8 秒超时复现（Run 45589200104 artifact 15011300527），不删测试、不放宽限制、不把原因猜成新异步课错误；新主干仍需实际回归。D11-A 复用独立 Edition 2024 工作区；四步教学帧编解码与计数、三个固定性质、三种真实 mutant、rustfmt/Clippy 红绿、GDB 实际断点和 Release 测量。有限生成输入不等于 libFuzzer，不宣称性能胜负；Windows IDE、Miri、libFuzzer 与 RustSec 另验。学员包无答案，源清单和 Python/PowerShell 指纹同步，经典课程及 rc.5 不变。
+
+D11-A 首轮 Run 45605693046 的 Windows/Linux reference-debug 均失败；[Linux 原始日志](https://github.com/clonetimer/RustAppLab/actions/runs/45605693046/artifacts/15018045979) 确认 Edition 2024 的 gen 保留字被误用为局部变量。参考与学员属性测试统一改名 generator，保留全部种子、生成样本、断言和测试数量；必须重新通过当前提交 CI。这也说明 Edition 迁移检查应真实覆盖测试和 examples，不只检查 lib.rs。

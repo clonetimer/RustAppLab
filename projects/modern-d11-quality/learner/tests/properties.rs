@@ -18,10 +18,10 @@ impl Generator {
 
 #[test]
 fn roundtrip_and_single_bit_faults() {
-    let mut gen = Generator(0x2c85_06d4_950c_1231);
+    let mut generator = Generator(0x2c85_06d4_950c_1231);
     for case in 0..4096 {
         let length = case % (MAX_PAYLOAD + 1);
-        let payload = gen.bytes(length);
+        let payload = generator.bytes(length);
         let frame = encode(&payload).unwrap();
         assert_eq!(decode(&frame).unwrap(), payload, "seed case {case}");
         // All single-bit positions in a representative frame for each length.
@@ -42,9 +42,9 @@ fn roundtrip_and_single_bit_faults() {
 
 #[test]
 fn arbitrary_bytes_never_panic_and_accepted_frames_are_canonical() {
-    let mut gen = Generator(0x7e18_9cf2_a10b_4d35);
+    let mut generator = Generator(0x7e18_9cf2_a10b_4d35);
     for case in 0..8192 {
-        let mut bytes = gen.bytes(case % 100);
+        let mut bytes = generator.bytes(case % 100);
         // Increase meaningful coverage of the header and length checks.
         if case % 3 == 0 && bytes.len() >= 3 {
             bytes[0] = MAGIC;
@@ -61,14 +61,14 @@ fn arbitrary_bytes_never_panic_and_accepted_frames_are_canonical() {
 
 #[test]
 fn implementations_agree_with_histogram_oracle() {
-    let mut gen = Generator(0x174c_7ad2_8e09_a6d1);
+    let mut generator = Generator(0x174c_7ad2_8e09_a6d1);
     for case in 0..1024 {
-        let values = gen.bytes(case % 129);
+        let values = generator.bytes(case % 129);
         let mut histogram = [0usize; 256];
         for &value in &values {
             histogram[value as usize] += 1;
         }
-        for threshold in [0, gen.byte(), 127, 255] {
+        for threshold in [0, generator.byte(), 127, 255] {
             let expected: usize = histogram[usize::from(threshold)..].iter().sum();
             assert_eq!(count_loop(&values, threshold), expected, "loop case {case}");
             assert_eq!(count_iter(&values, threshold), expected, "iterator case {case}");
