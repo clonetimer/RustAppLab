@@ -76,6 +76,7 @@ TaskPocket / PageMint 的 CONTRACT.md、DEVELOPMENT_PLAN.md、TEST_PLAN.md、REL
 - 可选现代 D9-B：见 [标准库与 Cargo 讲义](course/BOOK_D9_STDLIB_CARGO.md)，按 16 步实现并操作个人 Cargo 练习副本。
 - 可选现代 D10-A：见 [异步核心讲义](course/BOOK_D10_ASYNC_CORE.md)，六步实际 Future/Poll/Waker/Pin 练习，无第三方依赖。
 - 可选现代 D10-B：见 [Tokio/Stream 讲义](course/BOOK_D10_TOKIO_STREAM.md)，学员模板固定依赖，首次 cargo fetch --locked 或另取通过验收的离线包。
+- 可选现代 D11-A：见 [工程质量讲义](course/BOOK_D11_QUALITY.md)，帧处理、属性测试、工具诊断、断点及 Release 测量；无第三方 crate。
 - C1/C2 请另取对应 learner-offline.zip 并按讲义准备 Rust 1.85.0；本包没有这两门课的学员工程和 vendor。
 - projects/book-d* 是可选的参考实验，包含 D1 Cargo、D2 智能指针、D3 面向对象与模式、D4 高级特性、D5 Web Server、D6-A 附录参考实验、D6-B 基础缺口补齐实验。D6-A/D6-B 都是独立参考实验，和其它 Book 实验一样不自动计入个人成绩。course/ 中的概念补课帮助理解当前作品，不是 FirstCard 后必须先做完的新任务。
 - MiniKV 的 journal.rs、TermGarden 的 storage.rs、StoreDesk 的 sqlite.rs、AsyncBoard 的 runtime.rs 是已提供的基础设施，任务卡会说明你亲手实现哪一层。
@@ -98,7 +99,7 @@ def course_inputs() -> list[tuple[str, bytes]]:
         "30_second_independent_product.md", "31_transfer_release.md",
         "LEARNER_EVIDENCE_PROTOCOL.md", "LEARNING_LOG_TEMPLATE.md", "BOOK_31_GAPS_REPAIR.md",
         "BOOK_MODERN_COVERAGE_D7.md", "MODERN_RUST_ROADMAP.md", "BOOK_D8_EDITION_2024.md",
-        "BOOK_D9_STABLE_FEATURES.md", "MODERN_STABLE_FEATURE_INDEX.md", "BOOK_D9_STDLIB_CARGO.md", "BOOK_D10_ASYNC_CORE.md", "BOOK_D10_TOKIO_STREAM.md",
+        "BOOK_D9_STABLE_FEATURES.md", "MODERN_STABLE_FEATURE_INDEX.md", "BOOK_D9_STDLIB_CARGO.md", "BOOK_D10_ASYNC_CORE.md", "BOOK_D10_TOKIO_STREAM.md", "BOOK_D11_QUALITY.md",
         "BEGINNER_WINDOWS_GUIDE.md", "00_first_five_minutes.md", "NETWORK_PREPARATION.md", "LEARNING_NAVIGATOR.md", "RUST_ERROR_LABS.md", "FOUNDATION_PATH.md", "FOUNDATION_NEXT_STEPS.md", "PROGRESS_OVERVIEW.md", "SYSTEMS_PATH.md", "RELIABILITY_PATH.md", "INDEPENDENT_PATH.md",
     ]
     result = [(f"course/{name}", (ROOT / "course" / name).read_bytes()) for name in files]
@@ -199,6 +200,14 @@ def course_inputs() -> list[tuple[str, bytes]]:
         if (path.is_file() and not {"target", ".git", "__pycache__"}.intersection(path.relative_to(modern).parts)
                 and path.suffix in {".toml", ".lock", ".md", ".rs"}):
             result.append((path.relative_to(ROOT).as_posix(), path.read_bytes()))
+    # D11-A ships TODO sources and the intentionally failing tool exercise.
+    modern = ROOT / "projects" / "modern-d11-quality"
+    result.append(("projects/modern-d11-quality/README.md", (modern / "README.md").read_bytes()))
+    for side in ("learner", "tools-practice"):
+        for path in sorted((modern / side).rglob("*")):
+            if (path.is_file() and not {"target", ".git", "__pycache__"}.intersection(path.relative_to(modern).parts)
+                    and path.suffix in {".toml", ".lock", ".md", ".rs"}):
+                result.append((path.relative_to(ROOT).as_posix(), path.read_bytes()))
     return result
 
 

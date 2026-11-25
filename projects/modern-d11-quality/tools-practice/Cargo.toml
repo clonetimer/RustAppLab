@@ -1,0 +1,9 @@
+[package]
+name = "d11-tools-practice"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.100"
+publish = false
+
+[workspace]
+resolver = "3"

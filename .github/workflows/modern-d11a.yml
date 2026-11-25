@@ -1,0 +1,44 @@
+name: Modern Rust D11-A quality and engineering tools
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+jobs:
+  d11a:
+    name: D11-A Rust 1.100.0 / ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 20
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: dtolnay/rust-toolchain@1.100.0
+        with:
+          components: rustfmt, clippy
+      - name: Validate distribution and fixed contracts
+        run: python -m unittest discover -s scripts/tests -p test_modern_d11a_delivery.py -v
+      - name: Install actual GDB on Ubuntu
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y gdb
+      - name: Run real tests, mutants, tools, benchmark and GDB
+        if: runner.os == 'Linux'
+        run: python scripts/modern_d11a_check.py --output d11a-evidence --gdb
+      - name: Run real tests, mutants, tools and benchmark
+        if: runner.os == 'Windows'
+        run: python scripts/modern_d11a_check.py --output d11a-evidence
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: modern-d11a-${{ matrix.os }}
+          path: d11a-evidence/
