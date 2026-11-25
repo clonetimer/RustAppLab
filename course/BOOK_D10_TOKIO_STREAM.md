@@ -2,7 +2,7 @@
 
 [现代化路线](MODERN_RUST_ROADMAP.md) · [D10-A 原理课](BOOK_D10_ASYNC_CORE.md) · [D10-B 工程入口](../projects/modern-d10-tokio/README.md)
 
-完成 D10-A 后进入。D10-A 自制教学 executor 只驱动一个 root；本课使用真实 Tokio 1.48.0、futures-util 0.3.34，固定 Rust 1.100.0 和 Cargo.lock。首次在个人副本运行 cargo fetch --locked（需要访问依赖源），之后 cargo test --locked --offline。离线包 D10-B-learner-offline.zip 包含 vendor 和校验清单，工具链已安装时无需 registry 缓存，运行 cargo test --frozen。不要升级 C1/C2 的旧锁或全局工具链。
+完成 D10-A 后进入。D10-A 自制教学 executor 只驱动一个 root；本课使用真实 Tokio 1.53.3、futures-util 0.3.34，固定 Rust 1.100.0 和 Cargo.lock。首次在个人副本运行 cargo fetch --locked（需要访问依赖源），之后 cargo test --locked --offline。离线包 D10-B-learner-offline.zip 包含 vendor 和校验清单，工具链已安装时无需 registry 缓存，运行 cargo test --frozen。不要单独改动全局工具链；旧网络课包按 [E1-0 安全迁移说明](NETWORK_SECURITY_BASELINE.md) 获取同提交的新依赖锁与 vendor 后重验。
 
 ## 7 步实际学习任务
 
@@ -46,4 +46,4 @@
 
 从完整平台根目录运行 python scripts/modern_d10b_check.py --output d10b-evidence。首次 Cargo vendor 必须联网；生成只含 TODO 的离线学员 ZIP、SHA-256、真实空缓存中文路径重放、7 步 RED/GREEN、Debug/Release、CLI、诊断日志。源码快照前后相等才 PASS。未安装编译器和系统构建工具仍需自行准备。不自动发布新 RC，不纳入旧 C1/C2 兼容工作区；网页入口和真人试用待后续。
 
-参考：[Tokio 教程](https://tokio.rs/tokio/tutorial) · [Tokio 1.48.0](https://docs.rs/tokio/1.48.0/tokio/) · [futures-util 0.3.34](https://docs.rs/futures-util/0.3.34/futures_util/) · [Pin](https://doc.rust-lang.org/std/pin/index.html)。
+参考：[Tokio 教程](https://tokio.rs/tokio/tutorial) · [Tokio 1.53.3](https://docs.rs/tokio/1.53.3/tokio/) · [futures-util 0.3.34](https://docs.rs/futures-util/0.3.34/futures_util/) · [Pin](https://doc.rust-lang.org/std/pin/index.html)。

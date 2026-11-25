@@ -100,7 +100,7 @@ def course_inputs() -> list[tuple[str, bytes]]:
         "30_second_independent_product.md", "31_transfer_release.md",
         "LEARNER_EVIDENCE_PROTOCOL.md", "LEARNING_LOG_TEMPLATE.md", "BOOK_31_GAPS_REPAIR.md",
         "BOOK_MODERN_COVERAGE_D7.md", "MODERN_RUST_ROADMAP.md", "BOOK_D8_EDITION_2024.md",
-        "BOOK_D9_STABLE_FEATURES.md", "MODERN_STABLE_FEATURE_INDEX.md", "BOOK_D9_STDLIB_CARGO.md", "BOOK_D10_ASYNC_CORE.md", "BOOK_D10_TOKIO_STREAM.md", "BOOK_D11_QUALITY.md", "BOOK_D11_SAFETY.md",
+        "BOOK_D9_STABLE_FEATURES.md", "MODERN_STABLE_FEATURE_INDEX.md", "BOOK_D9_STDLIB_CARGO.md", "BOOK_D10_ASYNC_CORE.md", "BOOK_D10_TOKIO_STREAM.md", "BOOK_D11_QUALITY.md", "BOOK_D11_SAFETY.md", "NETWORK_SECURITY_BASELINE.md",
         "BEGINNER_WINDOWS_GUIDE.md", "00_first_five_minutes.md", "NETWORK_PREPARATION.md", "LEARNING_NAVIGATOR.md", "RUST_ERROR_LABS.md", "FOUNDATION_PATH.md", "FOUNDATION_NEXT_STEPS.md", "PROGRESS_OVERVIEW.md", "SYSTEMS_PATH.md", "RELIABILITY_PATH.md", "INDEPENDENT_PATH.md",
     ]
     result = [(f"course/{name}", (ROOT / "course" / name).read_bytes()) for name in files]

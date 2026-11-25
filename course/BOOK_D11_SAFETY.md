@@ -27,7 +27,7 @@ D11-A 是确定性生成式属性检查；[libFuzzer 练习](../projects/modern-
 
 [审计练习](../projects/modern-d11-safety/audit-practice/README.md) 使用 cargo-audit 0.23.0 与固定 RustSec advisory-db 提交 b9b8a3c2cb1f2a3c76ab17a551193568c9f8b7a4（2026-11-25）。历史 regex 1.5.4/1.5.5 的对照只生成并审计锁文件，不编译或运行易受影响的旧 crate；验证 RUSTSEC-2022-0013 指定公告是否消失，不开发漏洞利用代码。
 
-同时对平台 Cargo.lock、C1/C2、D10-B、D11-A 的真实锁文件保存完整 JSON 报告与摘要。发现其他公告应如实记录并单独评估，报告阶段不自动抹掉发现或声称项目安全。固定快照不等于实时数据库；本实验关闭 yanked 查询且不作二进制/OS 依赖完整审计。正式生产应更新数据库并评估受影响配置、可达性与修复回归。
+同时对平台 Cargo.lock、C1/C2、D10-B、D11-A 的真实锁文件保存完整 JSON 报告与摘要。D11-B 首轮确实发现了两个网络依赖安全公告；见 [E1-0 网络安全基线](NETWORK_SECURITY_BASELINE.md)。E1-0 重审计覆盖 C1/C2/D10-B 全部六份 learner/reference 锁，在保留全部原始发现后拒绝漏洞及 unsound 警告；不通过就不能准入。固定快照不等于实时数据库；本实验关闭 yanked 查询且不作二进制/OS 依赖完整审计。正式生产应更新数据库并评估受影响配置、可达性与修复回归。
 
 维护者在平台根目录执行 python scripts/modern_d11b_check.py --mode stable --output d11b-stable-evidence；Linux 另分别运行 --mode miri / fuzz / audit（不同输出目录）。额外工具首次准备需联网；CI 真实安装固定版本并保存每个模式的日志。所有变更均在临时副本，原始教材与锁文件不改。尚待当前提交 CI。真人 IDE、网页入口、实际学习结果仍需另验。
 
