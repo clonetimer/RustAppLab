@@ -117,3 +117,7 @@
 ## D10-A 后续教学进展（待当前 CI）
 
 [异步核心实验](BOOK_D10_ASYNC_CORE.md) 提供新版第 17 章的六节逐项目标映射；实际教学实现覆盖 17.1、17.2/17.3 的核心组合与通知、17.5 的 Future/Pin/Waker 与 17.6 的跨线程唤醒边界，17.4 的真实 Stream 与 Tokio task/channel/select/spawn_blocking 保留 D10-B。上表是原 D7 冻结基线；此更新不重新计算或虚报全章覆盖率。
+
+## D10-B 后续进展（待当前 CI）
+
+D10-A 双平台专项通过（[Run 45586040166](https://github.com/clonetimer/RustAppLab/actions/runs/45586040166)）。[Tokio/Stream 实战](BOOK_D10_TOKIO_STREAM.md) 将第 17 章 17.1–17.6 的代表性目标分别映射到 D10-A、D10-B、C1/C2，17.4 新增实际 Stream trait 与 StreamExt，其他补真实 task、mpsc、select、限流和 spawn_blocking；同提交测试、离线交付及个人学习效果分别验收。上表仍为 D7 历史基线，不将后续主题映射误称穷尽全章或全书。
