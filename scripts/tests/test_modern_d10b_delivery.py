@@ -24,7 +24,7 @@ class ModernD10BTests(unittest.TestCase):
             self.assertIn('channel = "1.100.0"', (BASE / side / "rust-toolchain.toml").read_text(encoding="utf-8"))
             manifest = tomllib.loads((BASE / side / "Cargo.toml").read_text(encoding="utf-8"))
             self.assertEqual(manifest["package"]["edition"], "2024")
-            self.assertEqual(manifest["dependencies"]["tokio"]["version"], "=1.48.0")
+            self.assertEqual(manifest["dependencies"]["tokio"]["version"], "=1.53.3")
             self.assertEqual(manifest["dependencies"]["futures-util"]["version"], "=0.3.34")
         for path in ("Cargo.lock", "Cargo.toml", "tests/contracts.rs"):
             self.assertEqual((BASE / "reference" / path).read_bytes(), (BASE / "learner" / path).read_bytes())

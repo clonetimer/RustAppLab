@@ -69,7 +69,7 @@ def verify_vendor_resolution(evidence, label, work, home):
                 if p.get("source")}
     registry_packages = [p for p in metadata["packages"] if p.get("source")]
     observed = {(p["name"], p["version"]) for p in registry_packages}
-    if not {("tokio", "1.48.0"), ("futures-util", "0.3.34")} <= observed <= expected:
+    if not {("tokio", "1.53.3"), ("futures-util", "0.3.34")} <= observed <= expected:
         raise RuntimeError(label + ": unexpected dependency metadata")
     vendor = (work / "vendor").resolve()
     locations = []
