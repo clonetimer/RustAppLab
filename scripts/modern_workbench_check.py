@@ -23,7 +23,8 @@ COURSES = {
     "modern-d10a": "modern-d10-async-core",
     "modern-d11a": "modern-d11-quality",
     "modern-e4": "modern-e4-interop",
-    "modern-e5": "modern-e5-science"
+    "modern-e5": "modern-e5-science",
+    "modern-d11b": "modern-d11-safety"
 }
 OPENER = build_opener(ProxyHandler({}))
 
@@ -118,7 +119,7 @@ def main():
             with running_workbench([str(exe), "workbench", "--workspace", str(workspace),
                                     "--port", "0"], tmp, output / "server.txt") as base:
                 catalog = {item["id"]: item for item in api(base, "/api/catalog")["courses"]}
-                assert set(COURSES) <= set(catalog) and len(catalog) == 27
+                assert set(COURSES) <= set(catalog) and len(catalog) == 33
                 for course, folder in COURSES.items():
                     report["current_course"] = course
                     print(course, "START", flush=True)

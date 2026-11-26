@@ -53,7 +53,17 @@ D5 的服务器行为用真实测试验证，D6-A 是库与工具练习，因此
 
 ## 现代 Rust：先学会使用新版，再扩展到专用工具
 
-此功能属于当前开发候选，不改变历史 rc.5 下载包。先安装 Rust 1.100.0（首次需网络）：`rustup toolchain install 1.100.0 --profile minimal --component rustfmt --component clippy`。E4 还需 `rustup target add wasm32-unknown-unknown --toolchain 1.100.0`。经典 1.74 与 C1/C2 1.85.0 不变。左侧「现代 RUST」提供七门无额外 crate 的个人 TODO 工程，按步骤检查真实 Cargo 合同；最后一项执行全部目标与文档测试。每个项目只编辑 src/lib.rs 和学习记录，其他固定源、工具链、测试、C/Web 材料不得由工作台覆盖。默认运行入口为有限 Rust example；E4 只在网页做 host 测试，实际 C/WASM 按讲义继续。依赖供应链、GUI、QEMU、Miri/Fuzz、Cargo/IDE 专项仍按对应讲义及独立包操作；知识导航已提供现代全路线中文讲义，不冒称这些工具已经全部网页化。
+此功能属于当前开发候选，不改变历史 rc.5 下载包。先安装 Rust 1.100.0（首次需网络）：`rustup toolchain install 1.100.0 --profile minimal --component rustfmt --component clippy`。E4 还需 `rustup target add wasm32-unknown-unknown --toolchain 1.100.0`。经典 1.74 与 C1/C2 1.85.0 不变。左侧「现代 RUST」提供八门无额外 crate 的个人 TODO 工程，按步骤检查真实 Cargo 合同；最后一项执行全部目标与文档测试。每个项目只编辑 src/lib.rs 和学习记录（E2 另可编辑 src/gui.rs），其他固定源、工具链、测试、C/Web 材料不得由工作台覆盖。默认运行入口为有限 Rust example；E4 只在网页做 host 测试，实际 C/WASM 按讲义继续。另外五门依赖课程使用原专项通过验收的离线学员包，按随包 SHA-256 校验并解压到个人目录。选择对应课程，填写含 Cargo.toml、Cargo.lock、vendor 和 .cargo/config.toml 的实际目录，点击「打开项目」。不得选仓库原始模板、不得手改 vendor 或 Cargo 配置；首次冷编译最多 20 分钟，原课程时限不变。工作台不隐式联网下载依赖，vendor 为可信依赖环境，不是工作台编辑或实时逐字节监控范围。修改依赖环境后重新检查。
+
+| 课程 | 离线学员包 | 网页验收 |
+|---|---|---|
+| D10-B | D10-B-learner-offline.zip | Tokio/Stream 合同及有限示例 |
+| E1-A | E1-A-learner-offline.zip | HTTPS/授权合同与有限演示 |
+| E1-B | E1-B-learner-offline.zip | SQLite/观测合同与有限演示 |
+| E2 | E2-learner-offline.zip | 两个 TODO 文件及真实控件合同 |
+| E3 | E3-learner-offline.zip | 主机 HAL/调度与 host_demo |
+
+离线包现阶段从专项 CI 产物获取，旧 rc.5 不更新。GUI 原生窗口、ARM/QEMU、Miri/Fuzz、Cargo/IDE 和 C/WASM 仍按独立讲义操作；不把 host 测试称为专用工具验收。
 
 ## 记录自己是否理解
 
@@ -89,7 +99,7 @@ Windows 运行包在解压目录的终端执行以下命令。
 
 ## 可以在工作台学哪些课
 
-当前开发候选共 27 个网页学习入口：原有 13 门作品课程、D1–D6 的 7 个专题工程，以及 D8/D9-A/D9-B/D10-A/D11-A/E4/E5 七门现代 host 课程。原有课程仍是 37 个步骤，FirstCard 有 1 步，以下 12 款 Studio 各有 3 步。
+当前开发候选共 33 个网页学习入口：原有 13 门作品课程、D1–D6 的 7 个专题工程，以及十三门现代 host 课程。原有课程仍是 37 个步骤，FirstCard 有 1 步，以下 12 款 Studio 各有 3 步。
 
 UnitLab、QuizDeck、TextScope、LedgerLite、BadgeForge、TermGarden、BatchMeter、MiniKV、NetFetch、ServiceDesk、StoreDesk、AsyncBoard。
 

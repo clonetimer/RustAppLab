@@ -310,7 +310,14 @@ pub(super) fn start(
     }
     let shared = Arc::clone(app);
     let course = course_id.to_string();
-    let limit = if action == "check" { 180 } else { 120 };
+    // Cold native dependency builds need a separate bounded deadline.
+    let limit = if book_projects::get(course_id).is_some_and(|book| book.bundle().is_some()) {
+        1200
+    } else if action == "check" {
+        180
+    } else {
+        120
+    };
     let worker = std::thread::Builder::new()
         .name(format!("learning-operation-{id}"))
         .spawn(move || {

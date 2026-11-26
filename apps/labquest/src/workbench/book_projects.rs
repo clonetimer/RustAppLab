@@ -50,6 +50,59 @@ impl BookCourse {
         self.id.starts_with("modern-")
     }
 
+    pub fn bundle(&self) -> Option<&'static str> {
+        match self.id {
+            "modern-d10b" => Some("D10-B-learner-offline.zip"),
+            "modern-e1a" => Some("E1-A-learner-offline.zip"),
+            "modern-e1b" => Some("E1-B-learner-offline.zip"),
+            "modern-e2" => Some("E2-learner-offline.zip"),
+            "modern-e3" => Some("E3-learner-offline.zip"),
+            _ => None,
+        }
+    }
+
+    // Validate supplied prerequisites without embedding earlier-course answers.
+    #[rustfmt::skip]
+    pub fn support_hashes(&self) -> &'static [(&'static str, &'static str)] {
+        match self.id {
+            "modern-e1a" => &[
+                ("support/c2/Cargo.toml", "44d0e09409f016e475995e5d13af687a0ebf6f5c856cf4f49909f793ab3db1c0"),
+                ("support/c2/src/handlers.rs", "be3f770b043022d8887d27e1ee70025c898f73a26d5f60fa5009b3ecba66138d"),
+                ("support/c2/src/lib.rs", "dbbd259fca3b757fb424b72c34344ffbab2f68e9e23afcebcec9ee5df7d3646f"),
+                ("support/c2/src/main.rs", "33d7c334d3c0bff5dc196a8c71bcf1a40669f12fed2a02121b1d436f22b4f86c"),
+                ("support/c2/src/model.rs", "c0b6c4b960faee618837548e291d0e242ac1f6b16c9b80217de6ee41077a329e"),
+                ("support/c2/assets/app.css", "99fb944ec5f5f01977384a6ddcab7d74b820dfe585203482300f43f529aefac4"),
+                ("support/c2/assets/client.js", "e152dd205fe7b91961747daf194ad4bbd0b030a476ef993480414ebeef386b41"),
+                ("support/c2/assets/index.html", "360023b35ee11d01a0c2180e2b916366c82502207830a5e62dccd9ccde68530b"),
+                ("support/servicedesk/Cargo.toml", "04f4b1902eb4a90704cd3f19cc875624d8d97c9ba24a93119e15328fc35565b6"),
+                ("support/servicedesk/src/http.rs", "c9f57736ddf9e26923c3bc16935c57f41f1ac1f5ebb71f717e2b9063be96a78d"),
+                ("support/servicedesk/src/lib.rs", "e76f90bd94d40ff968dc1a3bb35c2e2353e967ef421cb3fc78fb09e69f4b6e4f"),
+                ("support/servicedesk/src/main.rs", "b39c98da11fbf83ba77c6f2ae43ec5e3778d88b61752ccc8f7610663cbc58930"),
+                ("support/servicedesk/samples/index.html", "e3bc640a36994a6062dd28e7c39fda53fbac69196cf722a6b6f03361dfb4d610"),
+            ],
+            "modern-e1b" => &[
+                ("support/e1a/support/c2/Cargo.toml", "44d0e09409f016e475995e5d13af687a0ebf6f5c856cf4f49909f793ab3db1c0"),
+                ("support/e1a/support/c2/src/handlers.rs", "be3f770b043022d8887d27e1ee70025c898f73a26d5f60fa5009b3ecba66138d"),
+                ("support/e1a/support/c2/src/lib.rs", "dbbd259fca3b757fb424b72c34344ffbab2f68e9e23afcebcec9ee5df7d3646f"),
+                ("support/e1a/support/c2/src/main.rs", "33d7c334d3c0bff5dc196a8c71bcf1a40669f12fed2a02121b1d436f22b4f86c"),
+                ("support/e1a/support/c2/src/model.rs", "c0b6c4b960faee618837548e291d0e242ac1f6b16c9b80217de6ee41077a329e"),
+                ("support/e1a/support/c2/assets/app.css", "99fb944ec5f5f01977384a6ddcab7d74b820dfe585203482300f43f529aefac4"),
+                ("support/e1a/support/c2/assets/client.js", "e152dd205fe7b91961747daf194ad4bbd0b030a476ef993480414ebeef386b41"),
+                ("support/e1a/support/c2/assets/index.html", "360023b35ee11d01a0c2180e2b916366c82502207830a5e62dccd9ccde68530b"),
+                ("support/e1a/support/servicedesk/Cargo.toml", "04f4b1902eb4a90704cd3f19cc875624d8d97c9ba24a93119e15328fc35565b6"),
+                ("support/e1a/support/servicedesk/src/http.rs", "c9f57736ddf9e26923c3bc16935c57f41f1ac1f5ebb71f717e2b9063be96a78d"),
+                ("support/e1a/support/servicedesk/src/lib.rs", "e76f90bd94d40ff968dc1a3bb35c2e2353e967ef421cb3fc78fb09e69f4b6e4f"),
+                ("support/e1a/support/servicedesk/src/main.rs", "b39c98da11fbf83ba77c6f2ae43ec5e3778d88b61752ccc8f7610663cbc58930"),
+                ("support/e1a/support/servicedesk/samples/index.html", "e3bc640a36994a6062dd28e7c39fda53fbac69196cf722a6b6f03361dfb4d610"),
+                ("support/e1a/Cargo.toml", "9d13f22b442ac6f230b070d96649059c102a5cc6bfc623727d4d5ba94b15d898"),
+                ("support/e1a/rust-toolchain.toml", "6b1cf8341d9a08d76c6deb1e9df90a0b208d0ef0d00ee05e0173e9cd4f0f425d"),
+                ("support/e1a/src/lib.rs", "ee1f390a4acb923d0fdf2969a23dfd1e94ea16bd1a23f6c121fe5c500a4953f4"),
+                ("support/e1a/LICENSE", "4cee53162acc2de60b774b57182c250bfd983160d5f5d58925564b904c7ccac4"),
+            ],
+            _ => &[],
+        }
+    }
+
     #[rustfmt::skip]
     pub fn steps(&self) -> &'static [&'static str] {
         match self.id {
@@ -60,6 +113,12 @@ impl BookCourse {
             "modern-d11a" => &["encode：有界帧编码", "decode：安全校验及借用", "count_loop：循环计数", "count_iter：迭代器计数", "综合：全部固定合同与文档测试"],
             "modern-e4" => &["classify：有界分类", "summarize：统计与失败边界", "e4_summarize：调用方内存", "综合：全部固定合同与文档测试"],
             "modern-e5" => &["features：Welford 窗口统计", "fit_scaler：训练集标准化", "train：批量逻辑回归", "evaluate：混淆矩阵", "综合：全部固定合同与文档测试"],
+            "modern-d10b" => &["join_samples：虚拟时间并发", "start_producer：有界通道", "run_bounded：限流及顺序", "ReceiverStream 与 merge_positive", "race_or_timeout 与取消", "blocking_work：阻塞池", "spawn_read：Send 异步 trait", "综合：全部固定合同与文档测试"],
+            "modern-d11b" => &["checked_read：安全读取", "初始化全部数组槽位", "综合：全部固定合同与文档测试"],
+            "modern-e1a" => &["认证：拒绝无效重复凭证", "权限：默认拒绝及 401/403", "TLS：拒绝错误证书与密钥", "握手：实际 TLS 与超时", "综合：全部固定合同与文档测试"],
+            "modern-e1b" => &["批量事务：业务与 audit", "关闭：冲突与幂等", "有界队列：满与关闭", "结构化记录：脱敏和容量", "综合：全部固定合同与文档测试"],
+            "modern-e2" => &["parse_samples：严格 CSV", "summarize：数据统计", "Model::apply：状态和失败边界", "src/gui.rs：真实控件产生 Action", "综合：全部固定合同与文档测试"],
+            "modern-e3" => &["History：定长缓冲（含 1b）", "Periodic：回绕与错过周期", "Hysteresis：滞环控制", "Controller：HAL 与故障锁存", "综合：全部固定合同与文档测试"],
             _ => STEPS,
         }
     }
@@ -163,7 +222,7 @@ impl BookCourse {
 
     pub fn protected(&self, path: &str) -> bool {
         if self.is_modern() {
-            return !matches!(path, "src/lib.rs" | "LEARNING_LOG.md");
+            return !self.source_path(path) && path != "LEARNING_LOG.md";
         }
         path.ends_with("Cargo.toml")
             || path == "Cargo.lock"
@@ -173,7 +232,7 @@ impl BookCourse {
 
     pub fn source_path(&self, path: &str) -> bool {
         if self.is_modern() {
-            return path == "src/lib.rs";
+            return path == "src/lib.rs" || (self.id == "modern-e2" && path == "src/gui.rs");
         }
         self.source_dirs
             .iter()
@@ -480,6 +539,35 @@ pub(super) const MODERN_COURSES: &[BookCourse] = &[
         ],
     },
     BookCourse {
+        id: "modern-d10b",
+        reference_dir: "modern-d10-tokio",
+        title: "D10-B · Tokio 与 Stream",
+        default_file: "src/lib.rs",
+        lesson_topic: "d10b",
+        function: "src/lib.rs",
+        concept: "真实 Tokio、Stream、取消、并发限制。",
+        prediction: "接收端关闭时生产者如何停止？",
+        experiment: "在离线个人工程完成七步，第四、五步各含子任务，再运行有限示例。",
+        reflection: "解释 Pending、Waker、drop JoinHandle 与 abort。",
+        source_dirs: &["src"],
+        run: Some(RunTarget { package: "", binary: "async_workbench", args: &[] }),
+        files: &[
+            EmbeddedFile { path: "Cargo.lock", content: include_str!("../../../../projects/modern-d10-tokio/learner/Cargo.lock") },
+            EmbeddedFile { path: "Cargo.toml", content: include_str!("../../../../projects/modern-d10-tokio/learner/Cargo.toml") },
+            EmbeddedFile { path: "rust-toolchain.toml", content: include_str!("../../../../projects/modern-d10-tokio/learner/rust-toolchain.toml") },
+            EmbeddedFile { path: "README.md", content: include_str!("../../../../projects/modern-d10-tokio/learner/README.md") },
+            EmbeddedFile { path: "LEARNING_LOG.md", content: include_str!("../../../../projects/modern-d10-tokio/learner/LEARNING_LOG.md") },
+            EmbeddedFile { path: "src/lib.rs", content: include_str!("../../../../projects/modern-d10-tokio/learner/src/lib.rs") },
+            EmbeddedFile { path: "tests/contracts.rs", content: include_str!("../../../../projects/modern-d10-tokio/learner/tests/contracts.rs") },
+            EmbeddedFile { path: "examples/async_workbench.rs", content: include_str!("../../../../projects/modern-d10-tokio/learner/examples/async_workbench.rs") },
+            EmbeddedFile { path: ".cargo/config.toml", content: r###"[source.crates-io]
+replace-with = "d10-vendor"
+[source.d10-vendor]
+directory = "vendor"
+"### },
+        ],
+    },
+    BookCourse {
         id: "modern-d11a",
         reference_dir: "modern-d11-quality",
         title: "D11-A · 工程质量",
@@ -504,6 +592,208 @@ pub(super) const MODERN_COURSES: &[BookCourse] = &[
             EmbeddedFile { path: "examples/frame.rs", content: include_str!("../../../../projects/modern-d11-quality/learner/examples/frame.rs") },
             EmbeddedFile { path: "examples/measure.rs", content: include_str!("../../../../projects/modern-d11-quality/learner/examples/measure.rs") },
             EmbeddedFile { path: "tests/properties.rs", content: include_str!("../../../../projects/modern-d11-quality/learner/tests/properties.rs") },
+        ],
+    },
+    BookCourse {
+        id: "modern-d11b",
+        reference_dir: "modern-d11-safety",
+        title: "D11-B · 安全接口",
+        default_file: "src/lib.rs",
+        lesson_topic: "d11b",
+        function: "src/lib.rs",
+        concept: "安全接口与初始化不变量。",
+        prediction: "越界或未初始化时安全接口如何处理？",
+        experiment: "完成两个 TODO；Miri、Fuzz、RustSec 继续按讲义独立操作。",
+        reflection: "普通测试无崩溃不证明 unsafe 正确。",
+        source_dirs: &["src"],
+        run: None,
+        files: &[
+            EmbeddedFile { path: "Cargo.lock", content: include_str!("../../../../projects/modern-d11-safety/learner/Cargo.lock") },
+            EmbeddedFile { path: "Cargo.toml", content: include_str!("../../../../projects/modern-d11-safety/learner/Cargo.toml") },
+            EmbeddedFile { path: "rust-toolchain.toml", content: include_str!("../../../../projects/modern-d11-safety/learner/rust-toolchain.toml") },
+            EmbeddedFile { path: "README.md", content: include_str!("../../../../projects/modern-d11-safety/learner/README.md") },
+            EmbeddedFile { path: "LEARNING_LOG.md", content: include_str!("../../../../projects/modern-d11-safety/learner/LEARNING_LOG.md") },
+            EmbeddedFile { path: "src/lib.rs", content: include_str!("../../../../projects/modern-d11-safety/learner/src/lib.rs") },
+            EmbeddedFile { path: "tests/contracts.rs", content: include_str!("../../../../projects/modern-d11-safety/learner/tests/contracts.rs") },
+        ],
+    },
+    BookCourse {
+        id: "modern-e1a",
+        reference_dir: "modern-e1-tls",
+        title: "E1-A · HTTPS 与授权",
+        default_file: "src/lib.rs",
+        lesson_topic: "e1a",
+        function: "src/lib.rs",
+        concept: "TLS、认证授权与本地 HTTPS。",
+        prediction: "缺失凭证和读者写入分别返回什么状态码？",
+        experiment: "完成四步并运行有限 HTTPS 演示；常驻服务按讲义另启。",
+        reflection: "区分 TLS 与授权，不使用真实凭证。",
+        source_dirs: &["src"],
+        run: Some(RunTarget { package: "", binary: "local_demo", args: &[] }),
+        files: &[
+            EmbeddedFile { path: "Cargo.lock", content: include_str!("../../../../projects/modern-e1-tls/learner/Cargo.lock") },
+            EmbeddedFile { path: "Cargo.toml", content: r###"[package]
+name = "e1-secure-lab"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.100"
+publish = false
+license = "MIT"
+
+[workspace]
+resolver = "3"
+exclude = ["support/c2", "support/servicedesk"]
+
+[dependencies]
+servicedesk-c2 = { path = "support/c2" }
+axum = { version = "=0.8.8", default-features = false, features = ["http1", "tokio", "json"] }
+tokio = { version = "=1.53.3", features = ["rt-multi-thread", "macros", "sync", "net", "signal", "time", "io-util"] }
+rustls = { version = "=0.23.46", default-features = false, features = ["ring", "std"] }
+tokio-rustls = { version = "=0.26.6", default-features = false, features = ["ring"] }
+subtle = "=2.6.1"
+
+[dev-dependencies]
+rcgen = { version = "=0.14.10", default-features = false, features = ["ring", "pem"] }
+serde_json = "=1.0.145"
+"### },
+            EmbeddedFile { path: "rust-toolchain.toml", content: include_str!("../../../../projects/modern-e1-tls/learner/rust-toolchain.toml") },
+            EmbeddedFile { path: "README.md", content: include_str!("../../../../projects/modern-e1-tls/learner/README.md") },
+            EmbeddedFile { path: "LEARNING_LOG.md", content: include_str!("../../../../projects/modern-e1-tls/learner/LEARNING_LOG.md") },
+            EmbeddedFile { path: "src/lib.rs", content: include_str!("../../../../projects/modern-e1-tls/learner/src/lib.rs") },
+            EmbeddedFile { path: "tests/contracts.rs", content: include_str!("../../../../projects/modern-e1-tls/learner/tests/contracts.rs") },
+            EmbeddedFile { path: "examples/local_cert.rs", content: include_str!("../../../../projects/modern-e1-tls/learner/examples/local_cert.rs") },
+            EmbeddedFile { path: "examples/local_demo.rs", content: include_str!("../../../../projects/modern-e1-tls/learner/examples/local_demo.rs") },
+            EmbeddedFile { path: "src/main.rs", content: include_str!("../../../../projects/modern-e1-tls/learner/src/main.rs") },
+            EmbeddedFile { path: "tests/support/mod.rs", content: include_str!("../../../../projects/modern-e1-tls/learner/tests/support/mod.rs") },
+            EmbeddedFile { path: ".cargo/config.toml", content: r###"[source.crates-io]
+replace-with = "e1-vendor"
+[source.e1-vendor]
+directory = "vendor"
+"### },
+            EmbeddedFile { path: "LICENSE", content: include_str!("../../../../LICENSE") },
+        ],
+    },
+    BookCourse {
+        id: "modern-e1b",
+        reference_dir: "modern-e1-sqlite",
+        title: "E1-B · SQLite 与观测",
+        default_file: "src/lib.rs",
+        lesson_topic: "e1b",
+        function: "src/lib.rs",
+        concept: "SQLite 事务、并发、有界队列和脱敏。",
+        prediction: "audit 失败时业务是否回滚？",
+        experiment: "运行有限演示并重开实际数据库。",
+        reflection: "区分事务、审计与访问日志。",
+        source_dirs: &["src"],
+        run: Some(RunTarget { package: "", binary: "local_demo", args: &[] }),
+        files: &[
+            EmbeddedFile { path: "Cargo.lock", content: include_str!("../../../../projects/modern-e1-sqlite/learner/Cargo.lock") },
+            EmbeddedFile { path: "Cargo.toml", content: r###"[package]
+name = "e1-sqlite-lab"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.100"
+publish = false
+license = "MIT"
+
+[workspace]
+resolver = "3"
+exclude = ["support/e1a"]
+
+[dependencies]
+e1-secure-lab = { path = "support/e1a" }
+servicedesk = { path = "support/e1a/support/servicedesk" }
+axum = { version = "=0.8.8", default-features = false, features = ["http1", "tokio", "json"] }
+tokio = { version = "=1.53.3", features = ["rt-multi-thread", "macros", "sync", "net", "signal", "time", "io-util"] }
+rusqlite = { version = "=0.43.0", default-features = false, features = ["bundled"] }
+serde = { version = "=1.0.228", features = ["derive"] }
+serde_json = "=1.0.145"
+
+[dev-dependencies]
+rustls = { version = "=0.23.46", default-features = false, features = ["ring", "std"] }
+tokio-rustls = { version = "=0.26.6", default-features = false, features = ["ring"] }
+rcgen = { version = "=0.14.10", default-features = false, features = ["ring", "pem"] }
+"### },
+            EmbeddedFile { path: "rust-toolchain.toml", content: include_str!("../../../../projects/modern-e1-sqlite/learner/rust-toolchain.toml") },
+            EmbeddedFile { path: "README.md", content: include_str!("../../../../projects/modern-e1-sqlite/learner/README.md") },
+            EmbeddedFile { path: "LEARNING_LOG.md", content: include_str!("../../../../projects/modern-e1-sqlite/learner/LEARNING_LOG.md") },
+            EmbeddedFile { path: "src/lib.rs", content: include_str!("../../../../projects/modern-e1-sqlite/learner/src/lib.rs") },
+            EmbeddedFile { path: "tests/contracts.rs", content: include_str!("../../../../projects/modern-e1-sqlite/learner/tests/contracts.rs") },
+            EmbeddedFile { path: "examples/local_cert.rs", content: include_str!("../../../../projects/modern-e1-sqlite/learner/examples/local_cert.rs") },
+            EmbeddedFile { path: "examples/local_demo.rs", content: include_str!("../../../../projects/modern-e1-sqlite/learner/examples/local_demo.rs") },
+            EmbeddedFile { path: "src/main.rs", content: include_str!("../../../../projects/modern-e1-sqlite/learner/src/main.rs") },
+            EmbeddedFile { path: "tests/support/mod.rs", content: include_str!("../../../../projects/modern-e1-sqlite/learner/tests/support/mod.rs") },
+            EmbeddedFile { path: ".cargo/config.toml", content: r###"[source.crates-io]
+replace-with = "e1b-vendor"
+[source.e1b-vendor]
+directory = "vendor"
+"### },
+            EmbeddedFile { path: "LICENSE", content: include_str!("../../../../LICENSE") },
+        ],
+    },
+    BookCourse {
+        id: "modern-e2",
+        reference_dir: "modern-e2-gui",
+        title: "E2 · SignalDesk 原生 GUI",
+        default_file: "src/lib.rs",
+        lesson_topic: "e2",
+        function: "src/lib.rs",
+        concept: "原生 eframe/egui、显式状态与数据曲线。",
+        prediction: "筛选是删除还是只显示告警？",
+        experiment: "网页编辑 lib.rs/gui.rs，启动原生窗口按讲义在终端执行。",
+        reflection: "真实控件测试不等同真实桌面体验。",
+        source_dirs: &["src"],
+        run: None,
+        files: &[
+            EmbeddedFile { path: "Cargo.lock", content: include_str!("../../../../projects/modern-e2-gui/learner/Cargo.lock") },
+            EmbeddedFile { path: "Cargo.toml", content: include_str!("../../../../projects/modern-e2-gui/learner/Cargo.toml") },
+            EmbeddedFile { path: "rust-toolchain.toml", content: include_str!("../../../../projects/modern-e2-gui/learner/rust-toolchain.toml") },
+            EmbeddedFile { path: "README.md", content: include_str!("../../../../projects/modern-e2-gui/learner/README.md") },
+            EmbeddedFile { path: "LEARNING_LOG.md", content: include_str!("../../../../projects/modern-e2-gui/learner/LEARNING_LOG.md") },
+            EmbeddedFile { path: "src/lib.rs", content: include_str!("../../../../projects/modern-e2-gui/learner/src/lib.rs") },
+            EmbeddedFile { path: "tests/contracts.rs", content: include_str!("../../../../projects/modern-e2-gui/learner/tests/contracts.rs") },
+            EmbeddedFile { path: "src/gui.rs", content: include_str!("../../../../projects/modern-e2-gui/learner/src/gui.rs") },
+            EmbeddedFile { path: "src/main.rs", content: include_str!("../../../../projects/modern-e2-gui/learner/src/main.rs") },
+            EmbeddedFile { path: ".cargo/config.toml", content: r###"[source.crates-io]
+replace-with = "e2-vendor"
+[source.e2-vendor]
+directory = "vendor"
+"### },
+            EmbeddedFile { path: "LICENSE", content: include_str!("../../../../LICENSE") },
+        ],
+    },
+    BookCourse {
+        id: "modern-e3",
+        reference_dir: "modern-e3-embedded",
+        title: "E3 · Embedded Monitor",
+        default_file: "src/lib.rs",
+        lesson_topic: "e3",
+        function: "src/lib.rs",
+        concept: "no_std、固定容量、回绕周期与 HAL。",
+        prediction: "错过周期如何保留相位？",
+        experiment: "网页验证主机合同和 host_demo；ARM/QEMU 按讲义另验。",
+        reflection: "主机模拟、模拟 CPU 与物理板必须分开。",
+        source_dirs: &["src"],
+        run: Some(RunTarget { package: "", binary: "host_demo", args: &[] }),
+        files: &[
+            EmbeddedFile { path: "Cargo.lock", content: include_str!("../../../../projects/modern-e3-embedded/learner/Cargo.lock") },
+            EmbeddedFile { path: "Cargo.toml", content: include_str!("../../../../projects/modern-e3-embedded/learner/Cargo.toml") },
+            EmbeddedFile { path: "rust-toolchain.toml", content: include_str!("../../../../projects/modern-e3-embedded/learner/rust-toolchain.toml") },
+            EmbeddedFile { path: "README.md", content: include_str!("../../../../projects/modern-e3-embedded/learner/README.md") },
+            EmbeddedFile { path: "LEARNING_LOG.md", content: include_str!("../../../../projects/modern-e3-embedded/learner/LEARNING_LOG.md") },
+            EmbeddedFile { path: "src/lib.rs", content: include_str!("../../../../projects/modern-e3-embedded/learner/src/lib.rs") },
+            EmbeddedFile { path: "tests/contracts.rs", content: include_str!("../../../../projects/modern-e3-embedded/learner/tests/contracts.rs") },
+            EmbeddedFile { path: "build.rs", content: include_str!("../../../../projects/modern-e3-embedded/learner/build.rs") },
+            EmbeddedFile { path: "examples/host_demo.rs", content: include_str!("../../../../projects/modern-e3-embedded/learner/examples/host_demo.rs") },
+            EmbeddedFile { path: "memory.x", content: include_str!("../../../../projects/modern-e3-embedded/learner/memory.x") },
+            EmbeddedFile { path: "src/bin/firmware.rs", content: include_str!("../../../../projects/modern-e3-embedded/learner/src/bin/firmware.rs") },
+            EmbeddedFile { path: "src/sim.rs", content: include_str!("../../../../projects/modern-e3-embedded/learner/src/sim.rs") },
+            EmbeddedFile { path: ".cargo/config.toml", content: r###"[source.crates-io]
+replace-with = "e3-vendor"
+[source.e3-vendor]
+directory = "vendor"
+"### },
+            EmbeddedFile { path: "LICENSE", content: include_str!("../../../../LICENSE") },
         ],
     },
     BookCourse {
