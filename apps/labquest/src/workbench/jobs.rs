@@ -95,7 +95,43 @@ fn commands(
 ) -> Result<Vec<Command>, ApiError> {
     let mut plan = Vec::new();
     if let Some(book) = book_projects::get(course_id) {
-        if action == "check" {
+        if book.is_modern() {
+            // Explicit rustup override; classic root MSRV is unchanged.
+            // Frozen mode avoids implicit registry/network resolution.
+            let mut add = |arguments: &[&str], trailing: &[String]| {
+                let mut command = Command::new("cargo");
+                command
+                    .arg("+1.100.0")
+                    .args(arguments)
+                    .arg("--manifest-path")
+                    .arg(root.join("Cargo.toml"))
+                    .arg("--target-dir")
+                    .arg(root.join("target"));
+                crate::process::learner_cargo(&mut command);
+                if !trailing.is_empty() {
+                    command.arg("--").args(trailing);
+                }
+                plan.push(command);
+            };
+            if action == "check" {
+                if step == book.steps().len() {
+                    for target in ["--all-targets", "--doc"] {
+                        add(&["test", "--frozen", target], &[]);
+                    }
+                } else {
+                    let filter = format!("step{step}_");
+                    add(&["test", "--frozen", "--test", "contracts", &filter], &[]);
+                }
+            } else {
+                let target = book.run.as_ref().ok_or_else(|| {
+                    ApiError::new(400, "本课外部 C/WASM 客户端需按讲义单独运行")
+                })?;
+                add(
+                    &["run", "--frozen", "--release", "--example", target.binary],
+                    args,
+                );
+            }
+        } else if action == "check" {
             // --all-targets intentionally excludes rustdoc's examples; run both
             // commands and stop on the first failure instead of hiding it.
             for target in ["--all-targets", "--doc"] {
@@ -252,7 +288,9 @@ pub(super) fn start(
         output: format!(
             "{}\n首次编译可能需要稍等，完成后在这里显示真实输出。",
             if action == "check" {
-                if book_projects::get(course_id).is_some() {
+                if book_projects::get(course_id).is_some_and(|book| book.is_modern()) {
+                    "正在用 Rust 1.100.0 检查本步真实合同；最后一步执行全部目标和文档测试…"
+                } else if book_projects::get(course_id).is_some() {
                     "正在检查当前 Book 实验副本的单测与文档测试；通过不自动完成学习步骤…"
                 } else {
                     "正在检查当前步骤…"

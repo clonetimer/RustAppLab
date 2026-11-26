@@ -37,7 +37,7 @@ fn course_ids() -> impl Iterator<Item = &'static str> {
                 .filter(|c| c.step == 1)
                 .map(|c| c.id),
         )
-        .chain(book_projects::COURSES.iter().map(|c| c.id))
+        .chain(book_projects::all().map(|c| c.id))
 }
 
 struct Course {
@@ -51,7 +51,7 @@ fn course(id: &str) -> Result<Course, ApiError> {
     if let Some(book) = book_projects::get(id) {
         return Ok(Course {
             title: book.title,
-            steps: book_projects::STEPS,
+            steps: book.steps(),
             default_file: book.default_file,
             page: "",
         });
@@ -558,7 +558,9 @@ impl Workspace {
     fn project_json(path: &Path, id: &str) -> Result<String, ApiError> {
         identify(path, id)?;
         let snap = Snapshot::read(path, id)?;
-        let (text, state) = if book_projects::get(id).is_some() {
+        let (text, state) = if book_projects::get(id).is_some_and(|book| book.is_modern()) {
+            ("现代课程：先安装固定 Rust 1.100.0。只编辑自己的 src/lib.rs；逐步检查，最后综合验证。学习记录不自动评分。".to_string(), None)
+        } else if book_projects::get(id).is_some() {
             ("Book 实验工程：按预测、修改、检查、解释、迁移完成学习记录。检查执行当前副本的真实单测和文档测试；通过不代表学习步骤已完成。".to_string(), None)
         } else {
             learning::navigation(path).map_err(invalid)?
@@ -771,7 +773,7 @@ mod tests {
             assert!(ws.lesson_html(id).unwrap().contains("</html>"));
             assert!(ws.course_json(id, 1).unwrap().contains("\"project\":null"));
         }
-        assert_eq!(course_ids().count(), 13 + book_projects::COURSES.len());
+        assert_eq!(course_ids().count(), 13 + book_projects::all().count());
         let unitlab = ws.course_json("unitlab", 1).unwrap();
         assert!(unitlab.contains(r#""reading":{"topics":["#));
         assert!(unitlab.contains("rust.bootcss.com/ch06-02-match.html"));

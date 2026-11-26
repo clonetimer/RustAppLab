@@ -20,7 +20,7 @@ const STYLE: &str = include_str!("workbench/ui/app.css");
 const SCRIPT: &str = include_str!("workbench/ui/app.js");
 const KNOWLEDGE_SCRIPT: &str = include_str!("workbench/ui/knowledge.js");
 const EXPERIMENT_SCRIPT: &str = include_str!("workbench/ui/experiments.js");
-const HELP:&str="Rust AppLab 网页学习工作台\n\n用法：labquest workbench [--workspace 现有学习目录] [--port 0] [--open]\n默认使用当前目录，端口 0 自动选择空闲端口；仅监听 127.0.0.1。\n在同一网页阅读任务卡、编辑自己的代码、运行真实检查和查看结果。\nFirstCard、12 款 Studio 与 D1–D6 七个专题已接入；Cargo 与课程原有系统依赖仍需安装。\n--open 打开默认浏览器；关闭本窗口或按 Ctrl+C 停止本地服务。\n";
+const HELP:&str="Rust AppLab 网页学习工作台\n\n用法：labquest workbench [--workspace 现有学习目录] [--port 0] [--open]\n默认使用当前目录，端口 0 自动选择空闲端口；仅监听 127.0.0.1。\n在同一网页阅读任务卡、编辑自己的代码、运行真实检查和查看结果。\nFirstCard、12 款 Studio、D1–D6 七个专题及七门现代 host 课程已接入；现代课另需安装 Rust 1.100.0，其他专题按知识导航独立操作。\n--open 打开默认浏览器；关闭本窗口或按 Ctrl+C 停止本地服务。\n";
 
 #[derive(Debug)]
 pub(super) struct ApiError {
