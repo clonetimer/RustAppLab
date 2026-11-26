@@ -1,0 +1,35 @@
+name: Modern Rust E5 scientific computation and ML
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+jobs:
+  e5:
+    name: E5 real CPU training and held-out evaluation / ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 15
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: dtolnay/rust-toolchain@1.100.0
+      - name: Verify delivery isolation
+        run: python -m unittest discover -s scripts/tests -p test_modern_e5_delivery.py -v
+      - name: Real Rust contracts, CPU training, holdout, benchmark and relocated learner
+        run: python scripts/modern_e5_check.py --output e5-evidence
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: modern-e5-${{ matrix.os }}
+          path: e5-evidence/
