@@ -15,12 +15,13 @@ from release_check import ROOT
 from workbench_process import running_workbench
 
 BASELINE = "a3659789c1b18e8009eec94c1ba6554e48108635"
+FIRST_MINIMAL = "8bb350c215d8153a928fbe167157ba8c6d77a93f"
 UI = "apps/labquest/src/workbench/ui"
 SIZES = ((1440, 900), (1366, 768), (390, 844), (320, 844))
 
 
-def git_bytes(path):
-    return subprocess.check_output(["git", "show", f"{BASELINE}:{UI}/{path}"], cwd=ROOT)
+def git_bytes(revision, path):
+    return subprocess.check_output(["git", "show", f"{revision}:{UI}/{path}"], cwd=ROOT)
 
 
 def main():
@@ -30,14 +31,18 @@ def main():
     out = args.output.resolve()
     out.mkdir(parents=True, exist_ok=False)
     report = {"status": "FAIL", "baseline": BASELINE, "commit": os.environ.get("GITHUB_SHA"),
-              "comparison": "Same live backend, course and project; baseline HTML/CSS served from frozen Git revision",
+              "first_minimal": FIRST_MINIMAL,
+              "comparison": "Same live backend, course and project; each historical HTML/CSS/JS from its frozen Git revision",
               "screenshots": {}, "layout": {}, "human_learning": "not evaluated"}
     exe = ROOT / "target/release" / ("labquest.exe" if os.name == "nt" else "labquest")
     try:
         from playwright.sync_api import expect, sync_playwright
-        baseline_css, baseline_html = git_bytes("app.css"), git_bytes("index.html")
-        report["baseline_css_sha256"] = hashlib.sha256(baseline_css).hexdigest()
-        report["baseline_html_sha256"] = hashlib.sha256(baseline_html).hexdigest()
+        historical = {side: {name: git_bytes(revision, name)
+                             for name in ("app.css", "index.html", "app.js")}
+                      for side, revision in (("before", BASELINE), ("v1", FIRST_MINIMAL))}
+        report["historical_sha256"] = {side: {name: hashlib.sha256(data).hexdigest()
+                                              for name, data in assets.items()}
+                                       for side, assets in historical.items()}
         with tempfile.TemporaryDirectory(prefix="minimal-ui-") as temp, sync_playwright() as pw:
             tmp = Path(temp)
             workspace = tmp / "学习工作区"
@@ -73,6 +78,9 @@ def main():
                                 step_height: strip.clientHeight,
                                 step_scroll_width: strip.scrollWidth,
                                 step_client_width: strip.clientWidth,
+                                visible_objective_rows: [...document.querySelectorAll('.objectives > div')]
+                                    .filter(row => getComputedStyle(row).display !== 'none').length,
+                                create_visible: getComputedStyle(document.querySelector('#create-button')).display !== 'none',
                                 editor_width: Math.round(editor.getBoundingClientRect().width),
                                 editor_height: Math.round(editor.getBoundingClientRect().height),
                                 lesson_width: Math.round(lesson.getBoundingClientRect().width),
@@ -80,15 +88,18 @@ def main():
                                 body_gradient: getComputedStyle(document.body).backgroundImage };
                         }""")
 
-                    for side in ("before", "after"):
+                    for side in ("before", "v1", "after"):
                         page = browser.new_page(viewport={"width": 1440, "height": 900}, color_scheme="light")
                         errors = []
                         page.on("pageerror", lambda error: errors.append(str(error)))
-                        if side == "before":
+                        if side in historical:
+                            assets = historical[side]
                             page.route(base + "/", lambda route: route.fulfill(
-                                body=baseline_html, content_type="text/html; charset=utf-8"))
+                                body=assets["index.html"], content_type="text/html; charset=utf-8"))
                             page.route(base + "/assets/app.css", lambda route: route.fulfill(
-                                body=baseline_css, content_type="text/css; charset=utf-8"))
+                                body=assets["app.css"], content_type="text/css; charset=utf-8"))
+                            page.route(base + "/assets/app.js", lambda route: route.fulfill(
+                                body=assets["app.js"], content_type="application/javascript; charset=utf-8"))
                         page.goto(base + "/")
                         expect(page.locator("#course-list [data-course]")).to_have_count(33)
                         for course in ("firstcard", "modern-d9b"):
@@ -100,6 +111,16 @@ def main():
                                 page.set_viewport_size({"width": width, "height": height})
                                 page.locator(".masthead").scroll_into_view_if_needed()
                                 key = f"{side}-{course}-{width}x{height}"
+                                if side == "after":
+                                    active_course = page.locator(f'#course-list [data-course="{course}"]')
+                                    expect(active_course).to_be_in_viewport(ratio=.8)
+                                    expect(page.locator("#create-button")).to_be_hidden()
+                                    if course == "modern-d9b":
+                                        expect(page.locator('#step-list [data-step="1"]')).to_have_attribute(
+                                            "aria-label", "第 1 步：inspect_readings：观察 Result")
+                                        expect(page.locator("#lesson-goal")).to_be_hidden()
+                                        expect(page.locator("#lesson-function")).to_be_hidden()
+                                        expect(page.locator("#lesson-concept")).to_be_visible()
                                 metrics = measure(page)
                                 report["layout"][key] = metrics
                                 shot(page, key)
@@ -122,6 +143,12 @@ def main():
                             expect(page.locator('#step-list [data-step="16"]')).to_have_attribute("aria-current", "step")
                             expect(page.locator('#step-list [data-step="16"]')).to_be_in_viewport()
                             shot(page, "after-long-course-step16")
+                            for width, height in SIZES[2:]:
+                                page.set_viewport_size({"width": width, "height": height})
+                                expect(page.locator('#course-list [data-course="modern-d9b"]')).to_be_in_viewport(ratio=.8)
+                                expect(page.locator('#step-list [data-step="16"]')).to_be_in_viewport(ratio=.8)
+                                shot(page, f"after-step16-{width}x{height}")
+                            page.set_viewport_size({"width": 1440, "height": 900})
                             page.emulate_media(color_scheme="dark")
                             expect(page.locator("#source-editor")).to_be_visible()
                             metrics = measure(page)
@@ -136,6 +163,11 @@ def main():
                         after = report["layout"]["after-" + suffix]
                         assert before["step_rows"] > after["step_rows"], (before, after)
                         assert after["editor_height"] > before["editor_height"], (before, after)
+                        v1 = report["layout"]["v1-" + suffix]
+                        assert after["step_scroll_width"] <= after["step_client_width"], after
+                        assert after["step_scroll_width"] < v1["step_scroll_width"], (v1, after)
+                        assert after["visible_objective_rows"] == 1 < v1["visible_objective_rows"]
+                        assert not after["create_visible"] and v1["create_visible"]
                 finally:
                     browser.close()
         report["status"] = "PASS"

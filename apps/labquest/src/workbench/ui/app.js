@@ -154,6 +154,40 @@ function buildCourses() {
   ui.courseList.replaceChildren(...controls);
 }
 
+// Scroll only within the navigation container. Never move the document/editor
+// to reveal an offscreen course or step.
+function revealInList(list, selector) {
+  const item = list?.querySelector?.(selector);
+  if (!item || !list.getBoundingClientRect || !item.getBoundingClientRect) return;
+  const view = list.getBoundingClientRect();
+  const rect = item.getBoundingClientRect();
+  if (list.scrollWidth > list.clientWidth) {
+    if (rect.left < view.left) list.scrollLeft -= view.left - rect.left + 2;
+    else if (rect.right > view.right) list.scrollLeft += rect.right - view.right + 2;
+  }
+  if (list.scrollHeight > list.clientHeight) {
+    if (rect.top < view.top) list.scrollTop -= view.top - rect.top + 2;
+    else if (rect.bottom > view.bottom) list.scrollTop += rect.bottom - view.bottom + 2;
+  }
+}
+
+function revealCurrentNavigation() {
+  const card = state.card;
+  if (!card) return;
+  revealInList(ui.courseList, `[data-course="${card.id}"]`);
+  revealInList(ui.stepList, `[data-step="${card.step}"]`);
+}
+
+function repeatedObjectives(card) {
+  if (!card.id.startsWith('modern-')) return { goal: false, target: false };
+  // Remove only exact repetitions. Distinct learning content is never hidden.
+  const normalize = value => String(value ?? '').trim();
+  const title = normalize(card.step_title);
+  const goal = normalize(card.goal);
+  const target = normalize(card.function);
+  return { goal: goal === title, target: target === title || target === goal };
+}
+
 function renderCard(previous) {
   const { card } = state;
   const course = state.catalog.courses.find(item => item.id === card.id);
@@ -166,15 +200,20 @@ function renderCard(previous) {
   ui.lessonLoading.hidden = true;
   ui.lessonContent.hidden = false;
   if (previous?.id !== card.id) {
+    ui.stepList.dataset.compact = String(course.steps.length >= 7);
     ui.stepList.replaceChildren(...course.steps.map((title, index) => {
-      const control = button(title, 'step', index + 1);
+      const control = button('', 'step', index + 1);
       control.title = title;
+      control.setAttribute('aria-label', `第 ${index + 1} 步：${title}`);
       control.disabled = Boolean(state.busy);
       const ordinal = document.createElement('span');
       ordinal.className = 'step-number';
       ordinal.textContent = index + 1;
       ordinal.setAttribute('aria-hidden', 'true');
-      control.prepend(ordinal);
+      const label = document.createElement('span');
+      label.className = 'step-label';
+      label.textContent = title;
+      control.append(ordinal, label);
       return control;
     }));
   }
@@ -183,6 +222,9 @@ function renderCard(previous) {
     text(ui.goal, card.goal);
     text(ui.target, card.function);
     text(ui.concept, card.concept);
+    const duplicates = repeatedObjectives(card);
+    if (ui.goal.parentElement) ui.goal.parentElement.hidden = duplicates.goal;
+    if (ui.target.parentElement) ui.target.parentElement.hidden = duplicates.target;
     renderReading(card.reading);
     text(ui.prediction, card.prediction);
     text(ui.experiment, card.experiment);
@@ -197,16 +239,7 @@ function renderCard(previous) {
       details.append(summary, description);
       return details;
     }));
-    // Keep a long, horizontally scrollable step strip on the current step.
-    // Adjust only the strip, never scroll the learner's whole page.
-    const strip = ui.stepList;
-    const active = strip.querySelector?.(`[data-step="${card.step}"]`);
-    if (active && strip.scrollWidth > strip.clientWidth) {
-      const view = strip.getBoundingClientRect();
-      const item = active.getBoundingClientRect();
-      if (item.left < view.left) strip.scrollLeft -= view.left - item.left + 2;
-      else if (item.right > view.right) strip.scrollLeft += item.right - view.right + 2;
-    }
+    revealCurrentNavigation();
     ui.lessonContent.scrollTop = 0;
     ui.runArgs.value = card.run_args.join('\n');
     ui.runSettings.open = false;
@@ -354,7 +387,7 @@ function renderControls() {
 
   ui.projectPath.disabled = locked || !card;
   ui.openProject.disabled = locked || !card;
-  ui.create.hidden = Boolean(card?.bundle);
+  ui.create.hidden = Boolean(card?.bundle || project);
   ui.create.disabled = locked || !card || project || Boolean(card?.bundle);
   ui.lessonOpen.disabled = !card;
   ui.fileSelect.disabled = locked || !project;
@@ -823,6 +856,7 @@ function initialize() {
       event.returnValue = '';
     }
   });
+  window.addEventListener('resize', revealCurrentNavigation);
   window.addEventListener('focus', () => { void recheckOnFocus(); });
   document.addEventListener('visibilitychange', () => {
     if (document.visibilityState === 'visible') void recheckOnFocus();
