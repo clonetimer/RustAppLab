@@ -68,13 +68,10 @@ def resolve(e, scratch, report):
     require(digest(E1A / "reference/Cargo.lock") == digest(E1A / "learner/Cargo.lock"),
             "E1-A prerequisite locks differ")
     e.env["CARGO_NET_OFFLINE"] = "false"
-    if (LAB / "reference/Cargo.lock").is_file():
-        require(digest(LAB / "reference/Cargo.lock") == digest(LAB / "learner/Cargo.lock"), "E1-B locks differ")
-        shutil.copyfile(LAB / "reference/Cargo.lock", lock)
-        e.execute("fetch-frozen-lock", CARGO + ["fetch", "--locked"], work, timeout=900)
-    else:
-        shutil.copyfile(E1A / "reference/Cargo.lock", lock)
-        e.execute("resolve-from-e1a-lock", CARGO + ["fetch"], work, timeout=900)
+    require(digest(LAB / "reference/Cargo.lock") == digest(LAB / "learner/Cargo.lock"), "E1-B locks differ")
+    shutil.copyfile(LAB / "reference/Cargo.lock", lock)
+    e.execute("fetch-frozen-lock", CARGO + ["fetch", "--locked"], work, timeout=900)
+    require(digest(lock) == digest(LAB / "reference/Cargo.lock"), "committed lock modified")
     count = verify_lock(lock)
     saved = e.output / "Cargo.lock"
     shutil.copyfile(lock, saved)
@@ -128,9 +125,8 @@ def replay(e, scratch, report, lockfile):
     lockfile = lockfile.resolve()
     expected_hash = lockfile.with_suffix(".lock.sha256").read_text(encoding="utf-8").split()[0]
     require(digest(lockfile) == expected_hash, "resolved lock hash mismatch")
-    if (LAB / "reference/Cargo.lock").is_file():
-        require(expected_hash == digest(LAB / "reference/Cargo.lock") == digest(LAB / "learner/Cargo.lock"),
-                "artifact differs from committed lock")
+    require(expected_hash == digest(LAB / "reference/Cargo.lock") == digest(LAB / "learner/Cargo.lock"),
+            "artifact differs from committed lock")
     count = verify_lock(lockfile)
     reference, learner = scratch / "reference", scratch / "learner-template"
     stage("reference", reference)
@@ -164,6 +160,11 @@ def replay(e, scratch, report, lockfile):
                 out, _, _ = e.execute("reference-" + mode, CARGO + ["test", "--frozen", "--all-targets"] + args,
                                        work, timeout=1200)
                 require("5 passed; 0 failed; 0 ignored" in out, "missing five actual contracts")
+            for attempt in range(1, 4):
+                out, _, _ = e.execute(f"reference-release-concurrency-{attempt}",
+                                       CARGO + ["test", "--frozen", "--release", "--test", "contracts", "step5_"],
+                                       work, timeout=300)
+                require("1 passed; 0 failed; 0 ignored" in out, "repeated concurrent HTTPS contract failed")
         else:
             e.execute("learner-compiles", CARGO + ["check", "--frozen", "--all-targets"], work, timeout=1200)
             for number in range(1,5):

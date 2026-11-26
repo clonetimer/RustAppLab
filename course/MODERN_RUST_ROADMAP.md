@@ -82,3 +82,5 @@ E1-A Run 45654557009 实际 Cargo resolve/RustSec 通过：101 个 registry 包�
 ## 开发经验（E1-B）
 
 E1-A #24 冻结首轮真实审计锁并修复未初始化的 C2 journal；不删原合同。此前 main 0e71b443 Run 45653594034 Windows launcher debug-tests 再次出现既有 StoreDesk 第三关 8 秒超时（artifact 15042940385）；保留独立风险，不放宽时限或认定新课为根因。E1-B 复用 E1-A guard/TLS（提取不变策略的 protect_router 入口）及 servicedesk::apply 域规则，新增 Rusqlite 0.43.0 bundled SQLite、单阻塞 actor、有界 try_send、真实业务/audit 原子事务、脱敏有界 JSON 访问事件。四个独立 TODO、五个合同，真实 SQL trigger 注入 audit 失败，验证业务回滚；HTTPS 并发与重开持久化、不合法权限不写库。真实 Cargo 从 E1-A 锁解析新图、固定库审计、两平台同锁及空缓存搬移独立学员包；须冻结成功产物后才能交付。仅 E1-B 专用包提供前置答案；全局 learner-kit 不含答案。非生产认证、未实现整体连接限流/幂等/遥测后端、真人与网页未验；不声称关闭了所有 E1 生产场景。E1-B 分支在 #24 之上，不取消其重验。
+
+E1-A #24 九套同提交 CI PASS，已合并 main 5ec8504；#25 原基线 tree 与新 main 相同，转向 main。E1-B 首轮 Run 45656674759 真实锁/审计与 Linux 全部通过，Windows Debug 通过、Release 4/5，step5 的 12 并发中客户端 8 秒超时（artifact 15042239292），不能推断为 DB 根因。冻结首轮原始锁 artifact 15043411603，108 registry 包、SHA-256 20adcb21ee432c82a590fd0da3cbec857adbe572bdad2471698c8e0b07f140db，真实审计 0 vulnerabilities/unsound。测试客户端按完整 HTTP 消息而非必须连接关闭判断，增加连接/握手/发送/头/体阶段诊断，共享原 8 秒绝对期限，保持所有业务断言及并发数，Release 额外重复三次。若仍失败按阶段日志定位，未声称已修复。旧 Windows StoreDesk 风险仍独立。

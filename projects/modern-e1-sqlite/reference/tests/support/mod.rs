@@ -33,21 +33,76 @@ pub fn connector(trust: &[u8]) -> TlsConnector {
     TlsConnector::from(Arc::new(config))
 }
 
+// Use one absolute deadline for every phase. Never include request text or credentials in errors.
+async fn phase<T>(deadline: tokio::time::Instant, label: &'static str,
+                  future: impl std::future::Future<Output = io::Result<T>>) -> io::Result<T> {
+    match tokio::time::timeout_at(deadline, future).await {
+        Ok(Ok(value)) => Ok(value),
+        Ok(Err(error)) => Err(io::Error::new(error.kind(), format!("{label}: {error}"))),
+        Err(_) => Err(io::Error::new(io::ErrorKind::TimedOut, format!("{label}: deadline exceeded"))),
+    }
+}
+
+const MAX_RESPONSE: usize = 1024 * 1024;
+
+/// Recognize only the fixture's HTTP/1.1 Content-Length or connection-close
+/// framing. Reject ambiguous lengths and unsupported transfer encodings.
+fn response_extent(bytes: &[u8]) -> io::Result<Option<(usize, Option<usize>)>> {
+    let Some(header_end) = bytes.windows(4).position(|part| part == b"\r\n\r\n")
+        .map(|index| index + 4) else { return Ok(None); };
+    let header = std::str::from_utf8(&bytes[..header_end])
+        .map_err(|_| io::Error::other("invalid response header"))?;
+    let mut length = None;
+    for line in header.split("\r\n").skip(1).filter(|s| !s.is_empty()) {
+        let (name, value) = line.split_once(':').ok_or_else(|| io::Error::other("malformed response header"))?;
+        if name.eq_ignore_ascii_case("transfer-encoding") {
+            return Err(io::Error::other("unsupported response transfer encoding in fixture"));
+        }
+        if name.eq_ignore_ascii_case("content-length") {
+            if length.is_some() { return Err(io::Error::other("duplicate content-length")); }
+            let size = value.trim().parse::<usize>().map_err(|_| io::Error::other("invalid content-length"))?;
+            let end = header_end.checked_add(size).filter(|end| *end <= MAX_RESPONSE)
+                .ok_or_else(|| io::Error::other("response too large"))?;
+            length = Some(end);
+        }
+    }
+    Ok(Some((header_end, length)))
+}
+
 pub async fn request(addr: SocketAddr, trust: &[u8], hostname: &str, request: String) -> io::Result<(u16, String)> {
-    tokio::time::timeout(LIMIT, async {
-        let socket = TcpStream::connect(addr).await?;
-        let name = ServerName::try_from(hostname.to_owned())
-            .map_err(|_| io::Error::other("invalid server name"))?;
-        let mut tls = connector(trust).connect(name, socket).await?;
-        tls.write_all(request.as_bytes()).await?;
-        let mut raw = Vec::new();
-        // A complete HTTP response with Connection: close is required by the fixture.
-        tls.read_to_end(&mut raw).await?;
-        let response = String::from_utf8(raw).map_err(|_| io::Error::other("invalid response"))?;
-        let status = response.lines().next().and_then(|l| l.split_whitespace().nth(1))
-            .and_then(|v| v.parse::<u16>().ok()).ok_or_else(|| io::Error::other("no HTTP status"))?;
-        Ok((status, response))
-    }).await.map_err(|_| io::Error::new(io::ErrorKind::TimedOut, "local request timed out"))?
+    let deadline = tokio::time::Instant::now() + LIMIT;
+    let socket = phase(deadline, "TCP connect", TcpStream::connect(addr)).await?;
+    let name = ServerName::try_from(hostname.to_owned())
+        .map_err(|_| io::Error::other("invalid server name"))?;
+    let mut tls = phase(deadline, "TLS handshake", connector(trust).connect(name, socket)).await?;
+    phase(deadline, "HTTP send", tls.write_all(request.as_bytes())).await?;
+    phase(deadline, "HTTP flush", tls.flush()).await?;
+    let mut raw = Vec::new();
+    let mut buffer = [0u8; 4096];
+    loop {
+        let frame = response_extent(&raw)?;
+        if let Some((_, Some(end))) = frame {
+            if raw.len() == end { break; }
+            if raw.len() > end { return Err(io::Error::other("unexpected bytes after response body")); }
+        }
+        let label = if frame.is_some() { "HTTP response body" } else { "HTTP response headers" };
+        let n = phase(deadline, label, tls.read(&mut buffer)).await?;
+        if n == 0 {
+            match frame {
+                Some((_, None)) => break, // a close-delimited fixture response
+                _ => return Err(io::Error::new(io::ErrorKind::UnexpectedEof, "incomplete HTTP response")),
+            }
+        }
+        if raw.len() + n > MAX_RESPONSE { return Err(io::Error::other("response too large")); }
+        raw.extend_from_slice(&buffer[..n]);
+    }
+    let response = String::from_utf8(raw).map_err(|_| io::Error::other("invalid response"))?;
+    let status = response.lines().next().and_then(|line| {
+        let mut words = line.split_whitespace();
+        if words.next()? != "HTTP/1.1" { return None; }
+        words.next()?.parse::<u16>().ok().filter(|code| (100..=599).contains(code))
+    }).ok_or_else(|| io::Error::other("no HTTP status"))?;
+    Ok((status, response))
 }
 
 pub fn http(method: &str, path: &str, token: Option<&str>, body: &str, extra: &str) -> String {

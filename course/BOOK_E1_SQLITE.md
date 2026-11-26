@@ -2,7 +2,7 @@
 
 [现代化路线](MODERN_RUST_ROADMAP.md) · [E1-A HTTPS](BOOK_E1_TLS_AUTH.md) · [工程入口](../projects/modern-e1-sqlite/README.md)
 
-本阶段复用原 C2 的 servicedesk::apply（标题、数量、编号、关闭冲突）与 E1-A TLS 1.3/角色策略。只替换持久化和观测层。使用 Rust 1.100.0、Rusqlite 0.43.0 bundled SQLite、已验证的 TLS/Axum/Tokio 直接版本。先完成 E1-A，取得通过验收的独立学员包；普通学员套件仅含模板。新增数据库依赖完整锁由真实 Cargo 从 E1-A 冻结锁出发解析，RustSec 同快照审核后双平台消费同一哈希；冻结前不作为发布版本。
+本阶段复用原 C2 的 servicedesk::apply（标题、数量、编号、关闭冲突）与 E1-A TLS 1.3/角色策略。只替换持久化和观测层。使用 Rust 1.100.0、Rusqlite 0.43.0 bundled SQLite、已验证的 TLS/Axum/Tokio 直接版本。先完成 E1-A，取得通过验收的独立学员包；普通学员套件仅含模板。新增数据库完整依赖锁已从首轮真实 Cargo/RustSec 产物冻结（108 registry 包、SHA-256 `20adcb21ee432c82a590fd0da3cbec857adbe572bdad2471698c8e0b07f140db`），两平台必须重新验证同锁；首轮 Windows Release 并发 HTTPS 超时，当前尚不能作为发布版本。
 
 | 任务 | 学员实现 | 行为验收 |
 |---|---|---|
@@ -26,6 +26,8 @@
 
 ## 验收
 
-维护者用 scripts/modern_e1b_check.py：resolve 从 E1-A 已冻结锁真实 Cargo 解析并审计（vulnerability/unsound 拒绝）；replay 使用同一 Cargo.lock SHA-256，准备 vendor，真实 Debug/Release、四步 RED/GREEN、集成及 CLI、ZIP 中文路径空缓存 frozen。源与学员测试保持一致；独立 E1-B 包的 support/e1a 提供前置完成源码而非 E1-B 答案，普通 learner-kit 不暴露前置答案。实际 CI 未通过前不宣称完成。网页、用户试用、跨进程持久化策略、正式生产审计另验。
+维护者用 scripts/modern_e1b_check.py：resolve 仅对仓库冻结锁执行 locked fetch 与重审计（vulnerability/unsound 拒绝）；replay 使用同一 Cargo.lock SHA-256，准备 vendor，真实 Debug/Release、四步 RED/GREEN、集成及 CLI、ZIP 中文路径空缓存 frozen。源与学员测试保持一致；独立 E1-B 包的 support/e1a 提供前置完成源码而非 E1-B 答案，普通 learner-kit 不暴露前置答案。实际 CI 未通过前不宣称完成。网页、用户试用、跨进程持久化策略、正式生产审计另验。
 
 参考：[Rusqlite 0.43.0](https://docs.rs/rusqlite/0.43.0/rusqlite/) · [SQLite 事务](https://www.sqlite.org/lang_transaction.html) · [SQLite 外键](https://www.sqlite.org/foreignkeys.html) · [Tokio mpsc](https://docs.rs/tokio/1.53.3/tokio/sync/mpsc/index.html)。
+
+首轮 Windows Release step5 在 12 路并发请求时出现 8 秒超时（Run 45656674759 artifact 15042239292），日志未能区分连接、握手或响应阶段。固定测试客户端改按 HTTP Content-Length 判断完整消息，拒绝截断/歧义，未知长度仍等待 EOF，并记录各阶段错误；所有阶段共享原 8 秒绝对期限。保留 12 路并发、成功写入与实际重开对应性，Release 额外重复三次。未确认关闭等待是唯一根因，必须以重验为准。

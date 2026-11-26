@@ -131,7 +131,8 @@ async fn step5_https_sqlite_permissions_and_concurrent_writes_are_real() {
         let trust = cert.der.clone(); let writer = writer.clone();
         tasks.spawn(async move {
             let body = serde_json::json!({"title":format!("concurrent-{index}")}).to_string();
-            let status = request(addr,&trust,"localhost",http("POST","/api/tickets",Some(&writer),&body,"")).await.unwrap().0;
+            let status = request(addr,&trust,"localhost",http("POST","/api/tickets",Some(&writer),&body,"")).await
+                .unwrap_or_else(|error| panic!("concurrent request {index}: {error}")).0;
             assert!(status == 201 || status == 503, "unexpected status {status}");
             (index, status)
         });
