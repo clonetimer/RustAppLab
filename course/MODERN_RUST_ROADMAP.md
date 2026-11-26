@@ -21,9 +21,9 @@
 | D11 | 现代开发工具 | IDE 断点、Clippy、Miri、属性测试、Fuzzing、基准与依赖审计；独立运行证据及学员迁移记录 | D11-A [工程质量与工具实验](BOOK_D11_QUALITY.md) 完整 CI 与专项通过，#21 已合并（c470154）；D11-B [Miri/libFuzzer/RustSec 实验](BOOK_D11_SAFETY.md) 专项 5/5 PASS，完整回归和 E1-0 安全修复合并（#23，0e71b443）；真人 IDE 与网页入口待验 |
 | E1 | 网络工程 | TLS、认证、数据库、可观测性、错误边界；明确本地教学与公网安全差异 | E1-0 [依赖安全收口](NETWORK_SECURITY_BASELINE.md) 已合并；E1-A [真实 TLS/认证](BOOK_E1_TLS_AUTH.md) 与 E1-B [SQLite 事务与观测](BOOK_E1_SQLITE.md) 双平台专项和完整集成均通过，#24/#25 已合并（main 2f4a53dc） |
 | E2 | 桌面 GUI | 一款完整可交互软件，模型/视图/状态分离，跨平台测试 | [SignalDesk](BOOK_E2_GUI.md) 十一套 CI 通过并合并 #26（0491d65），Linux 实际窗口/Windows 控件及离线交付通过；Windows 实机未验 |
-| E3 | 嵌入式与实时 | no_std、硬件抽象、仿真与硬件分别验证 | [Embedded Monitor](BOOK_E3_EMBEDDED.md) 首轮专项全通过；真实 ARM/QEMU 与固定锁；合并 E2、修正 Rustfmt 后重验 |
-| E4 | 互操作与 WASM | C ABI、安全封装、跨语言所有权；浏览器 WASM 独立小项目 | [SignalBridge](BOOK_E4_INTEROP.md) 候选：真实 C 动态链接、Rust/JS WASM 共享分类逻辑，三步 TODO；待当前专项与完整 CI |
-| E5 | 科学计算和 AI | 数值/数据处理、性能测量；可选 AI 应用，准确说明计算后端 | [FaultScope](BOOK_E5_SCIENCE.md) 候选：Welford 特征、训练集标准化、CPU 逻辑回归、按事件簇留出评估与实际计时；待专项及完整 CI |
+| E3 | 嵌入式与实时 | no_std、硬件抽象、仿真与硬件分别验证 | [Embedded Monitor](BOOK_E3_EMBEDDED.md) 12 套 CI 通过；#27 已合并（2749d1c0），实物与 WCET 未验 |
+| E4 | 互操作与 WASM | C ABI、安全封装、跨语言所有权；浏览器 WASM 独立小项目 | [SignalBridge](BOOK_E4_INTEROP.md) 13 套 CI 通过；#28 已合并（a92447ed），实际 C/Node/Chromium 已验 |
+| E5 | 科学计算和 AI | 数值/数据处理、性能测量；可选 AI 应用，准确说明计算后端 | [FaultScope](BOOK_E5_SCIENCE.md) 14 套 CI 通过；#29 已合并（919a9f74），合成数据 CPU 学习实验 |
 
 ## 本轮开发经验（D7）
 
@@ -112,3 +112,9 @@ E4 首轮 Run 45759087888 Windows job 139704567716 完成实际 Rust/C ABI、WAS
 ## 开发经验（E5）
 
 E5 以 E4 浏览器修复 a830ea52 为后续候选基线，独立 PR 不取消 #27/#28。选用无外部 crate 的 CPU 统计/逻辑回归作为现代科学计算与可解释 ML 入门，不冒称深度模型、GPU 或飞行故障诊断。Welford 总体方差、零方差标准化、稳定 sigmoid/交叉熵、有界批量梯度训练；合成事件分组在窗口特征计算前固定训练/留出边界，标准化与模型只拟合训练集。四个 TODO、五项固定合同、真实 Debug/Release 和空缓存搬移 RED/GREEN、真实训练损失/混淆矩阵及 Release 推断计时；不硬编码机器速度、合成准确率不等于泛化。源码清单与两端指纹同提交更新，普通学员包只含 TODO、固定夹具/合同而非参考实现。E4/E3 未合并，E5 不得提前合入；真人与现代课程网页入口仍待后续。
+
+## 现代课程网页统一入口（第一批）
+
+E3/E4/E5 的同 head 12/13/14 套 CI 全绿；按树一致性核查顺序合并 #27/#28/#29，最终 main 919a9f74 tree 5f5e321a 与 E5 已验证候选一致；历史发布资产不覆盖。第一批复用原本工作台的路径、文件保护、真实异步 job 和旧结果失效机制，内置七门独立无 registry 依赖的现代 learner 模板（D8、D9-A/B、D10-A、D11-A、E4/E5），不是参考答案。用显式 cargo +1.100.0 和 frozen 每步固定合同、最后全部测试与文档测试，经典 MSRV 1.74 不变。固定测试、支持文件、工具链与原模板不可被网页改写。知识导航提供 D7–E5 全部本地讲义；依赖型及专用工具仍保留实际独立入口，不伪装为网页已完成。新双平台 HTTP 和 Linux 实际浏览器专项须通过；网页、源码、清单同步提交。真实学员理解、Windows 实机以及后续 vendor/专用工具工作台接入仍待完成。
+
+第一批首轮专项 Run 45777156479 的 Windows/Linux 均在首课创建及 RED 后遇到 FileNotFoundError，原脚本错误假定 D8 参考位于 reference/src/lib.rs；实际两 Edition 参考树为 reference/e2024/src/lib.rs。修正固定映射并记录具体 traceback、阶段；扩展每门课全部逐步 RED/GREEN，拒绝零测试通过。综合 Run 45777156607 的 C2 原始日志 job 139763475490 明确两处 rustfmt 差异；按格式修复，不关闭格式检查。交付 job 139763475623 在搬移运行包目录检查时仍使用原 20 门课程集合，更新为精确 27 门并真实创建 E5 TODO、比较固定合同字节，不将现代工具链强加于旧运行包验证。保护现代模板/参考树（含 D8 嵌套参考）；仅当同一步新鲜合同成功时提示下一步，避免将单步判定误解为累计结果。专项显式安装工具链组件及 wasm 目标，清单同步。旧 CI 与新失败均保留；本提交待实际重验。

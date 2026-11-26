@@ -58,6 +58,8 @@ function nextDestination(card, check, changed) {
       || check.source_digest !== card.project.source_digest) {
     return null;
   }
+  // Modern checks select one contract, not a cumulative Studio assessment.
+  if (card.id.startsWith('modern-') && check.step !== card.step) return null;
   if (card.step < card.step_count) {
     const suggested = card.project.suggested_step;
     const withinScope = Number.isInteger(suggested) && suggested > card.step
@@ -126,11 +128,11 @@ function buildCourses() {
   const controls = [];
   let previousKind = null;
   for (const course of courses) {
-    const kind = course.kind || 'studio';
+    const kind = course.id.startsWith('modern-') ? 'modern' : (course.kind || 'studio');
     if (kind !== previousKind) {
       const heading = document.createElement('p');
       heading.className = 'course-group';
-      heading.textContent = kind === 'book' ? 'RUST BOOK · 专项练习' : '从作品开始';
+      heading.textContent = kind === 'modern' ? '现代 RUST · 1.100.0' : kind === 'book' ? 'RUST BOOK · 专项练习' : '从作品开始';
       controls.push(heading);
       previousKind = kind;
     }
@@ -353,7 +355,7 @@ function renderControls() {
   if (ui.learningLog) ui.learningLog.disabled = locked;
   if (ui.bookPractice) ui.bookPractice.disabled = locked;
   if (ui.experimentFailure) experimentControls();
-  ui.check.title = card?.kind === 'book' ? '执行当前专题的真实 Cargo 测试和文档测试；不等于理解评分' : '检查当前步骤的实际行为';
+  ui.check.title = card?.id?.startsWith('modern-') ? 'Rust 1.100.0：本步固定合同，最后一步全部测试；首次需自行安装工具链' : card?.kind === 'book' ? '执行当前专题的真实 Cargo 测试和文档测试；不等于理解评分' : '检查当前步骤的实际行为';
   ui.next.disabled = locked;
   ui.retry.hidden = !retry;
   ui.retry.disabled = Boolean(busy);
@@ -369,7 +371,7 @@ function renderControls() {
   text(ui.create, busy === 'create' ? '正在创建…' : '创建学习项目');
   text(ui.openProject, busy === 'open' ? '正在打开…' : '打开项目');
   text(ui.save, saving ? '正在保存…' : '保存');
-  text(ui.check, checking ? '正在检查…' : card?.kind === 'book' ? '验证专题' : '正式检查');
+  text(ui.check, checking ? '正在检查…' : card?.id?.startsWith('modern-') ? '检查本步' : card?.kind === 'book' ? '验证专题' : '正式检查');
   text(ui.run, running ? '正在运行…' : '运行程序');
   if (saving) {
     ui.saveStatus.dataset.state = 'pending';

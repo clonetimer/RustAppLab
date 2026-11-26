@@ -144,7 +144,7 @@ def run_flow(page, base, tmp, out, report, expect, exe):
 
     page.goto(base+'/', wait_until='domcontentloaded')
     catalog = get_json(page, base, '/api/catalog')['courses']
-    expected = {'firstcard', 'unitlab', 'quizdeck', 'textscope', 'ledgerlite', 'badgeforge', 'termgarden', 'batchmeter', 'minikv', 'netfetch', 'servicedesk', 'storedesk', 'asyncboard', 'book-d1', 'book-d2', 'book-d3', 'book-d4', 'book-d5', 'book-d6', 'book-foundations'}
+    expected = {'firstcard', 'unitlab', 'quizdeck', 'textscope', 'ledgerlite', 'badgeforge', 'termgarden', 'batchmeter', 'minikv', 'netfetch', 'servicedesk', 'storedesk', 'asyncboard', 'book-d1', 'book-d2', 'book-d3', 'book-d4', 'book-d5', 'book-d6', 'book-foundations', "modern-d8", "modern-d9a", "modern-d9b", "modern-d10a", "modern-d11a", "modern-e4", "modern-e5"}
     assert {c['id'] for c in catalog} == expected and len(catalog) == len(expected)
     expect(loc('#course-list [data-course]')).to_have_count(len(expected))
     for item in catalog:

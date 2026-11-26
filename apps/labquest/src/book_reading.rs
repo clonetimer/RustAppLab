@@ -176,6 +176,62 @@ pub(crate) fn workbench_topic(id: &str) -> Option<(&'static str, &'static str)> 
             "D6-B · 基础概念",
             include_str!("../../../course/BOOK_D6_FOUNDATIONS.md"),
         )),
+        "d8" => Some((
+            "D8 · Edition 2024 告警筛选",
+            include_str!("../../../course/BOOK_D8_EDITION_2024.md"),
+        )),
+        "d9a" => Some((
+            "D9-A · 现代语言特性",
+            include_str!("../../../course/BOOK_D9_STABLE_FEATURES.md"),
+        )),
+        "d9b" => Some((
+            "D9-B · 现代标准库",
+            include_str!("../../../course/BOOK_D9_STDLIB_CARGO.md"),
+        )),
+        "d10a" => Some((
+            "D10-A · 异步核心",
+            include_str!("../../../course/BOOK_D10_ASYNC_CORE.md"),
+        )),
+        "d11a" => Some((
+            "D11-A · 工程质量",
+            include_str!("../../../course/BOOK_D11_QUALITY.md"),
+        )),
+        "e4" => Some((
+            "E4 · C ABI 与 WebAssembly",
+            include_str!("../../../course/BOOK_E4_INTEROP.md"),
+        )),
+        "e5" => Some((
+            "E5 · 科学计算与机器学习",
+            include_str!("../../../course/BOOK_E5_SCIENCE.md"),
+        )),
+        "d7" => Some((
+            "D7 · 新版 Rust Book 映射",
+            include_str!("../../../course/BOOK_MODERN_COVERAGE_D7.md"),
+        )),
+        "d10b" => Some((
+            "D10-B · Tokio 与 Stream（独立工程）",
+            include_str!("../../../course/BOOK_D10_TOKIO_STREAM.md"),
+        )),
+        "d11b" => Some((
+            "D11-B · 安全与模糊测试（独立工程）",
+            include_str!("../../../course/BOOK_D11_SAFETY.md"),
+        )),
+        "e1a" => Some((
+            "E1-A · HTTPS 与授权（独立工程）",
+            include_str!("../../../course/BOOK_E1_TLS_AUTH.md"),
+        )),
+        "e1b" => Some((
+            "E1-B · SQLite 与可观测性（独立工程）",
+            include_str!("../../../course/BOOK_E1_SQLITE.md"),
+        )),
+        "e2" => Some((
+            "E2 · 原生 GUI（独立工程）",
+            include_str!("../../../course/BOOK_E2_GUI.md"),
+        )),
+        "e3" => Some((
+            "E3 · 嵌入式（独立工程）",
+            include_str!("../../../course/BOOK_E3_EMBEDDED.md"),
+        )),
         "ownership" => Some((
             "所有权与切片",
             include_str!("../../../course/BOOK_OWNERSHIP_PRACTICE.md"),

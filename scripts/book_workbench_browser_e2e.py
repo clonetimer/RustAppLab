@@ -176,7 +176,7 @@ def run_book_flow(page, base, tmp, out, expect):
         page.goto(base + '/', wait_until='domcontentloaded')
         page.set_viewport_size({'width': 1440, 'height': 1000})
         catalog = get_json(page, base, '/api/catalog')['courses']
-        expected = STUDIO_IDS | set(BOOK_IDS)
+        expected = STUDIO_IDS | set(BOOK_IDS) | {"modern-d8", "modern-d9a", "modern-d9b", "modern-d10a", "modern-d11a", "modern-e4", "modern-e5"}
         assert {item['id'] for item in catalog} == expected and len(catalog) == len(expected)
         expect(loc('#course-list [data-course]')).to_have_count(len(expected))
         report['catalog_ids'] = [item['id'] for item in catalog]
