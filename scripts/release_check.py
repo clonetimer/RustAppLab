@@ -22,7 +22,7 @@ ROOT = Path(__file__).resolve().parents[1]
 IGNORED_CHALLENGES = 15
 TEST_RESULT = re.compile(r"^test result: (ok|FAILED)\. (\d+) passed; (\d+) failed; (\d+) ignored;", re.MULTILINE)
 CODE_SUFFIXES = {'.rs', '.toml', '.lock', '.py', '.ps1', '.cmd', '.sh', '.html', '.css', '.js', '.cjs', '.yml', '.yaml',
-                 '.md', '.tsv', '.txt', '.json', '.kv', '.svg', '.x'}
+                 '.md', '.tsv', '.txt', '.json', '.kv', '.svg', '.x', '.c', '.h'}
 # Keep Windows-native evidence in sync; test_release_check checks exact scope.
 SOURCE_PROJECTS = {('projects', name) for name in (
     'advanced-b',
@@ -46,6 +46,7 @@ SOURCE_PROJECTS = {('projects', name) for name in (
     'modern-e1-sqlite',
     'modern-e2-gui',
     'modern-e3-embedded',
+    'modern-e4-interop',
 )}
 BOOK_D1_MANIFEST = 'projects/book-d1-cargo/Cargo.toml'
 BOOK_D2_MANIFEST = 'projects/book-d2-smart-pointers/Cargo.toml'

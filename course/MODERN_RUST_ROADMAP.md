@@ -22,7 +22,7 @@
 | E1 | 网络工程 | TLS、认证、数据库、可观测性、错误边界；明确本地教学与公网安全差异 | E1-0 [依赖安全收口](NETWORK_SECURITY_BASELINE.md) 已合并；E1-A [真实 TLS/认证](BOOK_E1_TLS_AUTH.md) 与 E1-B [SQLite 事务与观测](BOOK_E1_SQLITE.md) 双平台专项和完整集成均通过，#24/#25 已合并（main 2f4a53dc） |
 | E2 | 桌面 GUI | 一款完整可交互软件，模型/视图/状态分离，跨平台测试 | [SignalDesk](BOOK_E2_GUI.md) 十一套 CI 通过并合并 #26（0491d65），Linux 实际窗口/Windows 控件及离线交付通过；Windows 实机未验 |
 | E3 | 嵌入式与实时 | no_std、硬件抽象、仿真与硬件分别验证 | [Embedded Monitor](BOOK_E3_EMBEDDED.md) 首轮专项全通过；真实 ARM/QEMU 与固定锁；合并 E2、修正 Rustfmt 后重验 |
-| E4 | 互操作与 WASM | C ABI、安全封装、跨语言所有权；浏览器 WASM 独立小项目 | 待评估 |
+| E4 | 互操作与 WASM | C ABI、安全封装、跨语言所有权；浏览器 WASM 独立小项目 | [SignalBridge](BOOK_E4_INTEROP.md) 候选：真实 C 动态链接、Rust/JS WASM 共享分类逻辑，三步 TODO；待当前专项与完整 CI |
 | E5 | 科学计算和 AI | 数值/数据处理、性能测量；可选 AI 应用，准确说明计算后端 | 待评估 |
 
 ## 本轮开发经验（D7）
@@ -102,3 +102,9 @@ E2 #26 的冻结锁、Windows/Linux 实际合同及 Linux 原生窗口三张截�
 E2 #26 同提交 11 套 CI 均通过并合入 main 0491d65（Run 45750393552/45750393437），保留全部 E1-B 和 GUI 文件。E3 Run 45751986819 首轮实际三项专项 PASS：20 registry 包，0 vulnerability/unsound，bare-metal 0.2.5 的 RUSTSEC-2026-0110 unmaintained 保留；真实 lock artifact 15086121503 SHA-256 db2e90bc00344d3d33fa853f1a513cbb03780c078d491a08ca932293aa22909a 字节一致冻结。Linux artifact 15085584093 两个 ARM ELF 真实 QEMU 均 8 个 SysTick、计划 tick 2/4/6/8，raw 1500/2100/1800/1400，enabled 0/1/1/0，missed 均 0，模拟联锁触发低指令；主机另验错过周期和时钟回绕。Windows artifact 15085459020 主机与 ARM cross build 通过，不声称 Windows QEMU。完整回归 Run 45751986633 五项失败均为诊断补丁的 learning_e2e.rs:3 import rustfmt（artifact 15085578205/15085229153），按原始 diff 修正格式，不更改 8 秒门槛、日志语义或任何合同。合并 E2 的共享文件、manifest 和课程导航后，冻结锁与双平台重验；独立人类/硬件/WCET 仍未评估。
 
 E3 集成后 Run 45754480406 三项嵌入式专项通过；E2 回归 Run 45754480262 的 resolve/audit 与 Windows 合同通过，Ubuntu 原始日志 job 139690815456 显示参考 Debug/Release、四步 RED/GREEN、vendor 与 native-build 已通过，实际窗口 Ctrl+F 成功（8 行、3 告警、3 可见），Ctrl+L 未使标题从 lang=en 转为 lang=zh。失败 artifact 15087616609 保留。代码审查发现快捷键以帧末 Ctrl 状态与 key_pressed 联合判断，快速按下释放可能发生在同帧；按实际 Key 事件的 modifiers/pressed/repeat 匹配，参考与学员公共 GUI 逻辑同步，增加同帧按下/释放、无 Ctrl、重复键及其他键回归测试。未修改真实 X11 截图、三帧哈希与标题断言、锁或学员合同。此为有证据支持的候选修复，根因需当前提交真实重验确认；旧通过结果不代替新提交完整 CI。
+
+## 开发经验（E4）
+
+E3 的修复提交 eb2cafc6 已独立触发完整 CI；E4 以该提交为后续候选基线，不取消 #27、不提前合入。使用无第三方依赖的同一 Rust 安全核心，原生 C ABI 使用调用方所有的定长结构和有界数组，WASM 只暴露标量分类接口，JS 在传入 i32 前拒绝非法值，不共享 Rust 指针。参考与学员保留相同 ABI 头、C 客户端、Web 页面和测试；三个 TODO、三项 RED/GREEN 合同，双平台实际 C 编译和动态链接、实际 wasm32 编译/Node 执行、Ubuntu Chromium 页面交互与截图。源清单及 Python/PowerShell 指纹同提交更新，旧 MSRV、rc.5、已发布资产不变。C 指针有效性仍是调用方安全契约；未声称所有外部输入安全、真人学习效果或 Windows 实际浏览器已验收。必须先收口 E3 后再整合 E4。
+
+E4 首轮 Run 45759087888 Windows job 139704567716 完成实际 Rust/C ABI、WASM Node 和学员红绿/交付；Ubuntu job 139704567259 在业务测试前失败，Playwright 1.55.0 不支持 ubuntu26.04-x64。综合浏览器 Run 45758762915 已实测 Playwright 1.65.2 下载 Chromium v1255 并通过；E4 按该真实版本固定 1.65.2，保留 ubuntu-latest、实际 Chromium 运行、输入与迁移截图断言，不跳过任何测试。源码清单同提交同步两项。当前提交待完整重验。
