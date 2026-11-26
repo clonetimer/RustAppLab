@@ -158,9 +158,9 @@ function renderCard(previous) {
   const course = state.catalog.courses.find(item => item.id === card.id);
   text(ui.courseTitle, card.title);
   const path = card.project?.path;
-  text(ui.projectState, path || '尚未打开学习项目');
+  text(ui.projectState, path || (card.bundle ? '先解压 ' + card.bundle + '，打开个人目录' : '尚未打开学习项目'));
   ui.projectState.dataset.open = String(Boolean(path));
-  ui.projectState.title = path || '新项目将创建在启动工作台时指定的工作区';
+  ui.projectState.title = path || (card.bundle ? '只打开通过验收的离线学员包；完整讲义有准备说明' : '新项目将创建在启动工作台时指定的工作区');
   ui.stepList.hidden = false;
   ui.lessonLoading.hidden = true;
   ui.lessonContent.hidden = false;
@@ -342,7 +342,8 @@ function renderControls() {
 
   ui.projectPath.disabled = locked || !card;
   ui.openProject.disabled = locked || !card;
-  ui.create.disabled = locked || !card || project;
+  ui.create.hidden = Boolean(card?.bundle);
+  ui.create.disabled = locked || !card || project || Boolean(card?.bundle);
   ui.lessonOpen.disabled = !card;
   ui.fileSelect.disabled = locked || !project;
   ui.editor.readOnly = locked || !file;
@@ -499,7 +500,7 @@ function readyNotice() {
   if (state.card.project) {
     notice(state.file ? '按任务卡修改文件，保存后可以运行或正式检查。' : '请选择一个文件开始编辑。');
   } else {
-    notice('读完任务卡后，创建学习项目或打开该课程的已有目录。');
+    notice(state.card.bundle ? '请解压 ' + state.card.bundle + ' 到个人目录，填写目录路径后打开。首次编译可能较久。' : '读完任务卡后，创建学习项目或打开该课程的已有目录。');
   }
 }
 

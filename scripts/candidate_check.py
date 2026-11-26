@@ -120,7 +120,7 @@ def verify_runtime_workbench(fresh: Path, learner: Path, logfile: Path, env: dic
                     'servicedesk', 'storedesk', 'asyncboard', 'book-d1', 'book-d2',
                     'book-d3', 'book-d4', 'book-d5', 'book-d6', 'book-foundations',
                     'modern-d8', 'modern-d9a', 'modern-d9b', 'modern-d10a',
-                    'modern-d11a', 'modern-e4', 'modern-e5'}
+                    'modern-d11a', 'modern-e4', 'modern-e5', 'modern-d10b', 'modern-d11b', 'modern-e1a', 'modern-e1b', 'modern-e2', 'modern-e3'}
         actual = [course['id'] for course in catalog['courses']]
         if len(actual) != len(expected) or set(actual) != expected or actual[0] != 'firstcard':
             raise ValueError(f'relocated runtime course catalog differs: missing={sorted(expected-set(actual))}, extra={sorted(set(actual)-expected)}, order/count={actual}')

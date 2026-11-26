@@ -1,0 +1,51 @@
+name: Modern Rust prepared workbench teaching
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+jobs:
+  prepared:
+    name: Prepared workbench / ${{ matrix.course }} / ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+        course: [modern-d10b, modern-e1a, modern-e1b, modern-e2, modern-e3]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: dtolnay/rust-toolchain@1.100.0
+        with:
+          components: rustfmt, clippy
+      - name: Native GUI build libraries
+        if: runner.os == 'Linux' && matrix.course == 'modern-e2'
+        run: sudo apt-get update && sudo apt-get install -y libgl1-mesa-dev libxkbcommon-dev libx11-dev libxcursor-dev libxi-dev libxrandr-dev libxinerama-dev libxxf86vm-dev libfontconfig1-dev libwayland-dev libegl-dev libdbus-1-dev libxkbcommon-x11-dev pkg-config fonts-noto-cjk
+      - name: Build actual workbench
+        run: cargo build --locked --offline --release -p labquest
+      - name: Install browser
+        if: runner.os == 'Linux' && matrix.course == 'modern-d10b'
+        run: |
+          python -m pip install playwright==1.65.2
+          python -m playwright install --with-deps chromium
+          sudo apt-get install -y fonts-noto-cjk
+      - name: Actual offline import and browser
+        if: runner.os == 'Linux' && matrix.course == 'modern-d10b'
+        run: python scripts/modern_prepared_workbench_check.py --course ${{ matrix.course }} --output prepared-evidence --browser
+      - name: Actual offline import and host checks
+        if: runner.os != 'Linux' || matrix.course != 'modern-d10b'
+        run: python scripts/modern_prepared_workbench_check.py --course ${{ matrix.course }} --output prepared-evidence
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: prepared-workbench-${{ matrix.course }}-${{ matrix.os }}
+          path: prepared-evidence/

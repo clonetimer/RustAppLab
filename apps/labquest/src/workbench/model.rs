@@ -221,6 +221,9 @@ impl Snapshot {
     fn read(root: &Path, id: &str) -> Result<Self, ApiError> {
         let mut snapshot = Self::default();
         if let Some(book) = book_projects::get(id) {
+            if book.bundle().is_some() && !metadata(&root.join("vendor"))?.is_dir() {
+                return Err(invalid("离线学员包缺少普通 vendor 目录"));
+            }
             snapshot.walk_book(root, "", book, 0, &mut TreeBudget::default())?;
             for file in book.files.iter().filter(|file| book.protected(file.path)) {
                 let actual = snapshot.files.get(file.path).ok_or_else(|| {
@@ -236,6 +239,24 @@ impl Snapshot {
                         "课程清单或检查文件 {} 已改变；工作台只接受本课程的原始清单和检查文件",
                         file.path
                     )));
+                }
+            }
+            for (path, expected) in book.support_hashes() {
+                let actual = snapshot
+                    .files
+                    .get(*path)
+                    .ok_or_else(|| invalid(format!("离线包缺少固定前置文件 {path}")))?;
+                let mut hash = Sha256::new();
+                hash.update(&actual.bytes);
+                if hex(&hash.finalize()) != *expected {
+                    return Err(invalid(format!("离线包固定前置文件 {path} 已改变")));
+                }
+            }
+            if book.is_modern() {
+                for file in book.files {
+                    if !snapshot.files.contains_key(file.path) {
+                        return Err(invalid(format!("现代学员工程缺少文件 {}", file.path)));
+                    }
                 }
             }
             snapshot.file(book.default_file)?;
@@ -356,13 +377,18 @@ impl Snapshot {
                 if name == "target" || name == ".git" {
                     continue;
                 }
-                if name == ".cargo" {
+                if child == "vendor" && book.bundle().is_some() {
+                    // Trusted dependency environment, handled by frozen Cargo builds.
+                    continue;
+                }
+                if name == ".cargo" && !(child == ".cargo" && book.bundle().is_some()) {
                     return Err(invalid("Book 学员副本不能覆盖课程的 Cargo 执行配置"));
                 }
                 self.walk_book(root, &child, book, depth + 1, budget)?;
                 continue;
             }
-            let canonical = book.files.iter().any(|file| file.path == child);
+            let canonical = book.files.iter().any(|file| file.path == child)
+                || book.support_hashes().iter().any(|(path, _)| *path == child);
             let source = book.source_path(&child);
             if !canonical && !source && child != "LEARNING_LOG.md" {
                 return Err(invalid(format!(
@@ -546,20 +572,21 @@ impl Workspace {
         Ok(format!(concat!("{{\"id\":{},\"title\":{},\"step\":{},\"step_count\":{},\"step_title\":{},",
             "\"goal\":{},\"function\":{},\"concept\":{},\"prediction\":{},\"hints\":{},",
             "\"experiment\":{},\"reflection\":{},\"next_course\":{},\"run_args\":{},\"reading\":{},\"project\":{},",
-            "\"kind\":{},\"can_run\":{},\"lesson_topic\":{}}}"),
+            "\"kind\":{},\"can_run\":{},\"lesson_topic\":{},\"bundle\":{}}}"),
             json_string(id), json_string(c.title), step, c.steps.len(), json_string(c.steps[step-1]),
             json_string(card.goal), json_string(card.function), json_string(card.concept), json_string(card.prediction),
             json_list(card.hints), json_string(card.experiment), json_string(card.reflection), next, json_list(run_args(id).iter().copied()), crate::book_reading::workbench_json(id), project,
             json_string(if book.is_some() { "book" } else { "studio" }),
             book.map(|book| book.run.is_some()).unwrap_or(true),
-            book.map(|book| json_string(book.lesson_topic)).unwrap_or_else(|| "null".into())))
+            book.map(|book| json_string(book.lesson_topic)).unwrap_or_else(|| "null".into()),
+            book.and_then(|book| book.bundle()).map(json_string).unwrap_or_else(|| "null".into())))
     }
 
     fn project_json(path: &Path, id: &str) -> Result<String, ApiError> {
         identify(path, id)?;
         let snap = Snapshot::read(path, id)?;
         let (text, state) = if book_projects::get(id).is_some_and(|book| book.is_modern()) {
-            ("现代课程：先安装固定 Rust 1.100.0。只编辑自己的 src/lib.rs；逐步检查，最后综合验证。学习记录不自动评分。".to_string(), None)
+            ("现代课程：先安装固定 Rust 1.100.0。只编辑当前课程开放的 TODO 源码；逐步检查，最后综合验证。学习记录不自动评分。".to_string(), None)
         } else if book_projects::get(id).is_some() {
             ("Book 实验工程：按预测、修改、检查、解释、迁移完成学习记录。检查执行当前副本的真实单测和文档测试；通过不代表学习步骤已完成。".to_string(), None)
         } else {
@@ -603,6 +630,11 @@ impl Workspace {
             ));
         }
         if let Some(book) = book_projects::get(id) {
+            if let Some(bundle) = book.bundle() {
+                return Err(invalid(format!(
+                    "请先解压 {bundle} 到个人目录，再选择打开项目"
+                )));
+            }
             book.create(&path)
         } else if id == FIRST.id {
             beginner::init(&path)
