@@ -3,7 +3,10 @@ use std::{
     fs,
     path::{Path, PathBuf},
     process::{Command, Output},
-    sync::{atomic::{AtomicU64, Ordering}, Mutex},
+    sync::{
+        atomic::{AtomicU64, Ordering},
+        Mutex,
+    },
 };
 static TEMP_COUNTER: AtomicU64 = AtomicU64::new(0);
 // These are real nested Cargo/CLI checks. Do not have two of them compete

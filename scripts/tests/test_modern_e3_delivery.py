@@ -1,5 +1,6 @@
 """E3 project isolation, actual ARM configuration and protected distribution."""
 import ast
+import hashlib
 import importlib.util
 from pathlib import Path
 import tomllib
@@ -37,8 +38,10 @@ class ModernE3Tests(unittest.TestCase):
             self.assertEqual((BASE / "reference" / p).read_bytes(), (BASE / "learner" / p).read_bytes())
         self.assertEqual((BASE / "learner/src/lib.rs").read_text(encoding="utf-8").count("TODO("), 5)
         self.assertEqual((BASE / "reference/tests/contracts.rs").read_text(encoding="utf-8").count("fn step"), 5)
-        if (BASE / "reference/Cargo.lock").exists():
-            self.assertEqual((BASE / "reference/Cargo.lock").read_bytes(), (BASE / "learner/Cargo.lock").read_bytes())
+        lock = (BASE / "reference/Cargo.lock").read_bytes()
+        self.assertEqual(lock, (BASE / "learner/Cargo.lock").read_bytes())
+        self.assertEqual(hashlib.sha256(lock).hexdigest(), "db2e90bc00344d3d33fa853f1a513cbb03780c078d491a08ca932293aa22909a")
+        self.assertEqual(sum("source" in p for p in tomllib.loads(lock.decode())["package"]), 20)
         ast.parse((ROOT / "scripts/modern_e3_check.py").read_text(encoding="utf-8"))
 
     def test_source_and_learner_kit(self):

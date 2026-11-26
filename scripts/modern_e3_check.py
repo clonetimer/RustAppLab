@@ -53,14 +53,10 @@ def resolve(e, scratch, report):
     lock = work / "Cargo.lock"
     e.env["CARGO_NET_OFFLINE"] = "false"
     committed = LAB / "reference/Cargo.lock"
-    if committed.is_file():
-        require(digest(committed) == digest(LAB / "learner/Cargo.lock"), "committed locks differ")
-        shutil.copyfile(committed, lock)
-        e.execute("fetch-committed", CARGO + ["fetch", "--locked"], work, timeout=600)
-        require(digest(committed) == digest(lock), "committed lock changed")
-    else:
-        e.execute("resolve-real-lock", CARGO + ["generate-lockfile"], work, timeout=300)
-        e.execute("fetch-locked", CARGO + ["fetch", "--locked"], work, timeout=600)
+    require(digest(committed) == digest(LAB / "learner/Cargo.lock") == "db2e90bc00344d3d33fa853f1a513cbb03780c078d491a08ca932293aa22909a", "frozen E3 lock differs from audited artifact")
+    shutil.copyfile(committed, lock)
+    e.execute("fetch-committed", CARGO + ["fetch", "--locked"], work, timeout=600)
+    require(digest(committed) == digest(lock), "committed lock changed")
     count = lock_count(lock)
     saved = e.output / "Cargo.lock"
     shutil.copyfile(lock, saved)
@@ -208,8 +204,7 @@ def replay(e, scratch, report, bundle, with_qemu):
     lock_hash = digest(lock)
     count = lock_count(lock)
     committed = LAB / "reference/Cargo.lock"
-    if committed.is_file():
-        require(lock_hash == digest(committed) == digest(LAB / "learner/Cargo.lock"), "bundle differs from committed lock")
+    require(lock_hash == digest(committed) == digest(LAB / "learner/Cargo.lock") == "db2e90bc00344d3d33fa853f1a513cbb03780c078d491a08ca932293aa22909a", "bundle differs from committed lock")
     reference = scratch / "reference"
     stage("reference", reference)
     shutil.copyfile(lock, reference / "Cargo.lock")

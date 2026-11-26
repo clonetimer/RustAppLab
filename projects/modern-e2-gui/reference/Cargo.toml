@@ -1,0 +1,16 @@
+[package]
+name = "e2-signaldesk"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.100"
+publish = false
+license = "MIT"
+
+[workspace]
+resolver = "3"
+
+[dependencies]
+eframe = { version = "=0.37.0", default-features = false, features = ["accesskit", "default_fonts", "glow", "system_fonts", "x11"] }
+
+[dev-dependencies]
+egui_kittest = { version = "=0.37.0", default-features = false }
