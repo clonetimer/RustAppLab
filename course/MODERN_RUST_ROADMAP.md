@@ -23,7 +23,7 @@
 | E2 | 桌面 GUI | 一款完整可交互软件，模型/视图/状态分离，跨平台测试 | [SignalDesk](BOOK_E2_GUI.md) 十一套 CI 通过并合并 #26（0491d65），Linux 实际窗口/Windows 控件及离线交付通过；Windows 实机未验 |
 | E3 | 嵌入式与实时 | no_std、硬件抽象、仿真与硬件分别验证 | [Embedded Monitor](BOOK_E3_EMBEDDED.md) 首轮专项全通过；真实 ARM/QEMU 与固定锁；合并 E2、修正 Rustfmt 后重验 |
 | E4 | 互操作与 WASM | C ABI、安全封装、跨语言所有权；浏览器 WASM 独立小项目 | [SignalBridge](BOOK_E4_INTEROP.md) 候选：真实 C 动态链接、Rust/JS WASM 共享分类逻辑，三步 TODO；待当前专项与完整 CI |
-| E5 | 科学计算和 AI | 数值/数据处理、性能测量；可选 AI 应用，准确说明计算后端 | 待评估 |
+| E5 | 科学计算和 AI | 数值/数据处理、性能测量；可选 AI 应用，准确说明计算后端 | [FaultScope](BOOK_E5_SCIENCE.md) 候选：Welford 特征、训练集标准化、CPU 逻辑回归、按事件簇留出评估与实际计时；待专项及完整 CI |
 
 ## 本轮开发经验（D7）
 
@@ -108,3 +108,7 @@ E3 集成后 Run 45754480406 三项嵌入式专项通过；E2 回归 Run 4575448
 E3 的修复提交 eb2cafc6 已独立触发完整 CI；E4 以该提交为后续候选基线，不取消 #27、不提前合入。使用无第三方依赖的同一 Rust 安全核心，原生 C ABI 使用调用方所有的定长结构和有界数组，WASM 只暴露标量分类接口，JS 在传入 i32 前拒绝非法值，不共享 Rust 指针。参考与学员保留相同 ABI 头、C 客户端、Web 页面和测试；三个 TODO、三项 RED/GREEN 合同，双平台实际 C 编译和动态链接、实际 wasm32 编译/Node 执行、Ubuntu Chromium 页面交互与截图。源清单及 Python/PowerShell 指纹同提交更新，旧 MSRV、rc.5、已发布资产不变。C 指针有效性仍是调用方安全契约；未声称所有外部输入安全、真人学习效果或 Windows 实际浏览器已验收。必须先收口 E3 后再整合 E4。
 
 E4 首轮 Run 45759087888 Windows job 139704567716 完成实际 Rust/C ABI、WASM Node 和学员红绿/交付；Ubuntu job 139704567259 在业务测试前失败，Playwright 1.55.0 不支持 ubuntu26.04-x64。综合浏览器 Run 45758762915 已实测 Playwright 1.65.2 下载 Chromium v1255 并通过；E4 按该真实版本固定 1.65.2，保留 ubuntu-latest、实际 Chromium 运行、输入与迁移截图断言，不跳过任何测试。源码清单同提交同步两项。当前提交待完整重验。
+
+## 开发经验（E5）
+
+E5 以 E4 浏览器修复 a830ea52 为后续候选基线，独立 PR 不取消 #27/#28。选用无外部 crate 的 CPU 统计/逻辑回归作为现代科学计算与可解释 ML 入门，不冒称深度模型、GPU 或飞行故障诊断。Welford 总体方差、零方差标准化、稳定 sigmoid/交叉熵、有界批量梯度训练；合成事件分组在窗口特征计算前固定训练/留出边界，标准化与模型只拟合训练集。四个 TODO、五项固定合同、真实 Debug/Release 和空缓存搬移 RED/GREEN、真实训练损失/混淆矩阵及 Release 推断计时；不硬编码机器速度、合成准确率不等于泛化。源码清单与两端指纹同提交更新，普通学员包只含 TODO、固定夹具/合同而非参考实现。E4/E3 未合并，E5 不得提前合入；真人与现代课程网页入口仍待后续。
