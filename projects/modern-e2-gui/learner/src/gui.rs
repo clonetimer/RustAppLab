@@ -71,7 +71,7 @@ impl eframe::App for SignalDesk {
     fn ui(&mut self, ui: &mut egui::Ui, _frame: &mut eframe::Frame) {
         let ctx = ui.ctx().clone();
         // Genuine native key events and the clickable controls share the same state reducer.
-        let pressed = |key| ctx.input(|i| i.modifiers.ctrl && i.key_pressed(key));
+        let pressed = |key| ctx.input(|i| ctrl_pressed(&i.events, key));
         if pressed(egui::Key::F) { self.dispatch(Action::OnlyAlerts(!self.model.only_alerts)); }
         if pressed(egui::Key::R) { self.dispatch(Action::ResetDemo); }
         if pressed(egui::Key::L) { self.dispatch(Action::ToggleLanguage); }
@@ -141,5 +141,52 @@ impl eframe::App for SignalDesk {
             ctx.send_viewport_cmd(egui::ViewportCommand::Title(title.clone()));
             self.title=title;
         }
+    }
+}
+
+// Match the modifier snapshot on the key-down event, not the frame's final
+// modifier state: Ctrl may already have been released before egui paints.
+fn ctrl_pressed(events: &[egui::Event], key: egui::Key) -> bool {
+    events.iter().any(|event| {
+        matches!(
+            event,
+            egui::Event::Key {
+                key: event_key,
+                pressed: true,
+                repeat: false,
+                modifiers,
+                ..
+            } if *event_key == key && modifiers.ctrl
+        )
+    })
+}
+
+#[cfg(test)]
+mod shortcut_tests {
+    use super::*;
+
+    fn key_event(key: egui::Key, pressed: bool, repeat: bool, modifiers: egui::Modifiers) -> egui::Event {
+        egui::Event::Key {
+            key,
+            physical_key: None,
+            pressed,
+            repeat,
+            modifiers,
+        }
+    }
+
+    #[test]
+    fn ctrl_chord_uses_event_modifiers_even_if_released_in_same_frame() {
+        for key in [egui::Key::F, egui::Key::R, egui::Key::L, egui::Key::Q] {
+            let events = [
+                key_event(key, true, false, egui::Modifiers::CTRL),
+                key_event(key, false, false, egui::Modifiers::NONE),
+            ];
+            assert!(ctrl_pressed(&events, key));
+            assert!(!ctrl_pressed(&events[1..], key));
+            assert!(!ctrl_pressed(&[key_event(key, true, false, egui::Modifiers::NONE)], key));
+            assert!(!ctrl_pressed(&[key_event(key, true, true, egui::Modifiers::CTRL)], key));
+        }
+        assert!(!ctrl_pressed(&[key_event(egui::Key::F, true, false, egui::Modifiers::CTRL)], egui::Key::L));
     }
 }
