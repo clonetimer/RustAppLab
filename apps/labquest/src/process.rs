@@ -4,7 +4,7 @@
 //! block a verbose child. Limits are sampled, not a strict disk quota. Only the
 //! direct child is terminated; descendants and hostile build scripts are out of scope.
 use std::fs::{self, File, OpenOptions};
-use std::io::Read;
+use std::io::{Read, Seek, SeekFrom};
 use std::path::{Path, PathBuf};
 use std::process::{Child, Command, Output, Stdio};
 use std::sync::atomic::{AtomicU64, Ordering};
@@ -42,6 +42,31 @@ fn read_bounded(path: &Path) -> Result<Vec<u8>, String> {
         return Err("子进程输出超过 1 MiB，请减少打印内容".into());
     }
     Ok(bytes)
+}
+
+// Preserve a bounded suffix of each log before Captures removes the scratch files.
+// This is best-effort diagnostics only, never evidence of a completed test.
+fn timeout_tail(path: &Path) -> String {
+    const LIMIT: u64 = 4096;
+    let read = || -> std::io::Result<String> {
+        let mut file = File::open(path)?;
+        let length = file.metadata()?.len();
+        let start = length.saturating_sub(LIMIT);
+        file.seek(SeekFrom::Start(start))?;
+        let mut bytes = Vec::new();
+        file.take(LIMIT).read_to_end(&mut bytes)?;
+        let mut text = String::new();
+        if start > 0 {
+            text.push_str("[仅显示末尾 4096 字节]\n");
+        }
+        text.push_str(&String::from_utf8_lossy(&bytes));
+        Ok(text)
+    };
+    match read() {
+        Ok(text) if text.is_empty() => "(无已捕获输出)".into(),
+        Ok(text) => text,
+        Err(error) => format!("(无法读取部分输出：{error})"),
+    }
 }
 
 /// Use a separate target directory at each call site. Fixed build parallelism
@@ -108,9 +133,18 @@ pub(crate) fn capture(
             ));
         }
         if started.elapsed() >= timeout {
+            // Retain the existing deadline and failure decision. Reap the direct
+            // child before reading whatever it already wrote; descendants are
+            // still outside this bounded runner's termination guarantee.
+            let elapsed = started.elapsed();
+            let _ = child.0.kill();
+            let _ = child.0.wait();
+            let stdout = timeout_tail(&files.0[0]);
+            let stderr = timeout_tail(&files.0[1]);
             return Err(format!(
-                "{label}超过 {} 秒，已尝试终止直接子进程；检查无限循环或阻塞等待。这不是安全沙箱。",
-                timeout.as_secs_f32()
+                "{label}超过 {} 秒（观测耗时 {:.3} 秒），已尝试终止直接子进程；检查无限循环或阻塞等待。这不是安全沙箱。\n--- 部分 stdout（不是通过证据）---\n{stdout}\n--- 部分 stderr ---\n{stderr}",
+                timeout.as_secs_f32(),
+                elapsed.as_secs_f64()
             ));
         }
         thread::sleep(Duration::from_millis(10));
@@ -215,8 +249,23 @@ mod tests {
         )
         .unwrap_err();
         assert!(error.contains("超过"));
+        assert!(error.contains("部分 stdout") && error.contains("部分 stderr"));
         assert!(start.elapsed() < Duration::from_secs(5));
         assert_eq!(fs::read_dir(&temp.0).unwrap().count(), 0);
+    }
+    #[test]
+    fn timeout_log_tail_is_bounded_and_preserves_last_progress() {
+        let temp = TempWorkspace::new_named("capture-tail").unwrap();
+        let path = temp.0.join("progress.log");
+        let mut contents = vec![b'x'; 16 * 1024];
+        contents.extend_from_slice(b"\nCLI adjust started\n");
+        fs::write(&path, &contents).unwrap();
+        let tail = timeout_tail(&path);
+        assert!(tail.contains("4096"));
+        assert!(tail.ends_with("CLI adjust started\n"));
+        assert!(tail.len() < 4200);
+        fs::write(&path, []).unwrap();
+        assert!(timeout_tail(&path).contains("无已捕获输出"));
     }
     #[test]
     fn inherited_stdin_is_closed() {

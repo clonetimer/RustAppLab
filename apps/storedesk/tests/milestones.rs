@@ -5,6 +5,7 @@ use std::{
     path::PathBuf,
     process::{Command, Output},
     sync::atomic::{AtomicU64, Ordering},
+    time::Instant,
 };
 static COUNT: AtomicU64 = AtomicU64::new(0);
 struct Temp(PathBuf);
@@ -29,10 +30,21 @@ impl Drop for Temp {
     }
 }
 fn cli(args: &[&std::ffi::OsStr]) -> Output {
-    Command::new(env!("CARGO_BIN_EXE_storedesk"))
+    let action = args.first().and_then(|s| s.to_str()).unwrap_or("unknown");
+    // No user paths or data are logged. The partial output helps pinpoint
+    // which real child invocation was running when a milestone timed out.
+    eprintln!("[StoreDesk contract] {action}: start");
+    let start = Instant::now();
+    let output = Command::new(env!("CARGO_BIN_EXE_storedesk"))
         .args(args)
         .output()
-        .unwrap()
+        .unwrap();
+    eprintln!(
+        "[StoreDesk contract] {action}: exit={:?}; elapsed_ms={}",
+        output.status.code(),
+        start.elapsed().as_millis()
+    );
+    output
 }
 
 fn item(sku: &str, stock: i64) -> Item {

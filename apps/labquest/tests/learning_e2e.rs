@@ -3,9 +3,13 @@ use std::{
     fs,
     path::{Path, PathBuf},
     process::{Command, Output},
-    sync::atomic::{AtomicU64, Ordering},
+    sync::{atomic::{AtomicU64, Ordering}, Mutex},
 };
 static TEMP_COUNTER: AtomicU64 = AtomicU64::new(0);
+// These are real nested Cargo/CLI checks. Do not have two of them compete
+// for the same runner CPU/disk during a fixed 8-second execution contract.
+// The learner runtime and every milestone deadline remain unchanged.
+static CLI_GATE: Mutex<()> = Mutex::new(());
 struct Temp(PathBuf);
 impl Temp {
     fn new() -> Self {
@@ -28,6 +32,7 @@ impl Drop for Temp {
     }
 }
 fn call(args: &[&std::ffi::OsStr]) -> Output {
+    let _gate = CLI_GATE.lock().unwrap_or_else(|poison| poison.into_inner());
     Command::new(env!("CARGO_BIN_EXE_labquest"))
         .args(args)
         .stdin(std::process::Stdio::null())
@@ -65,6 +70,7 @@ fn follow_handoff(cwd: &Path, guidance: &str, command: &str) -> Output {
             argv.extend(part.split_whitespace().map(str::to_string));
         }
     }
+    let _gate = CLI_GATE.lock().unwrap_or_else(|poison| poison.into_inner());
     Command::new(env!("CARGO_BIN_EXE_labquest"))
         .current_dir(cwd)
         .args(argv)
