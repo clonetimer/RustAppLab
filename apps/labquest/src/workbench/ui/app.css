@@ -674,3 +674,42 @@ summary:hover { color: var(--text); }
 @media (max-width: 600px) {
   .step-list[data-compact="true"] button { min-width: 44px; }
 }
+
+/* Keep project switching available without repeating the current path.
+   The two jump links appear only when the lesson and editor stack. */
+.project-controls:has(#project-form[hidden]) {
+  flex: 0 1 auto;
+  justify-content: flex-end;
+}
+.project-controls:has(#project-form:not([hidden])) { min-width: 0; }
+.mobile-jump { display: none; }
+.lesson-tools, .editor-title-row {
+  display: flex;
+  align-items: center;
+  gap: 8px;
+  min-width: 0;
+}
+@media (max-width: 949px) {
+  .mobile-jump {
+    display: inline-flex;
+    align-items: center;
+    min-height: 44px;
+    padding: 4px 8px;
+    border-radius: 4px;
+    color: var(--accent);
+    font-size: 13px;
+    font-weight: 600;
+    text-decoration: none;
+    white-space: nowrap;
+  }
+  .mobile-jump:hover { background: var(--hover); }
+  #lesson-panel, #editor-panel { scroll-margin-top: 8px; }
+}
+@media (max-width: 600px) {
+  .project-controls:has(#project-form[hidden]) {
+    flex: 0 0 auto;
+  }
+  .project-controls:has(#project-form:not([hidden])) {
+    flex: 1 1 100%;
+  }
+}

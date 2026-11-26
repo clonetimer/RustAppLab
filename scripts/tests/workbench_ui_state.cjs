@@ -291,3 +291,19 @@ test('reveal active navigation moves only the overflowing list', () => {
   assert.equal(list.scrollLeft, 146);
   assert.equal(list.scrollTop, 138);
 });
+
+test('open projects show a single switch control and can reveal the existing path form', () => {
+  const context = loadApp();
+  primeEditor(context, { ...card, project: { ...card.project, path: '/projects/A' } });
+  vm.runInContext('renderControls()', context);
+  assert.equal(vm.runInContext('ui.projectForm.hidden', context), true);
+  assert.equal(vm.runInContext('ui.projectSwitch.hidden', context), false);
+  vm.runInContext('state.switchingProject = true; renderControls()', context);
+  assert.equal(vm.runInContext('ui.projectForm.hidden', context), false);
+  assert.equal(vm.runInContext('ui.projectSwitch.textContent', context), '取消切换');
+  vm.runInContext('state.busy = "check"; renderControls()', context);
+  assert.equal(vm.runInContext('ui.projectSwitch.disabled', context), true);
+  vm.runInContext('state.busy = null; state.card.project = null; state.switchingProject = false; renderControls()', context);
+  assert.equal(vm.runInContext('ui.projectForm.hidden', context), false);
+  assert.equal(vm.runInContext('ui.projectSwitch.hidden', context), true);
+});

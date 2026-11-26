@@ -14,6 +14,7 @@ const state = {
   saveIssue: null,
   needsFileReload: false,
   checkingFocus: false,
+  switchingProject: false,
   connection: 'pending',
 };
 const ui = {};
@@ -387,6 +388,11 @@ function renderControls() {
 
   ui.projectPath.disabled = locked || !card;
   ui.openProject.disabled = locked || !card;
+  ui.projectForm.hidden = project && !state.switchingProject;
+  ui.projectSwitch.hidden = !project;
+  ui.projectSwitch.disabled = locked;
+  ui.projectSwitch.setAttribute('aria-expanded', String(project && state.switchingProject));
+  text(ui.projectSwitch, state.switchingProject ? '取消切换' : '切换项目');
   ui.create.hidden = Boolean(card?.bundle || project);
   ui.create.disabled = locked || !card || project || Boolean(card?.bundle);
   ui.lessonOpen.disabled = !card;
@@ -510,6 +516,7 @@ async function applyCard(card, { file, projectPath, forceFile = false } = {}) {
   const changedProject = previous?.id !== card.id || previous?.project?.path !== card.project?.path;
   state.card = card;
   if (changedProject || forceFile) {
+    state.switchingProject = false;
     state.file = null;
     state.lastCheck = null;
     state.output = null;
@@ -765,7 +772,8 @@ function initialize() {
   const ids = {
     engine: 'engine-status', courseList: 'course-list', catalogCount: 'catalog-count',
     courseTitle: 'course-title', projectState: 'project-state', projectPath: 'project-path',
-    projectForm: 'project-form', create: 'create-button', openProject: 'open-project-button',
+    projectForm: 'project-form', projectSwitch: 'switch-project-button',
+    create: 'create-button', openProject: 'open-project-button',
     stepList: 'step-list', lessonOpen: 'lesson-open', lessonClose: 'lesson-close', lessonDialog: 'lesson-dialog',
     lessonFrame: 'lesson-frame', lessonContent: 'lesson-content', lessonLoading: 'lesson-loading',
     stepTitle: 'step-title', goal: 'lesson-goal', target: 'lesson-function', concept: 'lesson-concept',
@@ -796,6 +804,18 @@ function initialize() {
   ui.create.addEventListener('click', () => { void changeProject('create'); });
   initializeKnowledge();
   initializeExperiments();
+  ui.projectSwitch.addEventListener('click', () => {
+    if (ui.projectSwitch.disabled || !state.card?.project) return;
+    state.switchingProject = !state.switchingProject;
+    if (!state.switchingProject) ui.projectPath.value = state.card.project.path;
+    renderControls();
+    if (state.switchingProject) {
+      ui.projectPath.focus();
+      ui.projectPath.select();
+    } else {
+      ui.projectSwitch.focus();
+    }
+  });
   ui.projectForm.addEventListener('submit', event => {
     event.preventDefault();
     void changeProject('open');
