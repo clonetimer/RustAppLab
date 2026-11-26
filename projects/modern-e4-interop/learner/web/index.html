@@ -1,0 +1,12 @@
+<!doctype html>
+<html lang="zh-CN">
+<head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1">
+<title>SignalBridge · WASM 信号分类</title>
+<style>body{font:16px system-ui,sans-serif;background:#f6f7fa;color:#182330;max-width:720px;margin:48px auto;padding:0 20px}main{background:white;padding:28px;border:1px solid #d9dfe7;border-radius:12px}label{display:block;margin:16px 0}input{display:block;margin-top:5px;padding:8px;width:95%;font-size:16px}button{padding:10px 18px;font:inherit}output{display:block;margin-top:20px;padding:16px;background:#eef2f6;white-space:pre-wrap}small{color:#516173}</style></head>
+<body><main><h1>SignalBridge · WASM 信号分类</h1><p>输入整数信号，由实际 Rust WebAssembly 函数判定低、正常或高。</p>
+<small id="status" role="status">加载实际 WASM 模块…</small>
+<label>样本（逗号分隔）<input id="samples" value="-4, 10, 19, 20, 31"></label>
+<label>低阈值<input id="low" value="10" inputmode="numeric"></label>
+<label>高阈值<input id="high" value="20" inputmode="numeric"></label>
+<button id="analyze" disabled>分析</button><output id="result" aria-live="polite">尚未分析</output>
+</main><script src="app.js"></script></body></html>

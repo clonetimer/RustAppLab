@@ -1,0 +1,51 @@
+name: Modern Rust E4 actual C ABI and WebAssembly
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+jobs:
+  e4:
+    name: E4 real C and WASM / ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 25
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: actions/setup-node@v4
+        with:
+          node-version: '22'
+      - uses: dtolnay/rust-toolchain@1.100.0
+        with:
+          targets: wasm32-unknown-unknown
+      - uses: ilammy/msvc-dev-cmd@v1
+        if: runner.os == 'Windows'
+      - name: Verify source and learner isolation
+        run: python -m unittest discover -s scripts/tests -p test_modern_e4_delivery.py -v
+      - name: Install actual Chromium browser
+        if: runner.os == 'Linux'
+        run: |
+          python -m pip install playwright==1.55.0
+          python -m playwright install --with-deps chromium
+      - name: Actual native C and Wasm browser checks
+        if: runner.os == 'Linux'
+        run: python scripts/modern_e4_check.py --output e4-evidence --browser
+      - name: Actual native C and Wasm Node checks
+        if: runner.os == 'Windows'
+        run: python scripts/modern_e4_check.py --output e4-evidence
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: modern-e4-${{ matrix.os }}
+          path: e4-evidence/

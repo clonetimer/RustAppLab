@@ -1,0 +1,12 @@
+[package]
+name = "e4_signal_bridge"
+version = "0.1.0"
+edition = "2024"
+rust-version = "1.100"
+publish = false
+
+[lib]
+crate-type = ["rlib", "cdylib"]
+
+[workspace]
+resolver = "3"

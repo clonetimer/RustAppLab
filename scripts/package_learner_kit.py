@@ -104,7 +104,7 @@ def course_inputs() -> list[tuple[str, bytes]]:
         "30_second_independent_product.md", "31_transfer_release.md",
         "LEARNER_EVIDENCE_PROTOCOL.md", "LEARNING_LOG_TEMPLATE.md", "BOOK_31_GAPS_REPAIR.md",
         "BOOK_MODERN_COVERAGE_D7.md", "MODERN_RUST_ROADMAP.md", "BOOK_D8_EDITION_2024.md",
-        "BOOK_D9_STABLE_FEATURES.md", "MODERN_STABLE_FEATURE_INDEX.md", "BOOK_D9_STDLIB_CARGO.md", "BOOK_D10_ASYNC_CORE.md", "BOOK_D10_TOKIO_STREAM.md", "BOOK_D11_QUALITY.md", "BOOK_D11_SAFETY.md", "NETWORK_SECURITY_BASELINE.md", "BOOK_E1_TLS_AUTH.md", "BOOK_E1_SQLITE.md", "BOOK_E2_GUI.md", "BOOK_E3_EMBEDDED.md",
+        "BOOK_D9_STABLE_FEATURES.md", "MODERN_STABLE_FEATURE_INDEX.md", "BOOK_D9_STDLIB_CARGO.md", "BOOK_D10_ASYNC_CORE.md", "BOOK_D10_TOKIO_STREAM.md", "BOOK_D11_QUALITY.md", "BOOK_D11_SAFETY.md", "NETWORK_SECURITY_BASELINE.md", "BOOK_E1_TLS_AUTH.md", "BOOK_E1_SQLITE.md", "BOOK_E2_GUI.md", "BOOK_E3_EMBEDDED.md", "BOOK_E4_INTEROP.md",
         "BEGINNER_WINDOWS_GUIDE.md", "00_first_five_minutes.md", "NETWORK_PREPARATION.md", "LEARNING_NAVIGATOR.md", "RUST_ERROR_LABS.md", "FOUNDATION_PATH.md", "FOUNDATION_NEXT_STEPS.md", "PROGRESS_OVERVIEW.md", "SYSTEMS_PATH.md", "RELIABILITY_PATH.md", "INDEPENDENT_PATH.md",
     ]
     result = [(f"course/{name}", (ROOT / "course" / name).read_bytes()) for name in files]
@@ -248,6 +248,13 @@ def course_inputs() -> list[tuple[str, bytes]]:
     for path in sorted((modern / "learner").rglob("*")):
         if (path.is_file() and not {"target", ".git", "__pycache__", "vendor"}.intersection(path.relative_to(modern).parts)
                 and (path.suffix in {".toml", ".lock", ".md", ".rs"} or path.name == "memory.x")):
+            result.append((path.relative_to(ROOT).as_posix(), path.read_bytes()))
+    # E4: the complete dependency-free TODO project, C header/client and browser assets.
+    modern = ROOT / "projects" / "modern-e4-interop"
+    result.append(("projects/modern-e4-interop/README.md", (modern / "README.md").read_bytes()))
+    for path in sorted((modern / "learner").rglob("*")):
+        if (path.is_file() and not {"target", ".git", "__pycache__"}.intersection(path.relative_to(modern).parts)
+                and path.suffix in {".toml", ".lock", ".md", ".rs", ".c", ".h", ".html", ".js"}):
             result.append((path.relative_to(ROOT).as_posix(), path.read_bytes()))
     return result
 
