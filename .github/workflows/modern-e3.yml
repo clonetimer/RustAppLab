@@ -1,0 +1,66 @@
+name: Modern Rust E3 embedded no_std and QEMU
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+jobs:
+  resolve:
+    name: E3 actual dependency resolution and RustSec
+    runs-on: ubuntu-latest
+    timeout-minutes: 45
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: dtolnay/rust-toolchain@1.100.0
+      - name: Validate fixed source and learner distribution
+        run: python -m unittest discover -s scripts/tests -p test_modern_e3_delivery.py -v
+      - name: Resolve, audit and package actual ARM dependencies
+        run: python scripts/modern_e3_check.py --mode resolve --output e3-resolved
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: e3-resolved
+          path: e3-resolved/
+  replay:
+    needs: resolve
+    name: E3 real host contracts and ARM build / ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 35
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: dtolnay/rust-toolchain@1.100.0
+        with:
+          targets: thumbv7m-none-eabi
+      - uses: actions/download-artifact@v4
+        with:
+          name: e3-resolved
+          path: e3-resolved
+      - name: Install real Cortex-M emulator
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y qemu-system-arm
+      - name: Frozen host tests and actual ARM firmware in QEMU
+        if: runner.os == 'Linux'
+        run: python scripts/modern_e3_check.py --mode replay --bundle e3-resolved/E3-learner-offline.zip --output e3-evidence --qemu
+      - name: Frozen host tests and actual ARM cross compilation
+        if: runner.os == 'Windows'
+        run: python scripts/modern_e3_check.py --mode replay --bundle e3-resolved/E3-learner-offline.zip --output e3-evidence
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: modern-e3-${{ matrix.os }}
+          path: e3-evidence/
