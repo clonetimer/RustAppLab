@@ -118,10 +118,12 @@ def verify_runtime_workbench(fresh: Path, learner: Path, logfile: Path, env: dic
         expected = {'firstcard', 'unitlab', 'quizdeck', 'textscope', 'ledgerlite',
                     'badgeforge', 'termgarden', 'batchmeter', 'minikv', 'netfetch',
                     'servicedesk', 'storedesk', 'asyncboard', 'book-d1', 'book-d2',
-                    'book-d3', 'book-d4', 'book-d5', 'book-d6', 'book-foundations'}
+                    'book-d3', 'book-d4', 'book-d5', 'book-d6', 'book-foundations',
+                    'modern-d8', 'modern-d9a', 'modern-d9b', 'modern-d10a',
+                    'modern-d11a', 'modern-e4', 'modern-e5'}
         actual = [course['id'] for course in catalog['courses']]
         if len(actual) != len(expected) or set(actual) != expected or actual[0] != 'firstcard':
-            raise ValueError('relocated runtime lacks its embedded course catalog')
+            raise ValueError(f'relocated runtime course catalog differs: missing={sorted(expected-set(actual))}, extra={sorted(set(actual)-expected)}, order/count={actual}')
         for route, marker in (('/', b'source-editor'), ('/assets/app.js', b'/api/'),
                               ('/assets/knowledge.js', b'knowledgeMatches'),
                               ('/assets/experiments.js', b'/api/experiment'),
@@ -134,6 +136,20 @@ def verify_runtime_workbench(fresh: Path, learner: Path, logfile: Path, env: dic
         source = json.loads(fetch('/api/file?id=firstcard&path=src%2Fmain.rs'))
         if source['content'] != (learner/'src/main.rs').read_text(encoding='utf-8'):
             raise ValueError('relocated workbench did not read the learner source')
+        # Creation of a modern TODO copy requires no new toolchain; execution
+        # is separately verified with Rust 1.100.0 by the specialist workflow.
+        modern = json.loads(fetch('/api/create', {'id':'modern-e5'}))
+        project = modern['project']
+        path = Path(project['path'])
+        if not path.resolve().is_relative_to(fresh.resolve()):
+            raise ValueError('modern learner escaped relocated runtime workspace')
+        if project['history'] is not None or set(project['files']) != {'src/lib.rs', 'LEARNING_LOG.md'}:
+            raise ValueError('modern learner has unexpected editable inputs/history')
+        template = ROOT/'projects/modern-e5-science/learner/src/lib.rs'
+        if (path/'src/lib.rs').read_bytes() != template.read_bytes():
+            raise ValueError('relocated runtime did not create the original TODO source')
+        if (path/'tests/contracts.rs').read_bytes() != (template.parents[1]/'tests/contracts.rs').read_bytes():
+            raise ValueError('relocated runtime lost fixed modern tests')
 
 
 def main() -> int:

@@ -9,6 +9,7 @@ import os
 from pathlib import Path
 import tempfile
 import time
+import traceback
 from urllib.parse import urlencode
 from urllib.request import Request, ProxyHandler, build_opener
 
@@ -119,6 +120,8 @@ def main():
                 catalog = {item["id"]: item for item in api(base, "/api/catalog")["courses"]}
                 assert set(COURSES) <= set(catalog) and len(catalog) == 27
                 for course, folder in COURSES.items():
+                    report["current_course"] = course
+                    print(course, "START", flush=True)
                     card = api(base, "/api/create", form={"id": course})
                     project = card["project"]
                     assert Path(project["path"]).resolve().is_relative_to(workspace.resolve())
@@ -131,30 +134,47 @@ def main():
                     frozen = {p.relative_to(root).as_posix(): hashlib.sha256(p.read_bytes()).hexdigest()
                               for p in root.rglob("*") if p.is_file() and
                               p not in (source, root / "LEARNING_LOG.md")}
-                    red = check(base, course, str(root), 1)
-                    assert red["exit_code"] == 101 and "test result: FAILED" in red["output"], red
-                    assert "+1.100.0" in red["output"] and "--frozen" in red["output"]
+                    reds = []
+                    for step in range(1, len(catalog[course]["steps"])):
+                        red = check(base, course, str(root), step)
+                        assert red["exit_code"] == 101 and "test result: FAILED" in red["output"], red
+                        assert "+1.100.0" in red["output"] and "--frozen" in red["output"]
+                        reds.append(red)
+                    report["projects"][course] = {"red": reds}
                     current = api(base, "/api/file", id=course, path="src/lib.rs", project_path=str(root))
-                    solved = (ROOT / "projects" / folder / "reference/src/lib.rs").read_text(encoding="utf-8")
+                    # D8 is a two-edition reference workspace; the learner matches e2024.
+                    reference = ROOT / "projects" / folder / "reference"
+                    if course == "modern-d8":
+                        reference /= "e2024"
+                    solved_path = reference / "src/lib.rs"
+                    report["reference_path"] = solved_path.relative_to(ROOT).as_posix()
+                    solved = solved_path.read_text(encoding="utf-8")
                     api(base, "/api/save", form={"id": course, "path": "src/lib.rs",
                         "revision": current["revision"], "content": solved, "project_path": str(root)})
-                    assert api(base, "/api/job", id=red["id"])["stale"]
-                    first = check(base, course, str(root), 1)
+                    assert all(api(base, "/api/job", id=red["id"])["stale"] for red in reds)
+                    greens = []
+                    for step in range(1, len(catalog[course]["steps"])):
+                        green = check(base, course, str(root), step)
+                        assert green["exit_code"] == 0 and "test result: ok" in green["output"], green
+                        assert "running 0 tests" not in green["output"], green
+                        assert f"step{step}_" in green["output"] and not green["stale"]
+                        greens.append(green)
                     final = check(base, course, str(root), len(catalog[course]["steps"]))
-                    assert first["exit_code"] == final["exit_code"] == 0, (first, final)
-                    assert "step1_" in first["output"] and "--all-targets" in final["output"]
+                    assert final["exit_code"] == 0 and "--all-targets" in final["output"], final
                     assert "--doc" in final["output"] and not final["stale"]
                     assert all(hashlib.sha256((root / p).read_bytes()).hexdigest() == h
                                for p, h in frozen.items())
                     assert (template / "src/lib.rs").read_bytes() != source.read_bytes()
-                    report["projects"][course] = {"red": red, "green": first, "final": final}
+                    report["projects"][course] = {"red": reds, "green": greens, "final": final}
                     print(course, "PASS", flush=True)
                 if args.browser:
                     browser_flow(base, output, report)
         report["status"] = "PASS"
     except Exception as exc:
         report["error"] = repr(exc)
+        report["traceback"] = traceback.format_exc()
         print("FAIL", repr(exc), flush=True)
+        traceback.print_exc()
     finally:
         (output / "report.json").write_text(json.dumps(report, ensure_ascii=False, indent=2) + "\n", encoding="utf-8")
     return 0 if report["status"] == "PASS" else 1

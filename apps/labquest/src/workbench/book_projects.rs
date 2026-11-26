@@ -100,13 +100,12 @@ impl BookCourse {
     pub fn is_reference(&self, root: &Path) -> bool {
         if self.is_modern() {
             // Never open the shipped modern template or reference in place.
-            return root.file_name().is_some_and(|name| {
-                name == "learner" || name == "reference"
-            }) && root.parent().is_some_and(|parent| {
-                parent.file_name().is_some_and(|name| name == self.reference_dir)
-                    && parent.parent().is_some_and(|p| {
-                        p.file_name().is_some_and(|name| name == "projects")
-                    })
+            return root.ancestors().any(|path| {
+                let matches_course = path
+                    .file_name()
+                    .is_some_and(|name| name == self.reference_dir);
+                let in_projects = path.parent().and_then(Path::file_name);
+                matches_course && in_projects.is_some_and(|name| name == "projects")
             });
         }
         let embedded_root = Path::new(env!("CARGO_MANIFEST_DIR"))

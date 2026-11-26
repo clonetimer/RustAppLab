@@ -123,9 +123,10 @@ fn commands(
                     add(&["test", "--frozen", "--test", "contracts", &filter], &[]);
                 }
             } else {
-                let target = book.run.as_ref().ok_or_else(|| {
-                    ApiError::new(400, "本课外部 C/WASM 客户端需按讲义单独运行")
-                })?;
+                let target = book
+                    .run
+                    .as_ref()
+                    .ok_or_else(|| ApiError::new(400, "本课外部 C/WASM 客户端需按讲义单独运行"))?;
                 add(
                     &["run", "--frozen", "--release", "--example", target.binary],
                     args,

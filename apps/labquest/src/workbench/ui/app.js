@@ -58,6 +58,8 @@ function nextDestination(card, check, changed) {
       || check.source_digest !== card.project.source_digest) {
     return null;
   }
+  // Modern checks select one contract, not a cumulative Studio assessment.
+  if (card.id.startsWith('modern-') && check.step !== card.step) return null;
   if (card.step < card.step_count) {
     const suggested = card.project.suggested_step;
     const withinScope = Number.isInteger(suggested) && suggested > card.step

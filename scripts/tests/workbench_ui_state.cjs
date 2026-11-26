@@ -259,3 +259,12 @@ test('knowledge and experiment actions unlock when a project check finishes', ()
   assert.equal(vm.runInContext('ui.experimentFailure.disabled', context), false);
   assert.equal(vm.runInContext('ui.experimentRepair.disabled', context), false);
 });
+
+test('modern step-local checks cannot imply a different step passed', () => {
+  const { nextDestination } = loadApp();
+  const modern = { ...card, id: 'modern-e5', step_count: 5, next_course: null };
+  const result = { ...check, course_id: modern.id, step: 3 };
+  assert.equal(nextDestination(modern, result, false), null);
+  assert.equal(nextDestination({ ...modern, step: 3 }, result, false).step, 4);
+  assert.equal(nextDestination({ ...modern, step: 5 }, { ...result, step: 5 }, false).experiment, true);
+});

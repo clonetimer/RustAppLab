@@ -24,6 +24,9 @@ jobs:
         with:
           python-version: '3.12'
       - uses: dtolnay/rust-toolchain@1.100.0
+        with:
+          components: rustfmt, clippy
+          targets: wasm32-unknown-unknown
       - name: Build real workbench
         run: cargo build --locked --offline --release -p labquest
       - name: Install actual browser

@@ -53,7 +53,7 @@ D5 的服务器行为用真实测试验证，D6-A 是库与工具练习，因此
 
 ## 现代 Rust：先学会使用新版，再扩展到专用工具
 
-此功能属于当前开发候选，不改变历史 rc.5 下载包。先安装 Rust 1.100.0（首次需网络）：`rustup toolchain install 1.100.0 --profile minimal`。经典 1.74 与 C1/C2 1.85.0 不变。左侧「现代 RUST」提供七门无额外 crate 的个人 TODO 工程，按步骤检查真实 Cargo 合同；最后一项执行全部目标与文档测试。每个项目只编辑 src/lib.rs 和学习记录，其他固定源、工具链、测试、C/Web 材料不得由工作台覆盖。默认运行入口为有限 Rust example；E4 只在网页做 host 测试，实际 C/WASM 按讲义继续。依赖供应链、GUI、QEMU、Miri/Fuzz、Cargo/IDE 专项仍按对应讲义及独立包操作；知识导航已提供现代全路线中文讲义，不冒称这些工具已经全部网页化。
+此功能属于当前开发候选，不改变历史 rc.5 下载包。先安装 Rust 1.100.0（首次需网络）：`rustup toolchain install 1.100.0 --profile minimal --component rustfmt --component clippy`。E4 还需 `rustup target add wasm32-unknown-unknown --toolchain 1.100.0`。经典 1.74 与 C1/C2 1.85.0 不变。左侧「现代 RUST」提供七门无额外 crate 的个人 TODO 工程，按步骤检查真实 Cargo 合同；最后一项执行全部目标与文档测试。每个项目只编辑 src/lib.rs 和学习记录，其他固定源、工具链、测试、C/Web 材料不得由工作台覆盖。默认运行入口为有限 Rust example；E4 只在网页做 host 测试，实际 C/WASM 按讲义继续。依赖供应链、GUI、QEMU、Miri/Fuzz、Cargo/IDE 专项仍按对应讲义及独立包操作；知识导航已提供现代全路线中文讲义，不冒称这些工具已经全部网页化。
 
 ## 记录自己是否理解
 
