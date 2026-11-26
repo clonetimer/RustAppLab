@@ -19,8 +19,8 @@
 | D9 | 1.75–1.100 稳定特性 | 版本增量审计和优先级；语法、Trait、生命周期捕获、async closure、Never、DropGuard 等代表性练习；按稳定范围逐项验收 | D9-A [九项实际任务](BOOK_D9_STABLE_FEATURES.md) 与 [26 版本索引](MODERN_STABLE_FEATURE_INDEX.md) 已提交待 CI；D9-B [逐版代表性审计及标准库/Cargo 实验](BOOK_D9_STDLIB_CARGO.md) 已提交，待当前 CI；完整 API 清单、Unsafe 等专项不纳入覆盖率 |
 | D10 | 异步核心课 | 六节目标逐项关闭；Future、Poll、Waker、Pin/Unpin、Stream、join/select、async trait、取消与阻塞；以已有应用串起概念而非重复项目 | D10-A 六步实验双平台专项通过（Run 45586040166）；D10-B [七步真实 Tokio/Stream 实验与离线交付](BOOK_D10_TOKIO_STREAM.md) 双平台专项及完整 PR CI 通过，#20 已合并（b6f2abec） |
 | D11 | 现代开发工具 | IDE 断点、Clippy、Miri、属性测试、Fuzzing、基准与依赖审计；独立运行证据及学员迁移记录 | D11-A [工程质量与工具实验](BOOK_D11_QUALITY.md) 完整 CI 与专项通过，#21 已合并（c470154）；D11-B [Miri/libFuzzer/RustSec 实验](BOOK_D11_SAFETY.md) 专项 5/5 PASS，完整回归和 E1-0 安全修复合并（#23，0e71b443）；真人 IDE 与网页入口待验 |
-| E1 | 网络工程 | TLS、认证、数据库、可观测性、错误边界；明确本地教学与公网安全差异 | E1-0 [依赖安全收口](NETWORK_SECURITY_BASELINE.md) 已合并；E1-A [真实 TLS/认证](BOOK_E1_TLS_AUTH.md) 源码已提交待 CI；E1-B 持久化/可观测性待补 |
-| E2 | 桌面 GUI | 一款完整可交互软件，模型/视图/状态分离，跨平台测试 | 待评估 |
+| E1 | 网络工程 | TLS、认证、数据库、可观测性、错误边界；明确本地教学与公网安全差异 | E1-0 [依赖安全收口](NETWORK_SECURITY_BASELINE.md) 已合并；E1-A [真实 TLS/认证](BOOK_E1_TLS_AUTH.md) 已通过并合并 #24；E1-B #25 独立修复及重验中 |
+| E2 | 桌面 GUI | 一款完整可交互软件，模型/视图/状态分离，跨平台测试 | [SignalDesk](BOOK_E2_GUI.md) 双语原生 GUI 已提交，待实际依赖审计、控件测试与截图 |
 | E3 | 嵌入式与实时 | no_std、硬件抽象、仿真与硬件分别验证 | 待评估 |
 | E4 | 互操作与 WASM | C ABI、安全封装、跨语言所有权；浏览器 WASM 独立小项目 | 待评估 |
 | E5 | 科学计算和 AI | 数值/数据处理、性能测量；可选 AI 应用，准确说明计算后端 | 待评估 |
@@ -78,3 +78,7 @@ D11-B Run 45611450910 五个专项全部通过，审计 artifact 15020451443 发
 #23 在 a43d85f 的八套 CI 全部成功，包括固定数据库六份网络锁漏洞/unsound 准入，累计合入 D11-B 与 E1-0，main 0e71b443；避免单独发布已知风险的中间树。E1-A 直接 path 依赖已完成 C2 路由/单写者，避免重写业务；旧 HTTP Origin 校验原样，HTTPS 只开放显式 API，写入拒绝 Origin。四个 TODO、五个合同；真 rustls/Tokio TLS 1.3、客户端显式信任、错误 hostname/信任和明文拒绝、16 在途握手/2 秒期限、401/403 不改日志、授权后真实重启读取。凭证为随机等长教学值，不宣称完整账号系统。直接版本固定，完整新锁由 CI resolve 一次实际生成并审计，两平台复用哈希；后续冻结通过的锁，避免伪造锁文件。独立学员 ZIP 提供已学 C2 支持代码与 vendor，不含 E1 答案；普通 learner-kit 仅模板。网页、真人效果、E1-B 数据库与可观测性仍待验收。
 
 E1-A Run 45654557009 实际 Cargo resolve/RustSec 通过：101 个 registry 包，0 vulnerability/unsound；[原始锁产物](https://github.com/clonetimer/RustAppLab/actions/runs/45654557009/artifacts/15043180053) SHA-256 44ef895eb533fcf092d77f52c2488513d9dddb1b8faa0ad034d4cf7615d2c3fd。已冻结原始字节，后续只允许 --locked fetch 与复审；两份锁及 artifact 哈希绑定。首轮 Linux 4/5 测试通过，集成在 tests/contracts.rs:99 调用 start_store 前未初始化日志（C2 ensure_store 明确要求先 init），见 artifact 15042116734。增加 C2 的 init_store 公共重导出（仍由原 servicedesk::init 实施，非覆盖），测试/演示显式 init，CLI 增加 init 和不覆盖回归；并新增未初始化启动拒绝断言。不是通过删除测试或放宽存储保护修复。Windows 首轮也失败；当前提交须完整重跑，不提前宣布交付。
+
+## 开发经验（E2）
+
+E1-A #24 九套同提交 CI 通过、已合并 main 5ec8504；E1-B #25 仍在独立验收，不以 GUI 开发掩盖 Windows 并发失败。E2 不依赖网络项目，直接从已合并 main 分支，避免继续堆叠。核对 eframe/egui 0.37.0 实际 App::ui API 和 system font fallback，新增真实双语 SignalDesk，四步 TODO、五个合同（包括实际 egui_kittest 点击和中文路径导出/拒绝覆盖）。真实原生 Linux Xvfb/Mesa 窗口键盘事件、三张实际截图和状态标题核验；不宣称 Windows 桌面已实测。初始完整新锁由 CI 生成、RustSec 固定 DB gate、单一 vendor 学员 ZIP 两平台空缓存 replay 后冻结。同步包范围与指纹，不影响旧 MSRV/rc.5。E1-B #25 与 E2 合并前需处理共用文档/manifest 的真实冲突，不丢任何改动。网页与真人效果待验证。

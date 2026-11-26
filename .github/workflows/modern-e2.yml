@@ -1,0 +1,64 @@
+name: Modern Rust E2 native GUI
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+jobs:
+  resolve:
+    name: E2 actual GUI dependency resolution and RustSec
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: dtolnay/rust-toolchain@1.100.0
+      - name: Validate source and learner isolation
+        run: python -m unittest discover -s scripts/tests -p test_modern_e2_delivery.py -v
+      - name: Resolve, audit and package actual GUI dependencies
+        run: python scripts/modern_e2_check.py --mode resolve --output e2-resolved
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: e2-resolved
+          path: e2-resolved/
+  replay:
+    needs: resolve
+    name: E2 actual GUI contracts / ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 60
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: dtolnay/rust-toolchain@1.100.0
+      - uses: actions/download-artifact@v4
+        with:
+          name: e2-resolved
+          path: e2-resolved
+      - name: Install real X11/OpenGL and window interaction tools
+        if: runner.os == 'Linux'
+        run: sudo apt-get update && sudo apt-get install -y libgl1-mesa-dev libxkbcommon-dev libx11-dev libxcursor-dev libxi-dev libxrandr-dev libxinerama-dev libxxf86vm-dev libfontconfig1-dev xvfb openbox xdotool imagemagick fonts-noto-cjk
+      - name: Frozen contracts and actual native window screenshots
+        if: runner.os == 'Linux'
+        run: xvfb-run -a -s "-screen 0 1280x900x24" python scripts/modern_e2_check.py --mode replay --bundle e2-resolved/E2-learner-offline.zip --output e2-evidence --native-gui
+      - name: Frozen contracts and egui widget interactions
+        if: runner.os == 'Windows'
+        run: python scripts/modern_e2_check.py --mode replay --bundle e2-resolved/E2-learner-offline.zip --output e2-evidence
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: modern-e2-${{ matrix.os }}
+          path: e2-evidence/
