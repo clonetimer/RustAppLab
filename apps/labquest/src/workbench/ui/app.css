@@ -658,3 +658,19 @@ summary:hover { color: var(--text); }
 @media (prefers-reduced-motion: reduce) {
   *, *::before, *::after { scroll-behavior: auto !important; }
 }
+
+/* Long courses: compact numbered navigation, full task title stays in the card.
+   Accessible names and tooltips keep the full labels. Small screens scroll
+   only the strip and retain a 44px touch target. */
+.step-list[data-compact="true"] { gap: 3px; }
+.step-list[data-compact="true"] button {
+  justify-content: center;
+  min-width: 38px;
+  padding-inline: 8px;
+  font-variant-numeric: tabular-nums;
+}
+.step-list[data-compact="true"] .step-label { display: none; }
+.step-list[data-compact="true"] [aria-current="step"] { background: var(--selected); }
+@media (max-width: 600px) {
+  .step-list[data-compact="true"] button { min-width: 44px; }
+}

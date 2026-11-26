@@ -268,3 +268,26 @@ test('modern step-local checks cannot imply a different step passed', () => {
   assert.equal(nextDestination({ ...modern, step: 3 }, result, false).step, 4);
   assert.equal(nextDestination({ ...modern, step: 5 }, { ...result, step: 5 }, false).experiment, true);
 });
+
+test('modern task cards hide only exact duplicate title/goal/target content', () => {
+  const { repeatedObjectives } = loadApp();
+  const modern = { id: 'modern-d9b', step_title: 'Inspect', goal: 'Inspect', function: 'Inspect' };
+  assert.equal(repeatedObjectives(modern).goal, true);
+  assert.equal(repeatedObjectives(modern).target, true);
+  assert.equal(repeatedObjectives({ ...modern, goal: 'Different goal' }).goal, false);
+  assert.equal(repeatedObjectives({ ...modern, function: 'src/lib.rs' }).target, false);
+  assert.equal(repeatedObjectives({ ...modern, id: 'unitlab' }).goal, false);
+});
+
+test('reveal active navigation moves only the overflowing list', () => {
+  const { revealInList } = loadApp();
+  const list = {
+    scrollWidth: 900, clientWidth: 300, scrollHeight: 600, clientHeight: 200,
+    scrollLeft: 0, scrollTop: 0,
+    getBoundingClientRect: () => ({ left: 0, right: 300, top: 0, bottom: 200 }),
+    querySelector: () => ({ getBoundingClientRect: () => ({ left: 400, right: 444, top: 300, bottom: 336 }) }),
+  };
+  revealInList(list, '[data-step="16"]');
+  assert.equal(list.scrollLeft, 146);
+  assert.equal(list.scrollTop, 138);
+});
