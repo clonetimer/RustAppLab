@@ -139,6 +139,7 @@ function buildCourses() {
     const [name, ...subtitle] = course.title.split(' · ');
     const control = button('', 'course', course.id);
     control.className = 'course-link';
+    control.title = course.title;
     control.disabled = Boolean(state.busy);
     const label = document.createElement('strong');
     label.textContent = name;
@@ -167,6 +168,7 @@ function renderCard(previous) {
   if (previous?.id !== card.id) {
     ui.stepList.replaceChildren(...course.steps.map((title, index) => {
       const control = button(title, 'step', index + 1);
+      control.title = title;
       control.disabled = Boolean(state.busy);
       const ordinal = document.createElement('span');
       ordinal.className = 'step-number';
@@ -195,6 +197,16 @@ function renderCard(previous) {
       details.append(summary, description);
       return details;
     }));
+    // Keep a long, horizontally scrollable step strip on the current step.
+    // Adjust only the strip, never scroll the learner's whole page.
+    const strip = ui.stepList;
+    const active = strip.querySelector?.(`[data-step="${card.step}"]`);
+    if (active && strip.scrollWidth > strip.clientWidth) {
+      const view = strip.getBoundingClientRect();
+      const item = active.getBoundingClientRect();
+      if (item.left < view.left) strip.scrollLeft -= view.left - item.left + 2;
+      else if (item.right > view.right) strip.scrollLeft += item.right - view.right + 2;
+    }
     ui.lessonContent.scrollTop = 0;
     ui.runArgs.value = card.run_args.join('\n');
     ui.runSettings.open = false;
