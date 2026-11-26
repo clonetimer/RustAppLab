@@ -36,6 +36,7 @@
         </div>
         <div class="project-controls">
           <button type="button" id="create-button" class="secondary" disabled>创建学习项目</button>
+          <button type="button" id="switch-project-button" class="secondary" aria-controls="project-form" aria-expanded="false" hidden>切换项目</button>
           <form id="project-form" class="project-form">
             <label class="visually-hidden" for="project-path">已有项目目录</label>
             <input id="project-path" placeholder="已有项目目录，例如 D:\练习 Rust\FirstCard" autocomplete="off" spellcheck="false" required disabled>
@@ -50,7 +51,10 @@
         <section id="lesson-panel" class="panel" aria-labelledby="lesson-title" tabindex="-1">
           <header class="panel-heading">
             <h2 id="lesson-title">任务卡</h2>
-            <button type="button" id="lesson-open" class="text-button" aria-haspopup="dialog" aria-controls="lesson-dialog" disabled>完整讲义 <span aria-hidden="true">↗</span></button>
+            <div class="lesson-tools">
+              <button type="button" id="lesson-open" class="text-button" aria-haspopup="dialog" aria-controls="lesson-dialog" disabled>完整讲义 <span aria-hidden="true">↗</span></button>
+              <a href="#editor-panel" id="jump-to-editor" class="mobile-jump">编辑代码 ↓</a>
+            </div>
           </header>
           <article id="lesson-content" class="lesson-body" tabindex="0" aria-labelledby="step-title" hidden>
             <h3 id="step-title" tabindex="-1"></h3>
@@ -88,9 +92,12 @@
           <p id="lesson-loading" class="empty-lesson">正在读取课程目录…</p>
         </section>
 
-        <section id="editor-panel" class="panel editor-panel" aria-labelledby="editor-title">
+        <section id="editor-panel" class="panel editor-panel" aria-labelledby="editor-title" tabindex="-1">
           <header class="panel-heading editor-heading">
-            <h2 id="editor-title">源码编辑器</h2>
+            <div class="editor-title-row">
+              <h2 id="editor-title">源码编辑器</h2>
+              <a href="#lesson-panel" id="jump-to-lesson" class="mobile-jump">任务卡 ↑</a>
+            </div>
             <div class="editor-actions">
               <button type="button" id="save-button" class="secondary" title="Ctrl+S / ⌘S" disabled>保存</button>
               <button type="button" id="run-button" class="secondary" disabled>运行程序</button>

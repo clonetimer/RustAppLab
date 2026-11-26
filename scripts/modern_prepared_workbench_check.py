@@ -78,6 +78,9 @@ def browser_check(base, course, work, output, report):
             page.goto(base + "/", wait_until="domcontentloaded")
             page.locator(f'#course-list [data-course="{course}"]').click()
             expect(page.locator("#create-button")).to_be_hidden()
+            switch = page.locator("#switch-project-button")
+            if switch.is_visible():
+                switch.click()
             page.locator("#project-path").fill(str(work))
             with page.expect_response(lambda r: r.url == base + "/api/open" and r.request.method == "POST") as response:
                 page.locator("#open-project-button").click()
