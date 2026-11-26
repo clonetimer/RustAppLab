@@ -3,6 +3,8 @@
 mod handlers;
 pub mod model;
 pub use model::{ApiError, AppState, Ticket};
+/// Explicit, non-overwriting journal creation; serving still requires an existing store.
+pub use servicedesk::init as init_store;
 
 use axum::{
     extract::DefaultBodyLimit,

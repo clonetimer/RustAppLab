@@ -1,0 +1,57 @@
+name: Modern Rust E1-A HTTPS and authorization
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+jobs:
+  resolve:
+    name: E1-A actual lock resolution and RustSec gate
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: dtolnay/rust-toolchain@1.100.0
+      - name: Validate source and learner isolation
+        run: python -m unittest discover -s scripts/tests -p test_modern_e1a_delivery.py -v
+      - name: Resolve real Cargo lock and audit new TLS graph
+        run: python scripts/modern_e1a_check.py --mode resolve --output e1a-resolved
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: e1a-resolved
+          path: e1a-resolved/
+  replay:
+    needs: resolve
+    name: E1-A frozen TLS contracts / ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 40
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: dtolnay/rust-toolchain@1.100.0
+      - uses: actions/download-artifact@v4
+        with:
+          name: e1a-resolved
+          path: e1a-resolved
+      - name: Test actual HTTPS, fixed red/green and relocated vendored learner
+        run: python scripts/modern_e1a_check.py --mode replay --lock-file e1a-resolved/Cargo.lock --output e1a-evidence
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: modern-e1a-${{ matrix.os }}
+          path: e1a-evidence/

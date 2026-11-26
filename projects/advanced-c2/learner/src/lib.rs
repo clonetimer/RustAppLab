@@ -3,6 +3,8 @@ mod handlers;
 pub mod model;
 use axum::Router;
 pub use model::{ApiError, AppState, Ticket};
+/// Explicit, non-overwriting journal creation; serving still requires an existing store.
+pub use servicedesk::init as init_store;
 use std::path::Path;
 use tokio::{net::TcpListener, sync::watch};
 
