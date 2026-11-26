@@ -21,7 +21,7 @@
 | D11 | 现代开发工具 | IDE 断点、Clippy、Miri、属性测试、Fuzzing、基准与依赖审计；独立运行证据及学员迁移记录 | D11-A [工程质量与工具实验](BOOK_D11_QUALITY.md) 完整 CI 与专项通过，#21 已合并（c470154）；D11-B [Miri/libFuzzer/RustSec 实验](BOOK_D11_SAFETY.md) 专项 5/5 PASS，完整回归和 E1-0 安全修复合并（#23，0e71b443）；真人 IDE 与网页入口待验 |
 | E1 | 网络工程 | TLS、认证、数据库、可观测性、错误边界；明确本地教学与公网安全差异 | E1-0 [依赖安全收口](NETWORK_SECURITY_BASELINE.md) 已合并；E1-A [真实 TLS/认证](BOOK_E1_TLS_AUTH.md) 已冻结真实依赖锁、修复首轮初始化故障待重验；E1-B [SQLite 事务与观测](BOOK_E1_SQLITE.md) 源码已提交待 CI |
 | E2 | 桌面 GUI | 一款完整可交互软件，模型/视图/状态分离，跨平台测试 | 待评估 |
-| E3 | 嵌入式与实时 | no_std、硬件抽象、仿真与硬件分别验证 | 待评估 |
+| E3 | 嵌入式与实时 | no_std、硬件抽象、仿真与硬件分别验证 | [Embedded Monitor](BOOK_E3_EMBEDDED.md) 无堆分配核心/真实 ARM 固件已提交；待依赖审计、双平台、QEMU 实测 |
 | E4 | 互操作与 WASM | C ABI、安全封装、跨语言所有权；浏览器 WASM 独立小项目 | 待评估 |
 | E5 | 科学计算和 AI | 数值/数据处理、性能测量；可选 AI 应用，准确说明计算后端 | 待评估 |
 
@@ -88,3 +88,7 @@ E1-A #24 九套同提交 CI PASS，已合并 main 5ec8504；#25 原基线 tree �
 ## 交付回归补强（2026-11-26）
 
 E1-B #25 合并后，main 2f4a53dc 的 [Windows 交付 Run 45749380246 原始产物](https://github.com/clonetimer/RustAppLab/actions/runs/45749380246/artifacts/15085097087) 显示解压源码 Debug 417 passed，Release 的 learning_e2e::storedesk_guidance_rejects_partial_commits 在第 3 步 8 秒超时；旧 runner 删除临时 stdout/stderr，无法确认具体子测试或 I/O 根因。保持 Studio 8 秒期限、原四条 StoreDesk 第三关合同及非零失败策略。修复将直接子进程终止后可获取的 stdout/stderr 末尾各限 4096 字节纳入失败报告，并记录真实 StoreDesk CLI 操作开始、结束及耗时（不打印路径或数据）。learning_e2e 的嵌套 CLI 入口增加测试内互斥，减轻同一测试二进制并行编译和磁盘争用；不改变学员执行逻辑、不跳过任何合同，也不能据此断言已找到超时唯一根因。新增限长日志单元测试及现有超时测试的部分输出断言。需同提交 Windows/Linux 回归验证；E2 当前 CI 保持独立。
+
+## 开发经验（E3）
+
+E2 #26 的冻结锁、Windows/Linux 实际合同及 Linux 原生窗口三张截图在 Run 45750393437 全部通过（artifact 15085692080），完整回归最后 Windows native 尚待收口；不宣称 Windows GUI 实机或真人学习。为不中断耗时中的 E2 当前 CI，E3 从已经合并 E1-B 的独立 main 开发，先独立保留 StoreDesk 限时诊断提交 91f2d346，再提交真实 no_std 核心、embedded-hal 1.0.0 接口、Cortex-M3 SysTick exception 和 WFI、实际 QEMU ARM ELF、4 步 5 TODO 及 5 固定合同。区分模拟传感器/引脚和真实模拟 CPU，故障低电平指令失败明确报 Output 而不是宣称安全。交叉编译 Windows/Linux，QEMU Ubuntu；两份参考/学员 ELF 均真实运行并核验 IRQ/相位/滞环/联锁，不把虚拟 tick 当物理毫秒或 WCET。锁由真实 Cargo 生成、固定 RustSec gate 后冻结。增加 memory.x 源包/学员包白名单与 Python/PowerShell 一致指纹；保持经典根 MSRV/rc.5。当前未实际验证，E2 收口后整合共享打包文件与清单，再完整 CI。
