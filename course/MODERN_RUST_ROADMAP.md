@@ -19,8 +19,8 @@
 | D9 | 1.75–1.100 稳定特性 | 版本增量审计和优先级；语法、Trait、生命周期捕获、async closure、Never、DropGuard 等代表性练习；按稳定范围逐项验收 | D9-A [九项实际任务](BOOK_D9_STABLE_FEATURES.md) 与 [26 版本索引](MODERN_STABLE_FEATURE_INDEX.md) 已提交待 CI；D9-B [逐版代表性审计及标准库/Cargo 实验](BOOK_D9_STDLIB_CARGO.md) 已提交，待当前 CI；完整 API 清单、Unsafe 等专项不纳入覆盖率 |
 | D10 | 异步核心课 | 六节目标逐项关闭；Future、Poll、Waker、Pin/Unpin、Stream、join/select、async trait、取消与阻塞；以已有应用串起概念而非重复项目 | D10-A 六步实验双平台专项通过（Run 45586040166）；D10-B [七步真实 Tokio/Stream 实验与离线交付](BOOK_D10_TOKIO_STREAM.md) 双平台专项及完整 PR CI 通过，#20 已合并（b6f2abec） |
 | D11 | 现代开发工具 | IDE 断点、Clippy、Miri、属性测试、Fuzzing、基准与依赖审计；独立运行证据及学员迁移记录 | D11-A [工程质量与工具实验](BOOK_D11_QUALITY.md) 完整 CI 与专项通过，#21 已合并（c470154）；D11-B [Miri/libFuzzer/RustSec 实验](BOOK_D11_SAFETY.md) 专项 5/5 PASS，完整回归和 E1-0 安全修复合并（#23，0e71b443）；真人 IDE 与网页入口待验 |
-| E1 | 网络工程 | TLS、认证、数据库、可观测性、错误边界；明确本地教学与公网安全差异 | E1-0 [依赖安全收口](NETWORK_SECURITY_BASELINE.md) 已合并；E1-A [真实 TLS/认证](BOOK_E1_TLS_AUTH.md) 已冻结真实依赖锁、修复首轮初始化故障待重验；E1-B [SQLite 事务与观测](BOOK_E1_SQLITE.md) 源码已提交待 CI |
-| E2 | 桌面 GUI | 一款完整可交互软件，模型/视图/状态分离，跨平台测试 | 待评估 |
+| E1 | 网络工程 | TLS、认证、数据库、可观测性、错误边界；明确本地教学与公网安全差异 | E1-0 [依赖安全收口](NETWORK_SECURITY_BASELINE.md) 已合并；E1-A [真实 TLS/认证](BOOK_E1_TLS_AUTH.md) 与 E1-B [SQLite 事务与观测](BOOK_E1_SQLITE.md) 双平台专项和完整集成均通过，#24/#25 已合并（main 2f4a53dc） |
+| E2 | 桌面 GUI | 一款完整可交互软件，模型/视图/状态分离，跨平台测试 | [SignalDesk](BOOK_E2_GUI.md) 首轮 Windows 通过；Linux 缺 Wayland 系统开发库，冻结真实锁并修复后重验 |
 | E3 | 嵌入式与实时 | no_std、硬件抽象、仿真与硬件分别验证 | 待评估 |
 | E4 | 互操作与 WASM | C ABI、安全封装、跨语言所有权；浏览器 WASM 独立小项目 | 待评估 |
 | E5 | 科学计算和 AI | 数值/数据处理、性能测量；可选 AI 应用，准确说明计算后端 | 待评估 |
@@ -84,3 +84,9 @@ E1-A Run 45654557009 实际 Cargo resolve/RustSec 通过：101 个 registry 包�
 E1-A #24 冻结首轮真实审计锁并修复未初始化的 C2 journal；不删原合同。此前 main 0e71b443 Run 45653594034 Windows launcher debug-tests 再次出现既有 StoreDesk 第三关 8 秒超时（artifact 15042940385）；保留独立风险，不放宽时限或认定新课为根因。E1-B 复用 E1-A guard/TLS（提取不变策略的 protect_router 入口）及 servicedesk::apply 域规则，新增 Rusqlite 0.43.0 bundled SQLite、单阻塞 actor、有界 try_send、真实业务/audit 原子事务、脱敏有界 JSON 访问事件。四个独立 TODO、五个合同，真实 SQL trigger 注入 audit 失败，验证业务回滚；HTTPS 并发与重开持久化、不合法权限不写库。真实 Cargo 从 E1-A 锁解析新图、固定库审计、两平台同锁及空缓存搬移独立学员包；须冻结成功产物后才能交付。仅 E1-B 专用包提供前置答案；全局 learner-kit 不含答案。非生产认证、未实现整体连接限流/幂等/遥测后端、真人与网页未验；不声称关闭了所有 E1 生产场景。E1-B 分支在 #24 之上，不取消其重验。
 
 E1-A #24 九套同提交 CI PASS，已合并 main 5ec8504；#25 原基线 tree 与新 main 相同，转向 main。E1-B 首轮 Run 45656674759 真实锁/审计与 Linux 全部通过，Windows Debug 通过、Release 4/5，step5 的 12 并发中客户端 8 秒超时（artifact 15042239292），不能推断为 DB 根因。冻结首轮原始锁 artifact 15043411603，108 registry 包、SHA-256 20adcb21ee432c82a590fd0da3cbec857adbe572bdad2471698c8e0b07f140db，真实审计 0 vulnerabilities/unsound。测试客户端按完整 HTTP 消息而非必须连接关闭判断，增加连接/握手/发送/头/体阶段诊断，共享原 8 秒绝对期限，保持所有业务断言及并发数，Release 额外重复三次。若仍失败按阶段日志定位，未声称已修复。旧 Windows StoreDesk 风险仍独立。
+
+## 开发经验（E2）
+
+E1-A #24 九套同提交 CI 通过、已合并 main 5ec8504；E1-B #25 仍在独立验收，不以 GUI 开发掩盖 Windows 并发失败。E2 不依赖网络项目，直接从已合并 main 分支，避免继续堆叠。核对 eframe/egui 0.37.0 实际 App::ui API 和 system font fallback，新增真实双语 SignalDesk，四步 TODO、五个合同（包括实际 egui_kittest 点击和中文路径导出/拒绝覆盖）。真实原生 Linux Xvfb/Mesa 窗口键盘事件、三张实际截图和状态标题核验；不宣称 Windows 桌面已实测。初始完整新锁由 CI 生成、RustSec 固定 DB gate、单一 vendor 学员 ZIP 两平台空缓存 replay 后冻结。同步包范围与指纹，不影响旧 MSRV/rc.5。E1-B #25 与 E2 合并前需处理共用文档/manifest 的真实冲突，不丢任何改动。网页与真人效果待验证。
+
+E1-B #25 修复后 Run 45733820495 三个专项及 Run 45733820482 完整回归全部通过，十套 CI 均通过；合并 main 2f4a53dc，保留 12 路并发、8 秒请求期限与三次额外 Release 重放。E2 首轮 Run 45734235763 解析审计通过，Windows Debug/Release、控件和空缓存搬移通过（artifact 15078328936），Ubuntu 参考 Debug 尚未开始合同即缺少 wayland-client.pc（artifact 15077354281）。从原始 artifact 15078287324 冻结 89279 字节 Cargo.lock，SHA-256 0c547514c781df6d8571cb8dac307c66d671e95d22734e1f3bd098b80b81b210，346 registry 包、0 vulnerability/unsound；三项维护状态警告 RUSTSEC-2026-0370/0371/0372（zvariant/zbus_names/zvariant_derive）完整保留，不掩盖，不声称生产级供应链安全。补 libwayland-dev 等真实系统库和 pkg-config 检查；DBus session + Xvfb 原生窗口仍必须实测。将 E2 与已合并 E1-B 的共享源码包/学员包范围、指纹、清单和课程入口显式整合；两份冻结锁哈希绑定，原 E1-B 文件不丢失。重新通过十一个 workflow 后才能合并，E3 不先开新分支。
