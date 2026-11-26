@@ -1,6 +1,6 @@
 # 我的 SignalDesk 桌面应用
 
-安装 Rust 1.100.0 和本机原生构建工具；Linux 需 X11/OpenGL 与 fontconfig，中文需可用 CJK 系统字体。取得通过验收的 E2-learner-offline.zip，解压新目录，不覆盖个人代码。先完成 src/lib.rs TODO(1)–(3) 和 src/gui.rs TODO(4)，每步运行 cargo test --frozen --test contracts step1_（替换编号），最终 cargo test --frozen --all-targets。初始四项合同应失败。
+安装 Rust 1.100.0 和本机原生构建工具；Linux 需 X11/OpenGL、Wayland client 开发库、xkbcommon 与 fontconfig（如 libwayland-dev、libxkbcommon-dev、libfontconfig1-dev；完整包列表见 course/BOOK_E2_GUI.md），中文需可用 CJK 系统字体。取得通过验收的 E2-learner-offline.zip，解压新目录，不覆盖个人代码。先完成 src/lib.rs TODO(1)–(3) 和 src/gui.rs TODO(4)，每步运行 cargo test --frozen --test contracts step1_（替换编号），最终 cargo test --frozen --all-targets。初始四项合同应失败。
 
 启动真实应用：cargo run --frozen --release（默认中文），或 cargo run --frozen --release -- --english。示例 8 行、阈值 30、告警 3；通过滑块和应用阈值、只看告警/全部数据、重置示例操作。Ctrl+F 切换筛选，Ctrl+R 重置，Ctrl+L 切换语言，Ctrl+Q 退出；不是测试专用命令。
 

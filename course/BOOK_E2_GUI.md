@@ -20,6 +20,8 @@ src/lib.rs 管理数据与显式状态，不依赖 OS 窗口；src/gui.rs 将状
 
 ## 实际验收
 
-独立 CI 真实解析新依赖，固定 RustSec DB 审计漏洞/unsound，保存原始锁和 SHA-256；两平台消费同一锁与 vendor。实际 Debug/Release 合同、逐步 RED/GREEN、搬移空缓存学员包。Ubuntu 以 Xvfb + Mesa 启动真正的原生窗口，使用 xdotool 原生键盘事件触发筛选及语言切换，检查窗口状态标题并捕获三个实际截图（初始/筛选/中文）；不使用模拟截图，不宣称实机 Windows GUI 已验证。Win/Linux 共同执行真实 egui_kittest 控件点击。普通 learner-kit 不含答案，独立 ZIP 提供依赖。当前尚待 CI 与锁冻结；真人学习效果、网页工作台入口、Windows 桌面实际操作仍需验收。
+首轮 CI 实际解析新依赖并审计：346 个 registry 包、0 漏洞、0 unsound；原始锁已按 SHA-256 `0c547514c781df6d8571cb8dac307c66d671e95d22734e1f3bd098b80b81b210` 冻结到两份 Cargo.lock，之后只允许 locked fetch、复审与同锁 vendor。RUSTSEC-2026-0370/0371/0372 的上游 zvariant、zbus_names、zvariant_derive unmaintained 警告仍保留。实际 Debug/Release 合同、逐步 RED/GREEN、搬移空缓存学员包。Ubuntu 以 Xvfb + Mesa 启动真正的原生窗口，使用 xdotool 原生键盘事件触发筛选及语言切换，检查窗口状态标题并捕获三个实际截图（初始/筛选/中文）；不使用模拟截图，不宣称实机 Windows GUI 已验证。Win/Linux 共同执行真实 egui_kittest 控件点击。普通 learner-kit 不含答案，独立 ZIP 提供依赖。Windows 首轮合同及搬移通过；Linux 首轮缺少 wayland-client.pc，尚未进入业务测试。已补 libwayland-dev、其他原生系统库和 pkg-config 检查，锁冻结后仍需两平台重验；真人学习效果、网页工作台入口、Windows 桌面实际操作仍需验收。
 
 参考：[eframe 0.37.0](https://docs.rs/eframe/0.37.0/eframe/) · [egui_kittest](https://docs.rs/egui_kittest/0.37.0/egui_kittest/) · [官方原生窗口示例](https://github.com/emilk/egui/blob/0.37.0/examples/hello_world/src/main.rs)。
+
+Ubuntu 安装依赖示例（普通学员不需要 Xvfb、xdotool 和截图工具）：`sudo apt-get install libgl1-mesa-dev libegl-dev libwayland-dev libxkbcommon-dev libxkbcommon-x11-dev libx11-dev libxcursor-dev libxi-dev libxrandr-dev libxinerama-dev libxxf86vm-dev libfontconfig1-dev libdbus-1-dev pkg-config fonts-noto-cjk`。即使采用 X11/Glow，实际依赖图仍可能通过上游组件启用 Wayland 底层构建；先验证 `pkg-config --exists wayland-client xkbcommon fontconfig`，不通过则是系统构建环境问题，不是学员 TODO 错误。Windows 需 MSVC 构建工具和支持 OpenGL 的图形驱动；headless CI 通过不代表 Windows 实机 GUI 已验收。

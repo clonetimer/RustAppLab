@@ -42,13 +42,12 @@ def resolve(e,scratch,report):
     work=scratch/"resolved";stage("reference",work)
     lock=work/"Cargo.lock"
     e.env["CARGO_NET_OFFLINE"]="false"
-    if (LAB/"reference/Cargo.lock").is_file():
-        require(digest(LAB/"reference/Cargo.lock")==digest(LAB/"learner/Cargo.lock"),"committed locks differ")
-        shutil.copyfile(LAB/"reference/Cargo.lock",lock)
-        e.execute("fetch-committed",CARGO+["fetch","--locked"],work,timeout=1200)
-    else:
-        e.execute("resolve-real-lock",CARGO+["generate-lockfile"],work,timeout=600)
-        e.execute("fetch-locked",CARGO+["fetch","--locked"],work,timeout=1200)
+    committed=LAB/"reference/Cargo.lock"
+    require(digest(committed)==digest(LAB/"learner/Cargo.lock"),"committed locks differ")
+    require(digest(committed)=="0c547514c781df6d8571cb8dac307c66d671e95d22734e1f3bd098b80b81b210","frozen E2 source lock differs from original audited artifact")
+    shutil.copyfile(committed,lock)
+    e.execute("fetch-committed",CARGO+["fetch","--locked"],work,timeout=1200)
+    require(digest(lock)==digest(committed),"locked fetch changed frozen lock")
     count=lock_count(lock)
     saved=e.output/"Cargo.lock";shutil.copyfile(lock,saved)
     lock_hash=digest(saved);write(e.output/"Cargo.lock.sha256",lock_hash+"  Cargo.lock\n")
@@ -106,6 +105,9 @@ def check_vendor(e,work,home,label):
 def native(e,work,exe,report):
     # This function executes inside the actual Xvfb display, not a screenshot mock.
     env=e.env.copy();env["LIBGL_ALWAYS_SOFTWARE"]="1"
+    # This smoke path explicitly targets the actual X11 server supplied by Xvfb.
+    env.pop("WAYLAND_DISPLAY",None)
+    env["WINIT_UNIX_BACKEND"]="x11"
     log=e.output/"native-window.txt"
     def x(*args,timeout=10):
         p=subprocess.run(["xdotool",*map(str,args)],env=env,capture_output=True,text=True,timeout=timeout)
@@ -159,8 +161,7 @@ def replay(e,scratch,report,bundle,native_gui):
     learner=scratch/"搬移 学员 GUI"
     with zipfile.ZipFile(bundle) as z:z.extractall(learner)
     lock=learner/"Cargo.lock";lock_hash=digest(lock);count=lock_count(lock)
-    if (LAB/"reference/Cargo.lock").is_file():
-        require(lock_hash==digest(LAB/"reference/Cargo.lock")==digest(LAB/"learner/Cargo.lock"),"bundle differs from committed lock")
+    require(lock_hash==digest(LAB/"reference/Cargo.lock")==digest(LAB/"learner/Cargo.lock"),"bundle differs from committed lock")
     reference=scratch/"reference";stage("reference",reference)
     shutil.copyfile(lock,reference/"Cargo.lock")
     shutil.copytree(learner/"vendor",reference/"vendor")

@@ -1,5 +1,6 @@
 """E2 independent learner and native GUI evidence contract."""
 import ast
+import hashlib
 import importlib.util
 from pathlib import Path
 import tomllib
@@ -17,11 +18,18 @@ class ModernE2Tests(unittest.TestCase):
             self.assertEqual(manifest["dependencies"]["eframe"]["version"],"=0.37.0")
             self.assertEqual(manifest["dev-dependencies"]["egui_kittest"]["version"],"=0.37.0")
             self.assertEqual(manifest["package"]["rust-version"],"1.100")
-        for name in ("Cargo.toml","src/main.rs","tests/contracts.rs"):
+        for name in ("Cargo.toml","Cargo.lock","src/main.rs","tests/contracts.rs"):
             self.assertEqual((BASE/"learner"/name).read_bytes(),(BASE/"reference"/name).read_bytes())
         self.assertEqual(sum((BASE/"learner"/name).read_text(encoding="utf-8").count("TODO(") for name in ("src/lib.rs","src/gui.rs")),4)
         self.assertIn("eframe::run_native",(BASE/"reference/src/main.rs").read_text(encoding="utf-8"))
         self.assertIn("Harness::new_ui",(BASE/"reference/tests/contracts.rs").read_text(encoding="utf-8"))
+        lock=(BASE/"reference/Cargo.lock").read_bytes()
+        self.assertEqual(hashlib.sha256(lock).hexdigest(),"0c547514c781df6d8571cb8dac307c66d671e95d22734e1f3bd098b80b81b210")
+        self.assertEqual(sum("source" in p for p in tomllib.loads(lock.decode())["package"]),346)
+        workflow=(ROOT/".github/workflows/modern-e2.yml").read_text(encoding="utf-8")
+        self.assertIn("libwayland-dev",workflow)
+        self.assertIn("pkg-config --exists wayland-client",workflow)
+        self.assertIn("dbus-run-session -- xvfb-run",workflow)
         ast.parse((ROOT/"scripts/modern_e2_check.py").read_text(encoding="utf-8"))
     def test_learner_delivery(self):
         pack=load("package.py");assets=dict(load("package_learner_kit.py").course_inputs())

@@ -1,0 +1,57 @@
+name: Modern Rust E1-B SQLite and observability
+on:
+  pull_request:
+  push:
+    branches: [main]
+  workflow_dispatch:
+permissions:
+  contents: read
+concurrency:
+  group: ${{ github.workflow }}-${{ github.event.pull_request.number || github.ref }}
+  cancel-in-progress: true
+jobs:
+  resolve:
+    name: E1-B actual dependency resolution and RustSec gate
+    runs-on: ubuntu-latest
+    timeout-minutes: 50
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: dtolnay/rust-toolchain@1.100.0
+      - name: Validate contracts and source distribution
+        run: python -m unittest discover -s scripts/tests -p test_modern_e1b_delivery.py -v
+      - name: Resolve real SQLite lock and audit
+        run: python scripts/modern_e1b_check.py --mode resolve --output e1b-resolved
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: e1b-resolved
+          path: e1b-resolved/
+  replay:
+    needs: resolve
+    name: E1-B frozen SQLite/TLS / ${{ matrix.os }}
+    runs-on: ${{ matrix.os }}
+    timeout-minutes: 45
+    strategy:
+      fail-fast: false
+      matrix:
+        os: [ubuntu-latest, windows-latest]
+    steps:
+      - uses: actions/checkout@v4
+      - uses: actions/setup-python@v5
+        with:
+          python-version: '3.12'
+      - uses: dtolnay/rust-toolchain@1.100.0
+      - uses: actions/download-artifact@v4
+        with:
+          name: e1b-resolved
+          path: e1b-resolved
+      - name: Real SQLite transactions HTTPS and relocated frozen learner
+        run: python scripts/modern_e1b_check.py --mode replay --lock-file e1b-resolved/Cargo.lock --output e1b-evidence
+      - uses: actions/upload-artifact@v4
+        if: always()
+        with:
+          name: modern-e1b-${{ matrix.os }}
+          path: e1b-evidence/
