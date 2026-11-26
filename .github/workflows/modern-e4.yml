@@ -36,7 +36,7 @@ jobs:
       - name: Install actual Chromium browser
         if: runner.os == 'Linux'
         run: |
-          python -m pip install playwright==1.55.0
+          python -m pip install playwright==1.65.2
           python -m playwright install --with-deps chromium
       - name: Actual native C and Wasm browser checks
         if: runner.os == 'Linux'

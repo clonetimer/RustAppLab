@@ -106,3 +106,5 @@ E3 集成后 Run 45754480406 三项嵌入式专项通过；E2 回归 Run 4575448
 ## 开发经验（E4）
 
 E3 的修复提交 eb2cafc6 已独立触发完整 CI；E4 以该提交为后续候选基线，不取消 #27、不提前合入。使用无第三方依赖的同一 Rust 安全核心，原生 C ABI 使用调用方所有的定长结构和有界数组，WASM 只暴露标量分类接口，JS 在传入 i32 前拒绝非法值，不共享 Rust 指针。参考与学员保留相同 ABI 头、C 客户端、Web 页面和测试；三个 TODO、三项 RED/GREEN 合同，双平台实际 C 编译和动态链接、实际 wasm32 编译/Node 执行、Ubuntu Chromium 页面交互与截图。源清单及 Python/PowerShell 指纹同提交更新，旧 MSRV、rc.5、已发布资产不变。C 指针有效性仍是调用方安全契约；未声称所有外部输入安全、真人学习效果或 Windows 实际浏览器已验收。必须先收口 E3 后再整合 E4。
+
+E4 首轮 Run 45759087888 Windows job 139704567716 完成实际 Rust/C ABI、WASM Node 和学员红绿/交付；Ubuntu job 139704567259 在业务测试前失败，Playwright 1.55.0 不支持 ubuntu26.04-x64。综合浏览器 Run 45758762915 已实测 Playwright 1.65.2 下载 Chromium v1255 并通过；E4 按该真实版本固定 1.65.2，保留 ubuntu-latest、实际 Chromium 运行、输入与迁移截图断言，不跳过任何测试。源码清单同提交同步两项。当前提交待完整重验。
