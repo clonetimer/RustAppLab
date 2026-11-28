@@ -1,4 +1,4 @@
-# Rust AppLab 0.19.0-rc.5 · 本轮收尾与后续范围
+# Rust AppLab 0.19.0-rc.6 · 本轮收尾与后续范围
 
 ## 已完成的功能范围
 
@@ -18,4 +18,4 @@ Stable仍需真人学习记录及当前版本工程准入；不以新增功能�
 
 ## 现代 Rust 后续独立路线
 
-[现代化教学计划](course/MODERN_RUST_ROADMAP.md) 将新版 Book、Edition 2024、稳定特性增量、异步核心及现代工具分阶段建设；不改变本 rc.5 冻结的发布准入、原路线或兼容承诺。
+[现代化教学计划](course/MODERN_RUST_ROADMAP.md) 将新版 Book、Edition 2024、稳定特性增量、异步核心及现代工具分阶段建设；不放宽原有发布准入、原路线或兼容承诺。

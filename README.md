@@ -1,8 +1,8 @@
-# Rust AppLab · 0.19.0-rc.5 候选发布版
+# Rust AppLab · 0.19.0-rc.6 候选发布版
 
 通过亲手制作小软件学习 Rust：先读懂输入和输出，每次实现一个函数，用自己的数据验证，最后完成独立作品。
 
-**推荐从网页工作台开始。** Windows 双击 `START_WORKBENCH_WINDOWS.cmd`，Linux 执行 `./START_WORKBENCH.sh`。在一个浏览器窗口内读中文任务卡、编辑自己的源码、保存、运行和查看真实检查结果；已接入 FirstCard、全部 12 款 Studio 和 D1–D6 的 7 个既有专题工程。安装、续学和操作说明见 [网页学习工作台](course/WORKBENCH.md)。
+**推荐从网页工作台开始。** Windows 双击 `START_WORKBENCH_WINDOWS.cmd`，Linux 执行 `./START_WORKBENCH.sh`。在一个浏览器窗口内读中文任务卡、编辑自己的源码、保存、运行和查看真实检查结果；默认展示当前课程及后续两课，点击「开始本课」即可进入；已有 33 个网页课程入口（13 个作品、7 个 Book 专题、13 个现代 Rust host 课程）。部分进阶课需要另行准备对应工具链和离线学员包。安装、续学和操作说明见 [网页学习工作台](course/WORKBENCH.md)。
 
 ## 我现在应该做什么？
 
@@ -45,15 +45,15 @@
 
 ## 选择下载内容
 
-网页工作台随 **0.19.0-rc.5** 源码和对应平台运行包交付。请从 [Releases](https://github.com/clonetimer/RustAppLab/releases) 选择该版本及其校验文件；发布资格以同一提交的 CI 与实际 Release 为准。也可下载 [当前 main 源码 ZIP](https://github.com/clonetimer/RustAppLab/archive/refs/heads/main.zip)。旧 `v0.19.0-rc.3` 包保持原样，不会自动获得新界面。
+网页工作台随 **0.19.0-rc.6** 源码和对应平台运行包交付。请从 [Releases](https://github.com/clonetimer/RustAppLab/releases) 选择该版本及其校验文件；发布资格以同一提交的 CI 与实际 Release 为准。也可下载 [当前 main 源码 ZIP](https://github.com/clonetimer/RustAppLab/archive/refs/heads/main.zip)。已发布的 rc.5 及更早的包保持原样，不会自动获得新界面；rc.6 的下载以实际 Release 为准。
 
 更新时解压到新的平台文件夹，保留原来的 `my-...` 工程，再从工作台打开其实际路径。
 
 | 目的 | 下载包 | 需要什么 |
 |---|---|---|
-| 直接打开工作台、体验成品 | `RustAppLab-0.19.0-rc.5-<平台>-runtime.zip` | 对应系统；工作台与参考程序已编译，运行或检查自己的 Rust 仍需 Rust/Cargo |
-| 使用完整源码与课程 | `RustAppLab-0.19.0-rc.5-source.zip` | Rust/Cargo 与系统构建工具；首次打开会编译本地工作台 |
-| 只取学员骨架 | `RustAppLab-0.19.0-rc.5-learner-kit.zip` | 17 个基础/进阶 A/B 工程；核心 TODO 待完成，不含 C1/C2 vendor |
+| 直接打开工作台、体验成品 | `RustAppLab-0.19.0-rc.6-<平台>-runtime.zip` | 对应系统；工作台与参考程序已编译，运行或检查自己的 Rust 仍需 Rust/Cargo |
+| 使用完整源码与课程 | `RustAppLab-0.19.0-rc.6-source.zip` | Rust/Cargo 与系统构建工具；首次打开会编译本地工作台 |
+| 只取学员骨架 | `RustAppLab-0.19.0-rc.6-learner-kit.zip` | 17 个基础/进阶 A/B 工程；核心 TODO 待完成，不含 C1/C2 vendor |
 | 离线完成异步课程 | `C1-learner-offline.zip`、`C2-learner-offline.zip` | Rust 1.85.0 已安装；包内提供锁定依赖源码 |
 | 对照异步参考实现 | `C1-reference-offline.zip`、`C2-reference-offline.zip` | Rust 1.85.0；不是预编译 EXE |
 
@@ -90,7 +90,7 @@ cargo run --locked --offline -p labquest -- learn check "D:/练习/my-unitlab"
 
 ## 候选版范围与试用
 
-课程内容范围保持在 **B4、C1、C2** 及已有 Rust Book 专题；本次把 D1–D6 接入网页，不新增进阶路线。独立作品与进阶 A/B/C 保留原入口。D6 的 Edition 迁移、nightly 和 IDE 操作仍按原讲义单独验证。
+本次收口以教学工作台 R1–R6 为主，不新增课程。原有 B4、C1、C2、D1–D6 专题与现代 Rust host 课程保留；独立作品和进阶 A/B/C 保留原入口。五门现代依赖课程需从对应专项验收产物准备离线学员包；GUI、ARM/QEMU、C/WASM、工具链迁移和 IDE 等专项能力按各自证据判定，网页 host 测试不替代它们。
 
 支持范围为 Windows x64 MSVC、Linux x86_64；基础/A/B 的最低 Rust 为 1.74，C1/C2 单独要求 1.85.0。StoreDesk 需系统 SQLite，见 [支持说明](SUPPORTED_PLATFORMS.md)。普通学员不需要 Python 或 Playwright，不运行维护者的发布验收脚本。
 
