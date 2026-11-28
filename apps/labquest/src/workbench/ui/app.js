@@ -153,12 +153,26 @@ function buildCourses() {
   ui.courseList.replaceChildren(...controls);
 }
 
+// A stored result is usable only for the cumulative classic Studio contract.
+// Modern and Book tests have no equivalent persisted per-step history.
+function restoredLessonPass(card, check, changed, historyChanged) {
+  const history = card?.project?.history;
+  return Boolean(card?.kind === 'studio' && !card.id.startsWith('modern-')
+    && !check && !changed && !historyChanged && history?.same_source
+    && !history.compilation_failed && history.upto_step === history.passed_steps
+    && history.passed_steps >= card.step);
+}
+
 function renderCard(previous) {
   const { card } = state;
   const course = state.catalog.courses.find(item => item.id === card.id);
   text(ui.courseTitle, card.title);
   const path = card.project?.path;
-  text(ui.projectState, path || (card.bundle ? '需先准备课程包' : '尚未开始'));
+  text(ui.projectState, path ? '练习已打开' : (card.bundle ? '需先准备课程包' : '尚未开始'));
+  if (Object.prototype.hasOwnProperty.call(ui, 'activeProjectPath')) {
+    ui.activeProjectPath.hidden = !path;
+    text(ui.activeProjectPath, path ? '当前项目：' + path : '');
+  }
   ui.projectState.dataset.open = String(Boolean(path));
   ui.projectState.title = path || (card.bundle ? '只打开通过验收的离线学员包；完整讲义有准备说明' : '新项目将创建在启动工作台时指定的工作区');
   ui.stepList.hidden = false;
@@ -195,6 +209,11 @@ function renderCard(previous) {
       details.append(summary, description);
       return details;
     }));
+    if (Object.prototype.hasOwnProperty.call(ui, 'lessonPractice')) {
+      ui.lessonHints.open = false;
+      ui.lessonPractice.open = false;
+      ui.lessonProgress.dataset.phase = '';
+    }
     ui.lessonContent.scrollTop = 0;
     ui.runArgs.value = card.run_args.join('\n');
     ui.runSettings.open = false;
@@ -290,7 +309,13 @@ function renderHistory() {
 
 function renderNext() {
   const { card, lastCheck } = state;
-  let destination = nextDestination(card, lastCheck, sourceChanged());
+  const changed = sourceChanged();
+  let destination = nextDestination(card, lastCheck, changed);
+  const restored = restoredLessonPass(card, lastCheck, changed, state.historyChanged);
+  if (!destination && restored) {
+    destination = card.step < card.step_count ? { step: card.step + 1 }
+      : card.next_course ? { course: card.next_course } : { experiment: true };
+  }
   const history = card?.project?.history;
   const suggestedStep = card?.project?.suggested_step;
   const historySuggestion = !destination && history?.same_source && !state.historyChanged
@@ -311,6 +336,7 @@ function renderNext() {
   ui.next.onclick = async () => {
     if (state.busy || state.pending) return;
     if (destination.experiment) {
+      if (Object.prototype.hasOwnProperty.call(ui, 'lessonPractice')) ui.lessonPractice.open = true;
       ui.experimentTitle.focus();
       return;
     }
@@ -347,6 +373,32 @@ function renderLessonEntry(card, project) {
   ui.console.hidden = !project && !state.output;
 }
 
+// The task card reveals guidance from actual project and check state.
+function renderLearningProgress(card, locked) {
+  if (!Object.prototype.hasOwnProperty.call(ui, 'lessonProgress') || !card) return;
+  const changed = sourceChanged();
+  const check = state.lastCheck;
+  const passed = Boolean(nextDestination(card, check, changed))
+    || restoredLessonPass(card, check, changed, state.historyChanged);
+  const failed = check?.action === 'check' && check.status === 'failed'
+    && check.course_id === card.id && check.step === card.step && !check.stale && !changed
+    && check.source_digest === card.project?.source_digest;
+  const phase = !card.project ? 'start' : locked ? 'busy' : passed ? 'passed' : failed ? 'retry' : 'edit';
+  const guidance = {
+    start: '先开始本课',
+    busy: '正在处理，请查看操作状态',
+    passed: '代码检查通过 · 试一组自己的输入',
+    retry: '检查未通过 · 查看输出与提示',
+    edit: '修改代码，再检查本步',
+  };
+  text(ui.lessonProgress, '第 ' + card.step + ' / ' + card.step_count + ' 步 · ' + guidance[phase]);
+  if (ui.lessonProgress.dataset.phase !== phase) {
+    if (phase === 'passed') ui.lessonPractice.open = true;
+    if (phase === 'retry') ui.lessonHints.open = true;
+    ui.lessonProgress.dataset.phase = phase;
+  }
+}
+
 function renderControls() {
   const { busy, pending, card, file, retry, saveIssue } = state;
   const locked = Boolean(busy || pending || isExperimentRunning());
@@ -367,6 +419,7 @@ function renderControls() {
   }
 
   renderLessonEntry(card, project);
+  renderLearningProgress(card, locked);
   ui.projectPath.disabled = locked || !card;
   ui.openProject.disabled = locked || !card;
   ui.create.hidden = Boolean(card?.bundle);
@@ -399,7 +452,7 @@ function renderControls() {
   text(ui.create, busy === 'create' ? '正在准备…' : '开始本课');
   text(ui.openProject, busy === 'open' ? '正在打开…' : '打开项目');
   text(ui.save, saving ? '正在保存…' : '保存');
-  text(ui.check, checking ? '正在检查…' : card?.id?.startsWith('modern-') ? '检查本步' : card?.kind === 'book' ? '验证专题' : '正式检查');
+  text(ui.check, checking ? '正在检查…' : card?.id?.startsWith('modern-') ? '检查本步' : card?.kind === 'book' ? '验证专题' : '检查本步');
   text(ui.run, running ? '正在运行…' : '运行程序');
   if (saving) {
     ui.saveStatus.dataset.state = 'pending';
@@ -525,7 +578,7 @@ async function applyCard(card, { file, projectPath, forceFile = false } = {}) {
 
 function readyNotice() {
   if (state.card.project) {
-    notice(state.file ? '按任务卡修改代码，再点击正式检查。' : '请选择一个文件开始编辑。');
+    notice(state.file ? '' : '请选择一个文件开始编辑。');
   } else {
     notice('');
   }
@@ -677,11 +730,11 @@ async function finishJob(job) {
   if (refreshIssue) {
     notice(`已收到本次输出。项目状态暂时无法刷新。 ${refreshIssue.message}`, 'warning');
   } else if (job.status === 'failed') {
-    notice('请在输出中找到第一条报错，修改后重试。', 'error');
+    notice(job.action === 'check' ? '先看输出中的错误或未满足的要求，修改后再检查。' : '运行失败，请查看输出并修正。', 'error');
   } else if (job.stale || sourceChanged() || job.source_digest !== state.card.project.source_digest) {
     notice('文件版本有变化，查看输出后可重新检查或运行。', 'warning');
   } else {
-    notice(job.action === 'check' ? '可以用自己的输入做一次实验，或继续学习。' : '可更换参数再次运行，观察输出变化。', 'success');
+    notice(job.action === 'check' ? '本步代码检查通过。试一组自己的输入，再继续学习。' : '运行结束。可更换输入，再观察输出变化。', 'success');
   }
 }
 
@@ -757,6 +810,8 @@ function initialize() {
     stepList: 'step-list', lessonOpen: 'lesson-open', lessonClose: 'lesson-close', lessonDialog: 'lesson-dialog',
     lessonFrame: 'lesson-frame', lessonContent: 'lesson-content', lessonLoading: 'lesson-loading',
     stepTitle: 'step-title', goal: 'lesson-goal', target: 'lesson-function', concept: 'lesson-concept',
+    lessonProgress: 'lesson-progress', lessonHints: 'lesson-hints', lessonPractice: 'lesson-practice',
+    activeProjectPath: 'active-project-path',
     prediction: 'lesson-prediction', hints: 'hint-list', experiment: 'lesson-experiment',
     reading: 'book-reading', readingTopics: 'book-reading-topics',
     readingQuestion: 'book-reading-question', readingVersion: 'book-reading-version',

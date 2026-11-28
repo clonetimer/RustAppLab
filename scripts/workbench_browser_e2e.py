@@ -154,6 +154,9 @@ def run_flow(page, base, tmp, out, report, expect, exe):
     expect(loc('#console-panel')).to_be_hidden()
     expect(loc('#project-path')).to_be_hidden()
     expect(loc('#book-reading')).not_to_have_attribute('open', '')
+    expect(loc('#lesson-hints')).not_to_have_attribute('open', '')
+    expect(loc('#lesson-practice')).not_to_have_attribute('open', '')
+    expect(loc('#lesson-progress')).to_have_attribute('data-phase', 'start')
     capture(page, out, report, 'first-visit-1440x1000.png')
     viewport(page, 320, 844)
     expect(loc('#create-button')).to_be_in_viewport(ratio=.25)
@@ -205,6 +208,7 @@ def run_flow(page, base, tmp, out, report, expect, exe):
     expect(loc('#lesson-dialog')).to_be_visible()
     expect(page.frame_locator('#lesson-frame').locator('body')).to_contain_text('任务卡')
     loc('#lesson-dialog button').click()
+    loc('#lesson-hints > summary').click()
     for detail in loc('#hint-list details').all():
         detail.locator('summary').click()
         expect(detail).to_have_attribute('open', '')
@@ -217,6 +221,7 @@ def run_flow(page, base, tmp, out, report, expect, exe):
     expect(loc('#project-switch')).to_be_visible()
     expect(loc('#project-path')).to_be_hidden()
     expect(editor).to_be_editable()
+    expect(loc('#lesson-progress')).to_have_attribute('data-phase', 'edit')
     expect(editor).to_have_value(re.compile('等待完成第一张任务卡'))
     initial = editor.input_value()
     project = Path(course_data('firstcard')['project']['path'])
@@ -252,10 +257,14 @@ def run_flow(page, base, tmp, out, report, expect, exe):
         return job
 
     action('firstcard-initial', pending=True)
+    expect(loc('#lesson-progress')).to_have_attribute('data-phase', 'retry')
+    expect(loc('#lesson-hints')).to_have_attribute('open', '')
+    expect(loc('#lesson-practice')).not_to_have_attribute('open', '')
     fixed = initial.replace('println!("等待完成第一张任务卡");', 'println!("今日任务卡 | {name} | {task}");')
     assert fixed != initial
     editor.fill(fixed)
     expect(loc('#save-status')).to_have_attribute('data-state', 'dirty')
+    expect(loc('#lesson-progress')).to_have_attribute('data-phase', 'edit')
     loc('#save-button').click()
     expect(loc('#save-status')).to_have_attribute('data-state', 'saved')
     assert (project/'src/main.rs').read_text(encoding='utf-8') == fixed
@@ -263,6 +272,15 @@ def run_flow(page, base, tmp, out, report, expect, exe):
     expect(editor).to_have_value(fixed)
     report['observations'].append('save-and-reload')
     action('firstcard-pass')
+    expect(loc('#lesson-progress')).to_have_attribute('data-phase', 'passed')
+    expect(loc('#lesson-practice')).to_have_attribute('open', '')
+    expect(loc('#next-button')).to_contain_text('UnitLab')
+    # Reload a verified classic lesson: the real persisted check restores
+    # the next course without treating a mere program run as a pass.
+    page.reload()
+    expect(editor).to_have_value(fixed)
+    expect(loc('#lesson-progress')).to_have_attribute('data-phase', 'passed')
+    expect(loc('#next-button')).to_contain_text('UnitLab')
     loc('#run-settings summary').click()
     loc('#run-args').fill('林 果\n整理桌面')
     loc('#run-settings summary').click()
@@ -276,7 +294,8 @@ def run_flow(page, base, tmp, out, report, expect, exe):
     (imported/'README.md').unlink()
     sourcefile = imported/'src/lib.rs'
     starter = sourcefile.read_text(encoding='utf-8')
-    choose('unitlab')
+    loc('#next-button').click()
+    expect(loc('#course-list [data-course="unitlab"]')).to_have_attribute('aria-current', 'true')
     expect(loc('#start-panel')).to_be_visible()
     loc('#project-switch > summary').click()
     loc('#project-path').fill(str(imported))

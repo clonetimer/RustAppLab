@@ -92,6 +92,24 @@ test('fresh cumulative checks offer the next stage or course for the selected st
   assert.equal(nextDestination({ ...card, step: 3 }, { ...check, step: 3 }, false).course, 'quizdeck');
 });
 
+test('restored lessons use only a matching cumulative successful history', () => {
+  const { restoredLessonPass } = loadApp();
+  const classic = { ...card, kind: 'studio', project: { ...card.project, history: {
+    passed_steps: 1, upto_step: 1, same_source: true, compilation_failed: false,
+  } } };
+  assert.equal(restoredLessonPass(classic, null, false, false), true);
+  assert.equal(restoredLessonPass(classic, check, false, false), false);
+  assert.equal(restoredLessonPass(classic, null, true, false), false);
+  assert.equal(restoredLessonPass(classic, null, false, true), false);
+  assert.equal(restoredLessonPass({ ...classic, step: 2 }, null, false, false), false);
+  assert.equal(restoredLessonPass({ ...classic, id: 'modern-d8' }, null, false, false), false);
+  assert.equal(restoredLessonPass({ ...classic, kind: 'book' }, null, false, false), false);
+  for (const history of [{ same_source: false }, { compilation_failed: true }, { upto_step: 2 }]) {
+    const project = { ...classic.project, history: { ...classic.project.history, ...history } };
+    assert.equal(restoredLessonPass({ ...classic, project }, null, false, false), false);
+  }
+});
+
 test('navigation can recommend a later step only within the verified scope', () => {
   const { nextDestination } = loadApp();
   const withSuggestion = { ...card, project: { ...card.project, suggested_step: 3 } };

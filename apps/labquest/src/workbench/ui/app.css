@@ -660,3 +660,14 @@ summary:hover { color: var(--text); }
   .start-card .project-form { flex-wrap: wrap; }
   .start-card #project-path { flex: 1 1 100%; width: 100%; }
 }
+
+/* Teaching-first task card: optional help is disclosed at the point of need. */
+.lesson-progress { margin-bottom: 9px; color: var(--muted); font-size: 12px; }
+.lesson-progress[data-phase="passed"] { color: var(--green); }
+.lesson-progress[data-phase="retry"] { color: var(--amber); }
+.lesson-disclosure { margin-top: 10px; border-top: 1px solid var(--line); }
+.lesson-disclosure > summary { padding-inline: 0; font-weight: 500; }
+.lesson-disclosure[open] { padding-bottom: 7px; }
+.lesson-disclosure .lesson-exercise { margin-top: 8px; }
+.active-project-path { color: var(--muted); font-size: 12px; overflow-wrap: anywhere; margin: 5px 0 8px; }
+

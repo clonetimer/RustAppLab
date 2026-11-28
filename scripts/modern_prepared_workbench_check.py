@@ -77,7 +77,14 @@ def browser_check(base, course, work, output, report):
             page = browser.new_page(viewport={"width": 1440, "height": 1000}, locale="zh-CN")
             page.goto(base + "/", wait_until="domcontentloaded")
             page.locator(f'#course-list [data-course="{course}"]').click()
+            expect(page.locator(f'#course-list [data-course="{course}"]')).to_have_attribute("aria-current", "true")
             expect(page.locator("#create-button")).to_be_hidden()
+            # The API already opened this same project. Reopen through the
+            # actual learner-facing switcher rather than a hidden input.
+            expect(page.locator("#source-editor")).to_be_editable()
+            expect(page.locator("#project-path")).to_be_hidden()
+            page.locator("#project-switch > summary").click()
+            expect(page.locator("#project-path")).to_be_visible()
             page.locator("#project-path").fill(str(work))
             with page.expect_response(lambda r: r.url == base + "/api/open" and r.request.method == "POST") as response:
                 page.locator("#open-project-button").click()
