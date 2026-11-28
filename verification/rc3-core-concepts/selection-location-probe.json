@@ -1,9 +1,0 @@
-{
-  "baseline_source_id": "002aca38e6681e67103ff862f4f3cbb947aefcc3a2f16d95e4eea61ab05d3677",
-  "checkout_root_selection_source_id": "bff7493dbacd013013f259a49d6f02b734040769170118208d93082ff96a2529",
-  "root_changed_identity": true,
-  "outside_preserved_identity": true,
-  "outside_checkout_selection_source_id": "002aca38e6681e67103ff862f4f3cbb947aefcc3a2f16d95e4eea61ab05d3677",
-  "commit": "eef7dbe8d68b034b4a0fb2daf100cec5a5f03a68",
-  "context": "Local differential probe before workflow path fix; outside-checkout temporary directory, not a remote CI result."
-}

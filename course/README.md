@@ -21,11 +21,11 @@
 
 ## 遇到概念问题时再打开
 
-[Rust Book 对照学习](BOOK_GUIDE.md) · [Rust Book 逐节覆盖审计](BOOK_COVERAGE_AUDIT.md) · [D1 Cargo 专题](BOOK_D1_CARGO.md) · [D2 智能指针](BOOK_D2_SMART_POINTERS.md) · [D3 面向对象与模式](BOOK_D3_OOP_PATTERNS.md) · [D4 高级特性](BOOK_D4_ADVANCED_FEATURES.md) · [D5 多线程 Web Server](BOOK_D5_WEB_SERVER.md) · [D6 附录 A–G](BOOK_D6_APPENDICES.md) · [D6 基础知识补齐](BOOK_D6_FOUNDATIONS.md) · [变量与模块专项](BOOK_D6_LANGUAGE_BASICS.md) · [工具/迁移/Nightly 实操](BOOK_D6_PRACTICAL.md) · [学习导航](LEARNING_NAVIGATOR.md) · [进阶 A](ADVANCED_A.md) · [进阶 B](ADVANCED_B.md)。已有学员可用 `learn reading <工程路径>` 按当前作品查找相关概念。
+[Rust Book 对照学习](BOOK_GUIDE.md) · [D1 Cargo 专题](BOOK_D1_CARGO.md) · [D2 智能指针](BOOK_D2_SMART_POINTERS.md) · [D3 面向对象与模式](BOOK_D3_OOP_PATTERNS.md) · [D4 高级特性](BOOK_D4_ADVANCED_FEATURES.md) · [D5 多线程 Web Server](BOOK_D5_WEB_SERVER.md) · [D6 附录 A–G](BOOK_D6_APPENDICES.md) · [D6 基础知识补齐](BOOK_D6_FOUNDATIONS.md) · [变量与模块专项](BOOK_D6_LANGUAGE_BASICS.md) · [工具/迁移/Nightly 实操](BOOK_D6_PRACTICAL.md) · [学习导航](LEARNING_NAVIGATOR.md) · [进阶 A](ADVANCED_A.md) · [进阶 B](ADVANCED_B.md)。已有学员可用 `learn reading <工程路径>` 按当前作品查找相关概念。
 
 想先预览作品，可打开 [作品工坊](../WORKSHOP.html)；已经开始 UnitLab 的学员继续读 [当前讲义](studio/unitlab.md)，无需重新生成工程。
 
-需要补核心概念时，按 [所有权、接收者与切片](BOOK_OWNERSHIP_PRACTICE.md) → [集合与错误传播](BOOK_COLLECTIONS_ERRORS.md) → [泛型与生命周期](BOOK_GENERICS_LIFETIMES.md) 学习。[本次概念审计](BOOK_CONCEPT_AUDIT.md) 逐项说明六章 118 个目标中的已有证据与剩余内容。
+需要补核心概念时，按 [所有权、接收者与切片](BOOK_OWNERSHIP_PRACTICE.md) → [集合与错误传播](BOOK_COLLECTIONS_ERRORS.md) → [泛型与生命周期](BOOK_GENERICS_LIFETIMES.md) 学习。
 
 新增进阶作品：[TermGarden](studio/termgarden.md) · [StoreDesk](studio/storedesk.md) · [SQLite环境说明](SQLITE_SETUP.md)。完成基础再进入，不取代UnitLab入口。
 
@@ -33,11 +33,9 @@
 
 ---
 
-## 现代 Rust 选修路线（建设中）
+## 现代 Rust 选修路线
 
-已完成基础课程后，可参考 [现代化教学计划](MODERN_RUST_ROADMAP.md) 和 [新版 Book 逐节映射](BOOK_MODERN_COVERAGE_D7.md)。D7 是新版审计基线；D8 [Edition 2024 告警筛选器](BOOK_D8_EDITION_2024.md)（已合并），学员可独立复制工程练习。D9-A [现代稳定特性批量数据实验](BOOK_D9_STABLE_FEATURES.md)（已合并）；D9-B [标准库与 Cargo 实验室](BOOK_D9_STDLIB_CARGO.md)（已合并）；D10-A [异步核心实验](BOOK_D10_ASYNC_CORE.md)（已合并）；D10-B 已提交 [Tokio 与 Stream 工程实验](BOOK_D10_TOKIO_STREAM.md)（专项与集成已通过并合并）；D11-A [工程质量实验](BOOK_D11_QUALITY.md)（专项与集成已通过并合并）；D11-B [安全验证、模糊测试与依赖审计](BOOK_D11_SAFETY.md) 与 E1-0 [网络依赖安全收口与学员迁移](NETWORK_SECURITY_BASELINE.md) 同提交完整通过并合并；E1-A [真实 HTTPS 与权限控制](BOOK_E1_TLS_AUTH.md) 与 E1-B [SQLite 事务与结构化观测](BOOK_E1_SQLITE.md) 完整通过并合并；E2 [原生桌面 GUI](BOOK_E2_GUI.md) 十一套 CI 通过并合并；E3 [嵌入式与实时任务](BOOK_E3_EMBEDDED.md) 实际 QEMU 与双平台综合 CI 通过并合并；E4 [C ABI 与 WebAssembly](BOOK_E4_INTEROP.md) 实际 C/WASM、Linux Chromium 与综合 CI 通过并合并；E5 [科学计算与机器学习](BOOK_E5_SCIENCE.md) 双平台专项和综合 CI 通过并合并。经典基础路线保持不变；已下载旧网络课包的学员按迁移说明保留个人源码，不能将历史包视为已修复。
-
-现代网页入口开发候选见 [工作台说明](WORKBENCH.md)：十三门现代 host 课程：八门创建个人 TODO，五门打开已验收的离线学员包；专用工具按原讲义独立操作。
+完成基础课程后，按 [现代 Rust 选修课程地图](MODERN_RUST_ROADMAP.md) 选择所需专题。网页工作台可进入 13 门现代 Rust 课程：8 门直接创建个人练习，5 门打开准备好的离线学员包；需要专用工具的实验按对应讲义操作。工具链和课程包准备见 [工作台说明](WORKBENCH.md)。
 
 ## 原有应用章节：按需拓展
 

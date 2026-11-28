@@ -1,21 +1,11 @@
-# Rust AppLab 0.19.0-rc.6 · 本轮收尾与后续范围
+# Rust AppLab 0.19.0-rc.6 · 当前范围与后续安排
 
-## 已完成的功能范围
+## 当前学习范围
 
-基础17包、12款Studio与FirstCard、TaskPocket/PageMint独立作品；进阶A；B1–B3多程序复用；B4 Serde JSON导出；C1 Tokio/Reqwest异步下载；C2 Axum工单服务。
+从 [开始指南](README_START_HERE.md) 或 [网页工作台](course/WORKBENCH.md) 开始，按 [课程地图](course/CURRICULUM.md) 选择当前作品。网页提供 33 门课程入口：13 门基础作品、7 门 Rust Book 专项、13 门现代 Rust 选修。独立作品、进阶 A/B/C 保留各自入口；现代课程见 [选修课程地图](course/MODERN_RUST_ROADMAP.md)。
 
-FirstCard 与 12 款 Studio 通过原生本地网页工作台连接任务卡、源码、保存、运行和真实检查。独立作品与进阶课程保持既有执行入口，课程数量和通关规则不变。
+支持环境及工具链见 [支持平台](SUPPORTED_PLATFORMS.md)。专用工具实验、离线包和课程适用边界以对应讲义为准。
 
-C2已包含持久化、真实并发客户端验证和优雅关闭，不再另建一门内容重复的C3。本轮以C2为功能边界，候选发布只整理文档、使用入口、交付包和证据。
+## 后续安排
 
-## 接下来怎样推进
-
-先按 [开始指南](README_START_HERE.md) 使用，在 [试用记录](course/USER_TRIAL.md) 保存真实体验。只处理阻断、错误提示、教学衔接和兼容性问题；没有实际问题的模块保持现状。
-
-GUI、WASM、公网/TLS、重试和其他框架放入可选方向。只有产生明确学习需求时重新评估，不作为当前RC或Stable的功能欠账。
-
-Stable仍需真人学习记录及当前版本工程准入；不以新增功能替代验收。详见 [发布规则](RELEASE_POLICY.md)。
-
-## 现代 Rust 后续独立路线
-
-[现代化教学计划](course/MODERN_RUST_ROADMAP.md) 将新版 Book、Edition 2024、稳定特性增量、异步核心及现代工具分阶段建设；不放宽原有发布准入、原路线或兼容承诺。
+当前教学工作台不再扩展功能，优先处理实际使用中发现的阻断、兼容性与教学理解问题。请使用 [试用记录](course/USER_TRIAL.md) 留下真实体验。正式候选发布及 Stable 准入遵守 [发布规则](RELEASE_POLICY.md)，不以新增功能代替验收，不以自动化检查代替真人学习评价。

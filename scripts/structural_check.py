@@ -22,8 +22,8 @@ def require(condition: bool, message: str) -> None:
 
 # The manifest tracks distributable source, not local student case folders or build artifacts.
 ROOT_ALLOWED = {
-    "VERSION", "RELEASE_POLICY.md", "KNOWN_ISSUES.md", "VERIFY_RELEASE_WINDOWS.cmd", "VERIFY_BROWSER_WINDOWS.cmd", "Cargo.toml", "Cargo.lock", ".gitignore", ".gitattributes", "LICENSE", "PROJECT_DESIGN.md",
-    "README.md", "README_START_HERE.md", "REFERENCE_ANALYSIS.md",
+    "VERSION", "RELEASE_POLICY.md", "KNOWN_ISSUES.md", "VERIFY_RELEASE_WINDOWS.cmd", "VERIFY_BROWSER_WINDOWS.cmd", "Cargo.toml", "Cargo.lock", ".gitignore", ".gitattributes", "LICENSE",
+    "README.md", "README_START_HERE.md",
     "START_WORKBENCH_WINDOWS.cmd", "START_WORKBENCH.sh",
     "RELEASE_NOTES.md", "ROADMAP.md", "START_HERE.html", "SYSTEMS_PATH.html", "RELIABILITY_PATH.html", "INDEPENDENT_PATH.html", "ADVANCED_A.html", "ADVANCED_B.html", "START_ADVANCED_B_WINDOWS.cmd", "START_ADVANCED_WINDOWS.cmd", "START_WINDOWS.cmd", "WORKSHOP.html", "CONTINUE_WINDOWS.cmd", "PREPARE_NETWORK_WINDOWS.cmd", "LEARN_NEXT_WINDOWS.cmd", "SUPPORTED_PLATFORMS.md", "VERIFY_BROWSER_WINDOWS.cmd",
 }

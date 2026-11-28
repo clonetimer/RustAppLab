@@ -20,7 +20,7 @@
 
 ## 历史与边界
 
-冻结 `0.17.0-rc.2` 的RC_READY和原始证据保持原样，只证明当时源码；不继承到本版本。历史材料从 [验证索引](verification/README.md) 与 [历史版本记录](docs/archive/releases/RELEASE_NOTES_THROUGH_0_19_RC_2.md) 查阅；当前修订见 [变更记录](RELEASE_NOTES.md)。
+当前修订见 [变更记录](RELEASE_NOTES.md)。历史版本及其原始证据只从对应 Git 标签、Release 和 CI 查阅，不随当前源码重复交付。
 
 启动C2时同步校验已有日志；请求期磁盘工作在独立阻塞线程执行。回环HTTP不作公网服务、账号认证或数据安全沙箱；StoreDesk依赖系统SQLite。系统支持详情见 [SUPPORTED_PLATFORMS](SUPPORTED_PLATFORMS.md)。
 

@@ -1,7 +1,0 @@
-rustc 1.102.0-nightly (5df8c02af 2026-11-16)
-binary: rustc
-commit-hash: 5df8c02afdf6b882bc301442cea70f026e3d3974
-commit-date: 2026-11-16
-host: x86_64-unknown-linux-gnu
-release: 1.102.0-nightly
-LLVM version: 23.1.5

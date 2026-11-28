@@ -14,7 +14,7 @@
 
 ## 1. 先选对包
 
-**网页工作台从 0.19.0-rc.4 开始提供。** 在 [Releases](https://github.com/clonetimer/RustAppLab/releases) 选择 rc.6 的 `source.zip` 或本机对应的 `runtime.zip`，核对同目录校验文件；是否已发布以实际 Release 为准。[当前 main 源码 ZIP](https://github.com/clonetimer/RustAppLab/archive/refs/heads/main.zip) 也包含合入主线的修订。已有 `v0.19.0-rc.3` 下载包保持原样。
+**推荐使用网页工作台。** 在 [Releases](https://github.com/clonetimer/RustAppLab/releases) 选择当前版本 `source.zip` 或本机对应的 `runtime.zip`，核对同目录校验文件；是否已发布以实际 Release 为准。
 
 已下载旧包时，把新平台解压到另一个文件夹，保留已有 `my-...` 目录和个人记录。新平台可直接对旧工程路径执行第 4 节的 next/check，不需要重新完成 FirstCard。正式发布包仍以 Releases 中带版本号的 source.zip 及其校验值为准。
 

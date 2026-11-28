@@ -39,9 +39,8 @@
 | 开始、续学、查看当前任务 | [开始指南](README_START_HERE.md)、[FirstCard 之后](course/AFTER_FIRSTCARD.md)、[课程目录](course/README.md) |
 | 看参考源码和实验材料 | 各 `apps/`、`projects/`、`examples/` 的 README；自己的代码在 `my-...` 工程 |
 | 维护项目或打包 | [维护文档与源码地图](docs/README.md) |
-| 查旧设计、旧版本和旧验证 | [历史文档](docs/archive/README.md)、[验证记录索引](verification/README.md) |
 
-按当前作品的 README 继续即可。历史记录按当时版本保留，不是新增的学习任务。
+按当前作品的 README 继续即可。维护文档不是学员必读材料。
 
 ## 选择下载内容
 
@@ -72,7 +71,7 @@ FirstCard → UnitLab → QuizDeck → TextScope → LedgerLite / BadgeForge / T
 
 新版工作台可以搜索中文概念、Rust 名称或错误编号，打开本地讲义与官方章节，再进入对应专题的个人副本。D1–D6 支持同页编辑、保存与真实 Cargo 测试；11 类编译错误提供隔离的失败／修复对照实验。中文 Rust Book 用于基础概念与项目组织对照；异步 API 按锁定版本的官方文档学习。使用 `learn reading <工程>` 查阅相关章节，见 [Book 对照指南](course/BOOK_GUIDE.md)。
 
-遇到相应概念时，可补读 [所有权与切片](course/BOOK_OWNERSHIP_PRACTICE.md)、[集合与错误传播](course/BOOK_COLLECTIONS_ERRORS.md)、[泛型与生命周期](course/BOOK_GENERICS_LIFETIMES.md)。它们不要求在 UnitLab 前完成。[31 项概念补课任务](course/BOOK_31_GAPS_REPAIR.md)、[学员学习效果观察](course/LEARNER_EVIDENCE_PROTOCOL.md) 和 [概念审计](course/BOOK_CONCEPT_AUDIT.md) 保留第 4–6、8–10 章 118 个目标的历史审计，并补齐其中原先未完成的 31 项解释、预测、成功／失败、修复与迁移练习；[本轮补充证据](verification/concept-repair-20261124.json)单独记录技术验证。这个范围不能作为整本书的完成率，示例验证也不表示真实学员已经掌握。
+遇到相应概念时，可补读 [所有权与切片](course/BOOK_OWNERSHIP_PRACTICE.md)、[集合与错误传播](course/BOOK_COLLECTIONS_ERRORS.md)、[泛型与生命周期](course/BOOK_GENERICS_LIFETIMES.md)，或选读 [31 项概念补课任务](course/BOOK_31_GAPS_REPAIR.md)。它们不要求在 UnitLab 前完成。
 
 ## 已有工程继续用
 
@@ -96,4 +95,4 @@ cargo run --locked --offline -p labquest -- learn check "D:/练习/my-unitlab"
 
 此版本为 **RC 候选版，不是 Stable**。当前源码必须重新通过 Windows/Linux、最低版本、浏览器、C1/C2 和交付检查；旧版本证据不继承。真人学习效果与 Win10 本机体验按 [试用记录](course/USER_TRIAL.md) 记录，不能以 CI 代填。参见 [发布规则](RELEASE_POLICY.md)、[已知边界](KNOWN_ISSUES.md)、[后续范围](ROADMAP.md)。
 
-网络服务仅用于可信本机回环 HTTP；不提供公网/TLS、账号认证或恶意代码沙箱。当前修订见 [变更记录](RELEASE_NOTES.md)；旧版设计、发布说明与验证分别从 [历史文档](docs/archive/README.md) 和 [验证索引](verification/README.md) 查阅，按记录的版本与提交理解。
+网络服务仅用于可信本机回环 HTTP；不提供公网/TLS、账号认证或恶意代码沙箱。当前修订见 [变更记录](RELEASE_NOTES.md)。
