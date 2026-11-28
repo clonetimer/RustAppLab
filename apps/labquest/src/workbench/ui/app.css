@@ -709,3 +709,9 @@ summary:hover { color: var(--text); }
 @media (max-width: 600px) {
   .course-preview { margin-top: 10px; padding-top: 8px; }
 }
+
+/* Short learner-facing explanation; original compiler and checker output stays intact. */
+.lesson-failure { margin: 12px 0 6px; padding: 9px 11px; border-left: 2px solid var(--amber); background: #262738; border-radius: 0 6px 6px 0; }
+.lesson-failure h4 { color: var(--amber); font-size: 14px; margin-bottom: 5px; }
+.lesson-failure p + p { margin-top: 5px; }
+.lesson-failure .failure-location { color: var(--muted); font-size: 12px; overflow-wrap: anywhere; }

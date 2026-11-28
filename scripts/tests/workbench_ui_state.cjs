@@ -260,6 +260,52 @@ test('returning to a workbench tab refreshes old success without replacing the o
   assert.match(requests[0], /^\/api\/file\?/);
 });
 
+test('teaching feedback distinguishes behavior, real errors, and unknown failures', () => {
+  const { teachingFailure } = loadApp();
+  const lesson = { id: 'firstcard', project: { files: ['src/main.rs'] } };
+  const failure = { action: 'check', status: 'failed', exit_code: 2 };
+  const guide = output => teachingFailure(lesson, { ...failure, output });
+  assert.equal(guide('期待：正确\n实际：占位').title, '输出还不符合任务要求');
+  const typed = guide('error[E0308]: mismatched types\n --> C:\\tmp\\src\\main.rs:4:9\n');
+  assert.match(typed.title, /E0308/);
+  assert.equal(typed.location, 'src/main.rs · 第 4 行，第 9 列');
+  assert.match(typed.reason, /类型/);
+  assert.match(guide('error: unclosed delimiter\n --> src/main.rs:3:5').title, /括号/);
+  assert.equal(guide('error[E9999]: unknown\n --> other.rs:2:1').location, '');
+  assert.match(guide('test result: FAILED. 0 passed').title, /检查要求/);
+  assert.match(guide('random output').reason, /不足以/);
+  assert.match(teachingFailure(lesson, { ...failure, exit_code: null }).title, /未能完成/);
+  assert.equal(teachingFailure(lesson, { ...failure, action: 'run', output: 'error[E0308]: example' }).title, '程序运行未成功');
+  assert.equal(teachingFailure(lesson, { ...failure, status: 'succeeded' }), null);
+});
+
+test('FirstCard reload trusts only a current server check, not a stored completion flag', async () => {
+  const original = { ...card, id: 'firstcard', step_count: 1, next_course: 'unitlab',
+    project: { path: '/projects/A', source_digest: 'new' } };
+  const saved = { id: 'firstcard', projectPath: '/projects/A', checkJob: 41 };
+  const first = { ...check, course_id: 'firstcard' };
+  for (const [job, expected] of [
+    [first, true], [{ ...first, stale: true }, false],
+    [{ ...first, source_digest: 'different' }, false],
+    [{ ...first, action: 'run' }, false],
+    [{ ...first, exit_code: 2, status: 'failed' }, false],
+    [{ ...first, id: 42 }, false],
+  ]) {
+    const context = loadApp(async url => {
+      assert.equal(url, '/api/job?id=41');
+      return { ok: true, json: async () => job };
+    });
+    primeEditor(context, original);
+    assert.equal(await context.restoreFirstCardCheck(saved), expected);
+  }
+  const expired = loadApp(async () => ({ ok: false, status: 404, json: async () => ({ error: 'missing' }) }));
+  primeEditor(expired, original);
+  assert.equal(await expired.restoreFirstCardCheck(saved), false);
+  const wrongProject = loadApp();
+  primeEditor(wrongProject, original);
+  assert.equal(await wrongProject.restoreFirstCardCheck({ ...saved, projectPath: '/projects/B' }), false);
+});
+
 test('book navigation has a bounded allowlist and diagnostics never pretend to fix code', () => {
   const context = loadApp();
   const docs = context.compilerDiagnostics([

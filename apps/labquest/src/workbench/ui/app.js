@@ -108,6 +108,8 @@ function rememberSelection() {
       step: card.step,
       file: file?.path,
       projectPath: card.project?.path || ui.projectPath.value,
+      checkJob: card.id === 'firstcard' && state.lastCheck?.exit_code === 0
+        && nextDestination(card, state.lastCheck, sourceChanged()) ? state.lastCheck.id : undefined,
     }));
   } catch {
     // Local storage is optional in private or restricted browser profiles.
@@ -625,7 +627,13 @@ function renderOutput() {
   ui.consoleSummary.dataset.state = tone;
   text(ui.consoleSummary, summary);
   text(ui.consoleOutput, output?.job?.output ?? output?.details ?? '');
-  renderCompilerHelp(output?.job);
+  const job = output?.job;
+  const card = state.card;
+  const current = Boolean(job && card?.project && job.course_id === card.id
+    && job.step === card.step && !job.stale && !sourceChanged()
+    && job.source_digest === card.project.source_digest);
+  renderCompilerHelp(current && job.action === 'check' ? job : null);
+  renderFailureGuide(card, current ? job : null);
 }
 
 // Navigation, saving and polling all use the same operation lock. A failed
@@ -695,6 +703,26 @@ function readyNotice() {
   }
 }
 
+// FirstCard has no trusted on-disk history. A browser may remember only a
+// job identifier; the still-running service must confirm the actual check.
+async function restoreFirstCardCheck(saved) {
+  const card = state.card;
+  if (card?.id !== 'firstcard' || !state.file || !card.project
+      || saved.id !== card.id || saved.projectPath !== card.project.path
+      || !Number.isSafeInteger(saved.checkJob) || saved.checkJob <= 0) return false;
+  try {
+    const job = readJob(await api('/api/job', { query: { id: saved.checkJob } }),
+      { id: card.id, action: 'check', step: 1, jobId: saved.checkJob });
+    if (job.exit_code !== 0 || !nextDestination(card, job, sourceChanged())) return false;
+    state.lastCheck = job;
+    state.output = { job };
+    return true;
+  } catch {
+    // A missing/expired/restarted service job is not a passing result.
+    return false;
+  }
+}
+
 async function start() {
   await perform('boot', '正在读取本地课程…', async () => {
     state.catalog = await api('/api/catalog');
@@ -705,7 +733,12 @@ async function start() {
       && saved.id === course.id ? saved.step : 1;
     const card = await getCourse(course.id, step);
     await applyCard(card, saved.id === course.id ? saved : {});
+    const restored = await restoreFirstCardCheck(saved);
+    rememberSelection();
     readyNotice();
+    if (!restored && card.id === 'firstcard' && card.project && saved.checkJob) {
+      notice('上次检查结果无法核验，请重新检查本步。', 'warning');
+    }
   }, repeat('重连', start));
 }
 
@@ -847,6 +880,7 @@ async function finishJob(job) {
   } else {
     notice(job.action === 'check' ? '本步代码检查通过。试一组自己的输入，再继续学习。' : '运行结束。可更换输入，再观察输出变化。', 'success');
   }
+  rememberSelection();
 }
 
 async function pollJob(job) {
@@ -925,6 +959,9 @@ function initialize() {
     stepTitle: 'step-title', goal: 'lesson-goal', target: 'lesson-function', concept: 'lesson-concept',
     lessonProgress: 'lesson-progress', lessonHints: 'lesson-hints', lessonPractice: 'lesson-practice',
     lessonRecap: 'lesson-recap', lessonRecapText: 'lesson-recap-text', lessonConceptRow: 'lesson-concept-row',
+    lessonFailure: 'lesson-failure', lessonFailureTitle: 'lesson-failure-title',
+    lessonFailureReason: 'lesson-failure-reason', lessonFailureLocation: 'lesson-failure-location',
+    lessonFailureAction: 'lesson-failure-action',
     coursePreview: 'course-preview', coursePreviewDescription: 'course-preview-description',
     coursePreviewOutput: 'course-preview-output', coursePreviewNote: 'course-preview-note',
     activeProjectPath: 'active-project-path',

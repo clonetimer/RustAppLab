@@ -286,6 +286,9 @@ def run_flow(page, base, tmp, out, report, expect, exe):
     action('firstcard-initial', pending=True)
     expect(loc('#lesson-progress')).to_have_attribute('data-phase', 'retry')
     expect(loc('#lesson-recap')).to_be_hidden()
+    expect(loc('#lesson-failure')).to_be_visible()
+    expect(loc('#lesson-failure-title')).to_have_text('输出还不符合任务要求')
+    expect(loc('#lesson-failure-action')).to_contain_text('期待 / 实际')
     expect(loc('#lesson-hints')).to_have_attribute('open', '')
     expect(loc('#lesson-practice')).not_to_have_attribute('open', '')
     fixed = initial.replace('println!("等待完成第一张任务卡");', 'println!("今日任务卡 | {name} | {task}");')
@@ -304,6 +307,7 @@ def run_flow(page, base, tmp, out, report, expect, exe):
     expect(loc('#lesson-practice')).to_have_attribute('open', '')
     expect(loc('#lesson-recap')).to_be_visible()
     expect(loc('#lesson-recap-text')).to_contain_text('没有独立实现参数解析')
+    expect(loc('#lesson-failure')).to_be_hidden()
     expect(loc('#lesson-concept-row')).to_be_hidden()
     # A dirty source must withdraw both the pass and the recap.
     editor.fill(fixed + '\n// pending change\n')
@@ -313,9 +317,11 @@ def run_flow(page, base, tmp, out, report, expect, exe):
     editor.fill(fixed)
     expect(loc('#lesson-recap')).to_be_visible()
     expect(loc('#next-button')).to_contain_text('UnitLab')
-    # Reload a verified classic lesson: the real persisted check restores
-    # the next course without treating a mere program run as a pass.
-    page.reload()
+    # FirstCard has no trustworthy on-disk history. Reload while the same
+    # server is alive and require a real GET of its original check job.
+    with page.expect_response(lambda r: '/api/job?id=' in r.url and r.request.method == 'GET') as restored:
+        page.reload()
+    assert restored.value.ok and restored.value.json()['action'] == 'check'
     expect(editor).to_have_value(fixed)
     expect(loc('#lesson-progress')).to_have_attribute('data-phase', 'passed')
     expect(loc('#lesson-recap')).to_be_visible()
@@ -367,6 +373,8 @@ def run_flow(page, base, tmp, out, report, expect, exe):
     editor.fill(broken)
     failed = action('unitlab-compiler')
     assert 'unclosed delimiter' in failed['output'] and 'src/lib.rs' in failed['output'].replace('\\', '/')
+    expect(loc('#lesson-failure-title')).to_have_text('先修复：括号不匹配')
+    expect(loc('#lesson-failure-location')).to_contain_text('src/lib.rs')
     loc('#console-toggle').click()
     expect(loc('#console-panel')).to_have_attribute('data-mode', 'collapsed')
     expect(loc('#console-summary')).to_have_attribute('data-state', 'error')
@@ -374,6 +382,7 @@ def run_flow(page, base, tmp, out, report, expect, exe):
     capture(page, out, report, 'collapsed-error.png')
     editor.fill(unit)
     action('unitlab-recovered')
+    expect(loc('#lesson-failure')).to_be_hidden()
     # Retain a dirty editor when a learner cancels navigation.
     draft = unit+'\n// 浏览器里的草稿\n'
     editor.fill(draft)
