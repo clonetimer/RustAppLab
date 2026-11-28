@@ -14,7 +14,7 @@ import traceback
 from urllib.error import HTTPError
 from modern_workbench_check import api
 from release_check import ROOT
-from workbench_process import running_workbench
+from workbench_process import choose_workbench_course, running_workbench
 from modern_d8_check import write
 import modern_d10b_check as d10
 import modern_e1a_check as e1a
@@ -76,7 +76,7 @@ def browser_check(base, course, work, output, report):
         try:
             page = browser.new_page(viewport={"width": 1440, "height": 1000}, locale="zh-CN")
             page.goto(base + "/", wait_until="domcontentloaded")
-            page.locator(f'#course-list [data-course="{course}"]').click()
+            choose_workbench_course(page, course)
             expect(page.locator(f'#course-list [data-course="{course}"]')).to_have_attribute("aria-current", "true")
             expect(page.locator("#create-button")).to_be_hidden()
             # The API already opened this same project. Reopen through the

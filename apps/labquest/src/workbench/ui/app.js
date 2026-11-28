@@ -122,20 +122,41 @@ function button(label, dataName, value) {
   return element;
 }
 
+function courseKind(course) {
+  return course.id.startsWith('modern-') ? 'modern' : (course.kind || 'studio');
+}
+
+// Use catalog order, not inferred completion. Don't recommend an unrelated
+// learning stage just because a group ends.
+function courseFocusIds(courses, currentId) {
+  if (!courses.length) return [];
+  const found = courses.findIndex(course => course.id === currentId);
+  const index = found < 0 ? 0 : found;
+  const current = courses[index];
+  return [current.id, ...courses.slice(index + 1)
+    .filter(course => courseKind(course) === courseKind(current))
+    .slice(0, 2).map(course => course.id)];
+}
+
+let courseNavigation = null;
+
 function buildCourses() {
   const courses = state.catalog.courses;
-  text(ui.catalogCount, '');
-  const controls = [];
-  let previousKind = null;
+  const controls = new Map();
+  const groups = new Map();
+  const labels = { studio: '基础课程', book: 'Rust 专项练习', modern: '进阶课程' };
+  for (const [kind, label] of Object.entries(labels)) {
+    const details = document.createElement('details');
+    details.className = 'course-disclosure';
+    details.dataset.courseGroup = kind;
+    const summary = document.createElement('summary');
+    summary.textContent = label;
+    const list = document.createElement('div');
+    list.className = 'course-group-list';
+    details.append(summary, list);
+    groups.set(kind, { details, list });
+  }
   for (const course of courses) {
-    const kind = course.id.startsWith('modern-') ? 'modern' : (course.kind || 'studio');
-    if (kind !== previousKind) {
-      const heading = document.createElement('p');
-      heading.className = 'course-group';
-      heading.textContent = kind === 'modern' ? '进阶练习' : kind === 'book' ? '专项练习' : '基础课程';
-      controls.push(heading);
-      previousKind = kind;
-    }
     const [name, ...subtitle] = course.title.split(' · ');
     const control = button('', 'course', course.id);
     control.className = 'course-link';
@@ -148,9 +169,35 @@ function buildCourses() {
       detail.textContent = subtitle.join(' · ');
       control.append(detail);
     }
-    controls.push(control);
+    controls.set(course.id, control);
   }
-  ui.courseList.replaceChildren(...controls);
+  courseNavigation = { controls, groups, current: null };
+  ui.courseGroups.replaceChildren(...Array.from(groups.values(), group => group.details));
+  ui.courseFocus.hidden = !courses.length;
+  ui.courseCatalog.hidden = !courses.length;
+  refreshCourseNavigation(state.card?.id || courses[0]?.id);
+}
+
+function refreshCourseNavigation(id) {
+  if (!courseNavigation || courseNavigation.current === id) return;
+  const { controls, groups } = courseNavigation;
+  const courses = state.catalog.courses;
+  const [current, ...upcoming] = courseFocusIds(courses, id);
+  if (!current) return;
+  const pinned = new Set([current, ...upcoming]);
+  // There is exactly one control per course. Keep IDs, event delegation and
+  // the existing dirty-navigation guard; only move controls between sections.
+  ui.courseCurrent.replaceChildren(controls.get(current));
+  ui.courseUpcoming.replaceChildren(...upcoming.map(id => controls.get(id)));
+  ui.courseUpcomingSection.hidden = !upcoming.length;
+  for (const [kind, group] of groups) {
+    const remaining = courses.filter(course => courseKind(course) === kind && !pinned.has(course.id));
+    group.list.replaceChildren(...remaining.map(course => controls.get(course.id)));
+    group.details.hidden = !remaining.length;
+    group.details.open = false;
+  }
+  courseNavigation.current = current;
+  ui.courseList.scrollTop = 0;
 }
 
 // A stored result is usable only for the cumulative classic Studio contract.
@@ -166,6 +213,7 @@ function restoredLessonPass(card, check, changed, historyChanged) {
 function renderCard(previous) {
   const { card } = state;
   const course = state.catalog.courses.find(item => item.id === card.id);
+  refreshCourseNavigation(card.id);
   text(ui.courseTitle, card.title);
   const path = card.project?.path;
   text(ui.projectState, path ? '练习已打开' : (card.bundle ? '需先准备课程包' : '尚未开始'));
@@ -802,7 +850,9 @@ async function startJob(action) {
 
 function initialize() {
   const ids = {
-    engine: 'engine-status', courseList: 'course-list', catalogCount: 'catalog-count',
+    engine: 'engine-status', courseList: 'course-list',
+    courseFocus: 'course-focus', courseCurrent: 'course-current', courseUpcoming: 'course-upcoming',
+    courseUpcomingSection: 'course-upcoming-section', courseCatalog: 'course-catalog', courseGroups: 'course-groups',
     courseTitle: 'course-title', projectState: 'project-state', projectPath: 'project-path',
     projectForm: 'project-form', create: 'create-button', openProject: 'open-project-button',
     startPanel: 'start-panel', startTitle: 'start-title', startDescription: 'start-description',
@@ -829,9 +879,13 @@ function initialize() {
   };
   for (const [name, id] of Object.entries(ids)) ui[name] = document.getElementById(id);
 
-  ui.courseList.addEventListener('click', event => {
+  ui.courseList.addEventListener('click', async event => {
     const control = event.target.closest('[data-course]');
-    if (control) void selectCourse(control.dataset.course, 1);
+    if (!control) return;
+    const id = control.dataset.course;
+    const changed = id !== state.card?.id;
+    await selectCourse(id, 1);
+    if (changed && state.card?.id === id) control.focus({ preventScroll: true });
   });
   ui.stepList.addEventListener('click', event => {
     const control = event.target.closest('[data-step]');

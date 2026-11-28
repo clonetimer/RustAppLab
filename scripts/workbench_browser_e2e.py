@@ -14,7 +14,7 @@ from urllib.parse import urlencode, urlparse
 
 from browser_e2e import find_browser
 from release_check import ROOT, source_id
-from workbench_process import running_workbench
+from workbench_process import choose_workbench_course, running_workbench
 from book_workbench_browser_e2e import run_book_flow
 
 # Immutable comparison for manual runs and future PRs that already contain
@@ -125,7 +125,7 @@ def compare_layout(page, expect, out, report, course):
 def run_flow(page, base, tmp, out, report, expect, exe):
     loc = page.locator
     def choose(course):
-        loc(f'#course-list [data-course="{course}"]').click()
+        choose_workbench_course(page, course)
     def step(number):
         loc(f'#step-list [data-step="{number}"]').click()
     def course_data(course, number=1):
@@ -157,6 +157,12 @@ def run_flow(page, base, tmp, out, report, expect, exe):
     expect(loc('#lesson-hints')).not_to_have_attribute('open', '')
     expect(loc('#lesson-practice')).not_to_have_attribute('open', '')
     expect(loc('#lesson-progress')).to_have_attribute('data-phase', 'start')
+    expect(loc('#course-current [data-course="firstcard"]')).to_be_visible()
+    expect(loc('#course-upcoming [data-course]')).to_have_count(2)
+    expect(loc('#course-upcoming [data-course="unitlab"]')).to_be_visible()
+    expect(loc('#course-upcoming [data-course="quizdeck"]')).to_be_visible()
+    expect(loc('#course-list [data-course]:visible')).to_have_count(3)
+    expect(loc('#course-groups details[open]')).to_have_count(0)
     capture(page, out, report, 'first-visit-1440x1000.png')
     viewport(page, 320, 844)
     expect(loc('#create-button')).to_be_in_viewport(ratio=.25)
@@ -166,9 +172,18 @@ def run_flow(page, base, tmp, out, report, expect, exe):
     expected = {'firstcard', 'unitlab', 'quizdeck', 'textscope', 'ledgerlite', 'badgeforge', 'termgarden', 'batchmeter', 'minikv', 'netfetch', 'servicedesk', 'storedesk', 'asyncboard', 'book-d1', 'book-d2', 'book-d3', 'book-d4', 'book-d5', 'book-d6', 'book-foundations', "modern-d8", "modern-d9a", "modern-d9b", "modern-d10a", "modern-d11a", "modern-e4", "modern-e5", "modern-d10b", "modern-d11b", "modern-e1a", "modern-e1b", "modern-e2", "modern-e3"}
     assert {c['id'] for c in catalog} == expected and len(catalog) == len(expected)
     expect(loc('#course-list [data-course]')).to_have_count(len(expected))
+    # A learner can inspect all remaining courses, including the advanced
+    # stages, but the first visit has no expanded catalog.
+    loc('#course-groups [data-course-group="modern"] > summary').click()
+    expect(loc('#course-list [data-course="modern-e5"]')).to_be_visible()
+    loc('#course-groups [data-course-group="modern"] > summary').click()
+    expect(loc('#course-list [data-course="modern-e5"]')).to_be_hidden()
     for item in catalog:
         course = item['id']
         choose(course)
+        expect(loc(f'#course-current [data-course="{course}"]')).to_have_attribute('aria-current', 'true')
+        expect(loc('#course-groups details[open]')).to_have_count(0)
+        expect(loc('#course-list [data-course]')).to_have_count(len(expected))
         expect(loc('#step-list [data-step]')).to_have_count(len(item['steps']))
         for number in range(1, len(item['steps'])+1):
             step(number)
@@ -400,7 +415,7 @@ def main():
                     report['book_practice'] = run_book_flow(page, base, tmp, out, expect)
                 # Refuse a real connection while preserving the page. Restart
                 # the real server on the same URL before retrying navigation.
-                page.locator('#course-list [data-course="quizdeck"]').click()
+                choose_workbench_course(page, 'quizdeck')
                 expect(page.locator('#retry-button')).to_be_visible(timeout=15_000)
                 with running_workbench([*cmd,str(urlparse(base).port)], tmp, out/'restarted-server.txt'):
                     page.locator('#retry-button').click()

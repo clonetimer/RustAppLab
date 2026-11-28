@@ -71,6 +71,24 @@ const check = {
   output: 'real output', exit_code: 0, source_digest: 'new', stale: false,
 };
 
+test('focused route keeps catalog order without crossing learning stages', () => {
+  const { courseFocusIds } = loadApp();
+  const courses = [
+    { id: 'firstcard', kind: 'studio' }, { id: 'unitlab', kind: 'studio' },
+    { id: 'quizdeck', kind: 'studio' }, { id: 'book-d1', kind: 'book' },
+    { id: 'book-d2', kind: 'book' }, { id: 'modern-d8', kind: 'book' },
+    { id: 'modern-d9a', kind: 'book' },
+  ];
+  const focus = id => Array.from(courseFocusIds(courses, id));
+  assert.deepEqual(focus('firstcard'), ['firstcard', 'unitlab', 'quizdeck']);
+  assert.deepEqual(focus('quizdeck'), ['quizdeck']);
+  assert.deepEqual(focus('book-d1'), ['book-d1', 'book-d2']);
+  assert.deepEqual(focus('book-d2'), ['book-d2']);
+  assert.deepEqual(focus('modern-d8'), ['modern-d8', 'modern-d9a']);
+  assert.deepEqual(focus('missing'), ['firstcard', 'unitlab', 'quizdeck']);
+  assert.deepEqual(Array.from(courseFocusIds([], 'firstcard')), []);
+});
+
 test('a run or a stale check leaves the course without a current check', () => {
   const { nextDestination } = loadApp();
   for (const result of [

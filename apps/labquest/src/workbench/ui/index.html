@@ -23,9 +23,21 @@
     <aside class="rail" aria-labelledby="course-list-title">
       <div class="rail-heading">
         <h2 id="course-list-title">学习路线</h2>
-        <span id="catalog-count"></span>
       </div>
-      <nav id="course-list" class="course-list" aria-label="课程"></nav>
+      <nav id="course-list" class="course-list" aria-label="课程">
+        <div class="course-focus" id="course-focus" hidden>
+          <p class="route-caption">当前学习</p>
+          <div id="course-current" class="course-current"></div>
+          <div id="course-upcoming-section" class="course-upcoming-section" hidden>
+            <p class="route-caption">后续课程</p>
+            <div id="course-upcoming" class="course-upcoming"></div>
+          </div>
+        </div>
+        <div class="course-catalog" id="course-catalog" hidden>
+          <p class="route-caption">浏览其他课程</p>
+          <div id="course-groups" class="course-groups"></div>
+        </div>
+      </nav>
       <button type="button" id="book-open" class="secondary book-launch">查知识 · 找实验</button>
     </aside>
     <main class="workspace" aria-labelledby="course-title">

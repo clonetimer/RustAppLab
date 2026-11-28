@@ -671,3 +671,30 @@ summary:hover { color: var(--text); }
 .lesson-disclosure .lesson-exercise { margin-top: 8px; }
 .active-project-path { color: var(--muted); font-size: 12px; overflow-wrap: anywhere; margin: 5px 0 8px; }
 
+
+/* Learning route: one current course, up to two later courses, optional catalog. */
+.course-list { flex-direction: column; gap: 14px; }
+.course-focus, .course-catalog { min-width: 0; flex: none; }
+.route-caption { font-size: 12px; color: var(--muted); margin: 3px 7px 6px; }
+.course-current, .course-upcoming, .course-group-list { display: grid; gap: 3px; min-width: 0; }
+.course-current .course-link, .course-upcoming .course-link, .course-group-list .course-link {
+  width: 100%; min-width: 0; overflow-wrap: anywhere;
+}
+.course-upcoming-section { margin-top: 14px; }
+.course-groups { display: grid; gap: 5px; min-width: 0; }
+.course-disclosure { border-top: 1px solid var(--line); min-width: 0; }
+.course-disclosure > summary { color: var(--muted); font-size: 12px; font-weight: 500; }
+.course-disclosure[open] > summary { color: var(--text); }
+.course-group-list { padding-bottom: 5px; }
+@media (max-width: 949px) {
+  .course-list { max-height: 245px; gap: 7px; }
+  .course-focus { display: grid; grid-template-columns: minmax(0, 1fr); }
+  .course-upcoming-section { margin-top: 6px; }
+  .course-upcoming { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .course-groups { grid-template-columns: repeat(3, minmax(0, 1fr)); }
+  .course-disclosure > summary { padding-inline: 4px; overflow-wrap: anywhere; }
+  .course-disclosure[open] { grid-column: 1 / -1; }
+  .course-group-list { grid-template-columns: repeat(2, minmax(0, 1fr)); }
+  .route-caption { margin: 1px 4px 3px; }
+  .course-link small { max-width: 100%; }
+}
