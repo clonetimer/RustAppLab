@@ -19,7 +19,7 @@ from urllib.parse import urlencode
 
 from browser_e2e import find_browser
 from release_check import ROOT
-from workbench_process import running_workbench
+from workbench_process import choose_workbench_course, running_workbench
 
 BOOK_IDS = ('book-d1', 'book-d2', 'book-d3', 'book-d4', 'book-d5', 'book-d6',
             'book-foundations')
@@ -85,7 +85,7 @@ def run_book_flow(page, base, tmp, out, expect):
             page.set_viewport_size({'width': 1440, 'height': 1000})
 
     def choose(course):
-        loc(f'#course-list [data-course="{course}"]').click()
+        choose_workbench_course(page, course)
         expect(loc('#course-title')).to_have_text(card(course)['title'])
         expect(loc('#step-list [data-step]')).to_have_count(3)
 

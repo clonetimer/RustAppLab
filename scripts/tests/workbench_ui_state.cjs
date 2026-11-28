@@ -71,6 +71,38 @@ const check = {
   output: 'real output', exit_code: 0, source_digest: 'new', stale: false,
 };
 
+test('focused route keeps catalog order without crossing learning stages', () => {
+  const { courseFocusIds } = loadApp();
+  const courses = [
+    { id: 'firstcard', kind: 'studio' }, { id: 'unitlab', kind: 'studio' },
+    { id: 'quizdeck', kind: 'studio' }, { id: 'book-d1', kind: 'book' },
+    { id: 'book-d2', kind: 'book' }, { id: 'modern-d8', kind: 'book' },
+    { id: 'modern-d9a', kind: 'book' },
+  ];
+  const focus = id => Array.from(courseFocusIds(courses, id));
+  assert.deepEqual(focus('firstcard'), ['firstcard', 'unitlab', 'quizdeck']);
+  assert.deepEqual(focus('quizdeck'), ['quizdeck']);
+  assert.deepEqual(focus('book-d1'), ['book-d1', 'book-d2']);
+  assert.deepEqual(focus('book-d2'), ['book-d2']);
+  assert.deepEqual(focus('modern-d8'), ['modern-d8', 'modern-d9a']);
+  assert.deepEqual(focus('missing'), ['firstcard', 'unitlab', 'quizdeck']);
+  assert.deepEqual(Array.from(courseFocusIds([], 'firstcard')), []);
+});
+
+test('foundation previews distinguish full software examples from current-step recaps', () => {
+  const { foundationPreview, lessonRecap } = loadApp();
+  assert.equal(foundationPreview('firstcard').output, '今日任务卡 | 小林 | 写 Rust');
+  assert.equal(foundationPreview('unitlab').output, '25.00 c = 77.00 f');
+  assert.match(foundationPreview('unitlab').note, /全部 3 步/);
+  assert.match(foundationPreview('quizdeck').output, /score=2\/3/);
+  assert.equal(foundationPreview('modern-d8'), null);
+  assert.equal(foundationPreview('constructor'), null);
+  assert.match(lessonRecap({ id: 'firstcard', step: 1 }), /没有独立实现参数解析/);
+  assert.match(lessonRecap({ id: 'unitlab', step: 1 }), /还未完成/);
+  assert.match(lessonRecap({ id: 'quizdeck', step: 3 }), /检查答案数量/);
+  assert.equal(lessonRecap({ id: 'book-d1', step: 1, concept: 'Cargo 工作区' }), 'Cargo 工作区');
+});
+
 test('a run or a stale check leaves the course without a current check', () => {
   const { nextDestination } = loadApp();
   for (const result of [
@@ -90,6 +122,24 @@ test('fresh cumulative checks offer the next stage or course for the selected st
   assert.equal(nextDestination(card, check, true), null);
   assert.equal(nextDestination({ ...card, step: 2 }, check, false), null);
   assert.equal(nextDestination({ ...card, step: 3 }, { ...check, step: 3 }, false).course, 'quizdeck');
+});
+
+test('restored lessons use only a matching cumulative successful history', () => {
+  const { restoredLessonPass } = loadApp();
+  const classic = { ...card, kind: 'studio', project: { ...card.project, history: {
+    passed_steps: 1, upto_step: 1, same_source: true, compilation_failed: false,
+  } } };
+  assert.equal(restoredLessonPass(classic, null, false, false), true);
+  assert.equal(restoredLessonPass(classic, check, false, false), false);
+  assert.equal(restoredLessonPass(classic, null, true, false), false);
+  assert.equal(restoredLessonPass(classic, null, false, true), false);
+  assert.equal(restoredLessonPass({ ...classic, step: 2 }, null, false, false), false);
+  assert.equal(restoredLessonPass({ ...classic, id: 'modern-d8' }, null, false, false), false);
+  assert.equal(restoredLessonPass({ ...classic, kind: 'book' }, null, false, false), false);
+  for (const history of [{ same_source: false }, { compilation_failed: true }, { upto_step: 2 }]) {
+    const project = { ...classic.project, history: { ...classic.project.history, ...history } };
+    assert.equal(restoredLessonPass({ ...classic, project }, null, false, false), false);
+  }
 });
 
 test('navigation can recommend a later step only within the verified scope', () => {
@@ -208,6 +258,52 @@ test('returning to a workbench tab refreshes old success without replacing the o
   assert.equal(vm.runInContext('ui.editor.value', context), '保存版本');
   assert.equal(requests.length, 1);
   assert.match(requests[0], /^\/api\/file\?/);
+});
+
+test('teaching feedback distinguishes behavior, real errors, and unknown failures', () => {
+  const { teachingFailure } = loadApp();
+  const lesson = { id: 'firstcard', project: { files: ['src/main.rs'] } };
+  const failure = { action: 'check', status: 'failed', exit_code: 2 };
+  const guide = output => teachingFailure(lesson, { ...failure, output });
+  assert.equal(guide('期待：正确\n实际：占位').title, '输出还不符合任务要求');
+  const typed = guide('error[E0308]: mismatched types\n --> C:\\tmp\\src\\main.rs:4:9\n');
+  assert.match(typed.title, /E0308/);
+  assert.equal(typed.location, 'src/main.rs · 第 4 行，第 9 列');
+  assert.match(typed.reason, /类型/);
+  assert.match(guide('error: unclosed delimiter\n --> src/main.rs:3:5').title, /括号/);
+  assert.equal(guide('error[E9999]: unknown\n --> other.rs:2:1').location, '');
+  assert.match(guide('test result: FAILED. 0 passed').title, /检查要求/);
+  assert.match(guide('random output').reason, /不足以/);
+  assert.match(teachingFailure(lesson, { ...failure, exit_code: null }).title, /未能完成/);
+  assert.equal(teachingFailure(lesson, { ...failure, action: 'run', output: 'error[E0308]: example' }).title, '程序运行未成功');
+  assert.equal(teachingFailure(lesson, { ...failure, status: 'succeeded' }), null);
+});
+
+test('FirstCard reload trusts only a current server check, not a stored completion flag', async () => {
+  const original = { ...card, id: 'firstcard', step_count: 1, next_course: 'unitlab',
+    project: { path: '/projects/A', source_digest: 'new' } };
+  const saved = { id: 'firstcard', projectPath: '/projects/A', checkJob: 41 };
+  const first = { ...check, course_id: 'firstcard' };
+  for (const [job, expected] of [
+    [first, true], [{ ...first, stale: true }, false],
+    [{ ...first, source_digest: 'different' }, false],
+    [{ ...first, action: 'run' }, false],
+    [{ ...first, exit_code: 2, status: 'failed' }, false],
+    [{ ...first, id: 42 }, false],
+  ]) {
+    const context = loadApp(async url => {
+      assert.equal(url, '/api/job?id=41');
+      return { ok: true, json: async () => job };
+    });
+    primeEditor(context, original);
+    assert.equal(await context.restoreFirstCardCheck(saved), expected);
+  }
+  const expired = loadApp(async () => ({ ok: false, status: 404, json: async () => ({ error: 'missing' }) }));
+  primeEditor(expired, original);
+  assert.equal(await expired.restoreFirstCardCheck(saved), false);
+  const wrongProject = loadApp();
+  primeEditor(wrongProject, original);
+  assert.equal(await wrongProject.restoreFirstCardCheck({ ...saved, projectPath: '/projects/B' }), false);
 });
 
 test('book navigation has a bounded allowlist and diagnostics never pretend to fix code', () => {

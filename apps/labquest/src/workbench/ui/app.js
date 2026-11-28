@@ -108,6 +108,8 @@ function rememberSelection() {
       step: card.step,
       file: file?.path,
       projectPath: card.project?.path || ui.projectPath.value,
+      checkJob: card.id === 'firstcard' && state.lastCheck?.exit_code === 0
+        && nextDestination(card, state.lastCheck, sourceChanged()) ? state.lastCheck.id : undefined,
     }));
   } catch {
     // Local storage is optional in private or restricted browser profiles.
@@ -122,20 +124,41 @@ function button(label, dataName, value) {
   return element;
 }
 
+function courseKind(course) {
+  return course.id.startsWith('modern-') ? 'modern' : (course.kind || 'studio');
+}
+
+// Use catalog order, not inferred completion. Don't recommend an unrelated
+// learning stage just because a group ends.
+function courseFocusIds(courses, currentId) {
+  if (!courses.length) return [];
+  const found = courses.findIndex(course => course.id === currentId);
+  const index = found < 0 ? 0 : found;
+  const current = courses[index];
+  return [current.id, ...courses.slice(index + 1)
+    .filter(course => courseKind(course) === courseKind(current))
+    .slice(0, 2).map(course => course.id)];
+}
+
+let courseNavigation = null;
+
 function buildCourses() {
   const courses = state.catalog.courses;
-  text(ui.catalogCount, `${courses.length} 门`);
-  const controls = [];
-  let previousKind = null;
+  const controls = new Map();
+  const groups = new Map();
+  const labels = { studio: '基础课程', book: 'Rust 专项练习', modern: '进阶课程' };
+  for (const [kind, label] of Object.entries(labels)) {
+    const details = document.createElement('details');
+    details.className = 'course-disclosure';
+    details.dataset.courseGroup = kind;
+    const summary = document.createElement('summary');
+    summary.textContent = label;
+    const list = document.createElement('div');
+    list.className = 'course-group-list';
+    details.append(summary, list);
+    groups.set(kind, { details, list });
+  }
   for (const course of courses) {
-    const kind = course.id.startsWith('modern-') ? 'modern' : (course.kind || 'studio');
-    if (kind !== previousKind) {
-      const heading = document.createElement('p');
-      heading.className = 'course-group';
-      heading.textContent = kind === 'modern' ? '现代 RUST · 1.100.0' : kind === 'book' ? 'RUST BOOK · 专项练习' : '从作品开始';
-      controls.push(heading);
-      previousKind = kind;
-    }
     const [name, ...subtitle] = course.title.split(' · ');
     const control = button('', 'course', course.id);
     control.className = 'course-link';
@@ -148,17 +171,58 @@ function buildCourses() {
       detail.textContent = subtitle.join(' · ');
       control.append(detail);
     }
-    controls.push(control);
+    controls.set(course.id, control);
   }
-  ui.courseList.replaceChildren(...controls);
+  courseNavigation = { controls, groups, current: null };
+  ui.courseGroups.replaceChildren(...Array.from(groups.values(), group => group.details));
+  ui.courseFocus.hidden = !courses.length;
+  ui.courseCatalog.hidden = !courses.length;
+  refreshCourseNavigation(state.card?.id || courses[0]?.id);
+}
+
+function refreshCourseNavigation(id) {
+  if (!courseNavigation || courseNavigation.current === id) return;
+  const { controls, groups } = courseNavigation;
+  const courses = state.catalog.courses;
+  const [current, ...upcoming] = courseFocusIds(courses, id);
+  if (!current) return;
+  const pinned = new Set([current, ...upcoming]);
+  // There is exactly one control per course. Keep IDs, event delegation and
+  // the existing dirty-navigation guard; only move controls between sections.
+  ui.courseCurrent.replaceChildren(controls.get(current));
+  ui.courseUpcoming.replaceChildren(...upcoming.map(id => controls.get(id)));
+  ui.courseUpcomingSection.hidden = !upcoming.length;
+  for (const [kind, group] of groups) {
+    const remaining = courses.filter(course => courseKind(course) === kind && !pinned.has(course.id));
+    group.list.replaceChildren(...remaining.map(course => controls.get(course.id)));
+    group.details.hidden = !remaining.length;
+    group.details.open = false;
+  }
+  courseNavigation.current = current;
+  ui.courseList.scrollTop = 0;
+}
+
+// A stored result is usable only for the cumulative classic Studio contract.
+// Modern and Book tests have no equivalent persisted per-step history.
+function restoredLessonPass(card, check, changed, historyChanged) {
+  const history = card?.project?.history;
+  return Boolean(card?.kind === 'studio' && !card.id.startsWith('modern-')
+    && !check && !changed && !historyChanged && history?.same_source
+    && !history.compilation_failed && history.upto_step === history.passed_steps
+    && history.passed_steps >= card.step);
 }
 
 function renderCard(previous) {
   const { card } = state;
   const course = state.catalog.courses.find(item => item.id === card.id);
+  refreshCourseNavigation(card.id);
   text(ui.courseTitle, card.title);
   const path = card.project?.path;
-  text(ui.projectState, path || (card.bundle ? '先解压 ' + card.bundle + '，打开个人目录' : '尚未打开学习项目'));
+  text(ui.projectState, path ? '练习已打开' : (card.bundle ? '需先准备课程包' : '尚未开始'));
+  if (Object.prototype.hasOwnProperty.call(ui, 'activeProjectPath')) {
+    ui.activeProjectPath.hidden = !path;
+    text(ui.activeProjectPath, path ? '当前项目：' + path : '');
+  }
   ui.projectState.dataset.open = String(Boolean(path));
   ui.projectState.title = path || (card.bundle ? '只打开通过验收的离线学员包；完整讲义有准备说明' : '新项目将创建在启动工作台时指定的工作区');
   ui.stepList.hidden = false;
@@ -195,6 +259,11 @@ function renderCard(previous) {
       details.append(summary, description);
       return details;
     }));
+    if (Object.prototype.hasOwnProperty.call(ui, 'lessonPractice')) {
+      ui.lessonHints.open = false;
+      ui.lessonPractice.open = false;
+      ui.lessonProgress.dataset.phase = '';
+    }
     ui.lessonContent.scrollTop = 0;
     ui.runArgs.value = card.run_args.join('\n');
     ui.runSettings.open = false;
@@ -290,7 +359,13 @@ function renderHistory() {
 
 function renderNext() {
   const { card, lastCheck } = state;
-  let destination = nextDestination(card, lastCheck, sourceChanged());
+  const changed = sourceChanged();
+  let destination = nextDestination(card, lastCheck, changed);
+  const restored = Boolean(state.file) && restoredLessonPass(card, lastCheck, changed, state.historyChanged);
+  if (!destination && restored) {
+    destination = card.step < card.step_count ? { step: card.step + 1 }
+      : card.next_course ? { course: card.next_course } : { experiment: true };
+  }
   const history = card?.project?.history;
   const suggestedStep = card?.project?.suggested_step;
   const historySuggestion = !destination && history?.same_source && !state.historyChanged
@@ -311,6 +386,7 @@ function renderNext() {
   ui.next.onclick = async () => {
     if (state.busy || state.pending) return;
     if (destination.experiment) {
+      if (Object.prototype.hasOwnProperty.call(ui, 'lessonPractice')) ui.lessonPractice.open = true;
       ui.experimentTitle.focus();
       return;
     }
@@ -319,6 +395,121 @@ function renderNext() {
     await selectCourse(id, step);
     if (state.card.id === id && state.card.step === step) ui.stepTitle.focus();
   };
+}
+
+// Use one real form for both opening and switching a project. The empty editor
+// is a lesson entry, not a disabled development environment.
+function renderLessonEntry(card, project) {
+  if (!Object.prototype.hasOwnProperty.call(ui, 'startPanel')) return;
+  ui.editorPanel.dataset.ready = String(project);
+  ui.startPanel.hidden = project;
+  ui.projectSwitchSlot.hidden = !project;
+  text(ui.editorTitle, project ? '代码编辑器' : '开始学习');
+  text(ui.projectSwitchSummary, project ? '切换已有项目' : '打开已有项目');
+  const target = project ? ui.projectSwitchSlot : ui.startPanel.querySelector('.start-card');
+  if (ui.projectSwitch.parentElement !== target) {
+    target.append(ui.projectSwitch);
+    ui.projectSwitch.open = !project && Boolean(card?.bundle);
+  }
+  const course = card?.id || '';
+  if (ui.projectSwitch.dataset.course !== course) {
+    ui.projectSwitch.dataset.course = course;
+    ui.projectSwitch.open = !project && Boolean(card?.bundle);
+  }
+  text(ui.startTitle, card?.bundle ? '打开本课的练习' : '准备开始本课');
+  text(ui.startDescription, card?.bundle
+    ? '请先解压 ' + card.bundle + '，再打开解压后的个人练习文件夹。准备方法见完整讲义。'
+    : card ? '点击开始，工作台会自动准备练习代码。' : '正在读取课程…');
+  ui.console.hidden = !project && !state.output;
+  if (Object.prototype.hasOwnProperty.call(ui, 'coursePreview')) {
+    const preview = foundationPreview(card?.id);
+    ui.coursePreview.hidden = project || !preview;
+    if (preview) {
+      text(ui.coursePreviewDescription, preview.description);
+      text(ui.coursePreviewOutput, preview.output);
+      text(ui.coursePreviewNote, preview.note);
+    }
+  }
+}
+
+// These three previews are taken from the existing learner contracts and
+// reference CLI demonstrations, not from the learner's own execution.
+// UnitLab and QuizDeck need all three steps before their full demo works.
+const foundationPreviews = Object.freeze({
+  firstcard: {
+    description: '输入姓名和任务，生成自己的任务卡。',
+    output: '今日任务卡 | 小林 | 写 Rust',
+    note: '修改一行代码即可完成。',
+  },
+  unitlab: {
+    description: '输入数字与单位，得到换算结果。',
+    output: '25.00 c = 77.00 f',
+    note: '完成全部 3 步后，才能使用完整换算器。',
+  },
+  quizdeck: {
+    description: '批改自己的题库，显示得分与错题。',
+    output: 'score=2/3\n复习：打印宏',
+    note: '完成全部 3 步后，才能使用完整题库工具。',
+  },
+});
+
+function foundationPreview(id) {
+  return Object.prototype.hasOwnProperty.call(foundationPreviews, id) ? foundationPreviews[id] : null;
+}
+
+function lessonRecap(card) {
+  if (!card) return '';
+  const explanations = {
+    firstcard: ['用变量参与格式化输出，让姓名和任务随输入变化。参数读取代码已经提供，本步没有独立实现参数解析。'],
+    unitlab: [
+      '用函数参数参与计算，返回浮点结果而不是打印固定数字。此时完整换算器还未完成。',
+      '用枚举与 match 区分单位组合，用 Result 表达成功或失败。',
+      '解析用户文本、传播错误，再格式化计算结果，把前面的函数连接成软件。',
+    ],
+    quizdeck: [
+      '借用字符串，去掉首尾空白，再比较完整答案；相等不是包含。',
+      '把题库文本解析为拥有自己的 String 的 Card，再保存到 Vec。',
+      '先检查答案数量，再逐题比较，统计得分与错题。',
+    ],
+  };
+  const explanation = Object.prototype.hasOwnProperty.call(explanations, card.id)
+    ? explanations[card.id][card.step - 1] : '';
+  return explanation || card.concept || '';
+}
+
+// The task card reveals guidance from actual project and check state.
+function renderLearningProgress(card, locked) {
+  if (!Object.prototype.hasOwnProperty.call(ui, 'lessonProgress') || !card) return;
+  const changed = sourceChanged();
+  const check = state.lastCheck;
+  const passed = Boolean(nextDestination(card, check, changed))
+    || (Boolean(state.file) && restoredLessonPass(card, check, changed, state.historyChanged));
+  const failed = check?.action === 'check' && check.status === 'failed'
+    && check.course_id === card.id && check.step === card.step && !check.stale && !changed
+    && check.source_digest === card.project?.source_digest;
+  const phase = !card.project ? 'start' : locked ? 'busy' : !state.file ? 'file' : passed ? 'passed' : failed ? 'retry' : 'edit';
+  if (Object.prototype.hasOwnProperty.call(ui, 'lessonRecap')) {
+    // A recap is conditional on a verified current code result. Never turn
+    // a run, dirty source or older output into a learning achievement.
+    const showRecap = phase === 'passed';
+    ui.lessonRecap.hidden = !showRecap;
+    ui.lessonConceptRow.hidden = showRecap;
+    if (showRecap) text(ui.lessonRecapText, lessonRecap(card));
+  }
+  const guidance = {
+    start: card.bundle ? '先准备并打开本课练习' : '先开始本课',
+    busy: '正在处理，请查看操作状态',
+    file: '打开练习文件后继续',
+    passed: card.can_run === false ? '代码检查通过 · 完成练习与复盘' : '代码检查通过 · 试一组自己的输入',
+    retry: '检查未通过 · 查看输出与提示',
+    edit: '修改代码，再检查本步',
+  };
+  text(ui.lessonProgress, '第 ' + card.step + ' / ' + card.step_count + ' 步 · ' + guidance[phase]);
+  if (ui.lessonProgress.dataset.phase !== phase) {
+    if (phase === 'passed') ui.lessonPractice.open = true;
+    if (phase === 'retry') ui.lessonHints.open = true;
+    ui.lessonProgress.dataset.phase = phase;
+  }
 }
 
 function renderControls() {
@@ -340,6 +531,8 @@ function renderControls() {
     control.setAttribute('aria-current', Number(control.dataset.step) === card?.step ? 'step' : 'false');
   }
 
+  renderLessonEntry(card, project);
+  renderLearningProgress(card, locked);
   ui.projectPath.disabled = locked || !card;
   ui.openProject.disabled = locked || !card;
   ui.create.hidden = Boolean(card?.bundle);
@@ -369,10 +562,10 @@ function renderControls() {
   const running = busy === 'run' || pending?.action === 'run';
   ui.check.setAttribute('aria-busy', String(checking));
   ui.run.setAttribute('aria-busy', String(running));
-  text(ui.create, busy === 'create' ? '正在创建…' : '创建学习项目');
+  text(ui.create, busy === 'create' ? '正在准备…' : '开始本课');
   text(ui.openProject, busy === 'open' ? '正在打开…' : '打开项目');
   text(ui.save, saving ? '正在保存…' : '保存');
-  text(ui.check, checking ? '正在检查…' : card?.id?.startsWith('modern-') ? '检查本步' : card?.kind === 'book' ? '验证专题' : '正式检查');
+  text(ui.check, checking ? '正在检查…' : card?.id?.startsWith('modern-') ? '检查本步' : card?.kind === 'book' ? '验证专题' : '检查本步');
   text(ui.run, running ? '正在运行…' : '运行程序');
   if (saving) {
     ui.saveStatus.dataset.state = 'pending';
@@ -434,7 +627,13 @@ function renderOutput() {
   ui.consoleSummary.dataset.state = tone;
   text(ui.consoleSummary, summary);
   text(ui.consoleOutput, output?.job?.output ?? output?.details ?? '');
-  renderCompilerHelp(output?.job);
+  const job = output?.job;
+  const card = state.card;
+  const current = Boolean(job && card?.project && job.course_id === card.id
+    && job.step === card.step && !job.stale && !sourceChanged()
+    && job.source_digest === card.project.source_digest);
+  renderCompilerHelp(current && job.action === 'check' ? job : null);
+  renderFailureGuide(card, current ? job : null);
 }
 
 // Navigation, saving and polling all use the same operation lock. A failed
@@ -498,9 +697,29 @@ async function applyCard(card, { file, projectPath, forceFile = false } = {}) {
 
 function readyNotice() {
   if (state.card.project) {
-    notice(state.file ? '按任务卡修改文件，保存后可以运行或正式检查。' : '请选择一个文件开始编辑。');
+    notice(state.file ? '' : '请选择一个文件开始编辑。');
   } else {
-    notice(state.card.bundle ? '请解压 ' + state.card.bundle + ' 到个人目录，填写目录路径后打开。首次编译可能较久。' : '读完任务卡后，创建学习项目或打开该课程的已有目录。');
+    notice('');
+  }
+}
+
+// FirstCard has no trusted on-disk history. A browser may remember only a
+// job identifier; the still-running service must confirm the actual check.
+async function restoreFirstCardCheck(saved) {
+  const card = state.card;
+  if (card?.id !== 'firstcard' || !state.file || !card.project
+      || saved.id !== card.id || saved.projectPath !== card.project.path
+      || !Number.isSafeInteger(saved.checkJob) || saved.checkJob <= 0) return false;
+  try {
+    const job = readJob(await api('/api/job', { query: { id: saved.checkJob } }),
+      { id: card.id, action: 'check', step: 1, jobId: saved.checkJob });
+    if (job.exit_code !== 0 || !nextDestination(card, job, sourceChanged())) return false;
+    state.lastCheck = job;
+    state.output = { job };
+    return true;
+  } catch {
+    // A missing/expired/restarted service job is not a passing result.
+    return false;
   }
 }
 
@@ -514,7 +733,12 @@ async function start() {
       && saved.id === course.id ? saved.step : 1;
     const card = await getCourse(course.id, step);
     await applyCard(card, saved.id === course.id ? saved : {});
+    const restored = await restoreFirstCardCheck(saved);
+    rememberSelection();
     readyNotice();
+    if (!restored && card.id === 'firstcard' && card.project && saved.checkJob) {
+      notice('上次检查结果无法核验，请重新检查本步。', 'warning');
+    }
   }, repeat('重连', start));
 }
 
@@ -544,13 +768,16 @@ async function changeProject(action) {
     ui.projectPath.focus();
     return;
   }
-  await perform(action, action === 'create' ? '正在创建学习项目…' : '正在打开已有项目…', async () => {
+  let opened = false;
+  await perform(action, action === 'create' ? '正在准备练习…' : '正在打开已有项目…', async () => {
     const form = { id: state.card.id };
     if (action === 'open') form.path = path;
     const card = await api(`/api/${action}`, { form });
     await applyCard(card, { forceFile: true });
-    notice(action === 'create' ? '学习项目已创建，可以编辑源文件。' : '学习项目已打开，可以继续编辑。', 'success');
+    opened = true;
+    notice('练习已准备好，按任务卡修改代码。', 'success');
   });
+  if (opened && state.file) ui.editor.focus();
 }
 
 async function selectFile(path, reload = false) {
@@ -647,12 +874,13 @@ async function finishJob(job) {
   if (refreshIssue) {
     notice(`已收到本次输出。项目状态暂时无法刷新。 ${refreshIssue.message}`, 'warning');
   } else if (job.status === 'failed') {
-    notice('请在输出中找到第一条报错，修改后重试。', 'error');
+    notice(job.action === 'check' ? '先看输出中的错误或未满足的要求，修改后再检查。' : '运行失败，请查看输出并修正。', 'error');
   } else if (job.stale || sourceChanged() || job.source_digest !== state.card.project.source_digest) {
     notice('文件版本有变化，查看输出后可重新检查或运行。', 'warning');
   } else {
-    notice(job.action === 'check' ? '可以用自己的输入做一次实验，或继续学习。' : '可更换参数再次运行，观察输出变化。', 'success');
+    notice(job.action === 'check' ? '本步代码检查通过。试一组自己的输入，再继续学习。' : '运行结束。可更换输入，再观察输出变化。', 'success');
   }
+  rememberSelection();
 }
 
 async function pollJob(job) {
@@ -718,12 +946,25 @@ async function startJob(action) {
 
 function initialize() {
   const ids = {
-    engine: 'engine-status', courseList: 'course-list', catalogCount: 'catalog-count',
+    engine: 'engine-status', courseList: 'course-list',
+    courseFocus: 'course-focus', courseCurrent: 'course-current', courseUpcoming: 'course-upcoming',
+    courseUpcomingSection: 'course-upcoming-section', courseCatalog: 'course-catalog', courseGroups: 'course-groups',
     courseTitle: 'course-title', projectState: 'project-state', projectPath: 'project-path',
     projectForm: 'project-form', create: 'create-button', openProject: 'open-project-button',
+    startPanel: 'start-panel', startTitle: 'start-title', startDescription: 'start-description',
+    editorPanel: 'editor-panel', editorTitle: 'editor-title', projectSwitch: 'project-switch',
+    projectSwitchSlot: 'project-switch-slot', projectSwitchSummary: 'project-switch-summary',
     stepList: 'step-list', lessonOpen: 'lesson-open', lessonClose: 'lesson-close', lessonDialog: 'lesson-dialog',
     lessonFrame: 'lesson-frame', lessonContent: 'lesson-content', lessonLoading: 'lesson-loading',
     stepTitle: 'step-title', goal: 'lesson-goal', target: 'lesson-function', concept: 'lesson-concept',
+    lessonProgress: 'lesson-progress', lessonHints: 'lesson-hints', lessonPractice: 'lesson-practice',
+    lessonRecap: 'lesson-recap', lessonRecapText: 'lesson-recap-text', lessonConceptRow: 'lesson-concept-row',
+    lessonFailure: 'lesson-failure', lessonFailureTitle: 'lesson-failure-title',
+    lessonFailureReason: 'lesson-failure-reason', lessonFailureLocation: 'lesson-failure-location',
+    lessonFailureAction: 'lesson-failure-action',
+    coursePreview: 'course-preview', coursePreviewDescription: 'course-preview-description',
+    coursePreviewOutput: 'course-preview-output', coursePreviewNote: 'course-preview-note',
+    activeProjectPath: 'active-project-path',
     prediction: 'lesson-prediction', hints: 'hint-list', experiment: 'lesson-experiment',
     reading: 'book-reading', readingTopics: 'book-reading-topics',
     readingQuestion: 'book-reading-question', readingVersion: 'book-reading-version',
@@ -740,9 +981,13 @@ function initialize() {
   };
   for (const [name, id] of Object.entries(ids)) ui[name] = document.getElementById(id);
 
-  ui.courseList.addEventListener('click', event => {
+  ui.courseList.addEventListener('click', async event => {
     const control = event.target.closest('[data-course]');
-    if (control) void selectCourse(control.dataset.course, 1);
+    if (!control) return;
+    const id = control.dataset.course;
+    const changed = id !== state.card?.id;
+    await selectCourse(id, 1);
+    if (changed && state.card?.id === id) control.focus({ preventScroll: true });
   });
   ui.stepList.addEventListener('click', event => {
     const control = event.target.closest('[data-step]');

@@ -4,11 +4,11 @@ const RUST_ERROR_GUIDES = Object.freeze({
   E0382: ['值被移动后再次使用', '检查所有权移交的位置，判断只读借用或调整使用顺序是否满足需求。', 'ch04-01-what-is-ownership.html', 'ownership'],
   E0502: ['可变借用与共享借用冲突', '定位两个引用实际使用的区间，检查修改是否发生在最后一次读取之前。', 'ch04-02-references-and-borrowing.html', 'ownership'],
   E0499: ['存在重叠的可变借用', '同一数据不能同时由两个活跃的可变引用修改。', 'ch04-02-references-and-borrowing.html', 'ownership'],
-  E0308: ['类型不匹配', '对照期望和实际类型，检查参数、分支与返回表达式。', 'ch03-02-data-types.html', 'd6b'],
+  E0308: ['类型不匹配', '代码给出的值与这里需要的类型不同。检查参数、分支、返回值，以及最后一行是否多写了分号。', 'ch03-02-data-types.html', 'd6b'],
   E0277: ['Trait 约束未满足', '核对类型实现的 trait 和调用要求的 bound。', 'ch10-02-traits.html', 'generics'],
-  E0599: ['方法或关联项不可用', '核对接收者类型、方法名称和 trait 是否已导入。', 'ch10-02-traits.html', 'generics'],
+  E0599: ['方法或关联项不可用', '当前值可能没有这个方法。先确认变量类型和方法名称，再检查是否需要导入 trait。', 'ch10-02-traits.html', 'generics'],
   E0596: ['当前绑定不能被可变借用', '检查 mut 绑定与函数接收的引用类型。', 'ch04-02-references-and-borrowing.html', 'ownership'],
-  E0425: ['名称不存在', '核对拼写和该绑定所在的作用域。', 'ch07-03-paths-for-referring-to-an-item-in-the-module-tree.html', 'd6b'],
+  E0425: ['名称不存在', 'Rust 找不到这个变量或函数。检查拼写、是否已定义，以及定义是否在当前代码块内。', 'ch07-03-paths-for-referring-to-an-item-in-the-module-tree.html', 'd6b'],
   E0432: ['无法解析导入', '核对 use 中模块路径与公开成员的名称。', 'ch07-04-bringing-paths-into-scope-with-the-use-keyword.html', 'd1'],
   E0433: ['模块或 crate 路径无法解析', '核对模块声明、依赖与路径起点。', 'ch07-03-paths-for-referring-to-an-item-in-the-module-tree.html', 'd1'],
   E0597: ['借用对象存活时间不足', '被引用的值必须在最后一次使用引用时仍然存在。', 'ch10-03-lifetime-syntax.html', 'generics'],
@@ -24,6 +24,72 @@ function compilerDiagnostics(output) {
     const [title, explanation, chapter, lesson] = RUST_ERROR_GUIDES[code];
     return { code, title, explanation, url: `https://doc.rust-lang.org/book/${chapter}`, lesson, experiment: code };
   });
+}
+
+// Do not infer a passing state or parse arbitrary successful program output.
+// Use only a failed, current check supplied by the caller.
+function teachingFailure(card, job) {
+  if (!card || job?.status !== 'failed') return null;
+  if (job.exit_code === null) {
+    return { title: '本次操作未能完成', reason: '没有获得正常退出结果，暂时不能判断代码是否满足要求。',
+      action: '查看下方真实输出中的启动、环境或超时提示，再重试。' };
+  }
+  if (job.action !== 'check') {
+    return { title: '程序运行未成功', reason: '这次运行返回失败；可能与输入、代码或环境有关。',
+      action: '核对本次输入及下方输出，再运行；运行结果不代表课程检查。' };
+  }
+  const clean = String(job.output || '').replace(/\u001b\[[0-9;]*m/g, '');
+  const lines = clean.split(/\r?\n/);
+  const index = lines.findIndex(line => /^\s*error(?:\[E\d{4}\])?:\s*\S/.test(line));
+  if (index >= 0) {
+    const diagnostic = lines[index].match(/^\s*error(?:\[(E\d{4})\])?:\s*(.+)$/);
+    const code = diagnostic?.[1];
+    const message = diagnostic?.[2] || '';
+    const guide = code && RUST_ERROR_GUIDES[code];
+    // The checker can compile a temporary copy. Only map an unambiguous
+    // compiler location to a source path actually editable in this project.
+    let location = '';
+    for (const line of lines.slice(index + 1, index + 9)) {
+      if (/^\s*error(?:\[E\d{4}\])?:/.test(line)) break;
+      const at = line.match(/^\s*-->\s+(.+):(\d+):(\d+)\s*$/);
+      if (!at) continue;
+      const path = at[1].replace(/\\/g, '/');
+      const candidates = (card.project?.files || []).filter(file =>
+        path === file || path.endsWith('/' + file));
+      if (candidates.length === 1) location = candidates[0] + ' · 第 ' + at[2] + ' 行，第 ' + at[3] + ' 列';
+      break;
+    }
+    if (guide) return { title: '先修复：' + guide[0] + '（' + code + '）', reason: guide[1], location,
+      action: '核对第一处错误，按任务卡修改自己的源码，再检查本步。' };
+    if (/unclosed delimiter|mismatched closing delimiter|unexpected closing delimiter/.test(message)) {
+      return { title: '先修复：括号不匹配', reason: '括号、花括号或方括号没有正确配对，编译器无法读懂这段代码。',
+        location, action: '从标出的代码附近检查成对的括号，再检查本步。' };
+    }
+    return { title: '先查看第一条错误', reason: '输出包含错误诊断，但工作台尚不能可靠解释这一类错误。',
+      location, action: '阅读下方原始错误及其上下文；不要仅凭退出码重装 Rust。' };
+  }
+  if (card.id === 'firstcard' && /^\s*期待：/m.test(clean) && /^\s*实际：/m.test(clean)) {
+    return { title: '输出还不符合任务要求', reason: '检查器已运行任务卡，并发现实际输出与期待结果不同。',
+      action: '对照下方“期待 / 实际”，检查任务卡中的 println! 是否使用输入变量，再检查本步。' };
+  }
+  if (/学习反馈：第 \d+ 步已经进入功能检查|^test result: FAILED\b/m.test(clean)) {
+    return { title: '代码还未满足检查要求', reason: '本次输出包含功能检查失败的信息，不代表 Rust 安装失败。',
+      action: '查看下方失败的检查或断言，对照当前任务卡，修改后再检查。' };
+  }
+  return { title: '检查未通过', reason: '现有输出不足以可靠判断是代码、输入还是运行环境问题。',
+    action: '先阅读下方真实输出中的第一处失败信息，再选择对应的修正方法。' };
+}
+
+function renderFailureGuide(card, job) {
+  if (!Object.prototype.hasOwnProperty.call(ui, 'lessonFailure')) return;
+  const guide = teachingFailure(card, job);
+  ui.lessonFailure.hidden = !guide;
+  if (!guide) return;
+  text(ui.lessonFailureTitle, guide.title);
+  text(ui.lessonFailureReason, guide.reason);
+  text(ui.lessonFailureAction, guide.action);
+  ui.lessonFailureLocation.hidden = !guide.location;
+  text(ui.lessonFailureLocation, guide.location || '');
 }
 
 function renderCompilerHelp(job) {

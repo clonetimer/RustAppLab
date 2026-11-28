@@ -23,9 +23,21 @@
     <aside class="rail" aria-labelledby="course-list-title">
       <div class="rail-heading">
         <h2 id="course-list-title">学习路线</h2>
-        <span id="catalog-count"></span>
       </div>
-      <nav id="course-list" class="course-list" aria-label="课程"></nav>
+      <nav id="course-list" class="course-list" aria-label="课程">
+        <div class="course-focus" id="course-focus" hidden>
+          <p class="route-caption">当前学习</p>
+          <div id="course-current" class="course-current"></div>
+          <div id="course-upcoming-section" class="course-upcoming-section" hidden>
+            <p class="route-caption">后续课程</p>
+            <div id="course-upcoming" class="course-upcoming"></div>
+          </div>
+        </div>
+        <div class="course-catalog" id="course-catalog" hidden>
+          <p class="route-caption">浏览其他课程</p>
+          <div id="course-groups" class="course-groups"></div>
+        </div>
+      </nav>
       <button type="button" id="book-open" class="secondary book-launch">查知识 · 找实验</button>
     </aside>
     <main class="workspace" aria-labelledby="course-title">
@@ -34,14 +46,7 @@
           <h1 id="course-title">学习工作台</h1>
           <p id="project-state" class="project-state">正在读取任务卡</p>
         </div>
-        <div class="project-controls">
-          <button type="button" id="create-button" class="secondary" disabled>创建学习项目</button>
-          <form id="project-form" class="project-form">
-            <label class="visually-hidden" for="project-path">已有项目目录</label>
-            <input id="project-path" placeholder="已有项目目录，例如 D:\练习 Rust\FirstCard" autocomplete="off" spellcheck="false" required disabled>
-            <button type="submit" id="open-project-button" class="secondary" disabled>打开项目</button>
-          </form>
-        </div>
+        <div id="project-switch-slot" class="project-controls" hidden></div>
       </header>
 
       <nav id="step-list" class="step-list" aria-label="学习步骤" hidden></nav>
@@ -53,28 +58,34 @@
             <button type="button" id="lesson-open" class="text-button" aria-haspopup="dialog" aria-controls="lesson-dialog" disabled>完整讲义 <span aria-hidden="true">↗</span></button>
           </header>
           <article id="lesson-content" class="lesson-body" tabindex="0" aria-labelledby="step-title" hidden>
+            <p id="lesson-progress" class="lesson-progress"></p>
             <h3 id="step-title" tabindex="-1"></h3>
             <dl class="objectives">
               <div><dt>目标</dt><dd id="lesson-goal"></dd></div>
               <div><dt>要改哪里</dt><dd id="lesson-function"></dd></div>
-              <div><dt>本步知识</dt><dd id="lesson-concept"></dd></div>
+              <div id="lesson-concept-row"><dt>练习知识</dt><dd id="lesson-concept"></dd></div>
             </dl>
-            <details id="book-reading" class="book-reading" hidden>
-              <summary>理解本步知识 · Rust Book 中文与官方对照</summary>
-              <p class="book-help">优先看当前知识点，不必现在读完整本书；外部教材将在新标签页打开。</p>
-              <ul id="book-reading-topics"></ul>
-              <p id="book-reading-question"></p>
-              <p id="book-reading-version" class="book-version"></p>
-              <p class="book-help">回到工作台修改自己的代码，再使用“正式检查”验证。阅读不计为通关。</p>
-            </details>
             <section class="prediction" aria-labelledby="prediction-title">
               <h4 id="prediction-title">写代码前，先预测</h4>
               <p id="lesson-prediction"></p>
             </section>
-            <section class="hints" aria-labelledby="hints-title">
-              <h4 id="hints-title">遇到卡点时逐层查看</h4>
-              <div id="hint-list"></div>
+            <section id="lesson-failure" class="lesson-failure" aria-labelledby="lesson-failure-title" hidden>
+              <h4 id="lesson-failure-title"></h4>
+              <p id="lesson-failure-reason"></p>
+              <p id="lesson-failure-location" class="failure-location" hidden></p>
+              <p id="lesson-failure-action"></p>
             </section>
+            <details id="lesson-hints" class="lesson-disclosure">
+              <summary>遇到困难？查看提示</summary>
+              <div id="hint-list"></div>
+            </details>
+            <details id="lesson-practice" class="lesson-disclosure">
+              <summary>练习与复盘</summary>
+              <div id="lesson-recap" class="lesson-recap" hidden>
+                <h4>本步练习了什么？</h4>
+                <p id="lesson-recap-text"></p>
+                <p class="recap-note">代码检查通过不等于已经掌握；请用自己的输入验证并尝试解释。</p>
+              </div>
             <section class="lesson-exercise" aria-labelledby="experiment-title">
               <h4 id="experiment-title" tabindex="-1">用自己的输入试一试</h4>
               <p id="lesson-experiment"></p>
@@ -82,21 +93,53 @@
             <section class="lesson-exercise" aria-labelledby="reflection-title">
               <h4 id="reflection-title">想一想</h4>
               <p id="lesson-reflection"></p>
-              <button type="button" id="learning-log-button" class="text-button">记录预测、解释与新输入</button>
+              <button type="button" id="learning-log-button" class="text-button">写学习记录</button>
             </section>
+            </details>
+            <details id="book-reading" class="book-reading" hidden>
+              <summary>补充知识（选读）</summary>
+              <ul id="book-reading-topics"></ul>
+              <p id="book-reading-question"></p>
+              <details class="book-version-details">
+                <summary>教材版本说明</summary>
+                <p id="book-reading-version" class="book-version"></p>
+              </details>
+            </details>
           </article>
           <p id="lesson-loading" class="empty-lesson">正在读取课程目录…</p>
         </section>
 
-        <section id="editor-panel" class="panel editor-panel" aria-labelledby="editor-title">
+        <section id="editor-panel" class="panel editor-panel" aria-labelledby="editor-title" data-ready="false">
           <header class="panel-heading editor-heading">
-            <h2 id="editor-title">源码编辑器</h2>
+            <h2 id="editor-title">开始学习</h2>
             <div class="editor-actions">
               <button type="button" id="save-button" class="secondary" title="Ctrl+S / ⌘S" disabled>保存</button>
               <button type="button" id="run-button" class="secondary" disabled>运行程序</button>
-              <button type="button" id="check-button" class="primary" disabled>正式检查</button>
+              <button type="button" id="check-button" class="primary" disabled>检查本步</button>
             </div>
           </header>
+          <div id="start-panel" class="start-panel">
+            <div class="start-card">
+              <h3 id="start-title">准备开始本课</h3>
+              <p id="start-description">正在读取课程…</p>
+              <button type="button" id="create-button" class="primary start-button" disabled>开始本课</button>
+              <div id="course-preview" class="course-preview" hidden>
+                <h4>完成本课后的效果（示例）</h4>
+                <p id="course-preview-description"></p>
+                <pre id="course-preview-output"></pre>
+                <p id="course-preview-note"></p>
+              </div>
+              <details id="project-switch" class="project-switch">
+                <summary id="project-switch-summary">打开已有项目</summary>
+                <p id="active-project-path" class="active-project-path" hidden></p>
+                <form id="project-form" class="project-form">
+                  <label class="visually-hidden" for="project-path">已有项目目录</label>
+                  <input id="project-path" placeholder="已有练习的文件夹路径" autocomplete="off" spellcheck="false" required disabled>
+                  <button type="submit" id="open-project-button" class="secondary" disabled>打开项目</button>
+                </form>
+              </details>
+            </div>
+          </div>
           <div class="file-row">
             <label for="file-select">文件</label>
             <select id="file-select" disabled><option value="">请选择项目</option></select>
@@ -104,11 +147,12 @@
             <button type="button" id="reload-file-button" class="text-button" hidden>重读磁盘版本</button>
           </div>
           <label class="visually-hidden" for="source-editor">当前文件内容</label>
-          <textarea id="source-editor" rows="12" wrap="off" spellcheck="false" autocapitalize="off" autocomplete="off" aria-describedby="editor-shortcuts" placeholder="创建学习项目或打开已有目录后，在这里编辑源文件。" readonly></textarea>
+          <textarea id="source-editor" rows="12" wrap="off" spellcheck="false" autocapitalize="off" autocomplete="off" aria-describedby="editor-shortcuts" placeholder="在这里编辑代码。" readonly></textarea>
           <div class="editor-footer">
-            <span id="editor-shortcuts">Tab 缩进 · Esc 后按 Tab 离开编辑器 · Ctrl / ⌘ + S 保存</span>
+            <span id="editor-shortcuts" class="visually-hidden">Tab 缩进 · Esc 后按 Tab 离开编辑器 · Ctrl / ⌘ + S 保存</span>
+            <span aria-hidden="true">Ctrl / ⌘ + S 保存</span>
             <details class="run-settings" id="run-settings">
-              <summary>运行参数</summary>
+              <summary>修改运行输入</summary>
               <div class="run-options">
                 <label for="run-args">程序参数，每行一个</label>
                 <textarea id="run-args" rows="3" spellcheck="false" autocomplete="off" autocapitalize="off" aria-describedby="args-help" disabled></textarea>
@@ -132,7 +176,7 @@
           </div>
         </div>
 
-        <section id="console-panel" class="console-panel" data-mode="normal" data-phase="idle" aria-labelledby="console-title">
+        <section id="console-panel" class="console-panel" hidden data-mode="normal" data-phase="idle" aria-labelledby="console-title">
           <header class="console-heading">
             <div class="console-title">
               <h2 id="console-title">输出</h2>

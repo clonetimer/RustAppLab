@@ -45,3 +45,21 @@ def running_workbench(command, cwd: Path, logfile: Path, env=None):
                 except subprocess.TimeoutExpired:
                     process.kill()
                     process.wait(timeout=5)
+
+
+
+def choose_workbench_course(page, course):
+    """Select via the visible navigation, expanding its category if necessary."""
+    # A previous course click can be loading asynchronously. Wait for the
+    # current course's real operation lock to clear before reading visibility:
+    # otherwise navigation may move the target into a closed group mid-click.
+    from playwright.sync_api import expect
+    expect(page.locator("#course-current [data-course]")).to_be_enabled()
+    control = page.locator(f'#course-list [data-course="{course}"]')
+    control.wait_for(state="attached")
+    if not control.is_visible():
+        # Only the optional category is collapsed. Use its visible summary,
+        # not injected JS or forced clicks on a hidden learner control.
+        group = control.locator("xpath=ancestor::details[1]")
+        group.locator("summary").click()
+    control.click()

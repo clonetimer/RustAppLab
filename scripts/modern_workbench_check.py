@@ -14,7 +14,7 @@ from urllib.parse import urlencode
 from urllib.request import Request, ProxyHandler, build_opener
 
 from release_check import ROOT
-from workbench_process import running_workbench
+from workbench_process import choose_workbench_course, running_workbench
 
 COURSES = {
     "modern-d8": "modern-d8-edition",
@@ -56,7 +56,7 @@ def browser_flow(base, output, report):
         try:
             page = browser.new_page(viewport={"width": 1440, "height": 1000}, locale="zh-CN")
             page.goto(base + "/", wait_until="domcontentloaded")
-            page.locator('#course-list [data-course="modern-e5"]').click()
+            choose_workbench_course(page, "modern-e5")
             editor = page.locator("#source-editor")
             expect(editor).not_to_have_value("")
             original = editor.input_value()
