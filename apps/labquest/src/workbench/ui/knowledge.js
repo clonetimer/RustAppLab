@@ -189,6 +189,8 @@ function renderReading(reading) {
   if (!ui.reading || typeof document.createElement !== 'function') return;
   const entries = reading?.topics?.length ? reading.topics : [];
   ui.reading.hidden = entries.length === 0;
+  ui.reading.open = false;
+  if (ui.readingVersion.parentElement) ui.readingVersion.parentElement.open = false;
   ui.readingTopics.replaceChildren();
   for (const topic of entries) {
     const item = document.createElement('li');

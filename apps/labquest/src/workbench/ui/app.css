@@ -629,3 +629,34 @@ summary:hover { color: var(--text); }
   .experiment-content { padding: 12px; }
   .experiment-comparison pre { min-height: auto; }
 }
+
+/* First visit: one clear action; existing projects remain a secondary path. */
+.editor-panel[data-ready="false"] .editor-actions,
+.editor-panel[data-ready="false"] > .file-row,
+.editor-panel[data-ready="false"] > #source-editor,
+.editor-panel[data-ready="false"] > .editor-footer { display: none; }
+.start-panel { display: grid; flex: 1; place-items: center; min-height: 240px; padding: 28px 20px; }
+.start-card { width: min(100%, 380px); min-width: 0; }
+.start-card h3 { color: var(--text); font-size: clamp(21px, 2.1vw, 28px); line-height: 1.35; }
+.start-card > p { margin: 10px 0 20px; color: var(--muted); line-height: 1.7; overflow-wrap: anywhere; }
+.start-button { min-height: 46px; width: 100%; font-size: 15px; }
+.project-switch { min-width: 0; width: 100%; }
+.start-card .project-switch { margin-top: 12px; }
+.project-switch summary { color: var(--muted); font-weight: 500; font-size: 13px; }
+.project-switch[open] .project-form { margin-top: 5px; }
+.project-controls:has(.project-switch:not([open])) { flex: 0 0 auto; }
+.project-controls .project-switch:not([open]) summary { text-align: right; }
+.book-reading { background: transparent; }
+.book-reading > summary { font-weight: 500; }
+.book-version-details { margin: 4px 12px; border-top: 1px solid var(--line); }
+.book-version-details > summary { font-size: 12px; color: var(--muted); }
+@media (max-width: 949px) {
+  .work-area:has(.editor-panel[data-ready="false"]) > .editor-panel { order: -1; }
+  .start-panel { min-height: 0; padding: 20px 15px; }
+  .start-card { width: 100%; }
+}
+@media (max-width: 600px) {
+  .workspace:has(.editor-panel[data-ready="false"]) { padding-bottom: 12px; }
+  .start-card .project-form { flex-wrap: wrap; }
+  .start-card #project-path { flex: 1 1 100%; width: 100%; }
+}

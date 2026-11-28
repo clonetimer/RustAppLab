@@ -124,7 +124,7 @@ function button(label, dataName, value) {
 
 function buildCourses() {
   const courses = state.catalog.courses;
-  text(ui.catalogCount, `${courses.length} 门`);
+  text(ui.catalogCount, '');
   const controls = [];
   let previousKind = null;
   for (const course of courses) {
@@ -132,7 +132,7 @@ function buildCourses() {
     if (kind !== previousKind) {
       const heading = document.createElement('p');
       heading.className = 'course-group';
-      heading.textContent = kind === 'modern' ? '现代 RUST · 1.100.0' : kind === 'book' ? 'RUST BOOK · 专项练习' : '从作品开始';
+      heading.textContent = kind === 'modern' ? '进阶练习' : kind === 'book' ? '专项练习' : '基础课程';
       controls.push(heading);
       previousKind = kind;
     }
@@ -158,7 +158,7 @@ function renderCard(previous) {
   const course = state.catalog.courses.find(item => item.id === card.id);
   text(ui.courseTitle, card.title);
   const path = card.project?.path;
-  text(ui.projectState, path || (card.bundle ? '先解压 ' + card.bundle + '，打开个人目录' : '尚未打开学习项目'));
+  text(ui.projectState, path || (card.bundle ? '需先准备课程包' : '尚未开始'));
   ui.projectState.dataset.open = String(Boolean(path));
   ui.projectState.title = path || (card.bundle ? '只打开通过验收的离线学员包；完整讲义有准备说明' : '新项目将创建在启动工作台时指定的工作区');
   ui.stepList.hidden = false;
@@ -321,6 +321,32 @@ function renderNext() {
   };
 }
 
+// Use one real form for both opening and switching a project. The empty editor
+// is a lesson entry, not a disabled development environment.
+function renderLessonEntry(card, project) {
+  if (!Object.prototype.hasOwnProperty.call(ui, 'startPanel')) return;
+  ui.editorPanel.dataset.ready = String(project);
+  ui.startPanel.hidden = project;
+  ui.projectSwitchSlot.hidden = !project;
+  text(ui.editorTitle, project ? '代码编辑器' : '开始学习');
+  text(ui.projectSwitchSummary, project ? '切换已有项目' : '打开已有项目');
+  const target = project ? ui.projectSwitchSlot : ui.startPanel.querySelector('.start-card');
+  if (ui.projectSwitch.parentElement !== target) {
+    target.append(ui.projectSwitch);
+    ui.projectSwitch.open = !project && Boolean(card?.bundle);
+  }
+  const course = card?.id || '';
+  if (ui.projectSwitch.dataset.course !== course) {
+    ui.projectSwitch.dataset.course = course;
+    ui.projectSwitch.open = !project && Boolean(card?.bundle);
+  }
+  text(ui.startTitle, card?.bundle ? '打开本课的练习' : '准备开始本课');
+  text(ui.startDescription, card?.bundle
+    ? '请先解压 ' + card.bundle + '，再打开解压后的个人练习文件夹。准备方法见完整讲义。'
+    : card ? '点击开始，工作台会自动准备练习代码。' : '正在读取课程…');
+  ui.console.hidden = !project && !state.output;
+}
+
 function renderControls() {
   const { busy, pending, card, file, retry, saveIssue } = state;
   const locked = Boolean(busy || pending || isExperimentRunning());
@@ -340,6 +366,7 @@ function renderControls() {
     control.setAttribute('aria-current', Number(control.dataset.step) === card?.step ? 'step' : 'false');
   }
 
+  renderLessonEntry(card, project);
   ui.projectPath.disabled = locked || !card;
   ui.openProject.disabled = locked || !card;
   ui.create.hidden = Boolean(card?.bundle);
@@ -369,7 +396,7 @@ function renderControls() {
   const running = busy === 'run' || pending?.action === 'run';
   ui.check.setAttribute('aria-busy', String(checking));
   ui.run.setAttribute('aria-busy', String(running));
-  text(ui.create, busy === 'create' ? '正在创建…' : '创建学习项目');
+  text(ui.create, busy === 'create' ? '正在准备…' : '开始本课');
   text(ui.openProject, busy === 'open' ? '正在打开…' : '打开项目');
   text(ui.save, saving ? '正在保存…' : '保存');
   text(ui.check, checking ? '正在检查…' : card?.id?.startsWith('modern-') ? '检查本步' : card?.kind === 'book' ? '验证专题' : '正式检查');
@@ -498,9 +525,9 @@ async function applyCard(card, { file, projectPath, forceFile = false } = {}) {
 
 function readyNotice() {
   if (state.card.project) {
-    notice(state.file ? '按任务卡修改文件，保存后可以运行或正式检查。' : '请选择一个文件开始编辑。');
+    notice(state.file ? '按任务卡修改代码，再点击正式检查。' : '请选择一个文件开始编辑。');
   } else {
-    notice(state.card.bundle ? '请解压 ' + state.card.bundle + ' 到个人目录，填写目录路径后打开。首次编译可能较久。' : '读完任务卡后，创建学习项目或打开该课程的已有目录。');
+    notice('');
   }
 }
 
@@ -544,13 +571,16 @@ async function changeProject(action) {
     ui.projectPath.focus();
     return;
   }
-  await perform(action, action === 'create' ? '正在创建学习项目…' : '正在打开已有项目…', async () => {
+  let opened = false;
+  await perform(action, action === 'create' ? '正在准备练习…' : '正在打开已有项目…', async () => {
     const form = { id: state.card.id };
     if (action === 'open') form.path = path;
     const card = await api(`/api/${action}`, { form });
     await applyCard(card, { forceFile: true });
-    notice(action === 'create' ? '学习项目已创建，可以编辑源文件。' : '学习项目已打开，可以继续编辑。', 'success');
+    opened = true;
+    notice('练习已准备好，按任务卡修改代码。', 'success');
   });
+  if (opened && state.file) ui.editor.focus();
 }
 
 async function selectFile(path, reload = false) {
@@ -721,6 +751,9 @@ function initialize() {
     engine: 'engine-status', courseList: 'course-list', catalogCount: 'catalog-count',
     courseTitle: 'course-title', projectState: 'project-state', projectPath: 'project-path',
     projectForm: 'project-form', create: 'create-button', openProject: 'open-project-button',
+    startPanel: 'start-panel', startTitle: 'start-title', startDescription: 'start-description',
+    editorPanel: 'editor-panel', editorTitle: 'editor-title', projectSwitch: 'project-switch',
+    projectSwitchSlot: 'project-switch-slot', projectSwitchSummary: 'project-switch-summary',
     stepList: 'step-list', lessonOpen: 'lesson-open', lessonClose: 'lesson-close', lessonDialog: 'lesson-dialog',
     lessonFrame: 'lesson-frame', lessonContent: 'lesson-content', lessonLoading: 'lesson-loading',
     stepTitle: 'step-title', goal: 'lesson-goal', target: 'lesson-function', concept: 'lesson-concept',

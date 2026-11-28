@@ -46,6 +46,8 @@ def screenshot_sizes():
              for w, h in SIZES}
     sizes.update({name+'.png': SIZES[0] for name in STATE_SHOTS})
     sizes['mobile-pending.png'] = (320,844)
+    sizes['first-visit-1440x1000.png'] = (1440, 1000)
+    sizes['first-visit-320x844.png'] = (320, 844)
     sizes['book-link-1440x1000.png'] = (1440, 1000)
     sizes['book-reader-1440x1000.png'] = (1440, 1000)
     sizes['book-reader-320x844.png'] = (320, 844)
@@ -143,6 +145,20 @@ def run_flow(page, base, tmp, out, report, expect, exe):
         expect(loc('#hint-list details')).to_have_count(3)
 
     page.goto(base+'/', wait_until='domcontentloaded')
+    # First visit is a real lesson entry: no inactive code or path controls.
+    expect(loc('#create-button')).to_have_text('开始本课')
+    expect(loc('#create-button')).to_be_enabled()
+    expect(loc('#start-panel')).to_be_visible()
+    expect(loc('#source-editor')).to_be_hidden()
+    expect(loc('#check-button')).to_be_hidden()
+    expect(loc('#console-panel')).to_be_hidden()
+    expect(loc('#project-path')).to_be_hidden()
+    expect(loc('#book-reading')).not_to_have_attribute('open', '')
+    capture(page, out, report, 'first-visit-1440x1000.png')
+    viewport(page, 320, 844)
+    expect(loc('#create-button')).to_be_in_viewport(ratio=.25)
+    capture(page, out, report, 'first-visit-320x844.png')
+    viewport(page, *SIZES[0])
     catalog = get_json(page, base, '/api/catalog')['courses']
     expected = {'firstcard', 'unitlab', 'quizdeck', 'textscope', 'ledgerlite', 'badgeforge', 'termgarden', 'batchmeter', 'minikv', 'netfetch', 'servicedesk', 'storedesk', 'asyncboard', 'book-d1', 'book-d2', 'book-d3', 'book-d4', 'book-d5', 'book-d6', 'book-foundations', "modern-d8", "modern-d9a", "modern-d9b", "modern-d10a", "modern-d11a", "modern-e4", "modern-e5", "modern-d10b", "modern-d11b", "modern-e1a", "modern-e1b", "modern-e2", "modern-e3"}
     assert {c['id'] for c in catalog} == expected and len(catalog) == len(expected)
@@ -161,7 +177,7 @@ def run_flow(page, base, tmp, out, report, expect, exe):
     bridge = course_data('unitlab', 1)['reading']
     assert bridge['topics'] and bridge['version_note']
     expect(loc('#book-reading')).to_be_visible()
-    loc('#book-reading summary').click()
+    loc('#book-reading > summary').click()
     expect(loc('#book-reading-topics a').first).to_have_attribute(
         'href', re.compile(r'^https://(rust\.bootcss\.com|doc\.rust-lang\.org)/'))
     capture(page, out, report, 'book-link-1440x1000.png')
@@ -197,6 +213,10 @@ def run_flow(page, base, tmp, out, report, expect, exe):
     choose('firstcard')
     loc('#create-button').click()
     editor = loc('#source-editor')
+    expect(loc('#start-panel')).to_be_hidden()
+    expect(loc('#project-switch')).to_be_visible()
+    expect(loc('#project-path')).to_be_hidden()
+    expect(editor).to_be_editable()
     expect(editor).to_have_value(re.compile('等待完成第一张任务卡'))
     initial = editor.input_value()
     project = Path(course_data('firstcard')['project']['path'])
@@ -257,6 +277,8 @@ def run_flow(page, base, tmp, out, report, expect, exe):
     sourcefile = imported/'src/lib.rs'
     starter = sourcefile.read_text(encoding='utf-8')
     choose('unitlab')
+    expect(loc('#start-panel')).to_be_visible()
+    loc('#project-switch > summary').click()
     loc('#project-path').fill(str(imported))
     loc('#open-project-button').click()
     expect(editor).to_have_value(starter)
