@@ -157,6 +157,9 @@ def run_flow(page, base, tmp, out, report, expect, exe):
     expect(loc('#lesson-hints')).not_to_have_attribute('open', '')
     expect(loc('#lesson-practice')).not_to_have_attribute('open', '')
     expect(loc('#lesson-progress')).to_have_attribute('data-phase', 'start')
+    expect(loc('#course-preview')).to_be_visible()
+    expect(loc('#course-preview-output')).to_have_text('今日任务卡 | 小林 | 写 Rust')
+    expect(loc('#lesson-recap')).to_be_hidden()
     expect(loc('#course-current [data-course="firstcard"]')).to_be_visible()
     expect(loc('#course-upcoming [data-course]')).to_have_count(2)
     expect(loc('#course-upcoming [data-course="unitlab"]')).to_be_visible()
@@ -191,6 +194,14 @@ def run_flow(page, base, tmp, out, report, expect, exe):
     report['observations'].append('all-course-cards')
 
     # The Book bridge is real server data, not a decorative link.
+    choose('unitlab')
+    expect(loc('#course-preview-output')).to_have_text('25.00 c = 77.00 f')
+    expect(loc('#course-preview-note')).to_contain_text('全部 3 步')
+    choose('quizdeck')
+    expect(loc('#course-preview-output')).to_have_text('score=2/3\n复习：打印宏')
+    expect(loc('#course-preview-note')).to_contain_text('全部 3 步')
+    choose('textscope')
+    expect(loc('#course-preview')).to_be_hidden()
     choose('unitlab')
     bridge = course_data('unitlab', 1)['reading']
     assert bridge['topics'] and bridge['version_note']
@@ -233,6 +244,7 @@ def run_flow(page, base, tmp, out, report, expect, exe):
     loc('#create-button').click()
     editor = loc('#source-editor')
     expect(loc('#start-panel')).to_be_hidden()
+    expect(loc('#course-preview')).to_be_hidden()
     expect(loc('#project-switch')).to_be_visible()
     expect(loc('#project-path')).to_be_hidden()
     expect(editor).to_be_editable()
@@ -273,6 +285,7 @@ def run_flow(page, base, tmp, out, report, expect, exe):
 
     action('firstcard-initial', pending=True)
     expect(loc('#lesson-progress')).to_have_attribute('data-phase', 'retry')
+    expect(loc('#lesson-recap')).to_be_hidden()
     expect(loc('#lesson-hints')).to_have_attribute('open', '')
     expect(loc('#lesson-practice')).not_to_have_attribute('open', '')
     fixed = initial.replace('println!("等待完成第一张任务卡");', 'println!("今日任务卡 | {name} | {task}");')
@@ -289,12 +302,23 @@ def run_flow(page, base, tmp, out, report, expect, exe):
     action('firstcard-pass')
     expect(loc('#lesson-progress')).to_have_attribute('data-phase', 'passed')
     expect(loc('#lesson-practice')).to_have_attribute('open', '')
+    expect(loc('#lesson-recap')).to_be_visible()
+    expect(loc('#lesson-recap-text')).to_contain_text('没有独立实现参数解析')
+    expect(loc('#lesson-concept-row')).to_be_hidden()
+    # A dirty source must withdraw both the pass and the recap.
+    editor.fill(fixed + '\n// pending change\n')
+    expect(loc('#lesson-recap')).to_be_hidden()
+    expect(loc('#lesson-concept-row')).to_be_visible()
+    expect(loc('#next-button')).to_be_hidden()
+    editor.fill(fixed)
+    expect(loc('#lesson-recap')).to_be_visible()
     expect(loc('#next-button')).to_contain_text('UnitLab')
     # Reload a verified classic lesson: the real persisted check restores
     # the next course without treating a mere program run as a pass.
     page.reload()
     expect(editor).to_have_value(fixed)
     expect(loc('#lesson-progress')).to_have_attribute('data-phase', 'passed')
+    expect(loc('#lesson-recap')).to_be_visible()
     expect(loc('#next-button')).to_contain_text('UnitLab')
     loc('#run-settings summary').click()
     loc('#run-args').fill('林 果\n整理桌面')
@@ -327,6 +351,8 @@ def run_flow(page, base, tmp, out, report, expect, exe):
     editor.fill(unit)
     # Checking a dirty draft must save it first.
     action('unitlab-step1')
+    expect(loc('#lesson-recap-text')).to_contain_text('完整换算器还未完成')
+    expect(loc('#lesson-recap')).to_be_visible()
     assert sourcefile.read_text(encoding='utf-8') == unit
     step(2)
     action('unitlab-step2')

@@ -63,7 +63,7 @@
             <dl class="objectives">
               <div><dt>目标</dt><dd id="lesson-goal"></dd></div>
               <div><dt>要改哪里</dt><dd id="lesson-function"></dd></div>
-              <div><dt>练习知识</dt><dd id="lesson-concept"></dd></div>
+              <div id="lesson-concept-row"><dt>练习知识</dt><dd id="lesson-concept"></dd></div>
             </dl>
             <section class="prediction" aria-labelledby="prediction-title">
               <h4 id="prediction-title">写代码前，先预测</h4>
@@ -74,7 +74,12 @@
               <div id="hint-list"></div>
             </details>
             <details id="lesson-practice" class="lesson-disclosure">
-              <summary>练习与复盘（检查后建议完成）</summary>
+              <summary>练习与复盘</summary>
+              <div id="lesson-recap" class="lesson-recap" hidden>
+                <h4>本步练习了什么？</h4>
+                <p id="lesson-recap-text"></p>
+                <p class="recap-note">代码检查通过不等于已经掌握；请用自己的输入验证并尝试解释。</p>
+              </div>
             <section class="lesson-exercise" aria-labelledby="experiment-title">
               <h4 id="experiment-title" tabindex="-1">用自己的输入试一试</h4>
               <p id="lesson-experiment"></p>
@@ -112,6 +117,12 @@
               <h3 id="start-title">准备开始本课</h3>
               <p id="start-description">正在读取课程…</p>
               <button type="button" id="create-button" class="primary start-button" disabled>开始本课</button>
+              <div id="course-preview" class="course-preview" hidden>
+                <h4>完成本课后的效果（示例）</h4>
+                <p id="course-preview-description"></p>
+                <pre id="course-preview-output"></pre>
+                <p id="course-preview-note"></p>
+              </div>
               <details id="project-switch" class="project-switch">
                 <summary id="project-switch-summary">打开已有项目</summary>
                 <p id="active-project-path" class="active-project-path" hidden></p>

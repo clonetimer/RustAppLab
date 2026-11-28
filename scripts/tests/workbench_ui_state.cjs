@@ -89,6 +89,20 @@ test('focused route keeps catalog order without crossing learning stages', () =>
   assert.deepEqual(Array.from(courseFocusIds([], 'firstcard')), []);
 });
 
+test('foundation previews distinguish full software examples from current-step recaps', () => {
+  const { foundationPreview, lessonRecap } = loadApp();
+  assert.equal(foundationPreview('firstcard').output, '今日任务卡 | 小林 | 写 Rust');
+  assert.equal(foundationPreview('unitlab').output, '25.00 c = 77.00 f');
+  assert.match(foundationPreview('unitlab').note, /全部 3 步/);
+  assert.match(foundationPreview('quizdeck').output, /score=2\/3/);
+  assert.equal(foundationPreview('modern-d8'), null);
+  assert.equal(foundationPreview('constructor'), null);
+  assert.match(lessonRecap({ id: 'firstcard', step: 1 }), /没有独立实现参数解析/);
+  assert.match(lessonRecap({ id: 'unitlab', step: 1 }), /还未完成/);
+  assert.match(lessonRecap({ id: 'quizdeck', step: 3 }), /检查答案数量/);
+  assert.equal(lessonRecap({ id: 'book-d1', step: 1, concept: 'Cargo 工作区' }), 'Cargo 工作区');
+});
+
 test('a run or a stale check leaves the course without a current check', () => {
   const { nextDestination } = loadApp();
   for (const result of [

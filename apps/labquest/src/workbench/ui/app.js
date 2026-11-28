@@ -419,6 +419,60 @@ function renderLessonEntry(card, project) {
     ? '请先解压 ' + card.bundle + '，再打开解压后的个人练习文件夹。准备方法见完整讲义。'
     : card ? '点击开始，工作台会自动准备练习代码。' : '正在读取课程…');
   ui.console.hidden = !project && !state.output;
+  if (Object.prototype.hasOwnProperty.call(ui, 'coursePreview')) {
+    const preview = foundationPreview(card?.id);
+    ui.coursePreview.hidden = project || !preview;
+    if (preview) {
+      text(ui.coursePreviewDescription, preview.description);
+      text(ui.coursePreviewOutput, preview.output);
+      text(ui.coursePreviewNote, preview.note);
+    }
+  }
+}
+
+// These three previews are taken from the existing learner contracts and
+// reference CLI demonstrations, not from the learner's own execution.
+// UnitLab and QuizDeck need all three steps before their full demo works.
+const foundationPreviews = Object.freeze({
+  firstcard: {
+    description: '输入姓名和任务，生成自己的任务卡。',
+    output: '今日任务卡 | 小林 | 写 Rust',
+    note: '修改一行代码即可完成。',
+  },
+  unitlab: {
+    description: '输入数字与单位，得到换算结果。',
+    output: '25.00 c = 77.00 f',
+    note: '完成全部 3 步后，才能使用完整换算器。',
+  },
+  quizdeck: {
+    description: '批改自己的题库，显示得分与错题。',
+    output: 'score=2/3\n复习：打印宏',
+    note: '完成全部 3 步后，才能使用完整题库工具。',
+  },
+});
+
+function foundationPreview(id) {
+  return Object.prototype.hasOwnProperty.call(foundationPreviews, id) ? foundationPreviews[id] : null;
+}
+
+function lessonRecap(card) {
+  if (!card) return '';
+  const explanations = {
+    firstcard: ['用变量参与格式化输出，让姓名和任务随输入变化。参数读取代码已经提供，本步没有独立实现参数解析。'],
+    unitlab: [
+      '用函数参数参与计算，返回浮点结果而不是打印固定数字。此时完整换算器还未完成。',
+      '用枚举与 match 区分单位组合，用 Result 表达成功或失败。',
+      '解析用户文本、传播错误，再格式化计算结果，把前面的函数连接成软件。',
+    ],
+    quizdeck: [
+      '借用字符串，去掉首尾空白，再比较完整答案；相等不是包含。',
+      '把题库文本解析为拥有自己的 String 的 Card，再保存到 Vec。',
+      '先检查答案数量，再逐题比较，统计得分与错题。',
+    ],
+  };
+  const explanation = Object.prototype.hasOwnProperty.call(explanations, card.id)
+    ? explanations[card.id][card.step - 1] : '';
+  return explanation || card.concept || '';
 }
 
 // The task card reveals guidance from actual project and check state.
@@ -432,6 +486,14 @@ function renderLearningProgress(card, locked) {
     && check.course_id === card.id && check.step === card.step && !check.stale && !changed
     && check.source_digest === card.project?.source_digest;
   const phase = !card.project ? 'start' : locked ? 'busy' : !state.file ? 'file' : passed ? 'passed' : failed ? 'retry' : 'edit';
+  if (Object.prototype.hasOwnProperty.call(ui, 'lessonRecap')) {
+    // A recap is conditional on a verified current code result. Never turn
+    // a run, dirty source or older output into a learning achievement.
+    const showRecap = phase === 'passed';
+    ui.lessonRecap.hidden = !showRecap;
+    ui.lessonConceptRow.hidden = showRecap;
+    if (showRecap) text(ui.lessonRecapText, lessonRecap(card));
+  }
   const guidance = {
     start: card.bundle ? '先准备并打开本课练习' : '先开始本课',
     busy: '正在处理，请查看操作状态',
@@ -862,6 +924,9 @@ function initialize() {
     lessonFrame: 'lesson-frame', lessonContent: 'lesson-content', lessonLoading: 'lesson-loading',
     stepTitle: 'step-title', goal: 'lesson-goal', target: 'lesson-function', concept: 'lesson-concept',
     lessonProgress: 'lesson-progress', lessonHints: 'lesson-hints', lessonPractice: 'lesson-practice',
+    lessonRecap: 'lesson-recap', lessonRecapText: 'lesson-recap-text', lessonConceptRow: 'lesson-concept-row',
+    coursePreview: 'course-preview', coursePreviewDescription: 'course-preview-description',
+    coursePreviewOutput: 'course-preview-output', coursePreviewNote: 'course-preview-note',
     activeProjectPath: 'active-project-path',
     prediction: 'lesson-prediction', hints: 'hint-list', experiment: 'lesson-experiment',
     reading: 'book-reading', readingTopics: 'book-reading-topics',
