@@ -1,5 +1,0 @@
-   Migrating appendix-lab/Cargo.toml from 2021 edition to 2024
-    Checking book-d6-appendix-lab v0.1.0 (/tmp/RustAppLab-D6-8m7tvbl8/lab/appendix-lab)
-   Migrating appendix-lab/src/lib.rs from 2021 edition to 2024
-       Fixed appendix-lab/src/lib.rs (2 fixes)
-    Finished `dev` profile [unoptimized + debuginfo] target(s) in 0.15s

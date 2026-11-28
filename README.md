@@ -1,8 +1,8 @@
-# Rust AppLab · 0.19.0-rc.5 候选发布版
+# Rust AppLab · 0.19.0-rc.6 候选发布版
 
 通过亲手制作小软件学习 Rust：先读懂输入和输出，每次实现一个函数，用自己的数据验证，最后完成独立作品。
 
-**推荐从网页工作台开始。** Windows 双击 `START_WORKBENCH_WINDOWS.cmd`，Linux 执行 `./START_WORKBENCH.sh`。在一个浏览器窗口内读中文任务卡、编辑自己的源码、保存、运行和查看真实检查结果；已接入 FirstCard、全部 12 款 Studio 和 D1–D6 的 7 个既有专题工程。安装、续学和操作说明见 [网页学习工作台](course/WORKBENCH.md)。
+**推荐从网页工作台开始。** Windows 双击 `START_WORKBENCH_WINDOWS.cmd`，Linux 执行 `./START_WORKBENCH.sh`。在一个浏览器窗口内读中文任务卡、编辑自己的源码、保存、运行和查看真实检查结果；默认展示当前课程及后续两课，点击「开始本课」即可进入；已有 33 个网页课程入口（13 个作品、7 个 Book 专题、13 个现代 Rust host 课程）。部分进阶课需要另行准备对应工具链和离线学员包。安装、续学和操作说明见 [网页学习工作台](course/WORKBENCH.md)。
 
 ## 我现在应该做什么？
 
@@ -39,21 +39,20 @@
 | 开始、续学、查看当前任务 | [开始指南](README_START_HERE.md)、[FirstCard 之后](course/AFTER_FIRSTCARD.md)、[课程目录](course/README.md) |
 | 看参考源码和实验材料 | 各 `apps/`、`projects/`、`examples/` 的 README；自己的代码在 `my-...` 工程 |
 | 维护项目或打包 | [维护文档与源码地图](docs/README.md) |
-| 查旧设计、旧版本和旧验证 | [历史文档](docs/archive/README.md)、[验证记录索引](verification/README.md) |
 
-按当前作品的 README 继续即可。历史记录按当时版本保留，不是新增的学习任务。
+按当前作品的 README 继续即可。维护文档不是学员必读材料。
 
 ## 选择下载内容
 
-网页工作台随 **0.19.0-rc.5** 源码和对应平台运行包交付。请从 [Releases](https://github.com/clonetimer/RustAppLab/releases) 选择该版本及其校验文件；发布资格以同一提交的 CI 与实际 Release 为准。也可下载 [当前 main 源码 ZIP](https://github.com/clonetimer/RustAppLab/archive/refs/heads/main.zip)。旧 `v0.19.0-rc.3` 包保持原样，不会自动获得新界面。
+网页工作台随 **0.19.0-rc.6** 源码和对应平台运行包交付。请从 [Releases](https://github.com/clonetimer/RustAppLab/releases) 选择该版本及其校验文件；发布资格以同一提交的 CI 与实际 Release 为准。也可下载 [当前 main 源码 ZIP](https://github.com/clonetimer/RustAppLab/archive/refs/heads/main.zip)。已发布的 rc.5 及更早的包保持原样，不会自动获得新界面；rc.6 的下载以实际 Release 为准。
 
 更新时解压到新的平台文件夹，保留原来的 `my-...` 工程，再从工作台打开其实际路径。
 
 | 目的 | 下载包 | 需要什么 |
 |---|---|---|
-| 直接打开工作台、体验成品 | `RustAppLab-0.19.0-rc.5-<平台>-runtime.zip` | 对应系统；工作台与参考程序已编译，运行或检查自己的 Rust 仍需 Rust/Cargo |
-| 使用完整源码与课程 | `RustAppLab-0.19.0-rc.5-source.zip` | Rust/Cargo 与系统构建工具；首次打开会编译本地工作台 |
-| 只取学员骨架 | `RustAppLab-0.19.0-rc.5-learner-kit.zip` | 17 个基础/进阶 A/B 工程；核心 TODO 待完成，不含 C1/C2 vendor |
+| 直接打开工作台、体验成品 | `RustAppLab-0.19.0-rc.6-<平台>-runtime.zip` | 对应系统；工作台与参考程序已编译，运行或检查自己的 Rust 仍需 Rust/Cargo |
+| 使用完整源码与课程 | `RustAppLab-0.19.0-rc.6-source.zip` | Rust/Cargo 与系统构建工具；首次打开会编译本地工作台 |
+| 只取学员骨架 | `RustAppLab-0.19.0-rc.6-learner-kit.zip` | 17 个基础/进阶 A/B 工程；核心 TODO 待完成，不含 C1/C2 vendor |
 | 离线完成异步课程 | `C1-learner-offline.zip`、`C2-learner-offline.zip` | Rust 1.85.0 已安装；包内提供锁定依赖源码 |
 | 对照异步参考实现 | `C1-reference-offline.zip`、`C2-reference-offline.zip` | Rust 1.85.0；不是预编译 EXE |
 
@@ -72,7 +71,7 @@ FirstCard → UnitLab → QuizDeck → TextScope → LedgerLite / BadgeForge / T
 
 新版工作台可以搜索中文概念、Rust 名称或错误编号，打开本地讲义与官方章节，再进入对应专题的个人副本。D1–D6 支持同页编辑、保存与真实 Cargo 测试；11 类编译错误提供隔离的失败／修复对照实验。中文 Rust Book 用于基础概念与项目组织对照；异步 API 按锁定版本的官方文档学习。使用 `learn reading <工程>` 查阅相关章节，见 [Book 对照指南](course/BOOK_GUIDE.md)。
 
-遇到相应概念时，可补读 [所有权与切片](course/BOOK_OWNERSHIP_PRACTICE.md)、[集合与错误传播](course/BOOK_COLLECTIONS_ERRORS.md)、[泛型与生命周期](course/BOOK_GENERICS_LIFETIMES.md)。它们不要求在 UnitLab 前完成。[31 项概念补课任务](course/BOOK_31_GAPS_REPAIR.md)、[学员学习效果观察](course/LEARNER_EVIDENCE_PROTOCOL.md) 和 [概念审计](course/BOOK_CONCEPT_AUDIT.md) 保留第 4–6、8–10 章 118 个目标的历史审计，并补齐其中原先未完成的 31 项解释、预测、成功／失败、修复与迁移练习；[本轮补充证据](verification/concept-repair-20261124.json)单独记录技术验证。这个范围不能作为整本书的完成率，示例验证也不表示真实学员已经掌握。
+遇到相应概念时，可补读 [所有权与切片](course/BOOK_OWNERSHIP_PRACTICE.md)、[集合与错误传播](course/BOOK_COLLECTIONS_ERRORS.md)、[泛型与生命周期](course/BOOK_GENERICS_LIFETIMES.md)，或选读 [31 项概念补课任务](course/BOOK_31_GAPS_REPAIR.md)。它们不要求在 UnitLab 前完成。
 
 ## 已有工程继续用
 
@@ -90,10 +89,10 @@ cargo run --locked --offline -p labquest -- learn check "D:/练习/my-unitlab"
 
 ## 候选版范围与试用
 
-课程内容范围保持在 **B4、C1、C2** 及已有 Rust Book 专题；本次把 D1–D6 接入网页，不新增进阶路线。独立作品与进阶 A/B/C 保留原入口。D6 的 Edition 迁移、nightly 和 IDE 操作仍按原讲义单独验证。
+本次收口以教学工作台 R1–R6 为主，不新增课程。原有 B4、C1、C2、D1–D6 专题与现代 Rust host 课程保留；独立作品和进阶 A/B/C 保留原入口。五门现代依赖课程需从对应专项验收产物准备离线学员包；GUI、ARM/QEMU、C/WASM、工具链迁移和 IDE 等专项能力按各自证据判定，网页 host 测试不替代它们。
 
 支持范围为 Windows x64 MSVC、Linux x86_64；基础/A/B 的最低 Rust 为 1.74，C1/C2 单独要求 1.85.0。StoreDesk 需系统 SQLite，见 [支持说明](SUPPORTED_PLATFORMS.md)。普通学员不需要 Python 或 Playwright，不运行维护者的发布验收脚本。
 
 此版本为 **RC 候选版，不是 Stable**。当前源码必须重新通过 Windows/Linux、最低版本、浏览器、C1/C2 和交付检查；旧版本证据不继承。真人学习效果与 Win10 本机体验按 [试用记录](course/USER_TRIAL.md) 记录，不能以 CI 代填。参见 [发布规则](RELEASE_POLICY.md)、[已知边界](KNOWN_ISSUES.md)、[后续范围](ROADMAP.md)。
 
-网络服务仅用于可信本机回环 HTTP；不提供公网/TLS、账号认证或恶意代码沙箱。当前修订见 [变更记录](RELEASE_NOTES.md)；旧版设计、发布说明与验证分别从 [历史文档](docs/archive/README.md) 和 [验证索引](verification/README.md) 查阅，按记录的版本与提交理解。
+网络服务仅用于可信本机回环 HTTP；不提供公网/TLS、账号认证或恶意代码沙箱。当前修订见 [变更记录](RELEASE_NOTES.md)。

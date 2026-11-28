@@ -46,11 +46,26 @@ class BookCoverageTests(unittest.TestCase):
             with self.subTest(item=item):
                 self.assertIn(item, text)
 
-    def test_development_experience_has_one_title_and_unique_sections(self):
-        text = (ROOT / "verification/DEVELOPMENT_EXPERIENCE_D6.md").read_text(encoding="utf-8")
-        self.assertEqual(text.count("# RustAppLab · D6 开发经验记录"), 1)
-        sections = re.findall(r"^## (\d+)\.", text, re.M)
-        self.assertEqual(len(sections), len(set(sections)))
+    def test_obsolete_document_archives_are_not_shipped(self):
+        # Supersedes the formatting-only test of the removed history document.
+        # Teaching coverage, evidence mappings and executable contracts remain.
+        obsolete = (
+            "docs/archive", "docs/superpowers", "verification/archive",
+            "verification/rc3-core-concepts", "verification/d6-practical-linux",
+            "PROJECT_DESIGN.md", "REFERENCE_ANALYSIS.md",
+            "course/WINDOWS_BEGINNER_0_11_1_HOTFIX.md",
+            "verification/2026-11-02-book-guided-quality.md",
+            "verification/DEVELOPMENT_EXPERIENCE_D5.md",
+            "verification/DEVELOPMENT_EXPERIENCE_D6.md",
+            "verification/DOCUMENTATION_HOUSEKEEPING_20261119.md",
+            "verification/README_LEARNING_HANDOFF_20261119.md",
+        )
+        for relative in obsolete:
+            with self.subTest(path=relative):
+                self.assertFalse((ROOT / relative).exists())
+        for relative in ("verification/concept-audit-rc3.json",
+                         "verification/concept-repair-20261124.json"):
+            self.assertTrue((ROOT / relative).is_file())
 
     def test_isolated_cargo_workspace_and_local_publish_guard(self):
         base = ROOT / "projects/book-d1-cargo"

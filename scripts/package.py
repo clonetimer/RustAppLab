@@ -14,9 +14,9 @@ OUTPUT = ROOT.parent / f"RustAppLab-{VERSION}-source.zip"
 MANIFEST = ROOT / "SOURCE_MANIFEST.sha256"
 SKIP = {".git", "target", "__pycache__", "filequest-playground", "loglens-playground", "localhub-playground", "safesync-playground", "labquest-playground", "labquest-second-case"}
 ROOT_ALLOWED = {
-    "VERSION", "RELEASE_POLICY.md", "KNOWN_ISSUES.md", "VERIFY_RELEASE_WINDOWS.cmd", "VERIFY_BROWSER_WINDOWS.cmd", "Cargo.toml", "Cargo.lock", ".gitignore", ".gitattributes", "LICENSE", "PROJECT_DESIGN.md", "README.md",
+    "VERSION", "RELEASE_POLICY.md", "KNOWN_ISSUES.md", "VERIFY_RELEASE_WINDOWS.cmd", "VERIFY_BROWSER_WINDOWS.cmd", "Cargo.toml", "Cargo.lock", ".gitignore", ".gitattributes", "LICENSE", "README.md",
     "START_WORKBENCH_WINDOWS.cmd", "START_WORKBENCH.sh",
-    "README_START_HERE.md", "REFERENCE_ANALYSIS.md", "RELEASE_NOTES.md", "ROADMAP.md",
+    "README_START_HERE.md", "RELEASE_NOTES.md", "ROADMAP.md",
     "START_HERE.html", "SYSTEMS_PATH.html", "RELIABILITY_PATH.html", "INDEPENDENT_PATH.html", "ADVANCED_A.html", "ADVANCED_B.html", "START_ADVANCED_B_WINDOWS.cmd", "START_ADVANCED_WINDOWS.cmd", "START_WINDOWS.cmd", "WORKSHOP.html", "CONTINUE_WINDOWS.cmd", "PREPARE_NETWORK_WINDOWS.cmd", "LEARN_NEXT_WINDOWS.cmd", "SUPPORTED_PLATFORMS.md",
 }
 

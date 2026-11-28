@@ -1,14 +1,14 @@
-# Rust AppLab 0.19.0-rc.5 · 候选发布与Stable准入
+# Rust AppLab 0.19.0-rc.6 · 候选发布与Stable准入
 
 ## 固定本轮范围
 
-基础Studio、独立作品、进阶A、B1–B4、C1及C2为当前交付范围。rc.5 接入既有 D1–D6 网页实践、知识导航、编译对照与人工观察材料，原正式检查标准保持不变。Windows x64 MSVC与Linux x86_64为目标平台；macOS不作支持声明。候选版不以继续增加C3/C4/GUI/WASM作为发布前提。
+基础Studio、独立作品、进阶A、B1–B4、C1及C2为当前交付范围。rc.6 收口教学工作台 R1–R6，保留既有 D1–D6 与现代 Rust host 课程；连续三门基础课的七步真实检查、个人及错误输入、学习记录、续学和回归证据纳入候选验收，原正式检查标准保持不变。五门现代依赖课程的离线学员包由对应专项提供，不将网页 host 检查当作原生专项验收。Windows x64 MSVC与Linux x86_64为目标平台；macOS不作支持声明。候选版不以继续增加C3/C4/GUI/WASM作为发布前提。
 
 ## 三种状态分别记录
 
 **开发检查点**：同一提交的现有CI通过后创建 `checkpoint/v<VERSION>-<SHA>`。它既不是正式产品版本，也不说明真人学习效果。
 
-**RC候选版**：`0.19.0-rc.5`作为GitHub prerelease发布，不标记Latest或Stable。除了现有Linux/Windows、Rust1.74、真实浏览器、C1/C2全部准入，还要求源码归档新目录重放、首次学习路径检查、对应平台运行包与文件校验。缺少这些结果时只能保留候选源码，不能宣称已完成RC准入。`scripts/release_decision.py`保留历史工程报告兼容性；真人观察必须提供当前协议规定的人工复核记录和可校验文件，旧占位 PASS 不再被接受。新的候选汇总同时核验C1/C2与交付证据，避免只凭旧判定器忽略新增课程。
+**RC候选版**：`0.19.0-rc.6`作为GitHub prerelease发布，不标记Latest或Stable。除了现有Linux/Windows、Rust1.74、真实浏览器、C1/C2全部准入，还要求源码归档新目录重放、首次学习路径检查、对应平台运行包与文件校验。缺少这些结果时只能保留候选源码，不能宣称已完成RC准入。`scripts/release_decision.py`保留历史工程报告兼容性；真人观察必须提供当前协议规定的人工复核记录和可校验文件，旧占位 PASS 不再被接受。新的候选汇总同时核验C1/C2与交付证据，避免只凭旧判定器忽略新增课程。
 
 **Stable**：保留上述工程证据，还需要当前版本实际学员在FirstCard、UnitLab和独立作品路线的真人观察、提示使用与未解决阻断处理记录。自动化修复TODO用于验证教学工具，不是一个真实学员。未完成的观察使用 [试用模板](course/USER_TRIAL.md) 留空，不编造通过结果。
 
@@ -20,7 +20,7 @@
 
 ## 历史与边界
 
-冻结 `0.17.0-rc.2` 的RC_READY和原始证据保持原样，只证明当时源码；不继承到本版本。历史材料从 [验证索引](verification/README.md) 与 [历史版本记录](docs/archive/releases/RELEASE_NOTES_THROUGH_0_19_RC_2.md) 查阅；当前修订见 [变更记录](RELEASE_NOTES.md)。
+当前修订见 [变更记录](RELEASE_NOTES.md)。历史版本及其原始证据只从对应 Git 标签、Release 和 CI 查阅，不随当前源码重复交付。
 
 启动C2时同步校验已有日志；请求期磁盘工作在独立阻塞线程执行。回环HTTP不作公网服务、账号认证或数据安全沙箱；StoreDesk依赖系统SQLite。系统支持详情见 [SUPPORTED_PLATFORMS](SUPPORTED_PLATFORMS.md)。
 
