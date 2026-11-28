@@ -31,13 +31,31 @@ ACTIONS = {
     'unitlab-step2': ('unitlab', 'check', 2, 'failed'),
     'unitlab-compiler': ('unitlab', 'check', 1, 'failed'),
     'unitlab-recovered': ('unitlab', 'check', 1, 'succeeded'),
+    'route-unitlab-red': ('unitlab', 'check', 1, 'failed'),
+    'route-unitlab-1': ('unitlab', 'check', 1, 'succeeded'),
+    'route-unitlab-2': ('unitlab', 'check', 2, 'succeeded'),
+    'route-unitlab-3': ('unitlab', 'check', 3, 'succeeded'),
+    'route-unitlab-personal': ('unitlab', 'run', 3, 'succeeded'),
+    'route-unitlab-invalid': ('unitlab', 'run', 3, 'failed'),
+    'route-quizdeck-red': ('quizdeck', 'check', 1, 'failed'),
+    'route-quizdeck-1': ('quizdeck', 'check', 1, 'succeeded'),
+    'route-quizdeck-2': ('quizdeck', 'check', 2, 'succeeded'),
+    'route-quizdeck-3': ('quizdeck', 'check', 3, 'succeeded'),
+    'route-quizdeck-personal': ('quizdeck', 'run', 3, 'succeeded'),
+    'route-quizdeck-invalid': ('quizdeck', 'run', 3, 'failed'),
+    'route-quizdeck-recheck': ('quizdeck', 'check', 3, 'succeeded'),
 }
 STATE_SHOTS = ('pending', 'firstcard-initial', 'firstcard-pass', 'firstcard-personal',
                'unitlab-initial', 'unitlab-step1', 'unitlab-step2', 'unitlab-compiler',
-               'collapsed-error', 'external-conflict', 'restored-selection')
+               'collapsed-error', 'external-conflict', 'restored-selection',
+               'route-unitlab-3', 'route-unitlab-personal', 'route-unitlab-invalid',
+               'route-quizdeck-red', 'route-quizdeck-3', 'route-quizdeck-personal',
+               'route-quizdeck-invalid', 'route-quizdeck-recheck')
 OBSERVATIONS = {'all-course-cards', 'full-lesson-and-hints', 'desktop-mobile-layout',
                 'save-and-reload', 'existing-project', 'dirty-navigation', 'external-conflict',
-                'disconnect-retry', 'book-learning-bridge'}
+                'disconnect-retry', 'book-learning-bridge',
+                'foundation-route-seven-steps', 'foundation-personal-inputs',
+                'foundation-learning-log'}
 
 
 def screenshot_sizes():
@@ -331,17 +349,123 @@ def run_flow(page, base, tmp, out, report, expect, exe):
     loc('#run-settings summary').click()
     personal = action('firstcard-personal')
     assert '今日任务卡 | 林 果 | 整理桌面' in personal['output']
-    # Import a real project created outside the browser with an older-style
-    # document set. Opening must not regenerate the source or deleted README.
+    # R6: a continuous browser-only route through all seven learning steps.
+    # Deterministic reference fragments are test fixtures, NOT human work or
+    # automatic answers offered by the UI. Only the current TODO is replaced.
+    def next_course(course):
+        expect(loc('#next-button')).to_contain_text(
+            course_data(course)['title'].split(' · ')[0])
+        loc('#next-button').click()
+        expect(loc(f'#course-current [data-course="{course}"]')).to_have_attribute('aria-current', 'true')
+        expect(loc('#start-panel')).to_be_visible()
+        expect(loc('#create-button')).to_be_enabled()
+        expect(loc('#course-preview')).to_be_visible()
+        loc('#create-button').click()
+        expect(editor).to_be_editable()
+        expect(loc('#file-select')).to_have_value('src/lib.rs')
+        return Path(course_data(course)['project']['path'])
+
+    def finish_three_steps(course):
+        reference = (ROOT/'apps'/course/'src/lib.rs').read_text(encoding='utf-8')
+        action(f'route-{course}-red')
+        expect(loc('#lesson-failure')).to_be_visible()
+        for number in (1, 2, 3):
+            expect(loc(f'#step-list [data-step="{number}"]')).to_have_attribute('aria-current', 'step')
+            pattern = re.compile(
+                rf'(?ms)(^    // LESSON {number} BEGIN\n).*?(^    // LESSON {number} END$)')
+            current = editor.input_value()
+            assert f'TODO({number})' in current
+            fragment = pattern.search(reference)
+            assert fragment is not None
+            repaired, count = pattern.subn(lambda _: fragment.group(0), current)
+            assert count == 1 and repaired != current
+            for later in range(number + 1, 4):
+                assert f'TODO({later})' in repaired
+            editor.fill(repaired)
+            action(f'route-{course}-{number}')
+            expect(loc('#lesson-progress')).to_have_attribute('data-phase', 'passed')
+            expect(loc('#lesson-recap')).to_be_visible()
+            if number < 3:
+                expect(loc('#next-button')).to_contain_text(f'第 {number + 1} 步')
+                loc('#next-button').click()
+                expect(loc(f'#step-list [data-step="{number + 1}"]')).to_have_attribute('aria-current', 'step')
+                expect(editor).to_be_editable()
+
+    def run_input(name, value):
+        loc('#run-settings summary').click()
+        loc('#run-args').fill(value)
+        loc('#run-settings summary').click()
+        return action(name)
+
+    def save_sample(path, content, root):
+        original = (root/path).read_text(encoding='utf-8')
+        loc('#file-select').select_option(path)
+        expect(editor).to_have_value(original)
+        expect(editor).to_be_editable()
+        editor.fill(content)
+        loc('#save-button').click()
+        expect(loc('#save-status')).to_have_attribute('data-state', 'saved')
+        assert (root/path).read_text(encoding='utf-8') == content
+
+    def record_log(course, root, note):
+        digest = course_data(course, 1 if course == 'firstcard' else 3)['project']['source_digest']
+        expect(loc('#lesson-practice')).to_have_attribute('open', '')
+        loc('#learning-log-button').click()
+        expect(loc('#file-select')).to_have_value('LEARNING_LOG.md')
+        original = (root/'LEARNING_LOG.md').read_text(encoding='utf-8')
+        expect(editor).to_have_value(original)
+        entry = original + '\n## R6 自动化工程验收（不是学员学习记录）\n' + note + '\n'
+        editor.fill(entry)
+        loc('#save-button').click()
+        expect(loc('#save-status')).to_have_attribute('data-state', 'saved')
+        assert (root/'LEARNING_LOG.md').read_text(encoding='utf-8') == entry
+        assert course_data(course, 1 if course == 'firstcard' else 3)['project']['source_digest'] == digest
+        loc('#file-select').select_option('src/main.rs' if course == 'firstcard' else 'src/lib.rs')
+        expect(editor).to_be_editable()
+        expect(loc('#next-button')).to_be_visible()
+
+    record_log('firstcard', project, '输入：林 果／整理桌面；实际输出与输入一致。')
+    route_unit = next_course('unitlab')
+    finish_three_steps('unitlab')
+    result = run_input('route-unitlab-personal', 'convert\n-10\nc\nf')
+    assert '-10.00 c = 14.00 f' in result['output']
+    invalid = run_input('route-unitlab-invalid', 'convert\n25\nc\nm')
+    assert '温度和长度不能互相换算' in invalid['output']
+    record_log('unitlab', route_unit, '输入 -10 c f 得到 14.00 f；25 c m 被明确拒绝。')
+    route_quiz = next_course('quizdeck')
+    finish_three_steps('quizdeck')
+    # Reuse the learner's editable sample files via the browser; no shell or
+    # extra editor is required to supply a different set of questions/answers.
+    save_sample('samples/deck.tsv', '构建工具\tcargo\n2+3\t5\n学习主题\tRust\n', route_quiz)
+    save_sample('samples/answers.txt', 'Cargo\n4\nRust\n', route_quiz)
+    result = run_input('route-quizdeck-personal', 'check\nsamples/deck.tsv\nsamples/answers.txt')
+    assert 'score=2/3' in result['output'] and '复习：2+3' in result['output']
+    save_sample('samples/answers.txt', 'Cargo\n4\n', route_quiz)
+    invalid = run_input('route-quizdeck-invalid', 'check\nsamples/deck.tsv\nsamples/answers.txt')
+    assert '答案数量必须等于题目数量' in invalid['output']
+    save_sample('samples/answers.txt', 'Cargo\n4\nRust\n', route_quiz)
+    loc('#file-select').select_option('src/lib.rs')
+    expect(editor).to_have_value((route_quiz/'src/lib.rs').read_text(encoding='utf-8'))
+    action('route-quizdeck-recheck')
+    expect(loc('#lesson-recap')).to_be_visible()
+    record_log('quizdeck', route_quiz, '三题两对，错题 2+3；答案数量不匹配时明确报错。')
+    expect(loc('#next-button')).to_contain_text('TextScope')
+    report['observations'].extend(['foundation-route-seven-steps',
+                                   'foundation-personal-inputs', 'foundation-learning-log'])
+
+    # Separately test importing a real project created outside the browser
+    # with an older-style document set. Opening must not regenerate the
+    # source or deleted README.
     imported = tmp/'已有 UnitLab 中文'
     subprocess.run([str(exe), 'studio', 'start', 'unitlab', str(imported)], cwd=tmp, check=True,
                    capture_output=True, timeout=30)
     (imported/'README.md').unlink()
     sourcefile = imported/'src/lib.rs'
     starter = sourcefile.read_text(encoding='utf-8')
-    loc('#next-button').click()
+    choose('unitlab')
     expect(loc('#course-list [data-course="unitlab"]')).to_have_attribute('aria-current', 'true')
-    expect(loc('#start-panel')).to_be_visible()
+    expect(editor).to_be_editable()
+    expect(loc('#project-path')).to_be_hidden()
     loc('#project-switch > summary').click()
     loc('#project-path').fill(str(imported))
     loc('#open-project-button').click()
