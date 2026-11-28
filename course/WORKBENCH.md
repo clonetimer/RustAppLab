@@ -103,4 +103,4 @@ Windows 运行包在解压目录的终端执行以下命令。
 
 UnitLab、QuizDeck、TextScope、LedgerLite、BadgeForge、TermGarden、BatchMeter、MiniKV、NetFetch、ServiceDesk、StoreDesk、AsyncBoard。
 
-Book 专题为 D1 Cargo、D2 智能指针、D3 对象与模式、D4 高级 Rust、D5 多线程 Web Server、D6-A 附录、D6-B 基础概念。进阶 A/B/C、TaskPocket 和 PageMint 独立作品继续从各自的文档和终端入口学习。需要交互式标准输入或长时间运行的服务时，按该课程原有的终端命令操作。工作台的「运行参数」在启动程序时一次性传入。相关入口见 [课程地图](CURRICULUM.md)、[独立作品路线](INDEPENDENT_PATH.md) 和 [Rust Book 对照学习](BOOK_GUIDE.md)。
+Book 专题为 D1 Cargo、D2 智能指针、D3 对象与模式、D4 高级 Rust、D5 多线程 Web Server、D6-A 附录、D6-B 基础概念。进阶 A/B/C、TaskPocket 和 PageMint 独立作品继续从各自的文档和终端入口学习。需要交互式标准输入或长时间运行的服务时，按该课程原有的终端命令操作。工作台的「修改运行输入」在启动程序时一次性传入。相关入口见 [课程地图](CURRICULUM.md)、[独立作品路线](INDEPENDENT_PATH.md) 和 [Rust Book 对照学习](BOOK_GUIDE.md)。

@@ -311,7 +311,7 @@ function renderNext() {
   const { card, lastCheck } = state;
   const changed = sourceChanged();
   let destination = nextDestination(card, lastCheck, changed);
-  const restored = restoredLessonPass(card, lastCheck, changed, state.historyChanged);
+  const restored = Boolean(state.file) && restoredLessonPass(card, lastCheck, changed, state.historyChanged);
   if (!destination && restored) {
     destination = card.step < card.step_count ? { step: card.step + 1 }
       : card.next_course ? { course: card.next_course } : { experiment: true };
@@ -379,15 +379,16 @@ function renderLearningProgress(card, locked) {
   const changed = sourceChanged();
   const check = state.lastCheck;
   const passed = Boolean(nextDestination(card, check, changed))
-    || restoredLessonPass(card, check, changed, state.historyChanged);
+    || (Boolean(state.file) && restoredLessonPass(card, check, changed, state.historyChanged));
   const failed = check?.action === 'check' && check.status === 'failed'
     && check.course_id === card.id && check.step === card.step && !check.stale && !changed
     && check.source_digest === card.project?.source_digest;
-  const phase = !card.project ? 'start' : locked ? 'busy' : passed ? 'passed' : failed ? 'retry' : 'edit';
+  const phase = !card.project ? 'start' : locked ? 'busy' : !state.file ? 'file' : passed ? 'passed' : failed ? 'retry' : 'edit';
   const guidance = {
-    start: '先开始本课',
+    start: card.bundle ? '先准备并打开本课练习' : '先开始本课',
     busy: '正在处理，请查看操作状态',
-    passed: '代码检查通过 · 试一组自己的输入',
+    file: '打开练习文件后继续',
+    passed: card.can_run === false ? '代码检查通过 · 完成练习与复盘' : '代码检查通过 · 试一组自己的输入',
     retry: '检查未通过 · 查看输出与提示',
     edit: '修改代码，再检查本步',
   };

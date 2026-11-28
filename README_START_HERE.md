@@ -41,7 +41,7 @@ StoreDesk 是后续数据库课程，另需系统 SQLite；新手开始 FirstCar
 
 ## 3. 零基础：FirstCard → UnitLab
 
-**推荐使用同页学习流程：** Windows 双击 `START_WORKBENCH_WINDOWS.cmd`；Linux 执行 `./START_WORKBENCH.sh`。保留启动窗口，浏览器会打开本机地址。在左侧选择 FirstCard，点击代码区的“开始本课”，阅读当前中文任务卡，直接在编辑区修改自己的源码，按“保存”后点击“正式检查”。失败时底部输出区会展开并显示原检查器的错误；通过后换自己的输入运行，再进入 UnitLab。完整操作见 [网页工作台指南](course/WORKBENCH.md)。
+**推荐使用同页学习流程：** Windows 双击 `START_WORKBENCH_WINDOWS.cmd`；Linux 执行 `./START_WORKBENCH.sh`。保留启动窗口，浏览器会打开本机地址。在左侧选择 FirstCard，点击代码区的“开始本课”，阅读当前中文任务卡，直接在编辑区修改自己的源码，按“保存”后点击“检查本步”。失败时底部输出区会展开并显示原检查器的错误；通过后换自己的输入运行，再进入 UnitLab。完整操作见 [网页工作台指南](course/WORKBENCH.md)。
 
 原有终端流程继续可用。在完整源码包根目录打开 PowerShell 或终端：
 
